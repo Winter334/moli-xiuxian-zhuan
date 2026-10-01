@@ -10,19 +10,27 @@ import { dec, text } from '../../core/numbers';
 import { FOUNDATION_DIVINE_ART } from '../../core/prototype/divine-arts';
 import { FATE_IDS } from '../../core/prototype/fates';
 import { synchronizeCharacter } from '../../core/prototype/character-state';
+import { MANUAL_IDS, MANUALS } from '../../core/prototype/skills';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
 const requestId = '00000000-0000-4000-8000-000000000002';
 const secondId = '00000000-0000-4000-8000-000000000003';
 const initial = (): ClientSave => ({ format: 'opening-client-2', tradeRevision: '0', character: createCharacter(0, 19), playedMs: 0 });
-function memoryStore(save = initial()) {
-  let current: CloudSnapshot = { save, revision: '0', receivedAt: 0, lastRequestId: null, lastPayloadHash: null };
+function reverseObjectKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(reverseObjectKeys);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).reverse().map(([key, entry]) => [key, reverseObjectKeys(entry)]));
+  }
+  return value;
+}
+function memoryStore(save = initial(), serialize: (save: ClientSave) => unknown = structuredClone) {
+  let current: CloudSnapshot = { save: serialize(save), revision: '0', receivedAt: 0, lastRequestId: null, lastPayloadHash: null };
   const store: CloudStore = {
     async createSession() { throw new Error('unused'); },
     async load() { return structuredClone(current); },
     async commit(_id, expected, next, now, id, hash) {
       if (current.revision !== expected) return false;
-      current = { save: structuredClone(next), revision: String(BigInt(expected) + 1n), receivedAt: now, lastRequestId: id, lastPayloadHash: hash };
+      current = { save: serialize(next), revision: String(BigInt(expected) + 1n), receivedAt: now, lastRequestId: id, lastPayloadHash: hash };
       return true;
     },
   };
@@ -32,6 +40,34 @@ const upload = (save: ClientSave, overrides: Partial<SaveUpload> = {}): SaveUplo
   ({ characterId, requestId, baseRevision: '0', save, ...overrides });
 
 describe('client cloud save contract', () => {
+  it.each(MANUAL_IDS)('reads and uploads %s snapshots after object keys are reordered', async manualId => {
+    const previous = initial();
+    previous.character = executeDebugCommand(previous.character, { type: 'travel', locationId: MANUALS[manualId].location });
+    previous.character = executeCharacterCommand(previous.character, { type: 'learn-manual', manualId });
+    const active = { ...previous, character: executeCharacterCommand(previous.character, { type: 'activate-manual', manualId }) };
+    const memory = memoryStore(previous, reverseObjectKeys);
+    let now = 20_000;
+    const service = new ClientSaveService(memory.store, () => now);
+    await service.upload(characterId, upload(active));
+    const beforeRead = memory.snapshot();
+    expect((await service.getProfile(characterId)).save).toEqual(active);
+    expect(memory.snapshot()).toEqual(beforeRead);
+
+    now += MIN_UPLOAD_INTERVAL_MS;
+    const next = { ...active, character: advanceCharacter(active.character, 1000), playedMs: 1000 };
+    await expect(service.upload(characterId, reverseObjectKeys(upload(next, { baseRevision: '1', requestId: secondId }))))
+      .resolves.toMatchObject({ revision: '2' });
+    expect((await service.getProfile(characterId)).save).toEqual(next);
+
+    const beforeRejection = memory.snapshot();
+    const forged = structuredClone(next);
+    const source = forged.character.simulation.player.sources.find(entry => entry.id === `manual:${manualId}`)!;
+    source.statPolarity!.multiplier![MANUALS[manualId].attribute] = 'cost';
+    await expect(service.upload(characterId, upload(forged, { baseRevision: '2' })))
+      .rejects.toMatchObject({ code: 'SAVE_REJECTED' });
+    expect(memory.snapshot()).toEqual(beforeRejection);
+  });
+
   it('persists the initial fate checkpoint and rejects a different valid fate on subsequent uploads', async () => {
     const memory = memoryStore();
     const created = vi.fn<CloudStore['createSession']>().mockImplementation(async (save, now) => {

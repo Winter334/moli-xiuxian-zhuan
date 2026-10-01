@@ -54,14 +54,22 @@ export const modifierSchema = z.object({
     ctx.addIssue({ code: 'custom', message: 'Attack periods require outgoing damage' });
   }
 });
+const statPolaritySchema = z.partialRecord(statsSchema.keyof(), z.enum(['benefit', 'cost'])).transform(polarity => {
+  const ordered: typeof polarity = {};
+  // JSONB reorders object keys; settled-source comparisons need a stable order.
+  for (const key of (Object.keys(polarity) as (keyof typeof polarity)[]).sort()) {
+    ordered[key] = polarity[key];
+  }
+  return ordered;
+});
 export const sourceSchema = z.object({
   id: z.string().min(1),
   flat: statsSchema.partial().optional(),
   multiplier: statsSchema.partial().optional(),
   tags: z.array(effectTagSchema).optional(),
   statPolarity: z.object({
-    flat: z.partialRecord(statsSchema.keyof(), z.enum(['benefit', 'cost'])).optional(),
-    multiplier: z.partialRecord(statsSchema.keyof(), z.enum(['benefit', 'cost'])).optional(),
+    flat: statPolaritySchema.optional(),
+    multiplier: statPolaritySchema.optional(),
   }).strict().optional(),
   modifiers: z.array(modifierSchema).max(100).optional(),
 }).strict();
