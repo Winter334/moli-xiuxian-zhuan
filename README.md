@@ -1,7 +1,7 @@
 # 茉莉修仙传：修仙 RPG
 
 代码仓库：[Winter334/moli-xiuxian-zhuan](https://github.com/Winter334/moli-xiuxian-zhuan)，
-主分支为 `main`。用户选择公共仓库，首次推送与可见性调整由用户手动完成；
+主分支为 `main`。公共仓库的首次推送已由用户手动完成；
 VPS 拉取方式见[Activity接入](docs/discord-activity.zh-CN.md#代码仓库与vps拉取)。
 
 公开政策（中英双语）：[隐私政策](PRIVACY.md) · [服务条款](TERMS.md)。
@@ -47,6 +47,14 @@ pnpm dev:web
 使用独立 `moli_activity` 数据库，默认测试端口5180；不绑定或搬入原开发角色。
 完整应用后台设置、HTTPS隧道和登录测试步骤见[Activity接入](docs/discord-activity.zh-CN.md)。
 
+### VPS 测试部署
+
+独立部署入口与 Docker 配置已补齐，供 VPS Agent 配置域名、密钥后部署；
+当前仍是邀请测试，不代表正式运营，运营安排本批暂缓。
+使用`compose.activity.yaml`及仓库外的真实配置，不使用本机开发 Compose 或示例口令。
+支持可选 Caddy HTTPS，也可接现有反代；数据库使用独立持久化卷。
+首次部署、更新与登录验收见[部署步骤](docs/discord-activity.zh-CN.md#vps测试部署)。
+
 ## 启动
 
 需要 Node.js 22.12+、pnpm，以及正在运行的 Docker 引擎。
@@ -66,8 +74,8 @@ schema 与 `moli_client_session` Cookie，服务端细节见[客户端结算](do
 
 网页通过开发 Cookie 对应一条 PostgreSQL 角色存档；相同浏览器刷新或重启服务不会重建角色，
 清除 Cookie 或使用另一浏览器会创建另一名本地开发角色，目前没有账号恢复功能。
-服务只监听回环地址；`DEV_AUTH` 须明确开启，生产模式拒绝开发身份入口。
-不要将开发端口直接公开或作为 Discord 正式部署。
+本机服务只监听回环地址；`DEV_AUTH` 须明确开启，生产模式拒绝开发身份入口。
+不要将开发端口直接公开；VPS 使用上方专用部署入口。
 
 ## 验证
 

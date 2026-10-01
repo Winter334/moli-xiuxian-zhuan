@@ -1,0 +1,71 @@
+name: moli-activity-vps
+services:
+  postgres:
+    image: public.ecr.aws/docker/library/postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: moli_activity_admin
+      POSTGRES_PASSWORD: ${ACTIVITY_DATABASE_ADMIN_PASSWORD:?Set a separate database administrator password}
+      POSTGRES_DB: moli_activity_vps
+      ACTIVITY_DATABASE_PASSWORD: ${ACTIVITY_DATABASE_PASSWORD:?Set a random hexadecimal application database password}
+    volumes:
+      - activity_pgdata:/var/lib/postgresql/data
+      - ./deploy/init-activity-db.sh:/docker-entrypoint-initdb.d/10-activity.sh:ro
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U moli_activity_admin -d moli_activity_vps"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      CLIENT_AUTH_MODE: discord
+      DEV_AUTH: "false"
+      ACTIVITY_HOST: 0.0.0.0
+      ACTIVITY_PORT: "5180"
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:?Set the Discord application ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:?Set the server-only Discord client secret}
+      ACTIVITY_DATABASE_URL: postgres://moli_activity_vps:${ACTIVITY_DATABASE_PASSWORD:?Set the application database password}@postgres:5432/moli_activity_vps
+    ports:
+      - "127.0.0.1:${ACTIVITY_BIND_PORT:-5180}:5180"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - database
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    environment:
+      ACTIVITY_DOMAIN: ${ACTIVITY_DOMAIN:?Set the public game hostname}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - activity_caddy_data:/data
+      - activity_caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - web
+
+networks:
+  database:
+    internal: true
+  web:
+
+volumes:
+  activity_pgdata:
+  activity_caddy_data:
+  activity_caddy_config:

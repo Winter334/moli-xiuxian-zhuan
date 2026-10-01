@@ -44,3 +44,26 @@ export function assertLocalDatabaseUrl(value: string): void {
     throw new Error('The local database and role names must match.');
   }
 }
+
+export function assertActivityDeploymentDatabaseUrl(value: string): void {
+  const message = 'Activity deployment requires the isolated moli_activity_vps database and role, a password of at least 32 characters, and no URL parameters.';
+  let url: URL;
+  let password: string;
+  try {
+    url = new URL(value);
+    password = decodeURIComponent(url.password);
+  } catch {
+    throw new Error(message);
+  }
+  if (
+    !['postgres:', 'postgresql:'].includes(url.protocol) ||
+    !url.hostname ||
+    url.username !== 'moli_activity_vps' ||
+    url.pathname !== '/moli_activity_vps' ||
+    password.length < 32 ||
+    url.search !== '' ||
+    url.hash !== ''
+  ) {
+    throw new Error(message);
+  }
+}

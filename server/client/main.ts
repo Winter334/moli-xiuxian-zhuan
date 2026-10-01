@@ -36,16 +36,25 @@ function checkLocalRequest(request: FastifyRequest) {
   }
 }
 
-export async function createClientApp({ serveWeb = false }: { serveWeb?: boolean } = {}) {
+export async function createClientApp(
+  { serveWeb = false, deployment = false }: { serveWeb?: boolean; deployment?: boolean } = {},
+) {
   const config = readConfig();
-  if (config.nodeEnv === 'production') throw new Error('Production deployment is not enabled. Use the dedicated development Activity endpoint.');
   const authMode = readClientAuthMode();
+  if (deployment) {
+    if (config.nodeEnv !== 'production' || authMode !== 'discord' || config.devAuth) {
+      throw new Error('Activity deployment requires NODE_ENV=production, CLIENT_AUTH_MODE=discord and DEV_AUTH=false.');
+    }
+    if (!process.env.ACTIVITY_DATABASE_URL) throw new Error('Configure ACTIVITY_DATABASE_URL before starting the deployed Activity.');
+  } else if (config.nodeEnv === 'production') {
+    throw new Error('Use the dedicated Activity deployment entry point in production.');
+  }
   const discordConfig = authMode === 'discord' ? readDiscordConfig() : null;
   const databaseUrl = discordConfig ? process.env.ACTIVITY_DATABASE_URL ?? DEFAULT_ACTIVITY_DATABASE_URL : config.databaseUrl;
-  if (discordConfig && new URL(databaseUrl).pathname !== '/moli_activity') {
+  if (discordConfig && !deployment && new URL(databaseUrl).pathname !== '/moli_activity') {
     throw new Error('Discord Activity development requires the isolated moli_activity database.');
   }
-  const pool = createPool(databaseUrl);
+  const pool = createPool(databaseUrl, false, deployment ? 'activity-deployment' : 'local');
   const repository = new ClientRepository(pool);
   const discord = discordConfig ? new DiscordAuth(discordConfig, repository) : null;
   const service = new ClientSaveService(repository);
@@ -57,7 +66,7 @@ export async function createClientApp({ serveWeb = false }: { serveWeb?: boolean
   app.addHook('onRequest', async (request, reply) => {
     reply.header('Cache-Control', 'no-store');
     reply.header('X-Content-Type-Options', 'nosniff');
-    if (discordConfig) checkActivityRequest(request, discordConfig.clientId);
+    if (discordConfig) checkActivityRequest(request, discordConfig.clientId, deployment ? 'deployed' : 'local');
     else checkLocalRequest(request);
   });
   app.setErrorHandler((error, _request, reply) => {
@@ -84,12 +93,13 @@ export async function createClientApp({ serveWeb = false }: { serveWeb?: boolean
     return id;
   }
 
+  const healthMode = discord ? deployment ? 'discord-activity-deployed' : 'discord-activity-development' : 'client-opening';
   app.get('/api/health', async (_request, reply) => {
     try {
       await pool.query('SELECT 1');
-      return { ok: true, database: 'ok', mode: discord ? 'discord-activity-development' : 'client-opening' };
+      return { ok: true, database: 'ok', mode: healthMode };
     } catch { return reply.code(503).send({ ok: false, database: 'unavailable',
-      mode: discord ? 'discord-activity-development' : 'client-opening' }); }
+      mode: healthMode }); }
   });
   if (discord) {
     app.get('/api/discord/config', async () => ({ clientId: discord.config.clientId }));

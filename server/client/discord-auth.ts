@@ -24,9 +24,13 @@ const apiUserSchema = z.object({
 });
 const SESSION_TTL_MS = 4 * 60 * 60 * 1000;
 
-export function checkActivityRequest(request: Pick<FastifyRequest, 'headers' | 'method' | 'ip'>, clientId: string) {
+export function checkActivityRequest(
+  request: Pick<FastifyRequest, 'headers' | 'method' | 'ip'>,
+  clientId: string,
+  mode: 'local' | 'deployed' = 'local',
+) {
   const origin = `https://${clientId}.discordsays.com`;
-  if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.ip) ||
+  if ((mode === 'local' && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.ip)) ||
       (request.headers.origin !== undefined && request.headers.origin !== origin) ||
       (!['GET', 'HEAD'].includes(request.method) && request.headers.origin !== origin)) {
     throw new ApiError(403, 'ORIGIN_REJECTED', '请从此应用的 Discord Activity 入口访问。');

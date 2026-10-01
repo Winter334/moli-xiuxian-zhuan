@@ -7,10 +7,11 @@
 游戏展示名现为“茉莉修仙传”；英文政策使用拼音标识 `Moli Xiuxian Zhuan` 并保留中文名。
 界面与网页标题同步改名，应用 ID、数据库及本地保存标识不随展示名变化。
 
-用户确认以 Discord Activity 上线，本轮实施第一批：SDK 启动、真实授权与身份核实、
-账号对应角色及本人头像/名字展示。代码已接，实际登录由用户测试；原本机隧道测试
-尚未完成配置。用户计划改用有 Docker 的 VPS，由该机 Agent 部署，服务器入口仍待适配；
-不能把代码检查或政策文档完成写成登录、部署成功。
+用户确认以 Discord Activity 上线，SDK 启动、真实授权与身份核实、
+账号对应角色及本人头像/名字展示已接。现已补齐独立的 VPS 入口、前后端构建和 Docker
+测试部署配置，由 VPS Agent 配置服务器并部署，实际登录仍由用户测试；
+不能把本机构建或政策文档完成写成登录、容器运行或部署成功。
+原本机开发隧道入口保留，部署步骤见[VPS测试部署](#vps测试部署)。
 图片补齐由另一会话推进，本批不修改美术文件或映射。
 
 本批不包含正式部署、应用验证/Discovery、指定社群成员限制、玩家位置同步或组队；
@@ -40,11 +41,11 @@
   写请求来源必须是本应用的 `https://<应用ID>.discordsays.com`，不信任转发头中的身份。
   Activity 模式不接受开发 Cookie，不提供匿名建角。
 - 构建版必须从 Discord 启动；浏览器直接打开会提示返回 Discord。
-  本批入口仅用于开发隧道联调，生产模式继续拒绝启动；不是公开发布方案。
+  本机入口仅用于开发隧道联调，仍拒绝生产模式；VPS 使用下节的专用部署入口。
   Activity 每次启动须联网认证，已打开后的本地运行与断网保存沿用现有客户端。
 
 主要入口：`src/ActivityApp.tsx`、`src/discord-activity.ts`、
-`server/client/discord-auth.ts`、`tools/activity.ts`。
+`server/client/discord-auth.ts`、`tools/activity.ts`、`server/client/activity.ts`。
 
 ## 配置与启动
 
@@ -113,6 +114,82 @@ Target 不含 `https://`，不指向 `index.html`；API与素材同走此映射�
 拒绝授权后应停留在登录提示并能重试；换账号不得读取前一个人的存档。
 暂不以此轮登录测试验证寄售、榜单、公平性或全流程内容。
 
+## VPS测试部署
+
+本节面向当前邀请测试，不代表正式运营或应用发布。容器使用`NODE_ENV=production`
+以运行构建产物并禁止开发身份，与游戏是否正式运营是两件事。
+按用户要求，本批不实施日志保留、人工数据删除等运营安排，也不启用数据库备份。
+
+### 文件与安全边界
+
+- [Dockerfile](../Dockerfile)使用 Node.js 22 与仓库指定的 pnpm，构建后只携带运行依赖和
+  `dist`，以非 root 用户运行。`pnpm build:activity`生成网页、Node 后端及原有 SQL；
+  `pnpm start:activity`运行专用入口，不使用 Vite 或 watch 服务。
+- [部署Compose](../compose.activity.yaml)与本机`compose.yaml`使用不同项目和持久化卷。
+  PostgreSQL 不发布端口；应用只发布`127.0.0.1:5180`，可用`ACTIVITY_BIND_PORT`改宿主机端口，
+  容器内部端口固定5180，不自动跳到其它空闲端口。
+- VPS 数据库及应用角色均为`moli_activity_vps`，与本机开发、测试及 Activity 库分离。
+  首次空卷启动创建数据库和非超级用户应用角色，服务按原 SQL 初始化表；
+  不搬入、转换或重置本机角色。数据库密码至少32字符，建议两个独立的64字符随机十六进制密码。
+  管理账号`moli_activity_admin`只用于数据库维护，不作为应用连接账号。
+- 专用入口要求 Discord 身份、关闭`DEV_AUTH`并显式配置`ACTIVITY_DATABASE_URL`；
+  其它旧入口仍拒绝生产模式，原有本机数据库保护不放宽。
+  部署请求允许 Docker/反代连接，写请求仍要求本应用的 Discord Origin。
+  不启用通配 CORS，不信任转发头、Cookie 或前端提交的用户 ID；身份仍由 Discord 核实。
+- [.dockerignore](../.dockerignore)另行排除配置、凭据、Git 历史、`.local`、参考工程及临时产物；
+  `.gitignore`不能替代 Docker 构建排除。生图服务不部署到 VPS。
+
+### VPS Agent首次部署
+
+先按[代码仓库与VPS拉取](#代码仓库与vps拉取)取得`main`，安装 Docker Engine 与 Compose v2。
+把[环境示例](../deploy/activity.env.example)复制为仓库外的`/etc/moli-activity.env`，
+限制为600权限；已有真实配置时不得覆盖。填写游戏域名、应用 ID、服务端 Client Secret，
+以及两个不同的数据库密码；可分别运行`openssl rand -hex 32`生成密码。
+真实配置不提交仓库，不把密钥放进镜像、构建参数或`VITE_`变量。
+
+需要本项目接管 HTTPS 时，将域名 DNS 指向 VPS，确认 A/AAAA 对应网络可达，
+开放80/443，并确保这两个端口没有被其它服务占用。启用可选的 Caddy：
+
+```sh
+docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml --profile https up -d --build
+```
+
+Caddy 按[配置](../deploy/Caddyfile)自动申请证书，证书数据使用独立持久化卷。
+若 VPS 已有 Caddy/Nginx，不启动`https` profile：
+
+```sh
+docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml up -d --build
+```
+
+由现有反代将游戏 HTTPS 域名的全部路径转到`http://127.0.0.1:5180`
+（改过宿主机端口时同步修改），原样保留`Origin`及`Authorization`。
+不要覆盖成游戏域名 Origin，也不要添加阻止 Discord 嵌入的`X-Frame-Options`或
+仅允许自身嵌入的 CSP。应用需能出站访问 Discord HTTPS API。
+
+域名应只代理构建网页及游戏 API，不映射仓库目录、数据库或开发服务器。
+健康检查`https://<游戏域名>/api/health`应返回`ok: true`及
+`mode: discord-activity-deployed`。浏览器直接打开游戏提示返回 Discord 是预期行为。
+Discord URL Mappings 的`/`改为游戏域名，不带协议或路径；OAuth2 SDK 回调仍使用
+上方的`https://127.0.0.1`，不因 VPS 部署改为游戏域名，不启用 URL Override。
+
+### 更新与验收
+
+每次拉取`main`后重新执行对应的 Compose 构建启动命令，再核对健康检查。
+固定保留`moli-activity-vps`项目名及卷；不要使用`down -v`、清库、测试重置或自动删角色。
+已有数据库卷不会重跑首次初始化脚本，修改环境变量不会自动修改已有数据库密码；
+确需换密码时由 VPS Agent 单独处理，不通过删除卷解决。
+存档/内容版本拒读仍按当前规则处理，部署脚本不承担迁移或重置。
+
+测试库与 VPS 角色库隔离，不对后者运行集成/E2E或数值测试。首次上线仅核对健康、
+实际 Discord 授权、本人头像昵称、同一账号关闭重开与存档；邀请测试不扩大为正式发布，
+寄售、轮回及榜单全流程仍待后续实际联调。
+
+2026-10-01补齐本节部署入口、构建、容器配置、可选 HTTPS 与独立数据库保护。
+9项定向身份/部署边界测试、前后端构建、Compose配置校验及初始化脚本语法检查通过；
+编译产物的启动拒读开发库与两份 SQL 读取检查通过，使用内存数据库替身。
+本机 Docker daemon 不可用，未构建或启动镜像，真实数据库、TLS与Discord登录待VPS验证。
+本批不实施运营流程，不调整游戏规则、素材或保存版本。
+
 ## 公开政策文档与部署准备
 
 公开文档位于仓库根目录：[隐私政策](../PRIVACY.md)、[服务条款](../TERMS.md)。
@@ -125,7 +202,8 @@ Target 不含 `https://`，不指向 `index.html`；API与素材同走此映射�
 用户已确认运营者、联系邮箱、托管提供方、数据地区、日志期限和不开数据库备份的安排，
 已同步填写中英两版并移除资料待填写提示；这些公开参数以隐私政策顶部为单一来源。
 这只是按用户确认填写政策，不代表本会话已核实或配置 VPS。
-部署前须落实声明的日志期限、到期清理及安全措施；
+运营安排按用户要求暂缓，本轮只准备 VPS 测试部署，不宣称政策中的运营流程已经落实；
+正式运营前须落实声明的日志期限、到期清理及安全措施。
 不开数据库备份不等于关闭游戏云存档，但服务器数据丢失时没有独立数据库备份可恢复。
 实际部署必须能履行政策：配置私密请求渠道、人工身份核实与删除流程、
 必要记录的清理方式，不把 OAuth 会话到期或撤销授权视为已经删除账号数据。
@@ -150,8 +228,8 @@ Developer Portal 填写不带固定修订号的 Gist 页面链接，后续编辑
 玩家信息、素材授权和第三方许可；`.gitignore` 不能清除已经提交过的内容。
 用户决定手动将下节的代码仓库转为公共，政策仍使用独立 Gist；
 尚未审核整库素材的公开授权，公开前须确认音乐及第三方素材的授权范围。
-服务器部署仍需独立补齐生产入口、固定 HTTPS 域名与数据库持久化，
-不能直接把当前 `dev:activity` 当作正式生产入口。
+生产技术入口与持久化配置已补齐，固定域名、HTTPS与服务器真实配置由 VPS Agent 落实；
+不能直接把当前 `dev:activity` 当作 VPS 服务入口。
 
 2026-10-01完成两份政策及 README 入口，核对身份字段、令牌处理、本地/云保存和交易记录，
 并参照 Discord 开发者条款确认公开访问与数据删除要求；已补齐完整英文译文、语言导航、
@@ -164,8 +242,8 @@ Developer Portal 填写不带固定修订号的 Gist 页面链接，后续编辑
 ## 代码仓库与VPS拉取
 
 代码仓库：[Winter334/moli-xiuxian-zhuan](https://github.com/Winter334/moli-xiuxian-zhuan)，
-主分支为 `main`，本地远程名为 `origin`。创建时为私有，用户决定手动转为公共，
-并手动完成首次推送；政策仍可独立使用公开 Gist，
+主分支为 `main`，本地远程名为 `origin`。用户选择公共仓库，
+并已手动完成首次推送；政策仍可独立使用公开 Gist，
 创建代码仓库不代表 Gist 已同步、服务已部署或 Activity 已发布。
 
 初始快照纳入当前源码、配置示例、专题文档、制作计划及已挂载的游戏美术和音乐。
@@ -187,14 +265,12 @@ git pull --ff-only origin main
 ```
 
 服务器配置与持久数据库独立维护；拉取之后仍需按实际部署方式构建并重启服务。
-现有生产入口限制见上节，不直接将开发命令当作生产部署。
+当前[VPS测试部署](#vps测试部署)使用独立入口，不直接将开发命令当作生产部署。
 
 2026-10-01初始化本地 Git `main` 并创建上述仓库，
 核对入库清单、忽略规则及 GitHub 单文件大小限制，候选文本的常见凭据模式与本机配置密钥
-比对未发现问题。首次整包上传超时，分批上传确认前三批后按用户要求停止，
-远端尚无 `main`，只有临时默认分支 `codex-upload-bootstrap`；
-完整本地提交保留，用户手动推送 `main` 后须将它设为默认分支，再删除临时分支。
-仓库说明已按用户选择改为公共仓库与 HTTPS 拉取，未替用户修改可见性。
+比对未发现问题。首次整包上传超时后由用户手动完成推送，
+本批已核对远端默认分支为`main`；仓库说明使用 HTTPS 拉取。
 只调整忽略规则与仓库说明，未运行代码测试。
 
 ## 实际检查
@@ -209,7 +285,8 @@ git pull --ff-only origin main
 ## 后续批次
 
 - 第二批：完善账号连接/恢复、换设备取档及冲突处理入口。
-- 第三批：正式部署与备份配置，独立环境的寄售、轮回、榜单联调和正式身份展示。
+- 第三批：VPS实际部署验收、正式运营前配置，独立环境的寄售、轮回、榜单联调和正式身份展示；
+  独立数据库备份按用户决定不启用。
 - 第四批：桌面/横屏实际验收、发布资料、应用验证及按需要启用 Discovery。
 
 官方依据：[首次接入](https://docs.discord.com/developers/activities/building-an-activity)、

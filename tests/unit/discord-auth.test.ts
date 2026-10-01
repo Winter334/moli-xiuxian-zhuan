@@ -85,4 +85,16 @@ describe('Discord identity boundary', () => {
     ]) expect(() => checkActivityRequest(rejected, clientId)).toThrow();
     expect(() => checkActivityRequest({ method: 'GET', ip: '127.0.0.1', headers: {} }, clientId)).not.toThrow();
   });
+
+  it('accepts deployed proxy connections but still requires the real Activity Origin for writes', () => {
+    const request = { method: 'POST', ip: '172.18.0.2', headers: { origin: `https://${clientId}.discordsays.com` } };
+    expect(() => checkActivityRequest(request, clientId, 'deployed')).not.toThrow();
+    for (const headers of [
+      {},
+      { origin: 'https://game.example.com' },
+      { origin: 'https://other.discordsays.com' },
+      { 'x-forwarded-for': '127.0.0.1', 'x-forwarded-origin': request.headers.origin },
+    ]) expect(() => checkActivityRequest({ ...request, headers }, clientId, 'deployed')).toThrow();
+    expect(() => checkActivityRequest({ method: 'GET', ip: '172.18.0.2', headers: {} }, clientId, 'deployed')).not.toThrow();
+  });
 });

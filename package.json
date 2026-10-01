@@ -14,6 +14,8 @@
     "dev:server": "tsx watch server/client/main.ts",
     "dev:activity": "tsx tools/activity.ts",
     "build": "tsc --noEmit && vite build",
+    "build:activity": "pnpm build && vite build --config vite.activity.config.ts",
+    "start:activity": "node dist/server/server/client/activity.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",

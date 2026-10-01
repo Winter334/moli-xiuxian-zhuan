@@ -1,20 +1,21 @@
 import pg, { type Pool, type PoolClient } from 'pg';
-import { assertLocalDatabaseUrl } from './config';
+import { assertActivityDeploymentDatabaseUrl, assertLocalDatabaseUrl } from './config';
 
-export function createPool(databaseUrl: string, playtest = false): Pool {
-  assertLocalDatabaseUrl(databaseUrl);
+export function createPool(databaseUrl: string, playtest = false, mode: 'local' | 'activity-deployment' = 'local'): Pool {
+  if (mode === 'activity-deployment') assertActivityDeploymentDatabaseUrl(databaseUrl);
+  else assertLocalDatabaseUrl(databaseUrl);
   const pool = new pg.Pool({
     connectionString: databaseUrl,
     max: 10,
     connectionTimeoutMillis: 5_000,
     idleTimeoutMillis: 30_000,
     statement_timeout: 10_000,
-    application_name: 'moli-local',
+    application_name: mode === 'activity-deployment' ? 'moli-activity' : 'moli-local',
     ...(playtest ? { options: '-c search_path=moli_playtest' } : {}),
   });
   // pg emits idle connection errors outside query promises. Never log connection details.
   pool.on('error', () => {
-    console.error('A local PostgreSQL connection was lost; later requests will reconnect.');
+    console.error('A PostgreSQL connection was lost; later requests will reconnect.');
   });
   return pool;
 }
