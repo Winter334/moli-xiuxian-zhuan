@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from 'pg';
 import type { ClientSave } from '../../shared/client-save';
+import type { PublicPlayerProfile } from '../../shared/player-profile';
 import {
   CONSIGNMENT_PAGE_SIZE, consignmentDeliverySchema, consignmentListingSchema, consignmentReceiptSchema,
   consignmentTotalsSchema, type ConsignmentDelivery, type ConsignmentFill, type ConsignmentFilter,
@@ -8,6 +9,7 @@ import {
 import { inTransaction } from '../database';
 import { ApiError } from '../errors';
 import { ClientRepository, type CloudSnapshot } from './repository';
+import { playerScopeSql, type PlayerScope } from './player-profile';
 
 export interface StoredConsignmentReceipt {
   hash: string;
@@ -35,10 +37,11 @@ export interface ListingQuery extends ConsignmentFilter {
   page: number;
 }
 export interface ConsignmentStore {
+  readonly scope: PlayerScope;
   load(characterId: string): Promise<CloudSnapshot>;
   transact<T>(characterId: string, work: (tx: ConsignmentTransaction) => Promise<T>): Promise<T>;
   receipt(characterId: string, requestId: string): Promise<StoredConsignmentReceipt | null>;
-  listings(query: ListingQuery): Promise<ConsignmentListing[]>;
+  listings(query: ListingQuery): Promise<(ConsignmentListing & { sellerProfile: PublicPlayerProfile })[]>;
   deliveries(characterId: string, page: number): Promise<ConsignmentDelivery[]>;
   activeCount(characterId: string): Promise<number>;
   totals(characterId: string): Promise<ConsignmentTotals>;
@@ -68,7 +71,9 @@ async function activeCount(db: Queryable, characterId: string) {
 
 export class ConsignmentRepository implements ConsignmentStore {
   private readonly cloud: ClientRepository;
-  constructor(private readonly pool: Pool) { this.cloud = new ClientRepository(pool); }
+  constructor(private readonly pool: Pool, readonly scope: PlayerScope = { kind: 'development' }) {
+    this.cloud = new ClientRepository(pool, scope);
+  }
 
   load(characterId: string) { return this.cloud.load(characterId); }
   receipt(characterId: string, requestId: string) { return receipt(this.pool, characterId, requestId); }
@@ -89,8 +94,11 @@ export class ConsignmentRepository implements ConsignmentStore {
         receipt: id => receipt(db, characterId, id),
         activeCount: () => activeCount(db, characterId),
         listing: async id => {
+          const values: unknown[] = [id];
+          const membership = playerScopeSql(this.scope, 'seller_id', values);
           const rows = await db.query(
-            `SELECT ${listingColumns} FROM moli_client.consignment_listings WHERE id = $1 FOR UPDATE`, [id],
+            `SELECT ${listingColumns} FROM moli_client.consignment_listings
+             WHERE id = $1 AND ${membership} FOR UPDATE`, values,
           );
           return rows.rows[0] ? consignmentListingSchema.parse(rows.rows[0]) : null;
         },
@@ -156,9 +164,9 @@ export class ConsignmentRepository implements ConsignmentStore {
     });
   }
 
-  async listings(query: ListingQuery): Promise<ConsignmentListing[]> {
+  async listings(query: ListingQuery): Promise<(ConsignmentListing & { sellerProfile: PublicPlayerProfile })[]> {
     const values: unknown[] = [query.itemIds];
-    const where = ["asset->>'itemId' = ANY($1::text[])"];
+    const where = ["asset->>'itemId' = ANY($1::text[])", playerScopeSql(this.scope, 'seller_id', values)];
     const add = (expression: string, value: unknown) => { values.push(value); where.push(`${expression} $${values.length}`); };
     if (query.sellerId) add('seller_id =', query.sellerId);
     else where.push("status = 'active'");
@@ -171,7 +179,12 @@ export class ConsignmentRepository implements ConsignmentStore {
       `SELECT ${listingColumns} FROM moli_client.consignment_listings WHERE ${where.join(' AND ')}
        ORDER BY created_at DESC, id DESC LIMIT $${values.length - 1} OFFSET $${values.length}`, values,
     );
-    return result.rows.map(row => consignmentListingSchema.parse(row));
+    const rows = result.rows.map(row => consignmentListingSchema.parse(row));
+    const profiles = await this.cloud.publicProfiles(rows.map(row => row.sellerId));
+    return rows.flatMap(row => {
+      const sellerProfile = profiles.get(row.sellerId);
+      return sellerProfile ? [{ ...row, sellerProfile }] : [];
+    });
   }
 
   async deliveries(characterId: string, page: number): Promise<ConsignmentDelivery[]> {

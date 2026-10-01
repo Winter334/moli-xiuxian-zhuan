@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, BookOpen, ChevronRight, Cloud, CloudOff, Compass, Expand, Flame, History, LoaderCircle, MoreHorizontal,
-  Mountain, Package, RefreshCw, RotateCw, Terminal, X } from 'lucide-react';
+  Mountain, Package, RefreshCw, RotateCw, Shield, Terminal, X } from 'lucide-react';
 import { merchantShopSchema } from '../../core/prototype/consignment';
 import { activityName } from './ActivityPanel';
 import { CharacterPanel } from './CharacterPanel';
@@ -22,6 +22,7 @@ import type { AreaTrackId } from './SettingsControl';
 import { ConsignmentPanel } from './ConsignmentView';
 import { RankingsPanel } from './RankingsView';
 import type { GameSession, Page } from './types';
+import { PolicyLinks } from './PolicyLinks';
 
 const DebugConsole = import.meta.env.DEV ? lazy(() => import('../DebugConsole')) : null;
 const PAGES = [
@@ -29,10 +30,12 @@ const PAGES = [
   { id: 'practice', label: '修行', icon: BookOpen }, { id: 'craft', label: '炉鼎', icon: Flame },
   { id: 'journal', label: '履历', icon: History },
 ] as const;
-export function GameShell({ session, previewControls }: { session: GameSession; previewControls?: ReactNode }) {
+export function GameShell({ session, previewControls, mobileActivity = false }: {
+  session: GameSession; previewControls?: ReactNode; mobileActivity?: boolean;
+}) {
   const [logSettings, setLogSettings] = useLogSettings(Boolean(previewControls));
   const [page, setPage] = useState<Page>('world');
-  const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | 'saves' | null>(null);
+  const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | 'saves' | 'policies' | null>(null);
   const [displayError, setDisplayError] = useState('');
   const pageRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDetailsElement>(null);
@@ -50,7 +53,7 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
   const service = page === 'shop' || page === 'market' || page === 'rankings';
   return <>
     <div className="orientation-gate"><RotateCw size={42} strokeWidth={1.2} /><h1>横屏入境</h1><p>请将设备转为横屏</p><span>茉莉修仙传</span></div>
-    <div className="game-shell">
+    <div className={`game-shell${mobileActivity ? ' activity-mobile' : ''}`}>
       <header className="topbar">
         <div className="brand"><Mountain size={23} strokeWidth={1.4} /><strong>茉莉修仙传</strong></div>
         <div className="breadcrumb"><span>{game ? areaFor(game.locationId).name : '山河初卷'}</span><ChevronRight size={12} /><strong>{game?.locationName ?? '静候入世'}</strong>
@@ -65,6 +68,7 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
             onClick={() => void session.refresh()}>{session.refreshing ? <LoaderCircle size={17} className="spinning" /> : session.tradeStopped ? <CloudOff size={17} /> : <Cloud size={17} />}</IconButton>
           <details className="system-menu" ref={menuRef}><summary aria-label="更多选项" title="更多选项"><MoreHorizontal size={18} /></summary><div>
             {!previewControls && <button disabled={!session.recoveryAvailable} onClick={() => { setOverlay('saves'); menuRef.current!.open = false; }}><Cloud size={16} />存档管理</button>}
+            <button onClick={() => { setOverlay('policies'); menuRef.current!.open = false; }}><Shield size={16} />隐私与条款</button>
             {DebugConsole && <button disabled={!game} onClick={() => { setOverlay('debug'); menuRef.current!.open = false; }}><Terminal size={16} />测试控制台</button>}
           </div></details>
         </div>
@@ -117,6 +121,11 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
     </div>
     {overlay === 'reincarnation' && <ReincarnationDialog session={session} onClose={() => setOverlay(null)} />}
     {overlay === 'saves' && <SaveRecoveryDialog session={session} onClose={() => setOverlay(null)} />}
+    {overlay === 'policies' && <Dialog title="隐私与条款" onClose={() => setOverlay(null)}>
+      <p>榜单和寄售货单会向同一应用的已登录玩家显示你的 Discord 名字和头像。</p>
+      <p>榜单另显示境界、名次、本榜指标和收录时间；寄售公开所挂商品、品质、价格和余量，不公开完整存档、行囊或当前位置。</p>
+      <PolicyLinks />
+    </Dialog>}
     {overlay === 'debug' && game && DebugConsole && <Dialog title="测试控制台" wide onClose={() => setOverlay(null)}>
       <Suspense fallback={<p>正在读取</p>}><DebugConsole game={game} blocked={session.blocked} command={session.debugCommand} preview={Boolean(previewControls)} /></Suspense></Dialog>}
   </>;

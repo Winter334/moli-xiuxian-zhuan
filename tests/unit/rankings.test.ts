@@ -9,6 +9,7 @@ import { rankingBoardSchema } from '../../shared/rankings';
 import type { CloudSnapshot, CloudStore, RankingStore } from '../../server/client/repository';
 import { RankingsService } from '../../server/client/rankings';
 import { ClientSaveService } from '../../server/client/service';
+import { developmentProfile } from '../../server/client/player-profile';
 
 const id = (index: number) => `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`;
 const save = (): ClientSave => ({ format: 'opening-client-2', tradeRevision: '0', character: createCharacter(0, 19), playedMs: 0 });
@@ -18,6 +19,7 @@ function memory() {
     save: structuredClone(save), revision: '0', receivedAt: 0, lastRequestId: null, lastPayloadHash: null,
   });
   const store: CloudStore & RankingStore = {
+    scope: { kind: 'development' },
     async createSession() { throw new Error('unused'); },
     async load(key) { return structuredClone(rows.get(key)!); },
     async commit(key, expected, save, receivedAt, requestId, hash) {
@@ -27,7 +29,7 @@ function memory() {
       return true;
     },
     async *rankingSnapshots() {
-      for (const [characterId, snapshot] of rows) yield { characterId, ...structuredClone(snapshot) };
+      for (const [characterId, snapshot] of rows) yield { characterId, profile: developmentProfile(characterId), ...structuredClone(snapshot) };
     },
   };
   return { put, store };
@@ -53,7 +55,7 @@ describe('development cloud rankings', () => {
     expect(result.entries.slice(0, 4).map(entry => entry.rank)).toEqual([1, 2, 3, 3]);
     expect(result.entries.some(entry => entry.isSelf)).toBe(false);
     expect(result.self?.rank).toBe(3);
-    expect(Object.keys(result.entries[0]).sort()).toEqual(['isSelf', 'metric', 'name', 'rank', 'realmName', 'updatedAt']);
+    expect(Object.keys(result.entries[0]).sort()).toEqual(['avatarUrl', 'isSelf', 'metric', 'name', 'rank', 'realmName', 'updatedAt']);
 
     const expert = save();
     expert.character.skills.refining = { level: 10, xp: threshold('refining', 10) };

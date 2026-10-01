@@ -5,7 +5,7 @@ import { ApiError } from '../errors';
 import type { DiscordConfig } from './discord-config';
 
 export interface DiscordIdentityStore {
-  connectDiscordAccount(clientId: string, userId: string, expiresAt: number, now: number):
+  connectDiscordAccount(clientId: string, user: DiscordUser, expiresAt: number, now: number):
     Promise<{ characterId: string; sessionToken: string }>;
   findDiscordSession(token: string, clientId: string, now: number): Promise<string | null>;
 }
@@ -86,7 +86,7 @@ export class DiscordAuth {
       };
       const now = this.now();
       const expiresAt = now + Math.min(SESSION_TTL_MS, token.data.expires_in * 1000);
-      const account = await this.store.connectDiscordAccount(this.config.clientId, user.id, expiresAt, now);
+      const account = await this.store.connectDiscordAccount(this.config.clientId, user, expiresAt, now);
       return discordSessionSchema.parse({
         clientId: this.config.clientId, user, ...account, expiresAt, accessToken: token.data.access_token,
       });

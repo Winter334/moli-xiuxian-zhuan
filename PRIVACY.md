@@ -4,7 +4,7 @@
 
 ## English
 
-Last updated: October 1, 2026.
+Last updated: October 2, 2026.
 
 | Item | Details |
 | --- | --- |
@@ -27,11 +27,12 @@ or the server providers. For the rules governing use of the game, see our
 
 - With your authorization, we use Discord's `identify` permission to obtain your user ID,
   username, global display name, and avatar identifier. Your user ID links you to your game character;
-  your name and avatar are displayed in your own character interface.
+  your name and avatar are displayed in your character interface, leaderboards, and consignment listings.
   If no global display name is available, we use your username. We do not retrieve server-specific nicknames.
 - The server stores the Discord application ID, user ID, corresponding game character ID,
-  and the time when the account link was created.
-  Discord names, avatar identifiers, and avatar images are not currently written to the game's business database.
+  and the time when the account link was created. We also store your verified display name,
+  avatar identifier, and profile update time for leaderboards and consignment listings.
+  These fields are refreshed after successful login. Avatar image files are served by Discord, not stored in our database.
 - Authorization codes, PKCE verification information, and Discord access tokens are used to complete login.
   These credentials are processed only in memory during login and while the application is running,
   and are not written to character saves. We do not currently persist Discord access or refresh tokens.
@@ -121,11 +122,14 @@ We have not currently integrated advertising, third-party user behavior analytic
 - **Recipients required by law** may receive necessary information when applicable law requires disclosure,
   with the scope of disclosure limited accordingly.
 
-The application has not yet integrated verified Discord identities into public leaderboards
-or consignment display names, and does not make complete saves available to other players.
-If future features need to display your Discord name, avatar, or game information that can be linked
-to your identity to other players, we will first update this policy, clearly explain the public fields
-within those features, and obtain any required authorization.
+**Other authenticated players in the same Discord application** can see your verified display name and avatar
+on leaderboards and consignment listings. Leaderboards also show realm, rank, the selected metric
+(cultivation, normal combat power, refining proficiency, or current currency balance), and snapshot update time.
+Consignment listings show the listed item, quality where applicable, price, remaining quantity, and listing status/times.
+Your complete save, private inventory, equipment loadout, current location, session credentials,
+and private collection records are not disclosed through these public lists.
+Test and production application identities are separated. This does not restrict participation to a specific Discord server.
+If future features expand disclosure, we will update this policy and obtain any authorization required by applicable law.
 Discord controls its own display of Activity participants.
 
 Publishing code or policy documents does not mean publishing player data.
@@ -136,7 +140,7 @@ Do not submit personal information, tokens, or complete saves in public issues.
 
 ### 4. Retention and Security
 
-Account links and the latest cloud saves are retained for as long as necessary to provide account
+Account links, verified display profiles, and the latest cloud saves are retained for as long as necessary to provide account
 and character services. We will promptly delete them upon a valid deletion request,
 when the information is no longer necessary, or when the service ceases operation,
 unless applicable law specifically requires retention of particular information.
@@ -185,7 +189,7 @@ There is currently no self-service deletion interface; the operator handles dele
 
 Deletion may make characters and progress unrecoverable.
 Removing an account link or clearing a local save alone is not complete deletion.
-If you request deletion of all linked data, we will check account links, sessions, cloud saves,
+If you request deletion of all linked data, we will check account links, display profiles, sessions, cloud saves,
 related receipts, and other necessary records, and address your identity information
 in trade records involving other players.
 Lawfully de-identified statistics or ledger entries that can no longer be linked to you
@@ -220,7 +224,7 @@ and privacy email listed at the beginning of this policy.
 
 ## 简体中文
 
-最后更新：2026年10月1日。
+最后更新：2026年10月2日。
 
 | 项目 | 内容 |
 | --- | --- |
@@ -240,10 +244,11 @@ and privacy email listed at the beginning of this policy.
 #### Discord 身份及登录信息
 
 - 经您授权，通过 Discord 的 `identify` 权限获取用户 ID、用户名、全局显示名及头像标识。
-  用户 ID 用于对应您的游戏角色，名字和头像用于本人角色界面展示。
+  用户 ID 用于对应您的游戏角色，名字和头像用于本人角色界面、榜单及寄售货单展示。
   全局显示名缺失时使用用户名，不读取服务器专属昵称。
 - 服务器保存 Discord 应用 ID、用户 ID、对应的游戏角色 ID 及账号关联建立时间。
-  当前不把 Discord 名字、头像标识或头像图片写入游戏业务数据库。
+  另保存经核实的显示名、头像标识及资料更新时间，供榜单与寄售展示，每次成功登录后更新。
+  头像图片由 Discord 提供，不把图片文件保存到我们的数据库。
 - 授权码、PKCE 校验信息及 Discord 访问令牌用于完成登录。
   这些凭据仅在登录流程及运行中的内存里处理，不写入角色存档；
   当前不持久保存 Discord 访问令牌或刷新令牌。
@@ -312,9 +317,12 @@ IP 地址、浏览器或客户端类型、请求时间、访问路径、响应�
   故障排查或安全维护所必需的范围内处理信息，不得将这些信息用于自己的广告或其他无关目的。
 - **法律要求的接收方**：在适用法律确实要求时提供必要信息，并限制披露范围。
 
-当前本应用尚未将正式 Discord 身份接入公共榜单或寄售显示名，不向其他玩家开放完整存档。
-如果后续功能需要向其他玩家展示您的 Discord 名字、头像或可关联身份的游戏信息，
-我们会先更新本政策，并在相关功能中明确公开范围、取得适用要求的授权。
+**同一 Discord 应用内的其他已认证玩家**可在榜单和寄售货单看见您的已核实显示名及头像。
+榜单还展示境界、名次、所选榜单指标（修为、常态战力、炼制熟练或当前灵石余额）和云档收录时间；
+寄售展示所挂物品、适用品质、价格、余量以及货单状态与时间。
+这些公开列表不提供完整存档、私人行囊、完整配装、当前位置、会话凭据或私人待领记录。
+测试与正式应用身份分开；这不代表限制为特定 Discord 服务器的成员。
+后续功能若扩大披露范围，会更新本政策，并取得适用法律要求的授权。
 Discord 自身显示 Activity 参与者的行为由 Discord 控制。
 
 公开代码或政策文档不等于公开玩家数据。账号表、真实存档、运营数据库备份和包含玩家信息的
@@ -323,7 +331,7 @@ Discord 自身显示 Activity 参与者的行为由 Discord 控制。
 
 ### 4. 保存期限及安全
 
-账号关联与最新云存档在提供账号和角色服务所必要的期间保存，
+账号关联、已核实的展示资料与最新云存档在提供账号和角色服务所必要的期间保存，
 在您提出有效删除请求、信息不再必要或服务停止运营时及时删除，
 除非适用法律明确要求保留特定信息。
 当前云存档不是完整版本历史；游戏内交易和操作回执可能独立保存，用于核对未结操作、
@@ -358,7 +366,7 @@ Discord 自身显示 Activity 参与者的行为由 Discord 控制。
 目前没有自助删除入口，删除请求由运营者人工处理。
 
 删除可能导致角色和进度无法恢复。仅取消账号关联或清除本地存档不等于完整删除；
-如您请求删除全部关联数据，我们会核对账号关联、会话、云存档、相关回执及其他必要记录，
+如您请求删除全部关联数据，我们会核对账号关联、展示资料、会话、云存档、相关回执及其他必要记录，
 并处理与其他玩家相关的交易记录中您的身份信息。
 已依法去标识化且无法再关联到您的统计或账目不属于可恢复的个人存档。
 删除完成后重新授权使用服务可能创建新角色。

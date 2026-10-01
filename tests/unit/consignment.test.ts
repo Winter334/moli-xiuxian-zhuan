@@ -19,6 +19,7 @@ import { ClientSaveService } from '../../server/client/service';
 import { ReincarnationService } from '../../server/client/reincarnation';
 import type { ReincarnationStore, StoredReincarnationReceipt } from '../../server/client/reincarnation-store';
 import type { ReincarnationRequest } from '../../shared/reincarnation';
+import { developmentProfile } from '../../server/client/player-profile';
 
 const seller = '00000000-0000-4000-8000-000000000001';
 const buyer = '00000000-0000-4000-8000-000000000002';
@@ -36,6 +37,7 @@ const initial = (): ClientSave => {
 
 // Copy-on-commit store exercises service atomicity; it does not simulate PostgreSQL row locks.
 class MemoryStore implements ConsignmentStore, CloudStore {
+  readonly scope = { kind: 'development' as const };
   data = {
     characters: new Map<string, CloudSnapshot>(),
     listings: new Map<string, ConsignmentListing>(),
@@ -102,7 +104,8 @@ class MemoryStore implements ConsignmentStore, CloudStore {
       (query.minPrice === undefined || BigInt(row.unitPrice) >= BigInt(query.minPrice)) &&
       (query.maxPrice === undefined || BigInt(row.unitPrice) <= BigInt(query.maxPrice)),
     ).sort((a, b) => b.createdAt - a.createdAt || b.id.localeCompare(a.id))
-      .slice(query.page * CONSIGNMENT_PAGE_SIZE, (query.page + 1) * CONSIGNMENT_PAGE_SIZE + 1));
+      .slice(query.page * CONSIGNMENT_PAGE_SIZE, (query.page + 1) * CONSIGNMENT_PAGE_SIZE + 1)
+      .map(row => ({ ...row, sellerProfile: developmentProfile(row.sellerId) })));
   }
   async deliveries(id: string, page: number) {
     return structuredClone([...this.data.deliveries.values()].filter(row => row.ownerId === id && BigInt(row.quantity) > 0n)

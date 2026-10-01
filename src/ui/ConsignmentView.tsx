@@ -8,6 +8,7 @@ import { consignmentFilterSchema, type ConsignmentFilter, type ConsignmentReques
 import type { OpeningView } from '../../shared/opening-contracts';
 import type { GameClient } from '../game-client';
 import { formatAmount } from '../format';
+import { PlayerAvatar } from '../discord-identity';
 import { Bonuses, Dialog, Empty, IconButton, ItemGlyph, Quantity, SearchField, Tabs } from './common';
 
 type View = ConsignmentView['view'];
@@ -74,7 +75,8 @@ function ListingCard({ listing, disabled, money, confirm }: {
       <Coins size={13} />{formatAmount(listing.unitPrice)}<small>/件</small></span>}
     meta={active && <>
       <span>余量 <b>{listing.remaining}</b>{listing.asset.kind === 'stack' ? ' 份' : ' 件'}</span>
-      <span className="consignment-seller">{listing.isSelf ? '我上架' : listing.sellerName}</span>
+      <span className="consignment-seller"><PlayerAvatar url={listing.sellerAvatarUrl} size={20} />
+        <span>{listing.isSelf ? '我上架' : listing.sellerName}</span></span>
     </>}>
     {active && (listing.isSelf
       ? <button disabled={disabled} onClick={() => confirm({

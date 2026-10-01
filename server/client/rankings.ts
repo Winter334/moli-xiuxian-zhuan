@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { dec } from '../../core/numbers';
 import { combatPower, COMBAT_POWER_VERSION } from '../../core/prototype/combat-power';
 import { realmName } from '../../core/prototype/growth';
@@ -34,10 +33,11 @@ export class RankingsService {
       let state: CharacterState;
       try { state = readClientSave(snapshot.save).character; }
       catch { continue; } // Old or invalid saves are neither converted nor admitted.
+      if (this.store.scope.kind === 'discord' && state.history.testAssisted) continue;
       rows.push({
         id: snapshot.characterId,
         entry: {
-          name: `试修·${createHash('sha256').update(snapshot.characterId).digest('hex').slice(0, 10)}`, realmName: realmName(state.level),
+          ...snapshot.profile, realmName: realmName(state.level),
           metric: metricFor(state, board), updatedAt: snapshot.receivedAt, isSelf: snapshot.characterId === characterId,
         },
       });
@@ -53,6 +53,6 @@ export class RankingsService {
       if (index < RANKING_LIMIT) entries.push(entry);
       if (entry.isSelf) self = entry;
     }
-    return { board, scope: 'development', powerVersion: COMBAT_POWER_VERSION, entries, self };
+    return { board, scope: this.store.scope.kind, powerVersion: COMBAT_POWER_VERSION, entries, self };
   }
 }

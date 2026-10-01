@@ -5,6 +5,7 @@ import {
 } from '../core/prototype/consignment';
 import { countSchema } from '../core/prototype/types';
 import { clientSaveSchema, revisionSchema } from './client-save';
+import { playerAvatarUrlSchema, playerNameSchema, playerScopeSchema } from './player-profile';
 
 export const CONSIGNMENT_PAGE_SIZE = 50;
 const timeSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
@@ -68,10 +69,10 @@ export const consignmentTotalsSchema = z.object({
 }).strict();
 export type ConsignmentTotals = z.infer<typeof consignmentTotalsSchema>;
 export const publicListingSchema = consignmentListingSchema.omit({ sellerId: true, gross: true, fee: true, quantity: true }).extend({
-  sellerName: z.string(), isSelf: z.boolean(), name: z.string(),
+  sellerName: playerNameSchema, sellerAvatarUrl: playerAvatarUrlSchema, isSelf: z.boolean(), name: z.string(),
 });
 export const consignmentViewSchema = z.object({
-  scope: z.literal('development'), view: z.enum(['market', 'mine', 'deliveries']), page: z.number().int().nonnegative(),
+  scope: playerScopeSchema, view: z.enum(['market', 'mine', 'deliveries']), page: z.number().int().nonnegative(),
   hasMore: z.boolean(), activeCount: z.number().int().nonnegative(), slots: z.number().int().positive(),
   listings: z.array(publicListingSchema), deliveries: z.array(consignmentDeliverySchema.omit({ ownerId: true })),
   totals: consignmentTotalsSchema,

@@ -52,6 +52,7 @@ export class ConsignmentService {
 
   private async plan(tx: ConsignmentTransaction, input: ConsignmentRequest, now: number) {
     const save = checkCheckpoint(tx.snapshot, input, now);
+    this.requireEligible(save.character.history.testAssisted);
     requireMerchant(save.character, input.shopId);
     const delta: ConsignmentDelta = { debit: null, credit: null };
     const plan: ConsignmentPlan = { save, listing: null, deliveries: [], claimed: null, fill: null };
@@ -138,6 +139,7 @@ export class ConsignmentService {
     const input = consignmentViewRequestSchema.parse(raw);
     if (input.characterId !== characterId) reject('IDENTITY_CONFLICT', '寄售身份与当前角色不一致。');
     const save = checkCheckpoint(await this.store.load(characterId), input, this.now());
+    this.requireEligible(save.character.history.testAssisted);
     try { requireMerchant(save.character, input.shopId); }
     catch (error) {
       if (error instanceof CharacterCommandError) reject('MERCHANT_UNAVAILABLE', error.message);
@@ -152,15 +154,21 @@ export class ConsignmentService {
     });
     const deliveries = input.view === 'deliveries' ? await this.store.deliveries(characterId, input.page) : [];
     return consignmentViewSchema.parse({
-      scope: 'development', view: input.view, page: input.page,
+      scope: this.store.scope.kind, view: input.view, page: input.page,
       hasMore: Math.max(listings.length, deliveries.length) > CONSIGNMENT_PAGE_SIZE,
       activeCount: await this.store.activeCount(characterId), slots: CONSIGNMENT_SLOTS,
-      listings: listings.slice(0, CONSIGNMENT_PAGE_SIZE).map(({ sellerId, gross: _gross, fee: _fee, quantity: _quantity, ...listing }) => ({
+      listings: listings.slice(0, CONSIGNMENT_PAGE_SIZE).map(({ sellerId, sellerProfile, gross: _gross, fee: _fee, quantity: _quantity, ...listing }) => ({
         ...listing, name: ITEMS[listing.asset.itemId].name, isSelf: sellerId === characterId,
-        sellerName: `试修·${createHash('sha256').update(sellerId).digest('hex').slice(0, 10)}`,
+        sellerName: sellerProfile.name, sellerAvatarUrl: sellerProfile.avatarUrl,
       })),
       deliveries: deliveries.slice(0, CONSIGNMENT_PAGE_SIZE).map(({ ownerId: _owner, ...delivery }) => delivery),
       totals: await this.store.totals(characterId),
     });
+  }
+
+  private requireEligible(testAssisted: boolean) {
+    if (this.store.scope.kind === 'discord' && testAssisted) {
+      reject('TEST_CHARACTER', '受测试干预的角色不能参与 Discord 寄售。');
+    }
   }
 }

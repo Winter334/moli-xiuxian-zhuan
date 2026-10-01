@@ -6,6 +6,7 @@ import { DiscordIdentity } from './discord-identity';
 import { GameClient } from './game-client';
 import { acquireLocalSaveLock, LocalSaveStore } from './local-save';
 import GameApp from './GameApp';
+import { PolicyLinks } from './ui/PolicyLinks';
 
 export default function ActivityApp() {
   const connection = useRef<DiscordActivityConnection | null>(null);
@@ -35,7 +36,9 @@ export default function ActivityApp() {
     return () => { cancelled = true; };
   }, [attempt]);
 
-  if (game) return <DiscordIdentity.Provider value={game.user}><GameApp client={game.client} /></DiscordIdentity.Provider>;
+  if (game) return <DiscordIdentity.Provider value={game.user}>
+    <GameApp client={game.client} mobileActivity={new URLSearchParams(location.search).get('platform') === 'mobile'} />
+  </DiscordIdentity.Provider>;
   const embedded = isDiscordActivity();
   return <>
     <div className="orientation-gate"><RotateCw size={42} strokeWidth={1.2} /><h1>横屏入境</h1><p>请将设备转为横屏</p><span>茉莉修仙传</span></div>
@@ -44,6 +47,8 @@ export default function ActivityApp() {
       <p role={error ? 'alert' : 'status'}>{error ?? phase}</p>
       {!error && <LoaderCircle size={20} className="spinning" />}
       {error && embedded && <button onClick={() => setAttempt(current => current + 1)}><RefreshCw size={16} />重新登录</button>}
+      <p className="policy-disclosure">榜单与寄售会向本应用的其他玩家显示你的 Discord 名字和头像。</p>
+      <PolicyLinks />
     </main>
   </>;
 }

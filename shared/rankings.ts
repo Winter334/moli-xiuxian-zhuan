@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { COMBAT_POWER_VERSION } from '../core/prototype/combat-power';
 import { nonnegativeSchema } from '../core/prototype/types';
+import { playerAvatarUrlSchema, playerNameSchema, playerScopeSchema } from './player-profile';
 
 export const RANKING_LIMIT = 50;
 export const rankingIdSchema = z.enum(['cultivation', 'power', 'refining', 'money']);
@@ -18,7 +19,8 @@ const metricSchema = z.discriminatedUnion('kind', [
 export type RankingMetric = z.infer<typeof metricSchema>;
 const entrySchema = z.object({
   rank: z.number().int().positive(),
-  name: z.string().min(1).max(80),
+  name: playerNameSchema,
+  avatarUrl: playerAvatarUrlSchema,
   realmName: z.string().min(1).max(40),
   metric: metricSchema,
   updatedAt: z.number().int().nonnegative(),
@@ -27,7 +29,7 @@ const entrySchema = z.object({
 export type RankingEntry = z.infer<typeof entrySchema>;
 export const rankingBoardSchema = z.object({
   board: rankingIdSchema,
-  scope: z.literal('development'),
+  scope: playerScopeSchema,
   powerVersion: z.literal(COMBAT_POWER_VERSION),
   entries: z.array(entrySchema).max(RANKING_LIMIT),
   self: entrySchema.nullable(),

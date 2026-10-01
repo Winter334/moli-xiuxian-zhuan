@@ -35,7 +35,7 @@ describe('Discord identity boundary', () => {
       clientId, characterId, sessionToken, expiresAt: 3_601_000,
       user: { id: userId, username: 'test.user', displayName: '<name>', avatar: null },
     });
-    expect(store.connectDiscordAccount).toHaveBeenCalledWith(clientId, userId, 3_601_000, 1000);
+    expect(store.connectDiscordAccount).toHaveBeenCalledWith(clientId, session.user, 3_601_000, 1000);
     expect(fetcher.mock.calls[0][0]).toBe('https://discord.com/api/v10/oauth2/token');
     const body = new URLSearchParams(String(fetcher.mock.calls[0][1]!.body));
     expect(body.get('client_secret')).toBe(config.clientSecret);

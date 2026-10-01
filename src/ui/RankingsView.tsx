@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Coins, Flame, LoaderCircle, RefreshCw, Sparkles, Swords, Trophy } from 'lucide-react';
 import { RANKING_NAMES, type RankingBoard, type RankingEntry, type RankingId, type RankingMetric } from '../../shared/rankings';
 import { formatAmount } from '../format';
+import { PlayerAvatar } from '../discord-identity';
 import { Empty, IconButton, Tabs } from './common';
 
 const boardIcons: Record<RankingId, typeof Sparkles> = {
@@ -22,6 +23,7 @@ function RankingRow({ entry }: { entry: RankingEntry }) {
   const top = entry.rank <= 3 ? ` top-${entry.rank}` : '';
   return <li className={`ranking-entry${top}`} aria-current={entry.isSelf ? 'true' : undefined}>
     <span className="ranking-rank" aria-label={`第${entry.rank}名`}>{entry.rank}</span>
+    <PlayerAvatar url={entry.avatarUrl} />
     <div className="ranking-who">
       <span className="ranking-name"><strong>{entry.name}</strong>{entry.isSelf && <em>我</em>}</span>
       <span className="ranking-realm">{entry.realmName}</span>

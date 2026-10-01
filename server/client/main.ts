@@ -55,11 +55,13 @@ export async function createClientApp(
     throw new Error('Discord Activity development requires the isolated moli_activity database.');
   }
   const pool = createPool(databaseUrl, false, deployment ? 'activity-deployment' : 'local');
-  const repository = new ClientRepository(pool);
+  const scope = discordConfig ? { kind: 'discord' as const, applicationId: discordConfig.clientId }
+    : { kind: 'development' as const };
+  const repository = new ClientRepository(pool, scope);
   const discord = discordConfig ? new DiscordAuth(discordConfig, repository) : null;
   const service = new ClientSaveService(repository);
   const rankings = new RankingsService(repository);
-  const consignment = new ConsignmentService(new ConsignmentRepository(pool));
+  const consignment = new ConsignmentService(new ConsignmentRepository(pool, scope));
   const reincarnation = new ReincarnationService(new ReincarnationRepository(pool));
   const app = Fastify({ logger: false, bodyLimit: MAX_SAVE_BYTES });
   app.addHook('onClose', () => pool.end());

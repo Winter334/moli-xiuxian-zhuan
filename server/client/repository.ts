@@ -2,9 +2,12 @@ import { createHash, randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import type { Pool } from 'pg';
 import type { ClientSave } from '../../shared/client-save';
+import { discordUserSchema, type DiscordUser } from '../../shared/discord';
+import type { PublicPlayerProfile } from '../../shared/player-profile';
 import { createCharacter } from '../../core/prototype';
 import { inTransaction } from '../database';
 import { ApiError } from '../errors';
+import { developmentProfile, discordProfile, playerScopeSql, type PlayerScope } from './player-profile';
 
 export interface CloudSnapshot {
   save: unknown;
@@ -17,8 +20,10 @@ export interface RankingSnapshot {
   characterId: string;
   save: unknown;
   receivedAt: number;
+  profile: PublicPlayerProfile;
 }
 export interface RankingStore {
+  readonly scope: PlayerScope;
   rankingSnapshots(): AsyncIterable<RankingSnapshot>;
 }
 export interface CloudStore {
@@ -28,7 +33,7 @@ export interface CloudStore {
 }
 
 export async function initializeStorage(pool: Pool) {
-  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql'].map(async name => {
+  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql'].map(async name => {
     const sql = await readFile(new URL(`./${name}`, import.meta.url), 'utf8');
     return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') };
   }));
@@ -50,7 +55,7 @@ export async function initializeStorage(pool: Pool) {
 
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
 export class ClientRepository implements CloudStore, RankingStore {
-  constructor(readonly pool: Pool) {}
+  constructor(readonly pool: Pool, readonly scope: PlayerScope = { kind: 'development' }) {}
 
   async findSession(token: string): Promise<string | null> {
     const result = await this.pool.query<{ character_id: string }>(
@@ -70,7 +75,9 @@ export class ClientRepository implements CloudStore, RankingStore {
     return { token, characterId };
   }
 
-  async connectDiscordAccount(clientId: string, userId: string, expiresAt: number, now: number) {
+  async connectDiscordAccount(clientId: string, verifiedUser: DiscordUser, expiresAt: number, now: number) {
+    const user = discordUserSchema.parse(verifiedUser);
+    const userId = user.id;
     const sessionToken = randomBytes(32).toString('base64url');
     const characterId = await inTransaction(this.pool, async client => {
       // Serialize first login for this account, without locking unrelated accounts.
@@ -89,6 +96,12 @@ export class ClientRepository implements CloudStore, RankingStore {
           [id, JSON.stringify(save), now]);
         await client.query('INSERT INTO moli_client.discord_accounts VALUES ($1, $2, $3, $4)', [clientId, userId, id, now]);
       }
+      await client.query(
+        `INSERT INTO moli_client.discord_profiles (application_id, user_id, display_name, avatar_hash, updated_at)
+         VALUES ($1, $2, $3, $4, $5) ON CONFLICT (application_id, user_id) DO UPDATE
+         SET display_name = EXCLUDED.display_name, avatar_hash = EXCLUDED.avatar_hash, updated_at = EXCLUDED.updated_at`,
+        [clientId, userId, user.displayName, user.avatar, now],
+      );
       await client.query('INSERT INTO moli_client.discord_sessions VALUES ($1, $2, $3, $4)',
         [hashToken(sessionToken), clientId, userId, expiresAt]);
       return id;
@@ -122,19 +135,37 @@ export class ClientRepository implements CloudStore, RankingStore {
     try {
       // One consistent, read-only cloud snapshot, fetched in bounded batches.
       await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+      const values: unknown[] = [];
+      const membership = playerScopeSql(this.scope, 'c.id', values);
       await client.query(`DECLARE ranking_snapshots NO SCROLL CURSOR FOR
         SELECT c.id AS "characterId", c.save, c.received_at::float8 AS "receivedAt"
         FROM moli_client.characters c
-        WHERE EXISTS (SELECT 1 FROM moli_client.dev_sessions d WHERE d.character_id = c.id)`);
+        WHERE ${membership}`, values);
       while (true) {
-        const result = await client.query<RankingSnapshot>('FETCH FORWARD 100 FROM ranking_snapshots');
-        for (const row of result.rows) yield row;
+        const result = await client.query<Omit<RankingSnapshot, 'profile'>>('FETCH FORWARD 100 FROM ranking_snapshots');
+        const profiles = await this.publicProfiles(result.rows.map(row => row.characterId), client);
+        for (const row of result.rows) {
+          const profile = profiles.get(row.characterId);
+          if (profile) yield { ...row, profile };
+        }
         if (result.rows.length < 100) break;
       }
     } finally {
       try { await client.query('ROLLBACK'); } catch { discard = true; }
       client.release(discard);
     }
+  }
+
+  async publicProfiles(characterIds: string[], db: Pick<Pool, 'query'> = this.pool): Promise<Map<string, PublicPlayerProfile>> {
+    if (this.scope.kind === 'development') return new Map(characterIds.map(id => [id, developmentProfile(id)]));
+    if (!characterIds.length) return new Map();
+    const result = await db.query<{ characterId: string; id: string; displayName: string; avatar: string | null }>(
+      `SELECT a.character_id AS "characterId", a.user_id AS id, p.display_name AS "displayName", p.avatar_hash AS avatar
+       FROM moli_client.discord_accounts a JOIN moli_client.discord_profiles p USING (application_id, user_id)
+       WHERE a.application_id = $1 AND a.character_id = ANY($2::uuid[])`,
+      [this.scope.applicationId, characterIds],
+    );
+    return new Map(result.rows.map(row => [row.characterId, discordProfile(row)]));
   }
 
   async commit(characterId: string, expected: string, save: ClientSave, now: number, requestId: string, hash: string) {
