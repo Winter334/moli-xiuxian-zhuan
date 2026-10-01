@@ -1,7 +1,8 @@
 # 茉莉修仙传：修仙 RPG
 
 代码仓库：[Winter334/moli-xiuxian-zhuan](https://github.com/Winter334/moli-xiuxian-zhuan)，
-私有，主分支为 `main`。VPS 拉取方式见[Activity接入](docs/discord-activity.zh-CN.md#代码仓库与vps拉取)。
+主分支为 `main`。用户选择公共仓库，首次推送与可见性调整由用户手动完成；
+VPS 拉取方式见[Activity接入](docs/discord-activity.zh-CN.md#代码仓库与vps拉取)。
 
 公开政策（中英双语）：[隐私政策](PRIVACY.md) · [服务条款](TERMS.md)。
 运营资料及 Gist 互链已填写；公开地址与部署前核对事项见[Activity接入](docs/discord-activity.zh-CN.md#公开政策文档与部署准备)。
