@@ -3,7 +3,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 
 FROM base AS build
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build:activity
@@ -14,7 +14,7 @@ ENV NODE_ENV=production \
     DEV_AUTH=false \
     ACTIVITY_HOST=0.0.0.0 \
     ACTIVITY_PORT=5180
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 COPY --from=build --chown=node:node /app/dist ./dist
 USER node
