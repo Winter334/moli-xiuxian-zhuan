@@ -8,6 +8,7 @@
 **/node_modules/
 /dist/
 **/dist/
+# Local services, API notes, model caches, and scratch files.
 /.local/
 /test-results/
 /playwright-report/

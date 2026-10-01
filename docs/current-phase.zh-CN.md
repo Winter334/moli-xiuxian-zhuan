@@ -31,7 +31,8 @@
 GitHub代码仓库已创建，用户选择手动转为公共并完成首次推送，
 入口与VPS拉取方式见[Activity接入](discord-activity.zh-CN.md)。
 未挂载图片及历史生图记录已按用户要求清理，后续生图不再记账，
-详情见[素材清单](asset-manifest.zh-CN.md#旧稿清理)。
+详情见[素材清单](asset-manifest.zh-CN.md#旧稿清理)；生图接口说明与调用工具
+只留在本机忽略目录，不随仓库发布，见[本地生图服务隔离](asset-manifest.zh-CN.md#本地生图服务隔离)。
 旧屋入口已按用户要求移除，详情见[地图收尾](world-setting-rework.zh-CN.md#第3批实施村内入口与节点收尾)。
 后续新增内容仍按区域组织美术，不续接旧全量生成待办，界面继续按反馈调整。
 

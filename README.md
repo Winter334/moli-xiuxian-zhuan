@@ -99,5 +99,6 @@ pnpm balance            # 同规则数值运行器，另有 balance:* 细分
 - 长期数值以十进制字符串传输；内容/规则/存档版本不匹配时拒绝推进，不做自动跨版本迁移。
 - `references/NekoRPG` 始终只读，且不纳入本项目 Git；`keys.txt`、`.env`、
   本地生成任务记录、依赖与构建结果均被忽略。
-- 美术相关：[素材清单](docs/asset-manifest.zh-CN.md)，通用网关速查为`imagegen_api_summary.md`。
+- 美术相关：[素材清单](docs/asset-manifest.zh-CN.md)。生图接口说明与调用脚本仅保留在
+  本机忽略目录`.local/imagegen/`，不随游戏代码发布或部署。
   旧素材及设计已清理；新图按当轮授权分步制作并记录，不沿用旧批量计划。
