@@ -25,6 +25,7 @@ const localSchema = z.object({
 }).strict();
 export type LocalSave = z.infer<typeof localSchema>;
 export type SaveStorage = Pick<Storage, 'getItem' | 'setItem'>;
+export class LocalSaveReadError extends Error {}
 
 function readLocalSave(raw: unknown): LocalSave {
   const local = localSchema.parse(raw);
@@ -78,24 +79,31 @@ export class LocalSaveStore {
     const raw = this.storage.getItem(this.key);
     this.expected = raw;
     if (raw === null) return null;
-    if (raw.length > 1024 * 1024) throw new Error('本地存档过大，未覆盖原数据');
+    if (raw.length > 1024 * 1024) throw new LocalSaveReadError('本地存档过大，未覆盖原数据');
     try {
       const wrapper = z.object({ data: z.unknown(), checksum: z.string().regex(/^[a-f0-9]{64}$/) }).strict().parse(JSON.parse(raw));
       if (await checksum(JSON.stringify(wrapper.data)) !== wrapper.checksum) throw new Error('checksum');
       return readLocalSave(wrapper.data);
-    } catch { throw new Error('本地存档校验或版本不匹配，已停止读取，原数据未修改'); }
+    } catch { throw new LocalSaveReadError('本地存档校验或版本不匹配，已停止读取，原数据未修改'); }
   }
 
-  async write(input: LocalSave): Promise<LocalSave> {
+  async write(input: LocalSave, preserveOriginal = false): Promise<LocalSave> {
     if (this.expected === undefined) throw new Error('必须先读取本地存档');
     const data = readLocalSave(input);
     const raw = JSON.stringify({ data, checksum: await checksum(JSON.stringify(data)) });
     if (raw.length > 1024 * 1024) throw new Error('本地存档超过接收上限');
     if (this.storage.getItem(this.key) !== this.expected) throw new Error('本地存档已被另一页面修改，当前页面已暂停');
-    try { this.storage.setItem(this.key, raw); }
+    try {
+      if (preserveOriginal && this.expected !== null) this.storage.setItem(`${this.key}:recovery`, this.expected);
+      this.storage.setItem(this.key, raw);
+    }
     catch { throw new Error('无法保存到此浏览器，已暂停推进；请检查存储权限与空间'); }
     this.expected = raw;
     return data;
+  }
+
+  exportRaw(copy: 'current' | 'recovery'): string | null {
+    return this.storage.getItem(copy === 'current' ? this.key : `${this.key}:recovery`);
   }
 }
 

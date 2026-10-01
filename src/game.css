@@ -675,6 +675,23 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .dialog-body > p { margin-bottom: 13px; font-size: 13px; }
 .dialog-body .meter { margin: 15px 0; }
 .dialog-actions { justify-content: flex-end; margin-top: 24px; }
+.save-recovery-heading, .save-option-heading, .save-export-actions, .save-recovery-actions { display: flex; align-items: center; gap: 8px; }
+.save-recovery-heading { justify-content: space-between; font-size: 13px; margin-bottom: 12px; }
+.save-options { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.save-option { min-width: 0; display: block; border: 1px solid var(--line); border-radius: 4px; padding: 12px; }
+.save-option.selected { border-color: var(--jade); }
+.save-option-heading { font-size: 13px; margin-bottom: 12px; }
+.save-option input[type="radio"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; accent-color: var(--jade); flex: 0 0 auto; }
+.save-summary { margin: 0; font-size: 12px; }
+.save-summary > div { margin-top: 9px; }
+.save-summary dt { color: var(--muted); font-size: 11px; }
+.save-summary dd { margin: 3px 0 0; overflow-wrap: anywhere; }
+.save-choice-warning { margin: 12px 0 0; color: #e2c3a1; font-size: 12px; overflow-wrap: anywhere; }
+.save-export-actions { flex-wrap: wrap; margin: 16px 0 10px; }
+.save-export-actions button { font-size: 12px; }
+.save-recovery-actions { justify-content: flex-end; flex-wrap: wrap; }
+.save-confirm { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.7; }
+.save-confirm input { flex: 0 0 auto; margin-top: 4px; }
 .reincarnation-intro { text-align: center; color: #c4b094; padding: 4px 0 23px; border-bottom: 1px solid var(--line); }
 .reincarnation-intro h3 { font: 19px var(--serif); margin: 13px 0 5px; color: #e0d5be; }
 .reincarnation-intro p { font-size: 12px; }

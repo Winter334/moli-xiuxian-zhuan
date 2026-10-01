@@ -66,6 +66,9 @@ and it does not collect Discord chat history as game history.
 The game stores character progress, pending operations, and necessary synchronization state
 in local storage on your device or in Discord's embedded browser.
 Activity saves are separated by Discord application ID and user ID.
+When you explicitly select a save for recovery, the game retains the most recent original
+as a local recovery copy. You may also export save copies to files on your device.
+These copies are not separately uploaded and are not independent server database backups.
 Interface preferences, such as music volume and log display settings, are also stored locally
 and are not currently uploaded to the game server.
 
@@ -268,6 +271,8 @@ and privacy email listed at the beginning of this policy.
 游戏在您的设备或 Discord 内嵌浏览器的本地存储中保存角色进度、待确认操作及必要的同步状态。
 Activity 存档按 Discord 应用 ID 和用户 ID 区分；音乐音量、日志显示等界面偏好也保存在本地。
 界面偏好当前不上传到游戏服务器。
+您明确选择存档进行恢复时，游戏会在本机保留最近一次替换前的原件；
+您也可将存档副本导出为设备上的文件。这些副本不另行上传，不是独立的服务器数据库备份。
 
 本地存储用于游戏保存，不用于广告追踪。Activity 身份认证当前不依赖跨站 Cookie。
 清除本地存储不会自动删除服务器上的账号或云存档，也可能使尚未上传的进度无法恢复。

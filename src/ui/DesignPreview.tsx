@@ -89,6 +89,8 @@ export default function DesignPreview() {
     busy: false, refreshing: false, blocked: false, issue, lastUpdated: null, lastCloudSave: null,
     tradePending: false, tradeBusy: false, tradeStopped: false, tradeMessage: null,
     reincarnationPending: false, reincarnationBusy: false, reincarnationMessage: null,
+    recoveryAvailable: false, recoveryBusy: false, recovery: null, recoveryMessage: null,
+    inspectSaves: offlineNotice, chooseSave: offlineNotice, exportSave: () => null,
     command: useCallback(command => run((state, events) => executeCharacterCommand(state, command, Date.now(), events)), [run]),
     debugCommand: useCallback(command => run(state => executeDebugCommand(state, command)), [run]),
     loadRanking: unavailable, loadConsignment: unavailable, submitTrade: offlineNotice, reconcileTrade: offlineNotice,

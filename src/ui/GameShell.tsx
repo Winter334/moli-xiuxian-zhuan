@@ -15,6 +15,7 @@ import { SettingsControl } from './SettingsControl';
 import { useLogSettings } from './log-settings';
 import { PracticeView } from './PracticeView';
 import { ReincarnationDialog } from './ReincarnationDialog';
+import { SaveRecoveryDialog } from './SaveRecoveryDialog';
 import { WorldView } from './WorldView';
 import { areaFor, type MapCamera } from './world';
 import type { AreaTrackId } from './SettingsControl';
@@ -31,7 +32,7 @@ const PAGES = [
 export function GameShell({ session, previewControls }: { session: GameSession; previewControls?: ReactNode }) {
   const [logSettings, setLogSettings] = useLogSettings(Boolean(previewControls));
   const [page, setPage] = useState<Page>('world');
-  const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | null>(null);
+  const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | 'saves' | null>(null);
   const [displayError, setDisplayError] = useState('');
   const pageRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDetailsElement>(null);
@@ -63,6 +64,7 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
           <IconButton label="上传云存档" disabled={session.blocked || session.refreshing || session.tradePending || session.tradeBusy || session.tradeStopped}
             onClick={() => void session.refresh()}>{session.refreshing ? <LoaderCircle size={17} className="spinning" /> : session.tradeStopped ? <CloudOff size={17} /> : <Cloud size={17} />}</IconButton>
           <details className="system-menu" ref={menuRef}><summary aria-label="更多选项" title="更多选项"><MoreHorizontal size={18} /></summary><div>
+            {!previewControls && <button disabled={!session.recoveryAvailable} onClick={() => { setOverlay('saves'); menuRef.current!.open = false; }}><Cloud size={16} />存档管理</button>}
             {DebugConsole && <button disabled={!game} onClick={() => { setOverlay('debug'); menuRef.current!.open = false; }}><Terminal size={16} />测试控制台</button>}
           </div></details>
         </div>
@@ -75,13 +77,15 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
           aria-current={page === id || id === 'world' && (page === 'map' || service) || id === 'journal' && page === 'bestiary' ? 'page' : undefined} onClick={() => setPage(id)}>
           <Icon size={17} /><span>{label}</span></button>)}</nav>
         {(session.issue || displayError) && <div className="alert-bar" role="alert"><span>{session.issue?.message ?? displayError}</span>
+          {session.recoveryAvailable && session.issue?.source !== 'action' &&
+            <IconButton label="核对与恢复存档" onClick={() => setOverlay('saves')}><Cloud size={15} /></IconButton>}
           {session.issue?.retryable !== false && <IconButton label="重试" disabled={session.busy || session.reincarnationBusy} onClick={() => void session.retry()}><RefreshCw size={15} /></IconButton>}
           {!session.blocked && <IconButton label="关闭提示" onClick={() => { session.dismissIssue(); setDisplayError(''); }}><X size={15} /></IconButton>}
         </div>}
         {session.tradePending && <div className="alert-bar" role="status"><span>寄售待确认 · {session.tradeMessage ?? '相关资产暂由商盟保管'}</span>
-          <button disabled={session.tradeBusy || session.tradeStopped || session.blocked} onClick={() => void session.reconcileTrade()}><RefreshCw size={15} />核对</button></div>}
+          <button disabled={session.tradeBusy || session.blocked} onClick={() => void session.reconcileTrade()}><RefreshCw size={15} />核对</button></div>}
         {session.reincarnationPending && <div className="alert-bar" role="status"><span>{session.reincarnationMessage ?? '轮回待确认，本世暂停'}</span>
-          <button disabled={session.reincarnationBusy || session.tradeStopped} onClick={() => void session.reconcileReincarnation()}><RefreshCw size={15} />核对轮回</button></div>}
+          <button disabled={session.reincarnationBusy || session.recoveryBusy} onClick={() => void session.reconcileReincarnation()}><RefreshCw size={15} />核对轮回</button></div>}
         {!session.reincarnationPending && session.reincarnationMessage && <p className="session-message" role="status">{session.reincarnationMessage}</p>}
         {game && props ? <main ref={pageRef} className="page-scroll" key={game.life.number}>
           {page === 'world' && <LocationView {...props} open={setPage} frame={session.combatFrame} paused={session.combatPaused} lastBattleId={lastBattle.current} />}
@@ -112,6 +116,7 @@ export function GameShell({ session, previewControls }: { session: GameSession; 
         <span>{previewControls ? '内存角色' : session.lastCloudSave ? `云备份 ${new Date(session.lastCloudSave).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}` : '尚无本次云备份记录'}</span></footer>
     </div>
     {overlay === 'reincarnation' && <ReincarnationDialog session={session} onClose={() => setOverlay(null)} />}
+    {overlay === 'saves' && <SaveRecoveryDialog session={session} onClose={() => setOverlay(null)} />}
     {overlay === 'debug' && game && DebugConsole && <Dialog title="测试控制台" wide onClose={() => setOverlay(null)}>
       <Suspense fallback={<p>正在读取</p>}><DebugConsole game={game} blocked={session.blocked} command={session.debugCommand} preview={Boolean(previewControls)} /></Suspense></Dialog>}
   </>;
