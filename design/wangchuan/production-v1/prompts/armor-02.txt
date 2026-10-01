@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted equipment icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four empty garments from ONE azure-treated beast-hide cultivation outfit, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is the approved beast-hide torso armor: broad natural slightly masculine shoulders, supple dark leather, classical lapel construction and refined painting. Image 2 anchors the shared classical wardrobe and painting quality, not wide sleeves for this sleeveless set.
+Top left: single broad fitted supple-hide forehead band with shaped overlapping central panel and two clearly separated traditional tie tails. Dark cool hide with a broad pale-teal treated panel, NOT a cloth turban or rigid crown.
+Top right: sleeveless supple-hide inner armor with broad natural shoulders, overlapping classical lapel and layered side panels, uniform natural waist. Deep blue-grey hide with clearly worked muted jade front and lapel planes. Same slightly masculine design as the reference, never a female corset, bulky steel cuirass or separate gender style.
+Bottom left: one complete pair of fitted but practical supple-hide long trousers, articulated overlapping knee pieces and naturally folded knee backs, restrained teal worked seam planes. Slimmer and smoother than the cloth outfit, no exaggerated body curve.
+Bottom right: pair of tall supple-hide boots with tied mouths, long smooth shafts and folded ankle joints, quiet pale-teal worked front bands. Visibly taller than ordinary soft short boots, not plated greaves.
+Style/medium: exquisite coherent softly layered painted volume, gentle reflected light and clear supple material edges. Clothing quality stays refined and deliberate, no photorealistic dense pores or harsh unfinished blocks.
+Constraints: changes reflect hide construction and integrated azure treatment, not gemstone decoration or new rigid metal armor. Empty garments only, no mannequin, head, legs or skin. Centered subjects with full ties, sleeves and boots inside ample pure white margins and broad clean cross gutter. No ground shadow, aura, labels, text, frame, UI or watermark.

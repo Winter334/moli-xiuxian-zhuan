@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: a narrow road squeezed by a vast projecting horizontal rock ridge, opening beyond the pinch point toward the outside river valley.
+Scene/backdrop: a great pale stone shoulder juts across the slope and leaves only a narrow passage beside the rock wall. Worn ground near the constriction bears a few heavy hoof impressions. Beyond it a repaired strip of laid road stone curves toward the distant valley.
+Composition/framing: an oblique side view puts the huge horizontal rock mass in contrast with the slender route and the wide valley beyond. The passage must read immediately at small size. Use a few broad confident stone planes, not a dense field of equally detailed cracks. No giant creature in the landscape; its separate portrait will supply the encounter.
+Style/medium: grand painterly landscape, simple value organization, soft luminous distance and an understated feeling of unfamiliar scale. Distinct from a cave entrance, village panorama or vertical chasm.
+Lighting/mood: chalk-white stone in broad natural light, cool shadow beneath the projecting rock and clear open air beyond. Constricted foreground, release into distance.
+Constraints: a natural roadside bottleneck occupied by a boar in the game, not a serpent temple, sacred gate, fortress or arranged trial. No snake imagery, characters, enemies, lettering, border, UI or watermark.
+Avoid: tiny shattered color patches across every surface, photographic rock microtexture, glowing runes, floating architecture, decorative light orbs.

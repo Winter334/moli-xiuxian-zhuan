@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four beasts from riverbank woods in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style reference ONLY. Borrow readable masses, bright painted volumes and grouped fur, not the wolf's species, pose or facing direction.
+Subjects:
+Top left: brocade-furred demon marten, slender long-bodied mustelid with a flowing tail and naturally interlaced dark-and-gold coat markings. Crouched to dart left, narrow muzzle aimed screen-left; tail curved inside the cell. Feral predator, not a domestic pet.
+Top right: rending-claw marsh shanxiao, a long-armed wild primate with sharp long claw edges. Low crouching attack with both sweeping forearms directed toward screen-left. Dense green-grey fur masses, lean body and distinctly prominent claws, no gore.
+Bottom left: ravine-ambushing demon ape, taller lean primate with long limbs and taut muscles, springing down and forward toward screen-left. A high arched arm sweep gives a different silhouette from the crouching shanxiao. No tree, rock or landing surface.
+Bottom right: inverted-mark demon fox, full bushy tail curled behind a slim alert fox body. Backward-growing hooked markings in the fur carry a restrained inner shimmer, not a huge aura. Snout, gaze and advancing forelegs face screen-left. A natural fox, not a human hybrid.
+Direction: ALL four heads, bodies, gaze and attack or movement directions face the LEFT edge. Use left profile or left-facing three-quarter poses; never face front or right. Subjects remain centered.
+Style/medium: confident non-photographic painting, coherent broad shadows and clear species-specific anatomy. Group fur into readable masses; detail concentrated in faces and identifying marks. Low-rank supernatural traits stay restrained.
+Composition/framing: one complete isolated beast per equal square cell, generous pure-white margins, clean white cross gutter. Tail, claws and limbs fully visible without crossing cells.
+Constraints: pure white background for local removal, no scenery, ground, shadow, frame, runic ring, text, labels, watermark or UI. Threatening wild creatures, not mascots.

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Hanyue's old outer courtyards on a bright mountainside. Connected pale stone flights, white walls, grey-green tiled double eaves and deep quiet galleries. A small inhabited side courtyard has modest temporary huts and a merchant's iron-material shelter tucked against an old wall; a few distant travelers imply continuing use without becoming portraits. One narrow spring stream crosses a small gap along an old upper trough, pulled by a faint remaining array.
+Style/medium: refined luminous Chinese fantasy painting, cleaner dreamlike air and soft pearl light, coherent large architecture, graceful mountainside spaces. Not photorealistic or gritty.
+Composition/framing: view from a shaded gallery opening onto a sunlit court and descending roof layers; the inhabited corner is secondary but readable. Broad calm walls and connected shadow planes, details concentrated at the shelter and spring trough.
+Constraints: a working rest stop within an abandoned cultivation complex, not an empty palace or a village reskin. No celestial megastructures, giant effects, readable signs, UI or watermark. No reference image.

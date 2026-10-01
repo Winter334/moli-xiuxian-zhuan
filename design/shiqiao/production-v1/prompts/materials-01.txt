@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four material icons in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a hide-series reference, Image 2 a meat-series reference; both guide the accepted readable painting and materials, not identical shapes.
+Subjects:
+Top left: dark-steel scrap, a compact small cluster of irregular blackened broken blade and armor fragments. Jagged angular silhouette, narrow bright fracture edges. Salvaged metal, no complete weapon or regular ingot.
+Top right: rich beast meat, one thick compact dark-red raw cut with fine dense grain and restrained pale marbling. Clearly fresh meat without gore, no plate, no bone or round pill.
+Bottom left: tough demon hide, one broad flexible skin sheet with an edge curled back to show its supple thinner leather, muted dark green-grey hide grain. Mostly bare leather with little fur, strong folded-sheet silhouette.
+Bottom right: lustrous patterned beast pelt, a flat naturally irregular furred skin with clear interlaced dark and tawny natural markings and even subdued sheen. Unfolded pelt silhouette distinct from the curled plain hide, no jewelry or woven cloth.
+Style/medium: bright hand-painted icons with solid volumes and simplified grouped texture, subtle unusual reflected color only where natural. Different material categories must read from overall shape, not tiny texture alone.
+Composition/framing: one complete centered icon per equal square cell, generous white margins and a clean white cross gutter. Strong readable shapes at small display size.
+Constraints: pure white background for local removal, no shadows, scenery, frame, glow clouds, text, labels, watermark or UI. Ordinary materials, not high-tier relics.

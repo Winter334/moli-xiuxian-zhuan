@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four complete creatures, strict 2-column by 2-row grid, reading order.
+Input images: Images 1 and 2 are accepted animal painting references only: soft complete volume, deliberate grouped brushwork and bright clear edges; not their species, pose or facing.
+Top left: iron-plumed vulture, broad winged scavenger with hooked naked-looking head, hefty talons and iron-grey rigid feather groups. A leftward landing-and-pinning pose, feather roots have only a few fine pale fibers. Broader and heavier than the falcon.
+Top right: rockback rhinoceros, heavy living rhino with a thick corrugated hide rising into rocklike shoulder and back folds, lowered horn charging left. Animal hide rather than literal piled boulders, no metal armor.
+Bottom left: wind-skimming falcon, slim fast raptor with long tapered folded wings and a flexible throat skin patch, talons poised in a compact leftward diving turn. Different narrow silhouette from eagle and vulture, no extra head.
+Bottom right: burrowing venom centipede, long jointed dark rust-green arthropod curved compactly so its mandibles and forward body point left, complete multiple legs and tapering tail, a few tiny cloudy droplets on underside. Not a snake, no gory prey.
+Direction: EVERY head, body front and main attack faces screen-left. All subjects centered with wings, horn, tail and legs fully enclosed by wide cell margins.
+Style/medium: refined luminous painting, soft grouped feathers, broad clear hide and shell planes; no photorealistic hair, scales or dense texture noise.
+Constraints: pure white backdrop and broad clean white cross gutter. No landscape, ground, cast shadow, large aura, UI, text, labels or watermark.

@@ -1,0 +1,51 @@
+{
+  "region": "item-readability",
+  "version": "refined-submission-retry-v4",
+  "variant": "flare",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Only the six weapons and metals from refined-production-v3. No replacement of the quench-and-food task or the six already-approved mounted icons.",
+  "jobs": [
+    {
+      "id": "weapons-and-metals",
+      "promptFile": "design/item-readability/refined-production-v3/prompts/weapons-and-metals.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-refined-v3",
+      "size": "1024x1536",
+      "columns": 2,
+      "rows": 3,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "referenceRoles": [
+        "Identical approved illustration and series anchor to the unresolved original request; no changed prompt, dimensions, quality or reference inputs."
+      ],
+      "items": [
+        {
+          "id": "iron-birch-sword",
+          "name": "铁剑"
+        },
+        {
+          "id": "wood-hilt-dark-steel-sword",
+          "name": "粗炼乌钢剑"
+        },
+        {
+          "id": "scrap-iron",
+          "name": "碎铁料"
+        },
+        {
+          "id": "dark-steel-scrap",
+          "name": "乌钢碎料"
+        },
+        {
+          "id": "iron-blade",
+          "name": "百炼铁料"
+        },
+        {
+          "id": "dark-steel-blade",
+          "name": "乌钢精料"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: the outward-facing slopes beyond a mountain watershed, where a remote hunter's path first meets side paths from an inhabited river valley.
+Scene/backdrop: pale gray ridgelines step down toward an expansive distant river valley. A worn footpath sweeps across the open slope, meeting a rough branch from below. One small broken crossbeam at a narrow turn suggests roadside obstruction, not a constructed checkpoint.
+Composition/framing: a spacious high viewpoint with a broad sloping foreground, a sweeping path and several very large layers of distant mountain and sky. The first feeling is leaving the enclosed homeland behind. Give the open slope a strong continuous silhouette; keep tiny travel traces subordinate.
+Style/medium: soft luminous painterly fantasy landscape with plausible terrain and gently unfamiliar distances. Clear large shapes and calm connected color masses, selective detail along the path; not a realistic photograph or an all-over patchwork of tiny brush marks.
+Lighting/mood: pale sun across exposed stone, warm light on the near slope and cool gray-green distances; airy, exposed and uncertain.
+Constraints: this location is an outer mountain slope despite the internal file name. No mine opening, mining equipment, settlement, heroic figure, enemies, text, border, UI or watermark. Keep the ordinary road identity without shrinking the mountain world.
+Avoid: elaborate bandit fortress, mountains covered in evenly scattered props, mandatory checklist composition, floating monuments, excessive glow, decorative bokeh.

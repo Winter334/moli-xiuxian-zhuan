@@ -1,0 +1,29 @@
+{
+  "region": "art-repairs",
+  "version": "divine-seated-v3",
+  "quality": "high",
+  "scope": "Replace only circulating-qi with a complete seated meditation energy figure. No other assets, player portrait, layout or rule changes.",
+  "authorization": "The user explicitly requested a fresh drawing with NO reference images and a complete human-shaped figure in a seated meditation pose.",
+  "replaces": "public/assets/art/techniques/circulating-qi-flare-divine-v2.png",
+  "jobs": [
+    {
+      "id": "divine-art",
+      "kind": "atlas",
+      "target": "techniques",
+      "variant": "flare",
+      "assetSuffix": "flare-divine-v3",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/art-repairs/divine-seated-v3/prompt.txt",
+      "items": [
+        {
+          "id": "circulating-qi",
+          "name": "周天罡气"
+        }
+      ]
+    }
+  ]
+}

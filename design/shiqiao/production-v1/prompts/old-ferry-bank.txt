@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: an old ferry bank beside a broad functioning river trade route, superseded by the new downstream port.
+Scene/backdrop: broad worn ferry steps descend from a wooded old bank into deep water, a fallen mooring post nearby. A narrow path vanishes into trees and a side ravine. Across the water and farther downstream, cargo masts and the connected tiers of the new port remain active, with distant boats following navigation lamps.
+Composition/framing: river-level view along the broad stone steps, their large descending planes form the foreground. A single tree-shadow mass frames the old bank while open water and the distant port stretch across the other side. Emphasize old quiet shore versus living far harbor.
+Style/medium: poetic broad-shape environment painting, soft atmospheric perspective and gently unreal length of river. Few focal details, not a collage of ruins and ships.
+Lighting/mood: soft late-afternoon pearl light, muted blue water, warm pale stone, deep green old bank and hazy red-grey distant roofs.
+Constraints: no reference image. Abandonment is local to this ferry, not the entire main waterway. No empty ruined city, army battle, floating structures, giant magical beacon, text, labels, watermark or UI.

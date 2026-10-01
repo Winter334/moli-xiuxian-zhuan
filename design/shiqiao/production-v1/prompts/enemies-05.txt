@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly three complete enemies in one strict horizontal row of three equal square cells, left to right.
+Input images: Image 1 is a painting-style reference ONLY for readable broad painted forms. Borrow its brushwork and coherent shadows, not the wolf's subject or orientation.
+Subjects:
+Left: layered-talisman robber, adult low-rank human cultivator in worn traveling robes, gripping two overlapping attack talismans between the fingers. Lean forward with the talisman hand extended toward screen-left, a smaller light mark and a denser dark mark distinguish the two paper slips without legible lettering. No huge magical wheel.
+Middle: bark-armored shanxiao, a large heavy wild primate whose shoulders and back are wrapped in thick bark slabs and hard birch branches. Head, torso and charging shoulder face screen-left. Coarse dark fur in broad masses; no carried tree or ground, no humanoid wooden robot.
+Right: earth-vein stone spirit, a hulking interlocked rock body with deep dark semi-translucent marrow kernels embedded in its torso and cloudy moisture at the joints. Its irregular head and upper body turn toward screen-left, and one large rock arm prepares a leftward strike. Natural mineral life, not an official gate guard, carved statue or engineered golem.
+Direction: EVERY subject faces and attacks toward the LEFT edge of the image, not toward the viewer or right. Subjects stay centered in their own cells; the right-side stone spirit also faces LEFT. Override the reference orientation.
+Style/medium: bright readable painting, large grouped cloth, fur and mineral planes. Restrained inner mineral light, no extravagant high-tier aura.
+Composition/framing: one complete subject centered per cell, generous white margins and two broad clean vertical white gutters. No limb, talisman, branch or stone shell touches a cell boundary.
+Constraints: pure white background for local removal, no scene, ground, shadow, frame, labels, readable text, logo, watermark or UI. No official uniforms or trial symbolism.

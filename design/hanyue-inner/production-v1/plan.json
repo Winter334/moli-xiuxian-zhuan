@@ -1,0 +1,590 @@
+{
+  "region": "hanyue-inner",
+  "version": "production-v1",
+  "authorization": "The user requested continuing the next batch after completion of Hanyue outer courts and shallows; AgentSky API remains the selected provider.",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "The 11 AREAS.inner locations, all 26 local enemy IDs, six new directly obtained items including the command seal, and 15 new manufacturing-chain outputs reachable using these and previously mounted materials. No marsh art, player imagery, replacement of mounted art, content-rule changes, UI changes or Discord work.",
+  "scopeCounts": {
+    "scenes": 11,
+    "enemies": 26,
+    "icons": 21,
+    "assets": 58,
+    "originalRequests": 24
+  },
+  "enemyDirection": "All new bodies, faces and leading attacks point screen-left, remaining centered and fully contained. Faceless spirits do not gain invented faces.",
+  "progression": "A clean dreamlike abandoned Chinese cultivation mountain academy. Local spring and earthfire arrays, spacious ordered architecture and clear large forms, not endless floating megastructures or battlefield ruins.",
+  "itemDesign": "Refined softly layered painting anchored to approved samples. Renewal silk is a classical slightly masculine cloth family, structurally distinct from leather garments; treatments keep supple cloth and differ in visible construction, not recoloring alone. Marrow remains bare lustrous beads, pills use a supporting composition.",
+  "jobs": [
+    {
+      "id": "manor-inner-threshold",
+      "name": "内院阵台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/manor-inner-threshold.txt"
+    },
+    {
+      "id": "rootbound-passage",
+      "name": "封渠地廊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/rootbound-passage.txt"
+    },
+    {
+      "id": "earthfire-platform",
+      "name": "分火悬台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/earthfire-platform.txt"
+    },
+    {
+      "id": "ruined-elixir-hall",
+      "name": "涵岳丹坊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/ruined-elixir-hall.txt"
+    },
+    {
+      "id": "edict-corridor",
+      "name": "巡枢长廊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/edict-corridor.txt"
+    },
+    {
+      "id": "hidden-furnace-wall",
+      "name": "调火石廊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/hidden-furnace-wall.txt"
+    },
+    {
+      "id": "earthvein-workroom",
+      "name": "暖泉静室",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/earthvein-workroom.txt"
+    },
+    {
+      "id": "brood-cavern",
+      "name": "育材石窟",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/brood-cavern.txt"
+    },
+    {
+      "id": "relic-underchannel",
+      "name": "回流暗渠",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/relic-underchannel.txt"
+    },
+    {
+      "id": "heartward-path",
+      "name": "归枢长阶",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/heartward-path.txt"
+    },
+    {
+      "id": "manor-heart",
+      "name": "涵岳总枢",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/manor-heart.txt"
+    },
+    {
+      "id": "enemies-01",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-01.txt",
+      "items": [
+        {
+          "id": "uprooted-wood-wight",
+          "name": "渠根木魅"
+        },
+        {
+          "id": "bloodpool-shadow",
+          "name": "照血胶灵"
+        },
+        {
+          "id": "soulbinding-wraith",
+          "name": "缚渠阵灵"
+        },
+        {
+          "id": "essence-thieving-bat",
+          "name": "映灵妖蝠"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-02.txt",
+      "items": [
+        {
+          "id": "renegade-manor-saber",
+          "name": "伏渠刀修",
+          "cellBounds": [
+            0,
+            0,
+            780,
+            777
+          ]
+        },
+        {
+          "id": "broken-talisman-cultivator",
+          "name": "残符邪修",
+          "cellBounds": [
+            780,
+            0,
+            756,
+            814
+          ]
+        },
+        {
+          "id": "relic-plundering-cultivator",
+          "name": "借命劫修",
+          "cellBounds": [
+            0,
+            777,
+            740,
+            759
+          ]
+        },
+        {
+          "id": "redspine-feral-beast",
+          "name": "赤脊凶兽",
+          "cellBounds": [
+            740,
+            814,
+            796,
+            722
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-03.txt",
+      "items": [
+        {
+          "id": "armored-moss-spirit",
+          "name": "披甲苔灵"
+        },
+        {
+          "id": "web-broodmother",
+          "name": "盘丝母蛛"
+        },
+        {
+          "id": "budding-moss-spirit",
+          "name": "分芽苔灵"
+        },
+        {
+          "id": "rock-piercing-owl",
+          "name": "穿岩枭"
+        }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/shrine-gate-warden-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-04.txt",
+      "items": [
+        {
+          "id": "edict-enforcer",
+          "name": "护枢禁卫"
+        },
+        {
+          "id": "vault-bronze-sentinel",
+          "name": "护材铜卫"
+        },
+        {
+          "id": "frenzied-bone-general",
+          "name": "叠劲工傀"
+        },
+        {
+          "id": "unbroken-stone-sentinel",
+          "name": "封枢石卫"
+        }
+      ]
+    },
+    {
+      "id": "enemies-05",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-05.txt",
+      "items": [
+        {
+          "id": "warped-fungus-puppet",
+          "name": "畸生菌傀"
+        },
+        {
+          "id": "rift-chasing-wight",
+          "name": "逐隙灵魈"
+        },
+        {
+          "id": "furnace-guard-wight",
+          "name": "蹑隙灵魈"
+        },
+        {
+          "id": "pale-bone-tendril",
+          "name": "白须菌灵"
+        }
+      ]
+    },
+    {
+      "id": "enemies-06",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-06.txt",
+      "items": [
+        {
+          "id": "earthfire-wisp",
+          "name": "地火游煞"
+        },
+        {
+          "id": "earthfire-core",
+          "name": "聚火煞灵"
+        },
+        {
+          "id": "fivefold-curse",
+          "name": "五重炉禁"
+        },
+        {
+          "id": "softbone-spirit-moth",
+          "name": "柔翅灵蛾"
+        }
+      ]
+    },
+    {
+      "id": "enemies-07",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/shrine-gate-warden-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-07.txt",
+      "items": [
+        {
+          "id": "earthshaking-feral-beast",
+          "name": "撼地凶猊"
+        },
+        {
+          "id": "manor-spirit-vessel",
+          "name": "涵岳枢灵"
+        }
+      ]
+    },
+    {
+      "id": "materials",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/materials.txt",
+      "items": [
+        {
+          "id": "flowing-essence-gel",
+          "name": "流灵凝胶"
+        },
+        {
+          "id": "frost-veined-hide",
+          "name": "寒纹灵皮"
+        },
+        {
+          "id": "feral-heart-meat",
+          "name": "凶兽心肉"
+        },
+        {
+          "id": "renewal-silk",
+          "name": "回春灵绢"
+        }
+      ]
+    },
+    {
+      "id": "marrows",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/jade-marrow-flare-wangchuan-v1.png",
+        "public/assets/art/icons/crimson-marrow-flare-hanyue-courts-v1.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/marrows.txt",
+      "items": [
+        {
+          "id": "verdant-marrow",
+          "name": "碧灵髓"
+        },
+        {
+          "id": "golden-marrow",
+          "name": "金灵髓"
+        }
+      ]
+    },
+    {
+      "id": "seal-knot-pill",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/spirit-jerky-flare-v5.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/seal-knot-pill.txt",
+      "items": [
+        {
+          "id": "manor-command-seal",
+          "name": "巡枢残印"
+        },
+        {
+          "id": "voidstep-knot",
+          "name": "踏虚结",
+          "backgroundRemoval": "white-background-open"
+        },
+        {
+          "id": "essence-broth",
+          "name": "凝元丹"
+        }
+      ]
+    },
+    {
+      "id": "renewal-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/renewal-outfit.txt",
+      "items": [
+        {
+          "id": "renewal-headwrap",
+          "name": "回春巾"
+        },
+        {
+          "id": "renewal-jacket",
+          "name": "回春法衣"
+        },
+        {
+          "id": "renewal-leggings",
+          "name": "回春长裤"
+        },
+        {
+          "id": "renewal-boots",
+          "name": "回春履"
+        }
+      ]
+    },
+    {
+      "id": "azure-renewal-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/azure-renewal-outfit.txt",
+      "items": [
+        {
+          "id": "renewal-lined-azure-head-shell",
+          "name": "青纹回春巾",
+          "cellBounds": [
+            0,
+            0,
+            768,
+            696
+          ]
+        },
+        {
+          "id": "renewal-lined-azure-body-shell",
+          "name": "青纹回春法衣",
+          "cellBounds": [
+            768,
+            0,
+            768,
+            955
+          ]
+        },
+        {
+          "id": "renewal-lined-azure-leg-shell",
+          "name": "青纹回春长裤",
+          "cellBounds": [
+            0,
+            696,
+            768,
+            840
+          ]
+        },
+        {
+          "id": "renewal-lined-azure-foot-shell",
+          "name": "青纹回春履",
+          "cellBounds": [
+            768,
+            955,
+            768,
+            581
+          ]
+        }
+      ]
+    },
+    {
+      "id": "baleful-renewal-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/baleful-renewal-outfit.txt",
+      "items": [
+        {
+          "id": "renewal-lined-baleful-head-shell",
+          "name": "玄煞回春巾"
+        },
+        {
+          "id": "renewal-lined-baleful-body-shell",
+          "name": "玄煞回春法衣"
+        },
+        {
+          "id": "renewal-lined-baleful-leg-shell",
+          "name": "玄煞回春长裤"
+        },
+        {
+          "id": "renewal-lined-baleful-foot-shell",
+          "name": "玄煞回春履"
+        }
+      ]
+    }
+  ]
+}

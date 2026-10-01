@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: a widening river-valley junction where mountain footpaths gradually meet a road used by carts.
+Scene/backdrop: several modest side tracks converge across a broad valley shoulder above a river. Dark bushes and large boulders hide the way toward the next rocky pass. A small burned tree root near the closest track and an abandoned fire patch suggest past travelers and local hazards.
+Composition/framing: a broad overlook of gently descending terrain, with the river as one clean continuous shape and converging road lines as the secondary focus. Give sky, slopes, water and shadowed foreground distinct large masses. Keep the junction visible without diagrams or excessive tiny cart-rut marks.
+Style/medium: luminous painterly environment, simplified connected brush shapes, natural forms with softly unfamiliar distance. This should feel wider and more inhabited by travel than the enclosed birch passage, but it is not a town.
+Lighting/mood: soft late-day river light and cool blue-green distance, a few warm surfaces on the near tracks; open and quiet, with uncertainty behind the boulders.
+Constraints: large believable terrain, ordinary roads, limited environmental evidence. No visible enemy made from the burned root, no city panorama, bridges, characters, text, frame, UI or watermark.
+Avoid: a checklist of small props, photographic landscape detail, mosaic-like brush noise, magical floating rivers, ornamental sparkles or bokeh.

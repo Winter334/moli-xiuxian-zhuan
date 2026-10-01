@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: Hanyue mountain gate at the summit of broad stone stairs. Two rows of grounded stone columns hold a substantial double-eaved Chinese gate; white walls and roofs step up the mountain behind. Two tall stone guardians stand on the stair summit, small relative to the architecture. Old spring troughs turn behind the columns and a faint local array light crosses the threshold, revealing long quiet colonnade shadows inside.
+Style/medium: exquisite luminous Chinese fantasy architecture painting, pale sunlit walls and measured cool pillar shadows, gently dreamlike depth. Solid believable mountain construction with restrained residual magic.
+Composition/framing: slightly off-center approach from lower stair edge, looking through layered pillars into the shaded corridor. A few clear architectural masses dominate, no ornate rubble clutter.
+Text (verbatim): "涵岳" carved exactly once on the central gate plaque, restrained and integrated, no other text.
+Constraints: not a village temple, floating palace or world-sized monument; no foreground character portrait, enormous glowing seals, modern objects, UI or watermark.
+Progression: serene, cleaner and more transcendent than Wangchuan harbor: coherent pearl-white stone planes, lucid dreamlike air, far-reaching quiet corridor shadows and only a few local supernatural light accents. The old institution is not a grim debris-filled ruin. Grounded architectural grandeur signals an emerging immortal domain, not a final celestial wonder.

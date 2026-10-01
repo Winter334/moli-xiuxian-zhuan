@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four complete painted enemy cutouts, strict 2-column by 2-row atlas.
+Input images: Image 1 references refined luminous painting and finish only; do not copy its animal anatomy for people.
+Top left: adult male ambushing saber cultivator, layered charcoal and muted teal classical robe, practical cloth trousers and boots, holding one rejoined spirit saber with subtle broken vein lines cohering along its blade. A few broken blade fragments at his belt and one stolen material pouch. Body, face and saber attack point LEFT, complete standing body, not a zombie or ancient academy official.
+Top right: adult hostile talisman cultivator in plum-grey classical robes, cold-patterned small skin talisman patches at sleeve and belt, a few severed pack cords. One hand projects a contained slender colored talisman gleam LEFT. Complete person facing LEFT, serious human anatomy, not a floating ghost.
+Bottom left: adult life-borrowing robber cultivator, lean body, layered dull green robe and stolen belt satchels; one sand-drawn talisman shines softly under an open crossed collar as the tense torso swells with vitality. Complete crouched human body and intent face oriented LEFT. No victim or gore.
+Bottom right: red-spined feral beast, broad muscular dark warm-grey quadruped with a low predatory head, thick skin and clearly raised crimson dorsal ridges. Twisting shoulders and strong tail suggest a back-swing after its leftward bite. Full body facing LEFT.
+Style/medium: exquisite coherent softly layered Chinese fantasy painting, finished anatomy and luminous restrained material shading.
+Constraints: centered complete silhouettes with generous pure-white margins in each cell and broad empty cross gutter. No terrain, ground shadow, text, labels, UI, modern garments or watermark. Weapons and tails must not cross cell boundaries.

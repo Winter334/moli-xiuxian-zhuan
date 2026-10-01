@@ -1,0 +1,24 @@
+{
+  "version": "stage-1-crafting-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-crafting-candidate.1-dual.1-slots.1",
+  "equipmentAcquisition": "crafting-only",
+  "settings": {
+    "starterEquipmentId": null
+  },
+  "items": [
+    { "id": "timber", "name": "硬木料", "kind": "material", "unlock": { "level": 0 }, "buyPrice": "2", "sellPrice": "1" }
+  ],
+  "recipes": [
+    { "id": "forge-wood-sword", "training": { "difficulty": 1, "xp": "8" }, "name": "青木剑制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "timber", "quantity": "4" }, { "itemId": "hide", "quantity": "1" }], "stones": "4", "outputKind": "equipment", "outputId": "wood-sword", "outputQuantity": "1" },
+    { "id": "forge-iron-sword", "training": { "difficulty": 3, "xp": "20" }, "name": "寒铁剑制法", "unlock": { "regionId": "quarry", "kills": "1" }, "costs": [{ "itemId": "ore", "quantity": "6" }, { "itemId": "spirit-bamboo", "quantity": "4" }, { "itemId": "hide", "quantity": "2" }], "stones": "40", "outputKind": "equipment", "outputId": "iron-sword", "outputQuantity": "1" },
+    { "id": "forge-stone-gauntlet", "training": { "difficulty": 3, "xp": "20" }, "name": "玄岩拳套制法", "unlock": { "regionId": "quarry", "kills": "1" }, "costs": [{ "itemId": "ore", "quantity": "6" }, { "itemId": "armor", "quantity": "4" }, { "itemId": "hide", "quantity": "2" }], "stones": "40", "outputKind": "equipment", "outputId": "stone-gauntlet", "outputQuantity": "1" },
+    { "id": "forge-jade-staff", "training": { "difficulty": 7, "xp": "50" }, "name": "灵玉杖制法", "unlock": { "regionId": "ruins", "kills": "1" }, "costs": [{ "itemId": "timber", "quantity": "2" }, { "itemId": "warm-jade", "quantity": "4" }, { "itemId": "essence", "quantity": "2" }], "stones": "80", "outputKind": "equipment", "outputId": "jade-staff", "outputQuantity": "1" }
+  ],
+  "regionClears": {
+    "foothill": { "waves": 20, "reward": { "stones": "20", "cultivation": "10" } },
+    "bamboo": { "waves": 20, "reward": { "stones": "40", "cultivation": "20" } },
+    "quarry": { "waves": 20, "reward": { "stones": "80", "cultivation": "40" } },
+    "pool": { "waves": 20, "reward": { "stones": "80", "cultivation": "40" } },
+    "ruins": { "waves": 20, "reward": { "stones": "120", "cultivation": "60" } }
+  }
+}

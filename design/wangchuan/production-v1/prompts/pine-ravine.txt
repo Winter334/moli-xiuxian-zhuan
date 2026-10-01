@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: Qinglan spirit valley: a long green valley enclosed by opposing pale blue-white cliffs. A clear spring bends around dense grouped woodland. Exposed rock at one near cliff root carries a few embedded teal mineral seams, while an old timber mining walkway disappears into a quiet pocket of blue mist. The bright valley is the subject, not mining clutter.
+Style/medium: delicate but complete Chinese fantasy painting, luminous cool daylight with green reflections, softly layered large cliffs and forest canopies, selective crisp foreground accents.
+Composition/framing: low view across the spring toward converging opposing rock faces. Distinct broad water, woodland and cliff masses carry depth; leave the far valley calm and legible.
+Constraints: different composition from terraced springs; no wall-to-wall pipeworks, busy baskets everywhere, huge magic veins, modern objects, readable text, UI, watermark or fog obscuring the actual place.
+Progression: clean luminous mineral faces, still translucent blue-green water and a gently implausibly quiet pocket of cyan light beneath woodland create a spirit-domain feeling. Simplify disorderly mining traces; use dreamlike clarity and spatial depth rather than dirty mundane wilderness or uniform glow.

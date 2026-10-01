@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four hostile adult human river-route cultivators in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style reference ONLY for clear brush masses, volume and light. Do not copy the wolf's subject, pose or orientation.
+Subjects:
+Top left: poison robber in a plain travel robe with loose sleeves, one hand casting a small attached puff of muted poison powder toward screen-left, the other kept close. Practical concealed powders, no wizard staff or enormous cloud.
+Top right: black-scarf raider with a black cloth covering the lower face, improvised scrap-iron bracers and a stolen coin pouch at the waist. Twisting sudden short-blade attack toward screen-left. All fabric and blade inside the cell.
+Bottom left: boat-landing saber robber, weathered adult in practical river travel clothes, a chipped dark-steel saber raised toward screen-left. Distinct broad saber blade and stable forward stance; no boat, cargo pile or shore.
+Bottom right: body-tempering robber with solid muscular forearms and old blade scars, worn clothes and a few small money pouches sewn beneath the hem. Shoulder-led forceful charge toward screen-left, hands ready to strike. Human anatomy, no giant superhero physique or magical armor.
+Direction: ALL four torsos, faces, gaze and primary attacks face toward the LEFT edge of the image. Use left-facing three-quarter or profile stances, never front-facing or right-facing. Override reference orientation.
+Style/medium: bright painted characters with grouped cloth planes and simplified skin/metal shadows, not photorealism. Plain low-rank hostile travelers with different body and weapon silhouettes, not royal warriors.
+Composition/framing: one complete subject centered in each equal square cell, generous white padding and a clean white cross gutter. Full heads, hands, feet, sleeves, blades and attached powder inside the cell.
+Constraints: pure white background for local removal, no landscape, floor, ground shadow, frame, ambient aura, labels, text, logo, watermark or UI.

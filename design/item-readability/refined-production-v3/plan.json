@@ -1,0 +1,95 @@
+{
+  "region": "item-readability",
+  "version": "refined-production-v3",
+  "variant": "flare",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Only the ten readable-v1 items left after the six approved replacements: two swords, four metal materials, two quench liquids and two dried foods. Preserve the approved six, all other images, gameplay and layout.",
+  "designIntent": "Continue the refined classical cultivation painting approved in refined-study-v2, while keeping material tier and processing stage readable through broad structure rather than hue or fine surface details alone.",
+  "jobs": [
+    {
+      "id": "weapons-and-metals",
+      "promptFile": "design/item-readability/refined-production-v3/prompts/weapons-and-metals.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-refined-v3",
+      "size": "1024x1536",
+      "columns": 2,
+      "rows": 3,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "referenceRoles": [
+        "User-approved illustration style and iron/dark-steel family anchor. Use the existing rough iron sword, finished dark-steel sword and ingots to guide their new neighbours; do not regenerate the six pictured objects."
+      ],
+      "items": [
+        {
+          "id": "iron-birch-sword",
+          "name": "铁剑",
+          "signature": "Long slender silver diamond-ridge blade and visibly arched classical guard; more regular and deliberate than the approved rough iron sword, not as broad or dark as dark-steel swords."
+        },
+        {
+          "id": "wood-hilt-dark-steel-sword",
+          "name": "粗炼乌钢剑",
+          "signature": "Broad heavy dark leaf-shaped blade and compact plain block guard; unlike the slender iron family or the finished dark-steel sword with a shaped twin-wing guard."
+        },
+        {
+          "id": "scrap-iron",
+          "name": "碎铁料",
+          "signature": "Several bent narrow tool strips and an open hook; unmistakably scrap rather than a solid casting or refined slab."
+        },
+        {
+          "id": "dark-steel-scrap",
+          "name": "乌钢碎料",
+          "signature": "Broad dark curved armor fragments in a compact fanned stack; thick plate silhouette, not a recolor of narrow iron strips."
+        },
+        {
+          "id": "iron-blade",
+          "name": "百炼铁料",
+          "signature": "Thin flat bright rectangular forged slab with a broad uninterrupted face and narrow edge; no tip, hilt or thick ingot profile."
+        },
+        {
+          "id": "dark-steel-blade",
+          "name": "乌钢精料",
+          "signature": "Short thick hexagonal blue-black forged billet with a large faceted end face; clearly different from a thin slab or trapezoidal ingot."
+        }
+      ]
+    },
+    {
+      "id": "quench-and-food",
+      "promptFile": "design/item-readability/refined-production-v3/prompts/quench-and-food.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-refined-v3",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "referenceRoles": [
+        "User-approved refined painting, soft layered volume, coherent light and classical cultivation design. Apply to liquids and dried foods without copying the pictured swords, clothing or metal objects."
+      ],
+      "items": [
+        {
+          "id": "old-wood-hilt",
+          "name": "粗制淬液",
+          "signature": "Squat wide open clay crock with cloudy opaque liquid and simple lip; ordinary material, carefully painted."
+        },
+        {
+          "id": "iron-birch-hilt",
+          "name": "桦脂淬液",
+          "signature": "Tall slender-neck classical glass vessel with clear amber resin liquid, cloth stopper and simple cord tie; not a modern laboratory flask."
+        },
+        {
+          "id": "dried-meat",
+          "name": "肉干",
+          "signature": "Several long narrow uneven dried strips gathered with a simple hemp tie; preserved food, not raw meat."
+        },
+        {
+          "id": "rich-jerky",
+          "name": "精肉脯",
+          "signature": "Broad dense rectangular dried slices arranged as a flat stepped fan, clean edges and softly layered deep red-brown meat; not another bundle of thin strips."
+        }
+      ]
+    }
+  ]
+}

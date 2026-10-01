@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four ordinary adult human robbers or low-rank hostile cultivators in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style reference ONLY. Borrow the accepted wolf's bright readable volumes, grouped brushwork and coherent shadows, not its anatomy, pose or facing direction.
+Subjects:
+Top left: a river-flat extortionist in worn practical layered clothing, braced legs and a coiled iron chain gripped in both hands. He leans toward screen-left, chain curving toward the left without leaving the cell. Clearly human, a predatory toll robber rather than an official.
+Top right: a road robber with mismatched salvaged iron and black-steel plates stitched onto a worn coat, asymmetric improvised armor. He advances toward screen-left with a short ordinary blade ready. Human face and limbs, NOT an armored construct or mechanical animal.
+Bottom left: a swift-blade robber, lean and lightly dressed with a thin black-steel short blade. Compact agile slashing pose aimed left, no giant sword, duplicate limbs or full-body motion trail. Human, NOT a puppet.
+Bottom right: a stolen-cargo guard, broader adult robber in work-worn clothing, gripping a chopping saber and making a preemptive strike toward screen-left. No sacks, shed or ground patch in the cutout.
+Direction: ALL four bodies, heads, gaze and main attacks point toward the LEFT edge of the image, facing the player off-screen left. Use left-facing three-quarter or profile poses, never front-facing or right-facing. Do not copy the reference orientation.
+Style/medium: bright non-photographic painted characters, clear grouped cloth planes, readable metal and restrained low-rank equipment. Different silhouettes, not four recolors.
+Composition/framing: one complete subject centered in each equal square cell, head, feet, hands, chain and blade fully inside generous white margins. Strict clean white cross gutter; left-facing does not mean positioned at the left boundary.
+Constraints: pure white background for local removal. No ground, shadow, frame, decorative aura, text, labels, watermark or UI. No modern gear, elaborate royal armor or cute caricatures.

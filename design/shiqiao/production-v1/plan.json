@@ -1,0 +1,401 @@
+{
+  "region": "shiqiao",
+  "version": "production-v1",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Stonebridge river valley only: 8 scenes, 19 new enemies and 15 new item icons; no Wangchuan expansion, player art, techniques, content changes, UI redesign or retired-image cleanup",
+  "enemyDirection": "All newly generated enemies face screen-left while centered in their cells. Existing enemies are reused without mirroring, regeneration or UI flipping.",
+  "reuse": {
+    "enemies": [
+      "charred-wood-puppet"
+    ],
+    "icons": [
+      "copper-coin",
+      "small-coin-string",
+      "hundred-coin-string",
+      "silver-ingot",
+      "cloudy-jade",
+      "cloudy-marrow",
+      "clear-marrow",
+      "condensed-marrow",
+      "charcoal",
+      "scrap-iron",
+      "crude-iron-ingot",
+      "iron-blade",
+      "old-wood-hilt",
+      "iron-birch-wood",
+      "iron-birch-hilt",
+      "fresh-meat",
+      "dried-meat",
+      "whole-hide",
+      "stitched-hide",
+      "wood-hilt-sword",
+      "iron-birch-sword",
+      "hide-headwrap",
+      "hide-jacket",
+      "hide-leggings",
+      "hide-boots"
+    ]
+  },
+  "jobs": [
+    {
+      "id": "hillside-market",
+      "name": "石桥镇",
+      "promptFile": "design/shiqiao/production-v1/prompts/hillside-market.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "market-backstreets",
+      "name": "镇外芦滩",
+      "promptFile": "design/shiqiao/production-v1/prompts/market-backstreets.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "kiln-alley",
+      "name": "淤湾苇荡",
+      "promptFile": "design/shiqiao/production-v1/prompts/kiln-alley.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "scripture-cave",
+      "name": "废埠匪窝",
+      "promptFile": "design/shiqiao/production-v1/prompts/scripture-cave.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "market-gardens",
+      "name": "回水深滩",
+      "promptFile": "design/shiqiao/production-v1/prompts/market-gardens.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "market-outer-road",
+      "name": "汇川长堤",
+      "promptFile": "design/shiqiao/production-v1/prompts/market-outer-road.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "old-ferry-bank",
+      "name": "沧流故渡",
+      "promptFile": "design/shiqiao/production-v1/prompts/old-ferry-bank.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "stone-gate-pass",
+      "name": "悬江石梁",
+      "promptFile": "design/shiqiao/production-v1/prompts/stone-gate-pass.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "enemies-01",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-01.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "extortionist",
+          "name": "拦滩劫修"
+        },
+        {
+          "id": "light-armored-construct",
+          "name": "披铁路匪"
+        },
+        {
+          "id": "swift-blade-puppet",
+          "name": "疾刃劫修"
+        },
+        {
+          "id": "cave-guardian",
+          "name": "守赃劫修"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-02.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "red-backed-badger",
+          "name": "赤背妖獾"
+        },
+        {
+          "id": "vinebound-beast",
+          "name": "青腹泽蟒"
+        },
+        {
+          "id": "miasma-toad",
+          "name": "黄瘴妖蟾"
+        },
+        {
+          "id": "stone-ward-spirit",
+          "name": "闭壳玉蚌"
+        }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-03.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "brocade-marten",
+          "name": "锦皮妖貂"
+        },
+        {
+          "id": "rending-shanxiao",
+          "name": "裂爪泽魈"
+        },
+        {
+          "id": "ravine-ambusher",
+          "name": "伏涧妖猿"
+        },
+        {
+          "id": "inverted-mark-fox",
+          "name": "逆纹妖狐"
+        }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-04.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "venom-cultivator",
+          "name": "施毒劫修"
+        },
+        {
+          "id": "black-scarf-raider",
+          "name": "黑巾劫修"
+        },
+        {
+          "id": "wandering-saber-cultivator",
+          "name": "截舟刀修"
+        },
+        {
+          "id": "body-tempering-rogue",
+          "name": "横练劫修"
+        }
+      ]
+    },
+    {
+      "id": "enemies-05",
+      "technicalNote": "Two near-cell-edge warnings retained. Thresholds 230, 240 and 245 identify separate complete main components; separating column x=1501 has minimum RGB 248. No dark subject pixels cross the cut. User reviews silhouettes and alpha extraction.",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-05.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "2304x768",
+      "columns": 3,
+      "rows": 1,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "layered-talisman-cultivator",
+          "name": "叠符劫修"
+        },
+        {
+          "id": "bark-armored-shanxiao",
+          "name": "披木山魈"
+        },
+        {
+          "id": "gate-stone-warden",
+          "name": "汲脉石魁"
+        }
+      ]
+    },
+    {
+      "id": "materials-01",
+      "promptFile": "design/shiqiao/production-v1/prompts/materials-01.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/whole-hide-flare-huiji-v1.png",
+        "public/assets/art/icons/fresh-meat-flare-v3.png"
+      ],
+      "items": [
+        {
+          "id": "dark-steel-scrap",
+          "name": "乌钢碎料"
+        },
+        {
+          "id": "rich-beast-meat",
+          "name": "妖兽精肉"
+        },
+        {
+          "id": "tough-beast-hide",
+          "name": "韧妖皮"
+        },
+        {
+          "id": "lustrous-hide",
+          "name": "锦纹兽皮"
+        }
+      ]
+    },
+    {
+      "id": "materials-02",
+      "promptFile": "design/shiqiao/production-v1/prompts/materials-02.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/condensed-marrow-flare-huiji-v1.png"
+      ],
+      "items": [
+        {
+          "id": "profound-marrow",
+          "name": "玄灵髓"
+        },
+        {
+          "id": "earth-vein-dew",
+          "name": "地脉浊露"
+        },
+        {
+          "id": "dark-steel-ingot",
+          "name": "乌钢锭"
+        },
+        {
+          "id": "dark-steel-blade",
+          "name": "乌钢精料"
+        }
+      ]
+    },
+    {
+      "id": "provisions-and-blades",
+      "promptFile": "design/shiqiao/production-v1/prompts/provisions-and-blades.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "rich-jerky",
+          "name": "精肉脯"
+        },
+        {
+          "id": "dark-steel-sword",
+          "name": "乌钢剑"
+        },
+        {
+          "id": "wood-hilt-dark-steel-sword",
+          "name": "粗炼乌钢剑"
+        }
+      ]
+    },
+    {
+      "id": "beasthide-armor",
+      "promptFile": "design/shiqiao/production-v1/prompts/beasthide-armor.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "beasthide-headwrap",
+          "name": "妖皮护额"
+        },
+        {
+          "id": "beasthide-jacket",
+          "name": "妖皮内甲"
+        },
+        {
+          "id": "beasthide-leggings",
+          "name": "妖皮长裤"
+        },
+        {
+          "id": "beasthide-boots",
+          "name": "妖皮靴"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: the broad stairs returning to Hanyue's central array hall. Layered white academy walls and massive stone supports frame a long flight rising toward a heavy closed door. Quiet dark tiled eaves emerge above in pale mountain air. A few water and earthfire array seams converge along the foot of the stairs; emptied side channels remain neatly cut into the stone.
+Composition/framing: diagonal ascending view from a shaded lower landing, powerful stair and wall masses, lucid daylight above and a small contained warm seam below. The destination door has architectural weight without occupying the entire image.
+Style/medium: exquisite luminous Chinese cultivation fantasy painting, ordered serene scale and slightly extended dreamlike space.
+Constraints: actual mountain academy, no sky-reaching endless staircase, giant floating pagoda, dense glowing rune carpets, featured sentinels, readable signs, text, UI or watermark. No reference image.

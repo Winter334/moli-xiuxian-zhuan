@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: refined painted sword icon atlas for a Chinese cultivation RPG.
+Primary request: exactly two complete spiritwood-quenched Chinese swords in a strict 2-column by 1-row grid.
+Input images: Image 1 is the ordinary iron sword family and refined painting reference; Image 2 is the dark-steel sword family and refined painting reference. Extend the correct material family, do not redraw either exact existing weapon.
+Left: spirit-treated iron sword, slender long pale silver-grey straight blade with a defined broad central diamond ridge, airy upturned forked guard and a long quiet cloth-wrapped grip. Pale-green treatment sits within the broad ridge; larger forked guard and longer proportions clearly distinguish it from the existing short compact ordinary iron design. Still understated low-rank cultivation equipment.
+Right: spirit-treated dark-steel sword, thick dark blue-grey broad shouldered blade tapering from a gently scalloped shoulder, split cloud-head double guard with an open center and sturdy fitted grip collar. Broad pale bevels and restrained green internal veins, not a recolored silver blade. Preserve the wide heavy dark-steel family but clearly change shoulder profile and guard structure from the existing solid double-wing guard.
+Style/medium: match the approved exquisite softly layered painted volume, gentle cool-warm light and precise complete edges. Modest metal, cloth and fittings rendered with care, no gold luxury or photorealistic scratch noise.
+Composition/framing: equal complete diagonal swords, one centered per cell with generous pure white margins and broad clean central gutter.
+Constraints: no wooden blades, handles mistaken for quenching liquid, giant aura, gemstone, scabbard, ground shadow, text, label, frame, UI or watermark.

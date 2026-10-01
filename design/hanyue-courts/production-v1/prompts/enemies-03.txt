@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas.
+Primary request: four distinct enemies in a strict 2-column by 2-row grid.
+Input images: Image 1 supplies refined beast painting only; Image 2 supplies the general classical human wardrobe and soft painting only. Do not copy species, clothing color or facing.
+Top left: large stone-eyed cave toad, round squat damp grey-green body, layered stone-like rings around its clearly left-facing eye, pale mineral highlights and strong crouched forelegs preparing to spring LEFT. No added poison sac or crown.
+Top right: sand-burrowing thorn beast, low broad cave reptile-like animal with a wedge head and a small number of large irregular stone-colored back spines. Short powerful feet, leftward head-first charge, stony sand-colored hide. Complete tail visible.
+Bottom left: fungus-armored wooden automaton, soaked swollen wooden frame under sparse blue-green iron plates, several large coherent pale green fungal caps clinging to shoulders and torso. Raises its leading arm LEFT, releasing only a small local cluster of painted spore flecks. Not a human zombie, corpse or mushroom person.
+Bottom right: material-plundering hostile cultivator, a slightly masculine adult in restrained classical dark robes and practical tied sleeves, waist pouches holding compact sand packets and a broken array core. Leaning into a LEFT palm strike with a small deep red spiritual compression near the palm, face turned LEFT. Not a friendly craftsman or extravagant noble.
+Style/medium: refined softly layered luminous Chinese fantasy painting, finished supple cloth, readable large anatomy and materials.
+Constraints: full centered bodies, heads and main strikes LEFT, generous white margins and broad empty cross gutter. No terrain, ground shadow, gore, readable words, UI or watermark. No huge decorative aura.

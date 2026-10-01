@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted sword icon atlas for a Chinese cultivation RPG.
+Primary request: exactly three complete azure-iron Chinese straight swords, strict 3-column by 1-row grid. All have cool pale steel and teal veins penetrating large blade planes, not painted stripes. Distinguish processing through both LARGE BLADE/GUARD STRUCTURE and worked material planes.
+Input images: Images 1 and 2 are newly approved sword painting and classical fitting references. Preserve exquisite soft volume, restrained craftsmanship and clear usable blade edges; do not reproduce their dark-steel or ordinary-iron designs.
+Left: crude azure sword, a compact short broad straight blade with square shoulders and a plain small straight bar guard, simple wrapped grip. Broad softly irregular teal-grey forging planes, full usable blade, not broken rusted scrap.
+Middle: refined azure sword, longer balanced straight blade with a clear central ridgeline and elegantly curved cloud-head double guard. Even continuous pale bevels, clean shoulder-to-grip transition and restrained fitted collar. Larger guard and more slender proportions than the crude sword.
+Right: spirit-treated azure sword, a long tapered straight blade with a broad channel-like central plane narrowing toward the point and a distinctive open crescent double guard, wrapped long grip and quiet stepped pommel. Shallow translucent pale-green veins integrated into blade structure. Refined, not extravagant; visibly different shoulder and guard silhouette from the ordinary refined sword, not a green recolor.
+Style/medium: exquisite softly layered luminous painting, coherent metal volume, no hard flat vector blocks, dense photorealistic scratches or smeared incomplete edges.
+Composition: each sword diagonal from lower left to upper right, complete tip, guard and pommel centered inside its cell. Generous pure white margins and wide empty vertical gutters.
+Constraints: no jewels, gold overload, decorative aura, stands, scabbards, cast shadows, text, labels, frame, UI or watermark.

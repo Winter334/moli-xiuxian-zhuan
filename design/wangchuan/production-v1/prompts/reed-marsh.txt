@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: broad terraced spring highlands above Wangchuan, NOT a reed marsh. Several large pale stone shelves step into the distance; white waterfalls divide clear emerald woodland into long calm bands. Sunlit upper rock contrasts with a soft low pool of lingering spring mist. A few luminous green leaves beside the nearest spring suggest spiritual vegetation, without filling the entire image with effects.
+Style/medium: exquisite luminous fantasy painting with Chinese landscape sensibility, translucent water and soft reflected light, clear grand landforms. Painterly refinement without excessive microtexture.
+Composition/framing: elevated oblique view; staggered shelves and one broad dominant waterfall organize the scene. Near water, middle green terrace and remote mountain sky remain separate coherent masses.
+Constraints: an independently composed natural place, no generic village palette or scattered colored specks. No buildings as the main subject, floating mountains, giant runes, modern objects, text, UI or watermark.
+Progression: visibly begin entering a spirit-rich landscape. Exceptionally clear water and clean vast shelves, soft pearly mist held only low among the terraces, quiet luminous plants and subtly extended dreamlike distance. More transcendent than ordinary hiking scenery, never a saturated magical theme park.

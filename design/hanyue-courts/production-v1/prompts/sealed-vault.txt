@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Hanyue's old material vault, several tall mountainside storehouses linked by deep Chinese galleries. Through a massive open stone door, sparse racks hold sealed boxes for spiritual timber, black metal blocks and small array cores. Warm old furnace embers float only just above a few low nurturing fire seats, motionless despite the open passage. Cool jade-like light rests in one box.
+Style/medium: refined softly layered Chinese dreamlike painting, clear white stone and dark timber geometry, limited warm amber embers within cool spacious shadows. Age shown by emptied racks and worn edges, not dirty ruin.
+Composition/framing: deep interior view from a doorway toward linked stepped vault halls. Strong tall door frame, sparse coherent racks and long calm floor planes, restrained visible outer daylight.
+Constraints: spiritual materials warehouse, not a treasure chamber full of gold or a giant furnace factory. No dominant enemy, enormous floating fire, readable labels, UI or watermark. No reference image.

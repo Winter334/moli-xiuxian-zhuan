@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: a narrow natural stone spine crossing a riverside gorge high above a tributary flowing into the Cangliu River.
+Scene/backdrop: immense exposed rock walls and one unbuilt natural stone bridge over the side gorge. Moist rock planes catch subdued mineral light. A compact rugged stone spirit occupies the narrow part as a subordinate scale figure, while the distant high-bank port terraces hint at Wangchuan beyond.
+Composition/framing: bold oblique view across and slightly below the stone spine, the bridge makes one clear diagonal over a large open drop. Tributary water far below leads outward to a pale wide river. Use a few monumental connected rock planes, not a forest of tiny spires.
+Style/medium: grand hand-painted cultivation landscape, simplified rock masses, flowing atmospheric distance and subtle dreamlike light. The geography itself carries grandeur.
+Lighting/mood: pale high daylight, cool violet-grey rock shadows, mineral green damp edges and soft silver distant river.
+Constraints: independently composed, no reference image. The bridge is natural, not an official gate, city checkpoint, formal trial or built arch bridge. The stone spirit is natural, not a uniformed guard. No carved gate, banners, massive rune circle, text, labels, watermark or UI. No noisy flecks over every rock face.

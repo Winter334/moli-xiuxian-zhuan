@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: the long embankment where Stonebridge's river flows into the much wider Cangliu River.
+Scene/backdrop: an expansive confluence with far mountain ridges spread across the opposite bank. A few cargo boats with subtle water-parting patterns move on the main channel; a distant orderly row of small navigation lamps indicates an active maintained waterway. The footpath runs through woods and reed-lined side channels below the embankment.
+Composition/framing: elevated near-bank panorama, one strong embankment diagonal leads toward the confluence and the wide river occupies the open majority of the view. Mountains form long connected bands, not many competing peaks. Boats are sparse scale cues.
+Style/medium: spacious painted landscape, flowing broad color and value shapes, soft distance slightly longer than expected. Convey a larger cultivation world through transport and landscape rather than decorative spectacle.
+Lighting/mood: fresh clear daylight, silver water, blue-green mountain bands, muted green bank and restrained pale amber navigation points.
+Constraints: independently composed without references. Main shipping is active; danger belongs to the peripheral path, not a destroyed civilization. No giant central spell, floating palace, modern ships, excessive sparkling lights, text, labels, logo, watermark or UI.

@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: a public cliffside cultivation training terrace overlooking the river valley. Two connected open stone courts: widely spaced wind-guiding stone posts in one court, a low pressure-array seat inset with a heavy stone seal in the other. A few small adult practitioners use flowing footwork among subtly visible crossing air currents and steady qi postures beside the seal. The practice is mystical but practical, not ordinary weightlifting.
+Style/medium: refined luminous Chinese fantasy painting; pale daylight, cool distant valley and quiet warm stone planes, controlled soft brushwork.
+Composition/framing: sheltered side view from the terrace edge across both courts; expansive empty paving and clean post shadows are the primary shapes. Human figures are small scale cues, not portraits or repeated detailed crowds.
+Constraints: no combat arena, tournament audience, obstacle-course signage, modern gym equipment, oversized hovering monuments, dense glowing diagram, text, UI or watermark. Keep pressure-array effects local and restrained.
+Progression: a clean serene cultivation space, sunlit stone planes and sparse long shadows against unusually limpid valley air. Qi-guided wind and calm array light make supernatural practice visible; the composition should feel dreamlike without ornate spectacle or mundane courtyard clutter.

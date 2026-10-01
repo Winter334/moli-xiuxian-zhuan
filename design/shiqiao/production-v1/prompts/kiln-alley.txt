@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: a silty bend in an abandoned riverbed, hidden within high reeds.
+Scene/backdrop: an old channel curving into a still backwater. Dense reed banks conceal deep puddles; a few broken mooring posts and one partly buried old cargo bundle suggest the vanished landing. Cloudy jade-bearing stones can be a quiet local detail in the mud, not glowing treasure markers.
+Composition/framing: slightly raised diagonal view, one smooth dark backwater curve occupying much of the foreground and reed banks forming continuous sweeping shapes around it. A small break in the reed wall hints at the path toward an abandoned cargo shed.
+Style/medium: atmospheric hand painting, rich simple silhouettes and connected light and shadow. The water bend feels still and subtly dreamlike; keep wet mud, plants and timber recognizable.
+Lighting/mood: diffuse afternoon light, olive reeds, smoky teal water, pale straw tops, restrained violet-grey mud shadows.
+Constraints: no reference image. No kiln, street, cave, temple, formal garden, tiny glittering objects across the image, labels, text, logo, watermark or UI. Detail only in a few focal clusters.

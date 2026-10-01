@@ -1,0 +1,269 @@
+{
+  "region": "huiji",
+  "version": "production-v1",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Gray Ridge mountain route only; no Stonebridge expansion, content changes, UI redesign or retired-image cleanup",
+  "reuse": {
+    "enemies": [
+      "black-backed-wolf"
+    ],
+    "icons": [
+      "copper-coin",
+      "small-coin-string",
+      "hundred-coin-string",
+      "silver-ingot",
+      "cloudy-jade",
+      "cloudy-marrow",
+      "clear-marrow",
+      "charcoal",
+      "hemp-thread",
+      "hide-scrap",
+      "scrap-iron",
+      "old-timber",
+      "fresh-meat",
+      "dried-meat",
+      "crude-iron-ingot",
+      "stitched-hide",
+      "iron-blade",
+      "old-wood-hilt",
+      "wood-hilt-sword",
+      "iron-birch-sword",
+      "hide-headwrap",
+      "hide-jacket",
+      "hide-leggings",
+      "hide-boots"
+    ]
+  },
+  "jobs": [
+    {
+      "id": "foothill-camp",
+      "name": "灰脊避风坪",
+      "promptFile": "design/huiji/production-v1/prompts/foothill-camp.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "mine-front",
+      "name": "灰脊外坡",
+      "promptFile": "design/huiji/production-v1/prompts/mine-front.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "mine-tunnels",
+      "name": "铁桦夹道",
+      "promptFile": "design/huiji/production-v1/prompts/mine-tunnels.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "mine-depths",
+      "name": "崩石险坡",
+      "promptFile": "design/huiji/production-v1/prompts/mine-depths.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "mountain-pass",
+      "name": "河谷岔道",
+      "promptFile": "design/huiji/production-v1/prompts/mountain-pass.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "serpent-ridge",
+      "name": "横岩隘口",
+      "promptFile": "design/huiji/production-v1/prompts/serpent-ridge.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v1",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "enemies-01",
+      "promptFile": "design/huiji/production-v1/prompts/enemies-01.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-huiji-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "masked-bladesman",
+          "name": "蒙面截道客"
+        },
+        {
+          "id": "mine-brigand",
+          "name": "横木路匪",
+          "cellBounds": [
+            788,
+            0,
+            748,
+            745
+          ]
+        },
+        {
+          "id": "twin-blade-raider",
+          "name": "双刀截道匪"
+        },
+        {
+          "id": "mine-sentry",
+          "name": "守卡悍匪",
+          "cellBounds": [
+            788,
+            736,
+            748,
+            800
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "promptFile": "design/huiji/production-v1/prompts/enemies-02.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-huiji-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "red-eyed-shanxiao",
+          "name": "赤眼山魈"
+        },
+        {
+          "id": "bone-gnawing-shanxiao",
+          "name": "噬骨山魈"
+        },
+        {
+          "id": "ambush-ape",
+          "name": "伏袭凶猿"
+        },
+        {
+          "id": "ward-eye",
+          "name": "抱玉石灵"
+        }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "promptFile": "design/huiji/production-v1/prompts/enemies-03.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-huiji-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "ember-cultivator",
+          "name": "纵火劫修"
+        },
+        {
+          "id": "armored-bandit-chief",
+          "name": "披甲匪首"
+        },
+        {
+          "id": "outlaw-swordsman",
+          "name": "亡命刀客"
+        },
+        {
+          "id": "cave-boar",
+          "name": "厚甲岩豕"
+        }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "promptFile": "design/huiji/production-v1/prompts/enemies-04.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-huiji-v1",
+      "size": "2304x768",
+      "columns": 3,
+      "rows": 1,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "green-backed-wolf",
+          "name": "青背妖狼"
+        },
+        {
+          "id": "charred-wood-puppet",
+          "name": "焦根木妖"
+        },
+        {
+          "id": "ridge-python",
+          "name": "岩脊巨豕"
+        }
+      ]
+    },
+    {
+      "id": "materials",
+      "promptFile": "design/huiji/production-v1/prompts/materials.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-huiji-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/clear-marrow-flare-v4.png"
+      ],
+      "items": [
+        {
+          "id": "iron-birch-wood",
+          "name": "铁桦木"
+        },
+        {
+          "id": "whole-hide",
+          "name": "完整兽皮"
+        },
+        {
+          "id": "condensed-marrow",
+          "name": "凝灵髓"
+        },
+        {
+          "id": "iron-birch-hilt",
+          "name": "桦脂淬液"
+        }
+      ]
+    }
+  ]
+}

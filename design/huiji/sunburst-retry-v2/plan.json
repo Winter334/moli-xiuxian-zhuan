@@ -1,0 +1,19 @@
+{
+  "region": "huiji",
+  "version": "sunburst-retry-v2",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "authorization": "User explicitly requested regeneration of the unresolved mine-front scene on 2026-10-01",
+  "jobs": [
+    {
+      "id": "mine-front",
+      "name": "灰脊外坡",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huiji-v2",
+      "size": "1792x784",
+      "promptFile": "design/huiji/production-v1/prompts/mine-front.txt",
+      "references": []
+    }
+  ]
+}

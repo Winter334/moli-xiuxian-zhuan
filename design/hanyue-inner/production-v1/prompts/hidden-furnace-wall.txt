@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: the side passage used to adjust Hanyue's sealed earthfire distribution. A substantial stone gallery curves behind the old furnace enclosure, a few square niches and empty stone mounting seats along the thick wall. Quiet amber-red furnace light flows through the nearer niches; at the far end an intact small door beneath a heavier firebreak wall leaks a thin white ribbon of spring vapor.
+Composition/framing: intimate curved passage viewed from its darker entrance, broad warm stone surfaces and cool pale far-door light, clear wall masses with few details. Warm shadows suggest an unseen watcher without drawing an enemy portrait.
+Style/medium: refined Chinese fantasy painting, softly finished stone, unusually still and dreamlike warmth.
+Constraints: not a furnace shop full of usable equipment, no giant mechanisms or new loot, no smoke obscuring the structure, text, UI or watermark. No reference image.

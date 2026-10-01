@@ -1,0 +1,264 @@
+{
+  "region": "huaixi",
+  "version": "production-v3",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "reuse": {
+    "scenes": [
+      "qingshi-village"
+    ],
+    "enemies": [
+      "black-backed-wolf",
+      "fire-thrower"
+    ],
+    "icons": [
+      "copper-coin",
+      "cloudy-jade",
+      "cloudy-marrow",
+      "clear-marrow",
+      "old-wood-hilt",
+      "dried-meat",
+      "iron-birch-sword",
+      "hide-jacket"
+    ]
+  },
+  "jobs": [
+    {
+      "id": "village-outskirts",
+      "promptFile": "design/huaixi/production-v3/prompts/village-outskirts.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v3",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "abandoned-road",
+      "promptFile": "design/huaixi/production-v3/prompts/abandoned-road.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v3",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "stony-trail",
+      "promptFile": "design/huaixi/production-v3/prompts/stony-trail.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v3",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "hermit-stone-chamber",
+      "promptFile": "design/huaixi/production-v3/prompts/hermit-stone-chamber.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v3",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "enemies-01",
+      "promptFile": "design/huaixi/production-v3/prompts/enemies-01.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "mountain-rat",
+          "name": "灰毛山鼠"
+        },
+        {
+          "id": "wild-badger",
+          "name": "掘土獾",
+          "cellBounds": [
+            734,
+            0,
+            802,
+            752
+          ]
+        },
+        {
+          "id": "stray-dog",
+          "name": "灰背野犬"
+        },
+        {
+          "id": "roadside-thief",
+          "name": "扑枝山狸"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "promptFile": "design/huaixi/production-v3/prompts/enemies-02.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "club-raider",
+          "name": "折枝猿"
+        },
+        {
+          "id": "hide-bandit",
+          "name": "厚皮野豕"
+        },
+        {
+          "id": "wildcat",
+          "name": "斑尾山猫"
+        },
+        {
+          "id": "mountain-wight",
+          "name": "苔背石蜥"
+        }
+      ]
+    },
+    {
+      "id": "materials",
+      "promptFile": "design/huaixi/production-v3/prompts/materials.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x1536",
+      "columns": 3,
+      "rows": 3,
+      "references": [],
+      "items": [
+        {
+          "id": "charcoal",
+          "name": "木炭"
+        },
+        {
+          "id": "hide-scrap",
+          "name": "碎兽皮"
+        },
+        {
+          "id": "hemp-thread",
+          "name": "粗麻线"
+        },
+        {
+          "id": "scrap-iron",
+          "name": "碎铁料"
+        },
+        {
+          "id": "old-timber",
+          "name": "干木料"
+        },
+        {
+          "id": "fresh-meat",
+          "name": "鲜兽肉"
+        },
+        {
+          "id": "crude-iron-ingot",
+          "name": "粗铁锭"
+        },
+        {
+          "id": "stitched-hide",
+          "name": "缝合皮料"
+        },
+        {
+          "id": "iron-blade",
+          "name": "百炼铁料"
+        }
+      ]
+    },
+    {
+      "id": "equipment",
+      "promptFile": "design/huaixi/production-v3/prompts/equipment.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "wood-hilt-sword",
+          "name": "粗炼铁剑"
+        },
+        {
+          "id": "hide-headwrap",
+          "name": "夹皮头巾"
+        },
+        {
+          "id": "hide-leggings",
+          "name": "夹皮长裤"
+        },
+        {
+          "id": "hide-boots",
+          "name": "软皮靴"
+        }
+      ]
+    },
+    {
+      "id": "currency",
+      "promptFile": "design/huaixi/production-v3/prompts/currency.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "references": [
+        "public/assets/art/icons/copper-coin-flare-v3.png"
+      ],
+      "items": [
+        {
+          "id": "small-coin-string",
+          "name": "小袋灵石"
+        },
+        {
+          "id": "hundred-coin-string",
+          "name": "大袋灵石"
+        },
+        {
+          "id": "silver-ingot",
+          "name": "整匣灵石"
+        }
+      ]
+    },
+    {
+      "id": "techniques",
+      "promptFile": "design/huaixi/production-v3/prompts/techniques.txt",
+      "kind": "atlas",
+      "target": "techniques",
+      "variant": "flare",
+      "assetSuffix": "flare-v3",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "cloudstep-art",
+          "name": "穿云诀"
+        },
+        {
+          "id": "mountainforce-art",
+          "name": "撼山功"
+        }
+      ]
+    }
+  ]
+}

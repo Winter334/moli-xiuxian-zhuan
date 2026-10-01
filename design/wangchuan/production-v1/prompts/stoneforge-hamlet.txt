@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: Wangchuan west market, a substantial Chinese city workshop street on a mountain terrace, NOT a small forge hamlet. Broad paved street between white-walled shops and blue-grey tiled workshops; high windows reveal contained columns of furnace flame guided by local arrays. One suspended hoist transfers a modest material bundle using a restrained qi tether. A quiet side colonnade and a distant rocky city slope give the street breathing room.
+Style/medium: sophisticated luminous painterly Chinese fantasy, clear sun and warm furnace reflections, elegant ordinary architecture. Refinement comes from light, volume and complete construction, not excessive gold ornament.
+Composition/framing: eye-level view from a street-side portico; large roof and wall planes frame an open middle-distance street. Limited small traders and cultivators, concentrated workshop detail. Avoid a miniature sea of tiny roofs.
+Constraints: visibly a functioning city, modest magic integrated into daily work; no floating metropolis, machinery from the industrial age, shopping UI, modern objects, readable signs, text or watermark.
+Progression: the city workshop also sheds rustic grime. Calm clean white-wall planes, unusually lucid pearl daylight, carefully contained furnace light and effortless local material transport show cultivation entering daily life. Preserve a few purposeful people and goods; no smoky industrial bustle or elaborate celestial palace.

@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: an earthfire rift valley where red rock and green warm-spring woodland meet. A few deep narrow cracks illuminate the lower rock with soft ember-orange light, while jade-green trees cluster on spring-fed terraces. A modest stone path crosses one fissure, and a single disused timber-soaking platform rests on the sheltered bank. The scene combines warmth and living vegetation, not a barren lava hell.
+Style/medium: polished painterly Chinese fantasy, rich but coherent red rock, green woodland and cool sky, restrained contrasting light. Large continuous planes, concentrated detail.
+Composition/framing: view across the rift from a shaded foreground ledge; one sweeping red cliff, one green terrace and luminous crack organize the panorama. No repeated tiny flame dots.
+Constraints: no giant volcano, rivers of lava, world-ending destruction, demonic fortress, floating structures, modern objects, text, UI or watermark.
+Progression: a clean otherworldly balance of living green, warm spring clarity and enclosed earthfire, luminous rather than sooty. Broad red mineral planes and serene pearl-blue air carry the dreamlike supernatural contrast, not violent chaotic flames or gritty apocalyptic rubble.

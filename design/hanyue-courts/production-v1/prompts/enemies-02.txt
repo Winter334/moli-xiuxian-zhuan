@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted automaton enemy atlas.
+Primary request: exactly four different old cultivation workshop automata in a strict 2-column by 2-row grid.
+Input images: Image 1 supplies soft finished painting, Image 2 supplies the general constructed-sentry material language; do not copy the reference's silhouette or face.
+Top left: gallery sword automaton, lean blue-green iron skeleton inside sparse old armor, articulated limbs and a long chipped sword held forward LEFT. Exposed working joints and a small arm-inlaid light, angular simple head turning left. Not a human knight.
+Top right: blade-array wooden automaton, squat soaked-timber frame with several broad ordered old blade slats mounted along visible pivot arms, some folded and one bank extending LEFT. Clearly an assembly frame with organized mechanics, not a many-armed human or a random weapon pile.
+Bottom left: thread-binding workshop automaton, a tall narrow wood-and-metal frame with unusually long practical clamp forearms, a small partial assembly sheet tucked in one plate. Several fine strong dark-teal threads curl from its LEFT-reaching wrist while the other arm braces behind.
+Bottom right: material-carrying armor automaton, wide-backed wooden body under heavy dull iron shoulder plates, load hooks and one compact box of broken blade fragments and treated wood on its back. Short sturdy legs, a forward LEFT stride, not a sword warrior.
+Style/medium: refined luminous softly layered fantasy painting, coherent wood, patinated iron and local jade light. No gritty microtexture.
+Constraints: all front planes, heads and attacks face screen-LEFT, centered within separate cells, full body and appendages visible. White background, wide empty cross gutter, generous margins, no ground or cast shadow, text, labels, UI or watermark.

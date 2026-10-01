@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four complete painted enemy cutouts, strict 2-column by 2-row atlas.
+Input images: Images 1 and 2 are approved refined softly layered creature-painting references only, not species or direction.
+Top left: channel-entangling vine spirit, a dense asymmetrical coiled root knot of thick moss-green vines, contained translucent gel between roots and a few small dark mature lotus seed heads trapped inside. Two broad living vines drive LEFT; faceless plant entity, no mushroom body, bowl or ground.
+Top right: jade-backed marsh lizard, complete long low quadruped with a clear left-facing head, muscular teal-green torso, supple jade back scales painted in large coherent planes, powerful forelimbs and fully contained curved tail. Wet highlights and local pale spiritual veins, not a moth or dragon.
+Bottom left: adult hostile herb-plundering talisman cultivator, layered pale grey-green classical robe, belt herb pouch and small open medicine box containing dark seeds and sand nodules. Intent human face and full body turned LEFT; fingers emit a contained slender talisman light toward LEFT. Not an ancient ghost, healer or player portrait.
+Bottom right: adult ambushing crossbow cultivator, complete slightly crouched figure in dark blue-grey classical travel layers, a heavy ancient crossbow braced in both hands aimed LEFT. Broad carapace reinforcement on bow limbs, restrained red-gold conducting seams, clear human left-facing face and compact practical robe. Not a modern gun, archer with a longbow or ordinary unarmed bandit.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, refined anatomy and clear large silhouettes.
+Constraints: all bodies, faces and main attacks face LEFT; subjects centered and complete in separate cells. Broad empty white cross gutter, generous pure-white outer margins. No terrain, ground shadow, dense surrounding aura, text, labels, UI or watermark.

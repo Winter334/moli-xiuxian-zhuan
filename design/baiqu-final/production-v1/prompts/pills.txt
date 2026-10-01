@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four related refined pill icons in a strict 2-column by 2-row atlas.
+Input images: Image 1 is the approved pill-on-cloth category anchor; Image 2 references the higher-finish pale pill family. Preserve medicinal matte or waxy dense material, not bare translucent marrow beads.
+Top left: essence-nurturing pill, three substantial pale warm cream medicinal pills with thin even pill skins and a few contained tiny crystal flecks, on one small folded muted violet cloth corner. Pills remain the main shape, not a feast or roasted meat.
+Top right: foundation pill, ONE dense warm ivory pill with a softly matte herbal-grain surface on a simple low square celadon ceramic saucer with four slightly turned corners. Clear large pill and modest support, plain stable material, no readable label.
+Bottom left: jade-fluid foundation pill, ONE softly lustrous jade-white medicinal pill on a low open petal-shaped muted green ceramic support, broader cupped silhouette and visible warm pale jade body inside a thin dense pill skin. Distinct support structure and material from the square-supported plain pill, not a glass pearl.
+Bottom right: ninefold foundation pill, ONE substantial pearl-grey pale amber medicinal pill with several restrained broad nested curved medicinal veins, on a short stepped dark-jade pedestal with a modest open split-ring cradle. More concentrated orderly inner veins and stepped support, not a towering reliquary, giant magical sphere or gold-jewel object.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, refined gentle material volumes. Pill supports are small enough that pills dominate.
+Constraints: complete centered separate compositions, broad white cross gutter and generous pure-white margins. No text, labels, grade numbers, UI, floor shadow, giant aura or watermark. Pictured quantities and supports are visual composition only.

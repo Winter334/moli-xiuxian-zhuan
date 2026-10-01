@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four members of ONE resonant sword family in a strict 2-column by 2-row atlas.
+Input images: Images 1 and 2 anchor approved refined weapon painting and ancient guard language only. New blades share muted golden-bronze resonant alloy, medium-width straight tapered sword forms and dense coherent metal volume, not ordinary iron recolors.
+Top left: rough-forged resonant sword, relatively short medium-broad flat blade, simple short rectangular guard, tied dark cord grip, clearly exposed broad hammered shoulder planes and unequal facet transitions. Complete usable weapon, not broken scrap.
+Top right: finished resonant sword, longer balanced medium-width blade with a continuous raised central ridge, clean slightly stepped shoulders, compact broad curved double-wing guard and orderly dark grip collars. More continuous and structured than rough-forged sword, not only shinier.
+Bottom left: spirit-nurtured resonant sword, long gently tapering blade with two broad softly recessed edge planes, an elegant upward-cloud-head guard with a narrow inner opening, pale jade-wrapped grip. Contained pale green treatment panels, materially and structurally different from the plain finished member.
+Bottom right: awakened resonant sword, more pronounced central ridge and clean widened stepped shoulders, a refined double-tier open ancient guard and longer ordered dark-jade grip collars. Fine restrained pearl-jade longitudinal treatment within warm resonant metal, not simply gold plating or more glow.
+Style/medium: exquisite softly layered Chinese fantasy painting, refined blade volume and coherent family craft with large silhouette/guard differences.
+Constraints: complete independent swords angled near-upright, full tips and pommels contained in cells, broad white cross gutter and generous pure-white margins. No scabbards, hands, text, grade labels, UI, floor shadow or giant aura.

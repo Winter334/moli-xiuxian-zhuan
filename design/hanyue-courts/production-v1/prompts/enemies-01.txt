@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four distinct spiritual beings, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is a refined softly layered painting reference only, not a species, setting or direction reference.
+Top left: mirror-water reflection spirit, a thin upright cyan-green folded reflection loosely echoing a human fighting outline. Dense blue-green edges and a broad left-reaching arm remain readable; delicate watery interior, no clothes, weapon or invented detailed face.
+Top right: sand-condensation spirit, a compact low floating swirl of pale gold-grey sand around a clearly shaped denser glowing sand core, two long narrow strands lashing left. It is granular and asymmetrical, not a water ghost or a humanoid statue.
+Bottom left: reversed-array spirit, an angular broken dark green array core encircled by a few mismatched copper-like curved segments and gathered blue-grey sandy spirit volume. One broad leading arc drives left, not a decorative circular mandala, no invented face.
+Bottom right: wandering nurturing-furnace flame, a folded blue-green and amber flame body cupping a small dark furnace core, a few contained flickering tails swept right as its leading flame reaches left. Clearly fire, not a red water silhouette or a living brazier.
+Style/medium: exquisite luminous soft fantasy painting, finished forms and controlled clear edges, restrained local spiritual effects.
+Constraints: every main motion aims LEFT. Subjects centered and complete inside individual cells. Pure white background, generous margins and broad empty cross gutter. No terrain, ground shadow, text, labels, UI, watermark or enormous surrounding aura. Colored spiritual edges must remain visible on white.

@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: an iron-birch passage where tall trees and rock walls narrow a mountain path.
+Scene/backdrop: hard, pale-barked birch trunks rise beside deep stone faces. Dark roots grip the footpath, with a few muted jade-bearing stones at their base. A modest rough timber barrier is tucked near a bend; it is a road obstruction, not the main subject.
+Composition/framing: a low viewpoint looking between a few great tree columns and broad rock walls toward a narrow strip of light deeper along the path. Strong tall forms dominate a wide landscape canvas. Group the canopy into connected shadow masses rather than painting hundreds of bright leaves. Make the narrow passage readable at a small display size.
+Style/medium: painterly environment art with broad clean value design, softened material texture and an understated dreamlike depth. Keep this place's enclosed green-and-stone character; do not imitate a village scene or an earlier forest composition.
+Lighting/mood: cool green reflected light, pale silver tree bark, soft light from the far bend. Quiet enclosure with concealed danger, not complete darkness.
+Constraints: an outdoor wooded passage, not a mine tunnel or temple corridor. The small travel traces remain secondary; no need to illustrate every detail in the location description. No characters, enemies, text, frame, UI or watermark.
+Avoid: dense multicolored leaf confetti, repeated tiny highlights, photoreal bark cracks, glowing shrine machinery, decorative particles, excessive atmospheric blur.

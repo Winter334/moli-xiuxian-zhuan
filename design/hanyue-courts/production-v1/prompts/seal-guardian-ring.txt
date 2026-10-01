@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide painted cultivation environment.
+Primary request: four old array platforms stepping around the mountainside beside Hanyue's outer terrace. Square pale stone terraces, a restrained bronze-gold seated array fixture at each center, and fine red metal seams entering the mountain wall. The ordinary main road bypasses this quiet side route. Layered green peaks open beyond the cliff.
+Style/medium: serene luminous Chinese dreamlike painting, clear stone planes, carefully composed architecture, restrained local red glimmers and fresh sky light.
+Composition/framing: see the nearest square platform large at a low diagonal angle and the other three diminishing along the rock slope. Long empty stone surfaces and distant peaks balance the small array fixtures. No dominant enemy character.
+Constraints: four platforms, not a colossal ritual arena or celestial pillar field. No huge halos, full-screen runes, floating mountains, contemporary objects, text, UI or watermark. Use a new composition with no reference image.

@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: refined painted medicine inventory atlas.
+Primary request: two clearly different medicines in one row, strict two-column by one-row layout.
+Input images: Image 1 is the approved cloth-supported pill style reference. Preserve soft material painting and visible medicine rather than copying its color or exact layout.
+Left: meridian-restoration powder, one carefully folded pale paper dose packet with one open triangular flap showing fine grey-white medicinal powder containing a few ground mineral specks. Flat angular packet silhouette and granular medicine, not a bottle or round pills.
+Right: blood-surge pills, several rich red-brown round medicinal pills arranged on one small neatly folded dark red silk square, one pill slightly separated. Matte-lustrous dense drug material, broad subtle red inner vein on the nearest pill; no gemstone translucency or bare marrow bead.
+Style/medium: exquisite softly layered luminous Chinese cultivation painting, refined cloth, paper and medicine with coherent light. Complete finished objects and restrained spirituality.
+Constraints: pure white background, broad empty middle gutter and generous outer margins. Supports do not crowd out medicine. No label, text, quantity indication, grade numeral, UI, ground shadow or watermark.

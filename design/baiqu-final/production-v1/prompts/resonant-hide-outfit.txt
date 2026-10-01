@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four empty resonant-treated cloth-and-hide garments in a strict 2-column by 2-row atlas.
+Input images: Image 1 is the approved classical slightly masculine cloth-and-hide family and softly refined painting anchor. Preserve woven cloth with thin hide reinforcement, not rigid armor or a different gender's outfit.
+Top left: modest pale grey-green cloth headwrap with a broad shallow double-lapped center, thin hide lining under its folded bronze-grey edge and two short tied tails. Visible woven cloth planes, no helmet.
+Top right: complete short classical crossed-collar grey-green work jacket with broad sleeves, large orderly hide shoulder/back overlays and a double-lapped diagonal front facing, muted bronze-gold worked bands embedded into broad seam structures. Short and roomy, distinct from sleeveless beast-hide armor and long silk robe; not luxurious plated clothing.
+Bottom left: full roomy cloth trousers with broad curved hide knee reinforcements and a wide doubled outer-leg overlap seam, gathered cloth ankle cuffs. Restrained resonant bands along panel joins; coherent workwear.
+Bottom right: one pair of short soft-hide boots with doubled folded upper cuff and wide angled instep closure, clearly layered dark sole and restrained bronze worked heel bands. Short boots, not tall beast-hide boots or low silk shoes.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, polished refined cloth and hide planes, classical slightly masculine proportions. Resonant treatment is part of flexible fabric, not decorative gold plate.
+Constraints: complete empty garments, no person, mannequin, skin, modern zipper or huge glow. Centered separate objects, broad empty white cross gutter and generous pure-white margins. No text, grade labels, UI, floor shadow or watermark.

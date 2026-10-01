@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four distinct supernatural beings, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is a painting reference only, softly layered bright volume and elegant controlled edges; not a creature design or facing reference.
+Top left: muddy-vein stone spirit, squat irregular wet rock mass with two large stony arms unfolding, dark damp crevices holding cloudy liquid. A natural rough mineral being, not a carved sentry, no invented human face. Its pushing rock arm and movement aim left.
+Top right: spring-water wisp, a semi-transparent upright folded water mass with green droplets held inside and one broad fluid arm extended to slap left. No added human face, dress or weapon. Use visibly blue-green denser painted water edges against white, not an almost invisible mist.
+Bottom left: swift shadow mountain spirit, a compact looming grey shade gathered into a low leftward pouncing silhouette, partly dissolving at its trailing edge. Threatening but not a skeleton or cute ghost; no invented elaborate face or clothing.
+Bottom right: old channel stone puppet, substantial human-shaped stone labor automaton with a marrow bead set in its torso and practical gripping grooves on thick stone forearms. Heavy leftward pushing stance. Clearly constructed stone worker, not the irregular natural stone spirit.
+Direction: major movement and strikes point LEFT; any head or front plane also points left. No need to invent faces for faceless beings. Subjects centered within individual cells.
+Style/medium: refined softly layered fantasy painting, readable complete silhouettes, coherent light, restrained local spirituality.
+Constraints: pure white background, generous margins and a broad perfectly empty white cross gutter. Complete limbs and vapor tails remain inside cells. No terrain, ground shadow, large decorative aura, text, UI or watermark.

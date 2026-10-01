@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: the inner array terrace of Hanyue, an abandoned mountain cultivation academy. A broad pale stone platform lies between two white courtyard walls and deep grey-green tiled eaves. A shallow carved recess holds a small cracked old command seal; narrow spring channels and restrained warm array seams branch toward higher academy rooms.
+Composition/framing: oblique view from the inner doorway across the terrace, with an opening looking back toward distant outer roofs and inhabited cliffside annexes. Large calm stone planes, lucid pearl daylight, the platform and architecture dominate; the small seal is secondary.
+Style/medium: refined luminous Chinese fantasy painting, soft clean light, ordered deep space and a quiet slightly dreamlike distance.
+Constraints: intact abandoned facilities rather than catastrophic ruins; local supernatural seams only. No giant floating palaces, dense tiny details, close-up people, readable writing, signs, UI or watermark. No reference image.

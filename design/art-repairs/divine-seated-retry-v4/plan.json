@@ -1,0 +1,27 @@
+{
+  "region": "art-repairs",
+  "version": "divine-seated-retry-v4",
+  "quality": "high",
+  "scope": "One independent replacement for the unresolved seated divine-art submission. Identical text prompt, model, dimensions, quality and NO reference images. No recursive replacement.",
+  "jobs": [
+    {
+      "id": "divine-art",
+      "kind": "atlas",
+      "target": "techniques",
+      "variant": "flare",
+      "assetSuffix": "flare-divine-v3",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/art-repairs/divine-seated-v3/prompt.txt",
+      "items": [
+        {
+          "id": "circulating-qi",
+          "name": "周天罡气"
+        }
+      ]
+    }
+  ]
+}

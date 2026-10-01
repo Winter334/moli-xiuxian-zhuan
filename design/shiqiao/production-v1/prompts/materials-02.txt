@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four crafting material icons in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 anchors the existing bare semi-translucent marrow-pearl series; Image 2 anchors painted metal volume. Use style and category continuity, not identical color or arrangement.
+Subjects:
+Top left: profound marrow, one bare rounded deep smoky-violet semi-translucent pearl with restrained fine luminous strands suspended inside. A dense polished jade/glass volume, unmistakably part of the existing marrow-bead series. No box, stand, capsule, pill or exterior halo.
+Top right: earth-vein cloudy dew, a small squat stoppered glass flask holding grey-green cloudy liquid, a heavy low pooled-liquid silhouette and pale sediment. Practical material presentation; the container is not new gameplay. No floating droplet or round pearl.
+Bottom left: dark-steel ingot, one short solid black-steel casting ingot with broad sloping sides, dense dark metal and narrow cool specular edges. A compact substantial cast-block silhouette, no pile of scrap.
+Bottom right: refined dark-steel stock, one long narrow rectangular forged metal billet, visibly straighter and thinner than the cast ingot, with fine dense fracture plane and dark smooth edges. This is a refined crafting bar, NOT a sharpened sword blade, dagger or completed weapon; no hilt, guard or sharp point.
+Style/medium: clear bright painted volume, restrained texture and subtle inner light only for marrow. Different categories use clearly distinct silhouettes.
+Composition/framing: one complete icon centered in each equal square cell, generous white padding and clean white cross gutter. Material and pearl remain large enough to read at small size.
+Constraints: pure white background for local removal, no shadows, scene, frame, dramatic magical aura, text, labels, logo, watermark or UI.

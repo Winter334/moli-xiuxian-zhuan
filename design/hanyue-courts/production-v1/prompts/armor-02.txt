@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted empty beast-hide cultivation outfit atlas.
+Primary request: four pieces from ONE black-alloy-treated beast-hide outfit, strict 2-column by 2-row grid.
+Input images: Image 1 is the approved classical sleeveless beast-hide armor with ordered layers and ties; Image 2 is its cloth-and-hide family companion. Maintain coherent slightly masculine wardrobe and refined paint, not a female variant.
+Top left: broad supple beast-hide forehead wrap with visibly overlapping reinforced center and two modest short tied tails, dark silver-treated border and natural hide planes. No full helmet or head.
+Top right: ancient sleeveless beast-hide armor with broad shoulders, orderly overlapping supple front layers, cross-lapped classical opening and tied sides. Large deep charcoal treatment panels follow clear layer joins; soft armor construction, no rigid steel cuirass or breast-shaped contour.
+Bottom left: complete relatively straight beast-hide trousers with broad articulated knee folds and doubled side-overlap construction, smooth inside hems and dark worked seam panels. Different large structure from roomy cloth trousers, not a mere color change.
+Bottom right: one pair of taller supple beast-hide boots with wrapped tie at the upper opening, long continuous hide planes and a broad doubled dark heel reinforcement. Clearly taller than the cloth-set short boots, not armored greaves.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, coherent dark hide and silver-black worked edges, refined broad planes and slightly masculine empty garment proportions.
+Constraints: preserve supple hide identity, no person, mannequin, skin, invented gender switch, modern zipper or giant glow. Full separate objects, broad empty cross gutter and generous pure-white margins. No readable text, grade labels, UI, ground shadow or watermark.

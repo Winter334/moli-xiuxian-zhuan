@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: two complete painted enemy cutouts in a strict 2-column by 1-row atlas.
+Input images: Image 1 references the approved softly layered creature painting; Image 2 references academy construct language and finish only, not its exact design.
+Left: earthshaking feral lion-like ni beast, complete thick-necked muscular quadruped with a broad low mane, huge forepaws, arched shoulders and dense pale grey-green fur over warm mineral-colored skin. Full head, torso and charging movement clearly face LEFT; strong ancient beast identity, not a wolf recolor, no earth or shockwave.
+Right: Hanyue's central water-and-earthfire array spirit, complete dignified human-like silhouette woven from pearl-cyan spring light and warm coral fire currents. Broad orderly overlapping light-pattern mantle and a small broken command-seal motif in the chest. Dense faceless forward head and one clear leftward blocking arm, lower body tapers into folded contained array streams. Not a living human, robot armor, player portrait, deity or enormous glowing aura; its agency comes from old facility arrays.
+Style/medium: exquisite luminous Chinese fantasy painting, softly layered finished volumes and coherent broad forms.
+Constraints: both centered in their own square cells, full silhouette and ample pure-white border, wide empty vertical gutter. All attacks and facing LEFT. No platform, scenery, ground shadow, readable text, UI, labels or watermark.

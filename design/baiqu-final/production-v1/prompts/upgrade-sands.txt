@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four resonant refining-sand icons in a strict 2-column by 2-row atlas.
+Input images: Image 1 anchors the refining-sand category; Image 2 references the approved softly refined material paint. These are prepared sand, not actual garments or metal armor parts.
+Top left: forehead-pattern resonant sand, a small open low square dark-celadon dish filled with fine pale gold-bronze grains, a neat short crescent-like sand ridge in the center. Broad low square silhouette, no readable pattern or label.
+Top right: body-pattern resonant sand, a broad shallow oval dark-celadon tray with one folded cloth lip and a wide ordered sand mound divided into two large flowing ridges. Clearly widest and shallow, no miniature shirt.
+Bottom left: leg-pattern resonant sand, a compact tall double-folded muted teal cloth pouch open at the top, two broad side pleats and visible gold-bronze granular material within its parted mouth. Distinct tall soft pouch silhouette, no pants.
+Bottom right: foot-pattern resonant sand, a small round low jade-grey vessel with a short curved pouring lip, granular golden-bronze material visible above the rim and one contained small spill. Clear rounded pour shape, not a boot.
+Style/medium: exquisite softly layered Chinese fantasy material painting, coherent family ceramics/cloth and refined granules grouped in large readable masses.
+Constraints: centered complete separate objects, generous pure-white cell margins and broad empty cross gutter. No readable symbols, names, grade labels, UI, floor shadow, giant glow or watermark.

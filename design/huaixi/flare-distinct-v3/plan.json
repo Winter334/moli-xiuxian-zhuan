@@ -1,0 +1,36 @@
+{
+  "region": "huaixi",
+  "version": "flare-distinct-v3",
+  "variant": "flare",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "minerals-study",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-v3",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "copper-coin",
+          "name": "灵石"
+        },
+        {
+          "id": "cloudy-jade",
+          "name": "含灵玉石"
+        },
+        {
+          "id": "cloudy-marrow",
+          "name": "浊灵髓"
+        },
+        {
+          "id": "clear-marrow",
+          "name": "清灵髓"
+        }
+      ]
+    }
+  ]
+}

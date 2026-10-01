@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four mountain creatures in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Images 1 and 2 are painting-style references ONLY, showing the accepted simplified wolf and toad brushwork. Borrow their readable volumes and clear painted masses, not their subjects, poses or anatomy.
+Subjects:
+Top left: a red-eyed mountain shanxiao, a lean long-armed mountain primate with a ring of reddish fur around the eyes. Crouched ready to spring from a high rock, but no actual rock in the cutout. Red fur around the eyes is the identifying trait, not laser-glowing eyes.
+Top right: a bone-gnawing mountain shanxiao, heavier and more hunched than the first, with a broad powerful jaw and a threatening open mouth. A muscular compact body; no gore or detached bones.
+Bottom left: an ambushing fierce ape, a dark, strong long-armed primate gripping a broken hard birch branch. A forceful twisting strike posture, the entire branch and both hands inside the cell. Its branch, tall arm sweep and muscular body make its outline distinct.
+Bottom right: a jade-clasping stone spirit, a small compact rounded mass of several tightly interlocking stone shell plates enclosing one cloudy jade kernel. A restrained jade glint between the seams. It rolls and has no human body, arms, legs, floating eyeball, temple mechanism or decorative rune ring.
+Style/medium: bright readable painted creatures, broad confident brush shapes and coherent simplified shadows. Fur grouped into masses rather than individual hairs; stone drawn as a few solid planes. Keep the ordinary mountain identity and restrained spiritual detail.
+Composition/framing: one isolated complete creature centered in each equal square cell, generous pure-white margins, clean white cross-shaped gutter. No limb, branch, tail or stone shell touches a boundary. Strong different overall silhouettes.
+Constraints: pure white background for local removal, no scene, ground patch, shadow, frame, text, labels or watermark. No decorative aura surrounding all subjects. Threatening creatures, not cute mascots or photographic animals.

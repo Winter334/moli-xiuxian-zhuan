@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: three distinct medicinal-liquid icons in a strict 3-column by 1-row atlas.
+Input images: Image 1 references approved refined softly layered paint finish, not exact containers.
+Left: clear spring medicinal saliva, a small tall clear jade-glass vial with a gently bulbous lower body, narrow neck and simple fitted pale cap, filled with almost-clear pearl-jade liquid. A compact clean curved liquid meniscus, no toad or bodily gore.
+Middle: harmonizing elixir, a low broad celadon medicine flask with a shallow visible emerald liquid reservoir and a wide short cylindrical neck closed by a soft cloth-and-cord stopper. Opaque ceramic lower planes and a visible recessed liquid window; visibly broad and low unlike the clear spring vial.
+Right: essence-nurturing spirit dew, a slim softly triangular pale blue-green glass bottle with a sealed tapered neck and a small folded-leaf-like glass shoulder, pale cyan condensation and darker herbal sediment resting at its base. Distinct triangular outline and layered liquid/sediment from the other two vessels; an actual herbal dew resource, not a technique book or glowing gem.
+Style/medium: exquisite luminous softly layered Chinese fantasy material painting with clear finished glass, ceramic and liquid planes.
+Constraints: full separate containers centered with generous pure-white margins and broad empty vertical gutters. No labels, writing, UI, grade numbers, ground shadow, large aura or watermark.

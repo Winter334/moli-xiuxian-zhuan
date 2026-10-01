@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: an old Chinese cultivation automaton workshop around an open court, high timber-and-white-wall halls with a calm sky opening. A few unfinished wooden frames and iron skeletons stand beside broad stone benches. Several loose wooden automaton arms hang from fine remaining array threads above an empty assembly station. A wood-soaking pool catches a muted inverted green reflection. Work ceased long ago, but some old mechanisms remain suspended.
+Style/medium: refined luminous dreamlike Chinese painting, softly modeled wood, iron and clean pale masonry, organized large forms rather than granular debris.
+Composition/framing: slightly elevated view across the open central court into shaded high-roof bays. Hanging arms form one modest focal group, sunlight and still water occupy quieter space.
+Constraints: suspended components are a local craft anomaly, not giant floating robots or science-fiction machinery. No gore, dense scrap heaps, huge glowing circles, readable text, UI or watermark. Independent composition, no reference image.

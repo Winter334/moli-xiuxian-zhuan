@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four complete creatures, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is a painting reference only: softly layered bright volumes, grouped brushwork, cool-warm reflection and controlled edges. Do not copy its wolf anatomy, subject or facing.
+Top left: cliff eagle, a powerful large eagle with a broad deep chest, partly spread broad wings and long dark feathers with quiet pale white shaft markings. A grounded wing-battering pose aimed left; bird anatomy, not a winged human.
+Top right: patterned-antler spirit deer, elegant but dangerous adult deer, branching antlers bearing a few brocade-like pale lines and softly lustrous tawny hide. Lowered antlers and braced legs aimed left.
+Bottom left: razorleaf mantis, green adult mantis with two thin blade-shaped forelimbs and a little pale spiritual fiber around leg armor. Compact threatening silhouette aimed left, distinguish every limb, not a humanoid swordsman.
+Bottom right: mist-venom green snake, a restrained coiled green-scaled serpent with raised head aiming left. A tiny grey-white breath close to its mouth, not a giant aura or scene; complete coiled tail.
+Direction: ALL bodies, heads, gaze and attacks clearly face screen-left in profile or three-quarter view, never front or right. Center each subject in its cell.
+Style/medium: refined luminous non-photographic painting, complete softly modeled material planes, no individual hair or dense scale microtexture.
+Constraints: pure white background, wide clean white cross gutter and generous margins. All wings, antlers, limbs and tails inside cells. No ground, cast shadow, frame, UI, labels, text or watermark.

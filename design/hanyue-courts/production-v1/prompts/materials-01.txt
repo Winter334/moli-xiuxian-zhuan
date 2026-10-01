@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas.
+Primary request: exactly four different old cultivation materials in a strict 2-column by 2-row grid.
+Input images: Image 1 supplies refined softly layered material painting and completed finish only, not the ingot shape.
+Top left: condensed-soul sand, a small low mound of fine pale lavender-grey grains in a shallow folded pale paper trough, sparse denser luminous grain clusters. Clear open granular silhouette, not beads or crystals.
+Top right: stone spirit eye, one uneven oval mineral shell with broad stone-like ridges partly opening around a clear green-blue central pupil of spiritual material. Organic mineral shape, not a human eyeball, polished marrow bead or jewel in a ring.
+Bottom left: broken array core, a compact asymmetrical dark ceramic-and-bronze mechanical nucleus with several patched carved channels and a small luminous center, one missing edge and one visible repair clamp. Not a complete magic seal or round gemstone.
+Bottom right: damaged spirit blade, a pair of recognizably broken old blade sections, angular snapped ends and a small remnant of interrupted teal inlaid blade pattern. No handle, complete sword or pile of generic scrap.
+Style/medium: exquisite soft luminous painting, coherent cool and warm highlights and large carefully modeled forms. Material damage is deliberate and readable, never rough unfinished artwork.
+Constraints: pure white background, broad empty cross gutter, complete separate centered objects with generous margins. No text, labels, inventory quantity, grade badge, UI, ground shadow or watermark. Illustrated grouping does not describe item count.

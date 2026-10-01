@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: three refined item icons in a strict 3-column by 1-row atlas.
+Input images: Image 1 references the approved refined paint finish; Image 2 references the approved pill-with-support category language, not exact pills or support design.
+Left: old academy command seal, compact square dark jade-grey stone stamp with a low bridge-like grip, one visibly cracked corner and an inset restrained pale array seam crossing its squared stamp face. Clearly an ancient seal rather than a round jewel or book; no readable inscription, no invented intact corner.
+Middle: voidstep knot, one elegant compact cord knot made from translucent teal gel strands wound around a small dark sand-and-array core, broad clean interlaced loops, two modest hanging tails with soft violet-silver strand volume. Open gaps clearly separated on white, no giant aura, no pendant frame or humanoid shape.
+Right: essence-condensing pill, three substantial pale warm ivory-grey matte medicinal pills with a subtle softly layered cream inner grain, placed on a small folded sage cloth corner. Pills dominate the composition, not the cloth; no blood color, no glass translucency. Distinct higher-finish gentle arrangement than rustic brown replenishing pills but not a cosmic elixir.
+Style/medium: exquisite softly layered Chinese fantasy painting, refined soft-warm light, finished materials and coherent ancient cultivation design.
+Constraints: separate complete subjects centered with broad empty white vertical gutters and generous outer margins, no ground shadow, text, labels, grade numbers, UI or watermark. Image quantities and cloth are composition only, not inventory or recipe changes.

@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four refined painted item icons in a strict 2-column by 2-row atlas.
+Input images: Image 1 is the approved refined-items painting and finish reference only, not the requested objects or atlas layout.
+Top left: flowing spirit gel, a low asymmetrical folded translucent turquoise-violet gel mass, one thick raised crest and a few connected small rounded lobes. Visible colored edges and softly layered interior, not a bead, potion bottle or liquid puddle.
+Top right: cold-veined spirit hide, one broad supple membrane folded diagonally with a tapering irregular edge, pale cool-grey hide with large soft cold-white branching vein bands and muted blue-violet underside. Organic unprocessed membrane, no stitched cloth, skull or full animal.
+Bottom left: feral heart meat, a thick compact deep crimson muscle cut with two broad lobes and one clearly readable clean dark-red cut face, a warm pale fascia strip on its outer edge. Uncooked dense ingredient, not dried strips, a cooked steak, anatomical gore or a jar.
+Bottom right: renewal silk, a compact folded bolt of fine luminous pearl-green cloth with one wide loose diagonal drape, clearly woven smooth continuous planes and a delicate cool thread sheen. Large rectangular layered cloth silhouette, distinct from the irregular hide membrane; not a scroll or garment.
+Style/medium: exquisite coherent softly layered Chinese fantasy painting, finished soft material volume and restrained spiritual sheen. Ordinary materials still receive careful polished painting.
+Constraints: full separate objects with generous pure-white cell margins and broad empty cross gutter. No terrain, ground shadow, text, labels, grade numbers, UI, watermark or large aura.

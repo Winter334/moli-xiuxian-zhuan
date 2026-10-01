@@ -1,0 +1,63 @@
+{
+  "scope": "Only the two user-reported cutouts. Preserve current subject RGB, position, size and facing; remove residual white backdrop through local source-derived alpha masks.",
+  "jobs": [
+    {
+      "id": "brocade-marten",
+      "input": "public/assets/art/enemies/brocade-marten-flare-shiqiao-v2.png",
+      "inputSha256": "dd3529fc456c782d674678ad07fe7aad538ec08ce8d4646a032d7d6906802a08",
+      "cell": [
+        0,
+        0,
+        764,
+        678
+      ],
+      "foregroundBounds": [
+        22,
+        179,
+        757,
+        678
+      ],
+      "whiteLevel": 248,
+      "edgeRange": 12,
+      "maximumChroma": 18,
+      "regions": [
+        [
+          287,
+          201,
+          405,
+          313
+        ]
+      ],
+      "output": "public/assets/art/enemies/brocade-marten-flare-cutout-v3.png"
+    },
+    {
+      "id": "burrowing-centipede",
+      "input": "public/assets/art/enemies/burrowing-centipede-flare-wangchuan-v1.png",
+      "inputSha256": "8aa2ab9640d42ab00e076b3cc8d230e2476f5beea4f627c78cf9f36c6ff5e41a",
+      "cell": [
+        758,
+        780,
+        778,
+        756
+      ],
+      "foregroundBounds": [
+        8,
+        116,
+        735,
+        634
+      ],
+      "whiteLevel": 248,
+      "edgeRange": 12,
+      "maximumChroma": 18,
+      "regions": [
+        [
+          110,
+          180,
+          414,
+          373
+        ]
+      ],
+      "output": "public/assets/art/enemies/burrowing-centipede-flare-cutout-v2.png"
+    }
+  ]
+}

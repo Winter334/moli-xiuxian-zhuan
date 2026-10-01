@@ -1,0 +1,80 @@
+{
+  "version": "stage-1-loadout-candidate.11",
+  "rulesVersion": "rules-loadout.7",
+  "foundationCosts": {
+    "human": [],
+    "earth": [
+      { "itemId": "stone-marrow", "quantity": "12", "failureQuantity": "6" },
+      { "itemId": "dense-ore", "quantity": "6", "failureQuantity": "3" },
+      { "itemId": "dew-flower", "quantity": "8", "failureQuantity": "4" }
+    ],
+    "heaven": [
+      { "itemId": "stone-marrow", "quantity": "24", "failureQuantity": "12" },
+      { "itemId": "dense-ore", "quantity": "12", "failureQuantity": "6" },
+      { "itemId": "dew-flower", "quantity": "16", "failureQuantity": "8" },
+      { "itemId": "clear-spirit-core", "quantity": "1", "failureQuantity": "0" }
+    ]
+  },
+  "fateMaterialItems": ["herb", "ore", "hide", "timber", "spirit-bamboo", "blood", "armor", "stone-marrow", "copper", "dense-ore", "heartwood", "dew-flower"],
+  "enemyDropChanges": [
+    { "id": "hill-wolf", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.3 }, { "itemId": "hide", "quantity": "1", "chance": 0.3 }, { "itemId": "timber", "quantity": "1", "chance": 0.2 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-attack-pill", "quantity": "1", "chance": 0.03 }] },
+    { "id": "hill-boar", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.25 }, { "itemId": "hide", "quantity": "1", "chance": 0.45 }, { "itemId": "timber", "quantity": "1", "chance": 0.15 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-defense-pill", "quantity": "1", "chance": 0.03 }] },
+    { "id": "bamboo-snake", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.25 }, { "itemId": "spirit-bamboo", "quantity": "1", "chance": 0.35 }, { "itemId": "blood", "quantity": "1", "chance": 0.2 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.02 }, { "itemId": "magic-attack-pill", "quantity": "1", "chance": 0.03 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.02 }] },
+    { "id": "spine-badger", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.2 }, { "itemId": "armor", "quantity": "1", "chance": 0.25 }, { "itemId": "blood", "quantity": "1", "chance": 0.15 }, { "itemId": "defense-pill", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-defense-pill", "quantity": "1", "chance": 0.03 }] },
+    { "id": "bamboo-snake-elite", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.25 }, { "itemId": "spirit-bamboo", "quantity": "1", "chance": 0.55 }, { "itemId": "blood", "quantity": "1", "chance": 0.45 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.03 }, { "itemId": "magic-attack-pill", "quantity": "1", "chance": 0.03 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.02 }, { "itemId": "magic-defense-pill", "quantity": "1", "chance": 0.02 }] },
+    { "id": "iron-lizard", "drops": [{ "itemId": "dense-ore", "quantity": "1", "chance": 0.12 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.2 }, { "itemId": "armor", "quantity": "1", "chance": 0.35 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-defense-pill-middle", "quantity": "1", "chance": 0.03 }] },
+    { "id": "flame-lizard", "drops": [{ "itemId": "ore", "quantity": "1", "chance": 0.3 }, { "itemId": "copper", "quantity": "1", "chance": 0.4 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.15 }, { "itemId": "blood", "quantity": "1", "chance": 0.2 }, { "itemId": "attack-pill-middle", "quantity": "1", "chance": 0.02 }, { "itemId": "magic-attack-pill-middle", "quantity": "1", "chance": 0.05 }] },
+    { "id": "iron-lizard-elite", "drops": [{ "itemId": "dense-ore", "quantity": "1", "chance": 0.25 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.3 }, { "itemId": "armor", "quantity": "1", "chance": 0.6 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.06 }, { "itemId": "magic-defense-pill-middle", "quantity": "1", "chance": 0.04 }] },
+    { "id": "stone-crab", "drops": [{ "itemId": "dew-flower", "quantity": "1", "chance": 0.25 }, { "itemId": "warm-jade", "quantity": "1", "chance": 0.025 }, { "itemId": "armor", "quantity": "1", "chance": 0.6 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-defense-pill-middle", "quantity": "1", "chance": 0.03 }] },
+    { "id": "cold-snake", "drops": [{ "itemId": "dew-flower", "quantity": "1", "chance": 0.25 }, { "itemId": "warm-jade", "quantity": "1", "chance": 0.025 }, { "itemId": "blood", "quantity": "1", "chance": 0.35 }, { "itemId": "vitality-pill-middle", "quantity": "1", "chance": 0.03 }, { "itemId": "magic-attack-pill-middle", "quantity": "1", "chance": 0.04 }] },
+    { "id": "garden-guardian", "drops": [{ "itemId": "essence", "quantity": "1", "chance": 0.03 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.3 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.03 }, { "itemId": "magic-defense-pill-late", "quantity": "1", "chance": 0.02 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.02 }] },
+    { "id": "root-vine", "drops": [{ "itemId": "moon-fungus", "quantity": "1", "chance": 0.03 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.25 }, { "itemId": "vitality-pill-late", "quantity": "1", "chance": 0.03 }, { "itemId": "magic-attack-pill-late", "quantity": "1", "chance": 0.04 }] },
+    { "id": "garden-guardian-elite", "drops": [{ "itemId": "essence", "quantity": "1", "chance": 0.05 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.5 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.04 }, { "itemId": "magic-defense-pill-late", "quantity": "1", "chance": 0.03 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.01 }, { "itemId": "magic-attack-pill-late", "quantity": "1", "chance": 0.02 }] }
+  ],
+  "enemyAllocationChanges": [
+    { "id": "spine-badger", "allocation": { "level": 2, "rank": "normal", "multipliers": { "maxHp": "0.55", "maxMp": "0", "attack": "0.75", "defense": "1.4", "agility": "0.75", "magicAttack": "0", "magicDefense": "1" } } },
+    { "id": "flame-lizard", "allocation": { "level": 4, "rank": "normal", "multipliers": { "maxHp": "0.7", "maxMp": "0.625", "attack": "0.3", "defense": "1", "agility": "1", "magicAttack": "1.5", "magicDefense": "2" } } },
+    { "id": "cold-snake", "allocation": { "level": 6, "rank": "normal", "multipliers": { "maxHp": "0.75", "maxMp": "0.6", "attack": "0.3", "defense": "1", "agility": "1.3", "magicAttack": "1.5", "magicDefense": "1.8" } } },
+    { "id": "root-vine", "allocation": { "level": 7, "rank": "normal", "multipliers": { "maxHp": "1.6", "maxMp": "0", "attack": "1.4", "defense": "1.3", "agility": "0.85", "magicAttack": "0", "magicDefense": "1.8" } } },
+    { "id": "bamboo-snake-elite", "allocation": { "level": 2, "rank": "elite", "multipliers": { "maxHp": "1.2", "maxMp": "0", "attack": "2.2", "defense": "1.8", "agility": "1.2", "magicAttack": "0", "magicDefense": "1.8" } } },
+    { "id": "iron-lizard-elite", "allocation": { "level": 3, "rank": "elite", "multipliers": { "maxHp": "1.5", "maxMp": "0", "attack": "3.5", "defense": "7.5", "agility": "1", "magicAttack": "0", "magicDefense": "2" } } },
+    { "id": "garden-guardian-elite", "allocation": { "level": 6, "rank": "elite", "multipliers": { "maxHp": "2.6", "maxMp": "1.1", "attack": "2.8", "defense": "4", "agility": "1.4", "magicAttack": "0", "magicDefense": "2.6" } } }
+  ],
+  "equipment": [
+    { "id": "hide-coat", "name": "粗皮衣", "slot": "armor", "modifiers": [{ "stat": "defense", "mode": "flat", "value": "2" }, { "stat": "magicDefense", "mode": "flat", "value": "1" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "iron-scale-armor", "name": "铁鳞甲", "slot": "armor", "modifiers": [{ "stat": "defense", "mode": "flat", "value": "7" }, { "stat": "magicDefense", "mode": "flat", "value": "4" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "dense-armor", "name": "凝纹甲", "slot": "armor", "modifiers": [{ "stat": "defense", "mode": "flat", "value": "16" }, { "stat": "magicDefense", "mode": "flat", "value": "11" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "soft-boots", "name": "轻履", "slot": "footwear", "modifiers": [{ "stat": "agility", "mode": "flat", "value": "3" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "vitality-pendant", "name": "护心佩", "slot": "accessory", "modifiers": [{ "stat": "maxHp", "mode": "flat", "value": "40" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "spirit-pendant", "name": "聚息佩", "slot": "accessory", "modifiers": [{ "stat": "maxMp", "mode": "flat", "value": "30" }], "effects": [], "affixPool": [], "affixCount": 0 }
+  ],
+  "recipes": [
+    { "id": "magic-attack", "name": "初阶凝法丹方", "training": { "difficulty": 2, "xp": "4" }, "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "spirit-bamboo", "quantity": "4" }], "stones": "8", "outputId": "magic-attack-pill", "outputQuantity": "1" },
+    { "id": "magic-defense", "name": "初阶御法丹方", "training": { "difficulty": 2, "xp": "4" }, "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "armor", "quantity": "4" }], "stones": "8", "outputId": "magic-defense-pill", "outputQuantity": "1" },
+    { "id": "magic-attack-middle", "name": "中阶凝法丹方", "training": { "difficulty": 5, "xp": "10" }, "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "4" }, { "itemId": "spirit-bamboo", "quantity": "2" }, { "itemId": "dew-flower", "quantity": "2" }], "stones": "18", "outputId": "magic-attack-pill-middle", "outputQuantity": "1" },
+    { "id": "magic-defense-middle", "name": "中阶御法丹方", "training": { "difficulty": 5, "xp": "10" }, "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "4" }, { "itemId": "armor", "quantity": "2" }, { "itemId": "dew-flower", "quantity": "2" }], "stones": "18", "outputId": "magic-defense-pill-middle", "outputQuantity": "1" },
+    { "id": "magic-attack-late", "name": "高阶凝法丹方", "training": { "difficulty": 8, "xp": "24" }, "unlock": { "regionId": "ruins", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "5" }, { "itemId": "spirit-bamboo", "quantity": "1" }, { "itemId": "heartwood", "quantity": "2" }], "stones": "36", "outputId": "magic-attack-pill-late", "outputQuantity": "1" },
+    { "id": "magic-defense-late", "name": "高阶御法丹方", "training": { "difficulty": 8, "xp": "24" }, "unlock": { "regionId": "ruins", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "5" }, { "itemId": "armor", "quantity": "1" }, { "itemId": "heartwood", "quantity": "2" }], "stones": "36", "outputId": "magic-defense-pill-late", "outputQuantity": "1" },
+    { "id": "forge-hide-coat", "training": { "difficulty": 1, "xp": "5" }, "name": "粗皮衣制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "hide", "quantity": "2" }], "stones": "2", "outputKind": "equipment", "outputId": "hide-coat", "outputQuantity": "1" },
+    { "id": "forge-iron-scale-armor", "training": { "difficulty": 3, "xp": "15" }, "name": "铁鳞甲制法", "unlock": { "regionId": "bamboo", "kills": "20" }, "costs": [{ "itemId": "ore", "quantity": "3" }, { "itemId": "copper", "quantity": "2" }, { "itemId": "hide", "quantity": "2" }], "stones": "16", "outputKind": "equipment", "outputId": "iron-scale-armor", "outputQuantity": "1" },
+    { "id": "forge-dense-armor", "training": { "difficulty": 7, "xp": "40" }, "name": "凝纹甲制法", "unlock": { "regionId": "quarry", "kills": "20" }, "costs": [{ "itemId": "dense-ore", "quantity": "3" }, { "itemId": "armor", "quantity": "3" }, { "itemId": "copper", "quantity": "6" }], "stones": "120", "outputKind": "equipment", "outputId": "dense-armor", "outputQuantity": "1" },
+    { "id": "forge-soft-boots", "training": { "difficulty": 1, "xp": "5" }, "name": "轻履制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "hide", "quantity": "2" }, { "itemId": "timber", "quantity": "2" }], "stones": "4", "outputKind": "equipment", "outputId": "soft-boots", "outputQuantity": "1" },
+    { "id": "forge-vitality-pendant", "training": { "difficulty": 2, "xp": "12" }, "name": "护心佩制法", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "spirit-bamboo", "quantity": "2" }, { "itemId": "copper", "quantity": "1" }, { "itemId": "herb", "quantity": "2" }], "stones": "10", "outputKind": "equipment", "outputId": "vitality-pendant", "outputQuantity": "1" },
+    { "id": "forge-spirit-pendant", "training": { "difficulty": 2, "xp": "12" }, "name": "聚息佩制法", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "spirit-bamboo", "quantity": "2" }, { "itemId": "copper", "quantity": "1" }, { "itemId": "herb", "quantity": "2" }], "stones": "10", "outputKind": "equipment", "outputId": "spirit-pendant", "outputQuantity": "1" }
+  ],
+  "actions": [
+    { "id": "small-ember", "name": "引火", "mpCost": "4", "damageType": "magical", "coefficient": "1.9", "hits": 1 }
+  ],
+  "techniques": [
+    { "id": "kindling", "name": "引火诀", "unlock": { "level": 1 }, "manualItemId": "kindling-manual", "weaponType": "staff", "actionId": "small-ember", "modifiers": [], "effects": [], "xpCap": "900", "practiceBonuses": [{ "stat": "magicAttack", "value": "4" }] }
+  ],
+  "items": [
+    { "id": "magic-attack-pill", "name": "初阶凝法丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "stat": "magicAttack", "tierId": "early", "amount": "1", "scale": "30" } },
+    { "id": "magic-defense-pill", "name": "初阶御法丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "stat": "magicDefense", "tierId": "early", "amount": "0.2", "scale": "6" } },
+    { "id": "magic-attack-pill-middle", "name": "中阶凝法丹", "kind": "growth", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "9", "use": { "kind": "growth", "stat": "magicAttack", "tierId": "middle", "amount": "3", "scale": "30" } },
+    { "id": "magic-defense-pill-middle", "name": "中阶御法丹", "kind": "growth", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "9", "use": { "kind": "growth", "stat": "magicDefense", "tierId": "middle", "amount": "0.6", "scale": "6" } },
+    { "id": "magic-attack-pill-late", "name": "高阶凝法丹", "kind": "growth", "unlock": { "regionId": "ruins", "kills": "5" }, "sellPrice": "24", "use": { "kind": "growth", "stat": "magicAttack", "tierId": "late", "amount": "8", "scale": "30" } },
+    { "id": "magic-defense-pill-late", "name": "高阶御法丹", "kind": "growth", "unlock": { "regionId": "ruins", "kills": "5" }, "sellPrice": "24", "use": { "kind": "growth", "stat": "magicDefense", "tierId": "late", "amount": "1.6", "scale": "6" } },
+    { "id": "kindling-manual", "name": "引火诀抄本", "kind": "manual", "unlock": { "level": 1 }, "buyPrice": "8", "sellPrice": "2" }
+  ]
+}

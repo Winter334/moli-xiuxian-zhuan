@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: painted guardian cutout atlas.
+Primary request: exactly four different Hanyue guardians in a strict 2-column by 2-row grid.
+Input images: Image 1 is a soft painting-quality reference, Image 2 supplies restrained old constructed-sentry materials. New silhouettes must not be copied from the references.
+Top left: wind-driven bronze guardian, lean upright bronze automaton with visibly articulated legs, broad thin spirit blades mounted on both forearms, a few wind-pattern channels linking feet to the torso core. A leftward advancing pose, one broad blade forward and a small contained wind ribbon at the feet.
+Top right: black-alloy vault guardian, heavy broad old automaton covered in overlapping black spiritual iron plates to below the knee, large thick leading forearm raised to strike LEFT. A restrained marrow light deep in the chest, no horned helmet or decorative gold.
+Bottom left: gold array guardian, tall formal old automaton with ordered overlapping gold metal leaves, substantial square torso and red marrow core visible between plates. Solid LEFT guarding stance, articulated feet with a short red-gold connecting filament, no fixed stone arena or pedestal.
+Bottom right: banyan-root ancient figure, weathered grey stone statue interwoven with broad living roots, root-bound stone arms swinging LEFT. One small integrated stone niche below its chest cradles a bronze lamp. Thick root legs support its whole body; no giant tree canopy or separate courtyard backdrop.
+Style/medium: exquisite soft luminous Chinese fantasy painting, calm clear volumes, fine material finish and limited local spiritual highlights.
+Constraints: full silhouettes centered, any head and primary action face LEFT, generous white margins and broad empty cross gutter. No ground, cast shadow, detached scenery, large halo, text, UI or watermark.

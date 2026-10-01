@@ -1,0 +1,598 @@
+{
+  "region": "hanyue-courts",
+  "version": "production-v1",
+  "completionPlan": "design/hanyue-courts/completion-v3/plan.json",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "First user-authorized remaining-art batch: the nine locations in AREAS.courts, their 17 enemy species and 35 unmapped item IDs obtainable from their drops or existing manufacturing chains together with prior-region materials. No inner-court, marsh, player imagery, existing-image replacement, content rules or UI changes.",
+  "scopeCounts": {
+    "scenes": 9,
+    "enemies": 17,
+    "icons": 35,
+    "assets": 61,
+    "originalRequests": 24
+  },
+  "identity": "Player names and avatars will come from Discord; no player art generation.",
+  "enemyDirection": "All new enemies face screen-left with centered, fully contained silhouettes. No changes to old enemy directions.",
+  "progression": "Clean dreamlike Chinese cultivation architecture with locally supernatural remaining arrays, white walls, deep eaves, sunlight and ordered spaces; abandoned production courtyards, not catastrophic battle ruins or an enormous celestial megastructure.",
+  "itemDesign": "Refined softly layered painting and coherent classical slightly masculine garments. Large silhouette and construction differences distinguish material, refining stage and treatment; no grade numbers, UI labels, recolors alone or rough painting for low-grade materials.",
+  "jobs": [
+    {
+      "id": "sunken-manor-entrance",
+      "name": "涵岳外台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/sunken-manor-entrance.txt"
+    },
+    {
+      "id": "seal-guardian-ring",
+      "name": "四枢阵坪",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/seal-guardian-ring.txt"
+    },
+    {
+      "id": "manor-outer-court",
+      "name": "涵岳前庭",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/manor-outer-court.txt"
+    },
+    {
+      "id": "rusted-corridor",
+      "name": "校器长廊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/rusted-corridor.txt"
+    },
+    {
+      "id": "puppet-court",
+      "name": "制傀工坊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/puppet-court.txt"
+    },
+    {
+      "id": "buried-gallery",
+      "name": "沉砂引渠",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/buried-gallery.txt"
+    },
+    {
+      "id": "stone-root-court",
+      "name": "静养榕庭",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/stone-root-court.txt"
+    },
+    {
+      "id": "sealed-vault",
+      "name": "涵岳材库",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/sealed-vault.txt"
+    },
+    {
+      "id": "manor-seal-gate",
+      "name": "内院灵关",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-courts-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/manor-seal-gate.txt"
+    },
+    {
+      "id": "enemies-01",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/enemies-01.txt",
+      "items": [
+        {
+          "id": "mirror-wisp",
+          "name": "照形魅"
+        },
+        {
+          "id": "spirit-knot",
+          "name": "凝砂游灵"
+        },
+        {
+          "id": "inverted-seal-spirit",
+          "name": "倒纹阵灵"
+        },
+        {
+          "id": "marrow-flame",
+          "name": "游炉灵焰"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/shrine-gate-warden-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/enemies-02.txt",
+      "items": [
+        {
+          "id": "oathbound-swordsman",
+          "name": "巡廊剑傀",
+          "cellBounds": [
+            0,
+            0,
+            1536,
+            736
+          ],
+          "backgroundRemoval": "white-background",
+          "foregroundComponent": 2
+        },
+        {
+          "id": "array-blade-puppet",
+          "name": "列刃木傀",
+          "cellBounds": [
+            0,
+            0,
+            1536,
+            736
+          ],
+          "backgroundRemoval": "white-background",
+          "foregroundComponent": 1
+        },
+        {
+          "id": "binding-puppet",
+          "name": "牵丝工傀"
+        },
+        {
+          "id": "hollow-armor-soldier",
+          "name": "运材甲傀"
+        }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/enemies-03.txt",
+      "items": [
+        {
+          "id": "stone-eyed-toad",
+          "name": "石目妖蟾"
+        },
+        {
+          "id": "buried-spine-beast",
+          "name": "伏砂棘兽"
+        },
+        {
+          "id": "spore-veiled-wight",
+          "name": "菌甲木傀",
+          "backgroundRemoval": "white-background-open"
+        },
+        {
+          "id": "grudge-delver",
+          "name": "搜材凶修"
+        }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/shrine-gate-warden-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/enemies-04.txt",
+      "items": [
+        {
+          "id": "gale-bronze-guard",
+          "name": "御风铜卫"
+        },
+        {
+          "id": "vault-armored-guard",
+          "name": "玄煞库卫"
+        },
+        {
+          "id": "four-seal-warden",
+          "name": "镇枢金卫"
+        },
+        {
+          "id": "root-entwined-idol",
+          "name": "榕根古像"
+        }
+      ]
+    },
+    {
+      "id": "enemies-05",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/enemies-05.txt",
+      "items": [
+        {
+          "id": "blood-oath-shadow",
+          "name": "照血阵影"
+        }
+      ]
+    },
+    {
+      "id": "materials-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/materials-01.txt",
+      "items": [
+        {
+          "id": "soul-ember",
+          "name": "凝魄砂"
+        },
+        {
+          "id": "spirit-eye",
+          "name": "石精灵眼"
+        },
+        {
+          "id": "formation-core",
+          "name": "阵枢残核"
+        },
+        {
+          "id": "fractured-spirit-blade",
+          "name": "残损灵刃"
+        }
+      ]
+    },
+    {
+      "id": "materials-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png",
+        "public/assets/art/icons/azure-iron-blade-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/materials-02.txt",
+      "items": [
+        {
+          "id": "baleful-alloy",
+          "name": "玄煞铁"
+        },
+        {
+          "id": "baleful-blade",
+          "name": "玄煞精料"
+        },
+        {
+          "id": "deepsteel-ingot",
+          "name": "沉渊钢"
+        },
+        {
+          "id": "deepsteel-blade",
+          "name": "沉渊精料"
+        }
+      ]
+    },
+    {
+      "id": "materials-03",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/jade-marrow-flare-wangchuan-v1.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/materials-03.txt",
+      "items": [
+        {
+          "id": "warding-notes",
+          "name": "工坊阵图残页"
+        },
+        {
+          "id": "crimson-marrow",
+          "name": "赤灵髓"
+        },
+        {
+          "id": "vault-bond",
+          "name": "赤纹灵金"
+        }
+      ]
+    },
+    {
+      "id": "provisions",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/spirit-jerky-flare-v5.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/provisions.txt",
+      "items": [
+        {
+          "id": "recovery-draught",
+          "name": "续脉散"
+        },
+        {
+          "id": "surge-pill",
+          "name": "燃血丹"
+        }
+      ]
+    },
+    {
+      "id": "trinkets",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png",
+        "public/assets/art/icons/marrow-crystal-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/trinkets.txt",
+      "items": [
+        {
+          "id": "marrow-pendant",
+          "name": "养元佩"
+        },
+        {
+          "id": "vital-eye",
+          "name": "命枢珠"
+        },
+        {
+          "id": "mountaincleaver-pendant",
+          "name": "断岳佩"
+        },
+        {
+          "id": "returning-lamp",
+          "name": "归息盏"
+        }
+      ]
+    },
+    {
+      "id": "upgrade-sands",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/azure-body-shell-flare-wangchuan-v1.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/upgrade-sands.txt",
+      "items": [
+        {
+          "id": "baleful-head-shell",
+          "name": "玄煞束额砂"
+        },
+        {
+          "id": "baleful-body-shell",
+          "name": "玄煞护衣砂"
+        },
+        {
+          "id": "baleful-leg-shell",
+          "name": "玄煞护腿砂"
+        },
+        {
+          "id": "baleful-foot-shell",
+          "name": "玄煞护履砂"
+        }
+      ]
+    },
+    {
+      "id": "weapons-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/weapons-01.txt",
+      "items": [
+        {
+          "id": "wood-hilt-baleful-sword",
+          "name": "粗炼玄煞剑"
+        },
+        {
+          "id": "iron-birch-baleful-sword",
+          "name": "玄煞剑"
+        },
+        {
+          "id": "spiritwood-baleful-sword",
+          "name": "养灵玄煞剑"
+        }
+      ]
+    },
+    {
+      "id": "weapons-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/weapons-02.txt",
+      "items": [
+        {
+          "id": "wood-hilt-deepsteel-sword",
+          "name": "粗炼沉渊剑"
+        },
+        {
+          "id": "iron-birch-deepsteel-sword",
+          "name": "沉渊剑"
+        },
+        {
+          "id": "spiritwood-deepsteel-sword",
+          "name": "养灵沉渊剑"
+        }
+      ]
+    },
+    {
+      "id": "armor-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/armor-01.txt",
+      "items": [
+        {
+          "id": "hide-lined-baleful-head-shell",
+          "name": "玄煞夹皮头巾"
+        },
+        {
+          "id": "hide-lined-baleful-body-shell",
+          "name": "玄煞夹皮短衣"
+        },
+        {
+          "id": "hide-lined-baleful-leg-shell",
+          "name": "玄煞夹皮长裤"
+        },
+        {
+          "id": "hide-lined-baleful-foot-shell",
+          "name": "玄煞软皮靴"
+        }
+      ]
+    },
+    {
+      "id": "armor-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-courts-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-courts/production-v1/prompts/armor-02.txt",
+      "items": [
+        {
+          "id": "beasthide-lined-baleful-head-shell",
+          "name": "玄煞妖皮护额"
+        },
+        {
+          "id": "beasthide-lined-baleful-body-shell",
+          "name": "玄煞妖甲"
+        },
+        {
+          "id": "beasthide-lined-baleful-leg-shell",
+          "name": "玄煞妖皮长裤"
+        },
+        {
+          "id": "beasthide-lined-baleful-foot-shell",
+          "name": "玄煞妖皮靴"
+        }
+      ]
+    }
+  ]
+}

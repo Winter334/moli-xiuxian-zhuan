@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: refined painted sword-family icon atlas, exactly three separate complete swords in one row.
+Input images: Images 1 and 2 are approved refined and coarse earlier swords. Use their painting precision and classical construction, not identical outlines or female/modern styling.
+Left: coarse-forged black spiritual iron sword, moderately long angular blade with broad uneven forge facets and a simple short rectangular guard, plain wrapped grip. Clear black-metal family with bright seams; solid serviceable weapon, not broken or rusty scrap.
+Middle: refined black spiritual iron sword, long narrow taper with an angular reinforced shoulder, a clean three-plane blade and a wide hooked twin-wing guard, neat classical grip fittings. More deliberate blade and guard construction than the coarse sword, not just a shinier recolor.
+Right: spirit-treated black spiritual iron sword, longer smoothly waisted blade below a broad stepped shoulder, elegant paired swept guard arms and a restrained continuous jade-metal collar. A few pale green worked channels follow large blade planes; spiritually refined, without huge light trails.
+Style/medium: exquisite luminous softly layered Chinese cultivation painting, controlled black and silver edges, nuanced broad surfaces and refined classical metalwork. Every grade is beautifully painted.
+Constraints: strict three-column by one-row grid, full swords diagonally inclined similarly with no part cropped, broad clean white gutters and generous margins. No ornamental gem overload, text, grade marks, ground shadow, UI or watermark. These are finished swords, not billets.

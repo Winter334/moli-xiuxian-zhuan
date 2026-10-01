@@ -1,0 +1,26 @@
+{
+  "region": "huaixi",
+  "version": "flare-cloth-v5",
+  "variant": "flare",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "cloth-pill-study",
+      "kind": "atlas",
+      "target": "icons",
+      "backgroundRemoval": "white-background",
+      "assetSuffix": "flare-v5",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "spirit-jerky",
+          "name": "培元丹",
+          "previewOnly": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: refined painted inventory atlas, exactly three separate objects in one row.
+Input images: Image 1 is the established jade marrow bead family reference; Image 2 supplies refined metal painting only.
+Left: workshop array-diagram fragments, a small fan of torn pale paper sheets held by a short old cord, broad incomplete looping assembly lines and several missing edges. These are damaged workshop notes, not a glowing spellbook; no legible text.
+Middle: crimson marrow, a single dense softly translucent bare bead continuing the jade-marrow family, a large folded crimson inner core and deep clear shell edge. Slightly heavier visual depth, not a pill, stone spirit eye or faceted crystal cluster.
+Right: red-pattern spiritual gold, a small stack of two broad angular gold material leaves with red mineral paths passing through their cut edges. Thin flat crafted metal plates, not money, legal documents, gold bars or a badge.
+Style/medium: exquisite luminous softly layered painting, refined paper, translucent marrow and warm metal with distinct silhouettes.
+Constraints: strict three-column by one-row layout, broad clean white gutters, pure white background and generous margins. Complete centered objects, no labels, numbers, grade badges, UI, ground shadow or watermark. Grouped leaves do not imply inventory quantity.

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: Qianqu river landing, a lived-in trade settlement beside the spirit wetland behind Hanyue mountain academy. Grey-green tiled dwellings and two orderly material-store houses meet on a broad old stone terrace; small cultivators' cargo boats rest outside a pale stone jetty with restrained water-parting seams. Sealed herb boxes sit by a shaded merchant counter. Beyond the landing, lucid jade-green wetland plants divide calm water into long soft color bands.
+Composition/framing: view from a shaded open gallery across the working jetty toward the wide luminous marsh; buildings and boats remain readable, distant mountain academy roofs only a small background echo. Coherent large forms, pearl daylight, a few faraway travelers, calm everyday cultivation atmosphere.
+Style/medium: exquisite softly layered Chinese fantasy painting, cleaner dreamlike light and graceful real settlement scale.
+Constraints: not an empty camp, grand floating city, industrial port or abandoned ruin. No dense tiny cargo clutter, enormous effects, readable signs, UI or watermark. No reference image.

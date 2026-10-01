@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four complete enemy cutouts, strict 2-column by 2-row atlas.
+Input images: Images 1 and 2 reference the approved refined softly layered creature painting only, not species, palette or facing.
+Top left: armored moss spirit, a low bulky clump of wet green moss and translucent gel pulled around a few broad dark silver-black alloy plates, short root-like supports, dense visible gel between plates. Not a human in steel armor. Its leading plate and probing roots drive LEFT.
+Top right: large web broodmother spider, a broad soft dark brown-violet abdomen with a translucent lower gel sac, eight fully visible thick jointed legs including two stronger forward stabbing legs. Head and front legs clearly oriented LEFT; no huge surrounding web or eggs spilling into other cells.
+Bottom left: budding moss spirit, one cohesive transparent green-blue gel root mass containing a dark old array core, three large raised fresh moss crowns extending short tendrils LEFT. Not three separate enemies, no face or human anatomy.
+Bottom right: rock-piercing owl, complete powerful grey-cream owl with a hard pointed beak and curled talons, compact left-facing head, one slightly raised wing showing a restrained cold-white membrane pattern. Dense painted feather masses, not tiny noisy individual feathers; whole creature attacks LEFT.
+Style/medium: exquisite luminous softly layered fantasy painting, polished clear forms and coherent creature volume.
+Constraints: complete subjects centered within their cells, broad white cross gutter and generous pure-white outer margins; keep all legs, wings and tendrils contained. No scenery, ground shadows, readable text, UI, labels or watermark.

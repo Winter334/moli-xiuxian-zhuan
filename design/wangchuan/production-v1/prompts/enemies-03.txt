@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted hostile cultivator cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four adult human robbers, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is a painting-style reference only, not anatomy, clothing or facing.
+Top left: twin-saber outlaw, agile adult in layered classical travel clothing, two short sabers in an intersecting leftward attack. A narrow pale blue-white line at each blade is a restrained qi accent. Natural hands holding exactly two weapons.
+Top right: iron-robed outlaw, robust adult in a heavy long Chinese robe with inset dark-steel plates and modest connecting pale lines. Broad weighted hem, visible human face, an ordinary short weapon readied left. Not a robot or knight in European plate armor.
+Bottom left: withered-staff outlaw, mature adult in several layers of supple beast-hide over classical clothing, holding a gnarled root staff with dull copper bands, raised in a heavy leftward strike. Small satchel, natural proportions, not a shaman with a gigantic glowing crystal.
+Bottom right: baleful-saber outlaw, poised hostile adult in a sober cross-collared robe, single saber with narrow dark-red blade marks, compact sequential leftward slash posture. No duplicate arms or whole-body red aura.
+Direction: ALL bodies, faces, gaze and attacks face screen-left, three-quarter or profile. Subjects stay centered in their cells, left-facing does not mean touching the left boundary.
+Style/medium: refined softly layered painterly volume, slightly masculine traditional cultivation wardrobe, natural adult anatomy and coherent material light; not photorealistic, scratchy or unfinished.
+Constraints: pure white background, generous white margins and broad empty cross gutter. Full heads, feet, hands and weapons inside cells. No ground, cast shadow, loot piles, text, labels, frame, UI or watermark.

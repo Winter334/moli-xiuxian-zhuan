@@ -1,0 +1,44 @@
+{
+  "version": "stage-1-growth-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-growth-candidate.1-dual.1-slots.1",
+  "schemaVersion": 14,
+  "growthPillTiers": [
+    { "id": "early", "name": "初阶" },
+    { "id": "middle", "name": "中阶" },
+    { "id": "late", "name": "高阶" }
+  ],
+  "items": [
+    { "id": "attack-pill", "name": "初阶培元丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "stat": "attack", "tierId": "early", "amount": "1", "scale": "30" } },
+    { "id": "defense-pill", "name": "初阶固元丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "stat": "defense", "tierId": "early", "amount": "0.2", "scale": "6" } },
+    { "id": "vitality-pill", "name": "初阶养血丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "stat": "maxHp", "tierId": "early", "amount": "5", "scale": "150" } },
+    { "id": "attack-pill-middle", "name": "中阶培元丹", "kind": "growth", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "9", "use": { "kind": "growth", "stat": "attack", "tierId": "middle", "amount": "3", "scale": "30" } },
+    { "id": "defense-pill-middle", "name": "中阶固元丹", "kind": "growth", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "9", "use": { "kind": "growth", "stat": "defense", "tierId": "middle", "amount": "0.6", "scale": "6" } },
+    { "id": "vitality-pill-middle", "name": "中阶养血丹", "kind": "growth", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "9", "use": { "kind": "growth", "stat": "maxHp", "tierId": "middle", "amount": "15", "scale": "150" } },
+    { "id": "attack-pill-late", "name": "高阶培元丹", "kind": "growth", "unlock": { "regionId": "ruins", "kills": "5" }, "sellPrice": "24", "use": { "kind": "growth", "stat": "attack", "tierId": "late", "amount": "8", "scale": "30" } },
+    { "id": "defense-pill-late", "name": "高阶固元丹", "kind": "growth", "unlock": { "regionId": "ruins", "kills": "5" }, "sellPrice": "24", "use": { "kind": "growth", "stat": "defense", "tierId": "late", "amount": "1.6", "scale": "6" } },
+    { "id": "vitality-pill-late", "name": "高阶养血丹", "kind": "growth", "unlock": { "regionId": "ruins", "kills": "5" }, "sellPrice": "24", "use": { "kind": "growth", "stat": "maxHp", "tierId": "late", "amount": "40", "scale": "150" } }
+  ],
+  "recipes": [
+    { "id": "attack", "training": { "difficulty": 2, "xp": "4" }, "name": "初阶培元丹方", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "blood", "quantity": "1" }], "stones": "3", "outputId": "attack-pill", "outputQuantity": "1" },
+    { "id": "defense", "training": { "difficulty": 2, "xp": "4" }, "name": "初阶固元丹方", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "stone-marrow", "quantity": "1" }], "stones": "3", "outputId": "defense-pill", "outputQuantity": "1" },
+    { "id": "vitality", "training": { "difficulty": 2, "xp": "4" }, "name": "初阶养血丹方", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "blood", "quantity": "1" }], "stones": "3", "outputId": "vitality-pill", "outputQuantity": "1" },
+    { "id": "attack-middle", "training": { "difficulty": 5, "xp": "10" }, "name": "中阶培元丹方", "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "6" }, { "itemId": "blood", "quantity": "3" }, { "itemId": "dew-flower", "quantity": "2" }], "stones": "12", "outputId": "attack-pill-middle", "outputQuantity": "1" },
+    { "id": "defense-middle", "training": { "difficulty": 5, "xp": "10" }, "name": "中阶固元丹方", "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "6" }, { "itemId": "stone-marrow", "quantity": "3" }, { "itemId": "dew-flower", "quantity": "2" }], "stones": "12", "outputId": "defense-pill-middle", "outputQuantity": "1" },
+    { "id": "vitality-middle", "training": { "difficulty": 5, "xp": "10" }, "name": "中阶养血丹方", "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "6" }, { "itemId": "blood", "quantity": "3" }, { "itemId": "dew-flower", "quantity": "2" }], "stones": "12", "outputId": "vitality-pill-middle", "outputQuantity": "1" },
+    { "id": "attack-late", "training": { "difficulty": 8, "xp": "24" }, "name": "高阶培元丹方", "unlock": { "regionId": "ruins", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "12" }, { "itemId": "blood", "quantity": "6" }, { "itemId": "heartwood", "quantity": "2" }], "stones": "45", "outputId": "attack-pill-late", "outputQuantity": "1" },
+    { "id": "defense-late", "training": { "difficulty": 8, "xp": "24" }, "name": "高阶固元丹方", "unlock": { "regionId": "ruins", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "12" }, { "itemId": "stone-marrow", "quantity": "6" }, { "itemId": "dense-ore", "quantity": "2" }], "stones": "45", "outputId": "defense-pill-late", "outputQuantity": "1" },
+    { "id": "vitality-late", "training": { "difficulty": 8, "xp": "24" }, "name": "高阶养血丹方", "unlock": { "regionId": "ruins", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "12" }, { "itemId": "blood", "quantity": "6" }, { "itemId": "heartwood", "quantity": "2" }], "stones": "45", "outputId": "vitality-pill-late", "outputQuantity": "1" }
+  ],
+  "pillDrops": {
+    "hill-wolf": [{ "itemId": "attack-pill", "quantity": "1", "chance": 0.01 }],
+    "hill-boar": [{ "itemId": "vitality-pill", "quantity": "1", "chance": 0.01 }],
+    "bamboo-snake": [{ "itemId": "attack-pill", "quantity": "1", "chance": 0.02 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.01 }],
+    "spine-badger": [{ "itemId": "defense-pill", "quantity": "1", "chance": 0.02 }],
+    "iron-lizard": [{ "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.015 }],
+    "flame-lizard": [{ "itemId": "attack-pill-middle", "quantity": "1", "chance": 0.015 }],
+    "stone-crab": [{ "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.015 }],
+    "cold-snake": [{ "itemId": "vitality-pill-middle", "quantity": "1", "chance": 0.015 }],
+    "garden-guardian": [{ "itemId": "defense-pill-late", "quantity": "1", "chance": 0.01 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.005 }],
+    "root-vine": [{ "itemId": "vitality-pill-late", "quantity": "1", "chance": 0.01 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.005 }]
+  }
+}

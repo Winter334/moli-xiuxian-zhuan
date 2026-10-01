@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: Stonebridge town, a lived-in river trading settlement whose stone bridge connects streets on both banks.
+Scene/backdrop: a broad gently flowing river passing below one substantial arched stone bridge. Low tiled shop roofs and stepped unloading quays form connected architectural masses on either bank. A few small cargo boats sit below the bridge; one bridgehead trading hall and grouped sacks, iron stock and folded hides suggest practical commerce without becoming a prop catalogue.
+Composition/framing: wide river-level establishing view, the bridge as one strong spanning shape and its pale reflection opening the middle of the painting. River, roof bands and distant reed banks form three calm readable layers. Small distant people only for scale, not portraits.
+Style/medium: luminous hand-painted environment, clear broad color areas and restrained concentrated detail. Quiet slightly unreal distance and soft light give the familiar town a subtle dreamlike quality; not photorealism or a miniature diorama.
+Lighting/mood: pearly late-morning light, pale blue water, cool stone, muted terracotta roof accents and deep green river margins.
+Constraints: no reference image; compose this location independently. Keep the town visibly inhabited and trading. No floating palaces, enormous magical monuments, modern objects, text, labels, readable signs, logo, watermark or UI. Avoid fragmented tiny brush marks covering every surface.

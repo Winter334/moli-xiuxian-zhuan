@@ -1,0 +1,29 @@
+{
+  "region": "art-repairs",
+  "version": "divine-v2",
+  "quality": "high",
+  "scope": "Replace only the circulating-qi divine-art illustration rejected for its isolated hand. No other assets, character portrait, layout or rule changes.",
+  "authorization": "The user asked for a new version of this image, continuing the explicitly confirmed AgentSky API workflow in this chat.",
+  "replaces": "public/assets/art/techniques/circulating-qi-flare-divine-v1.png",
+  "jobs": [
+    {
+      "id": "divine-art",
+      "kind": "atlas",
+      "target": "techniques",
+      "variant": "flare",
+      "assetSuffix": "flare-divine-v2",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/art-repairs/divine-v2/prompt.txt",
+      "items": [
+        {
+          "id": "circulating-qi",
+          "name": "周天罡气"
+        }
+      ]
+    }
+  ]
+}

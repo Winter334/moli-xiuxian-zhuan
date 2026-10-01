@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted equipment icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four wearable demon-hide pieces in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style and soft-hide material reference. New pieces belong to one practical leather family, not copies of the existing short jacket.
+Subjects:
+Top left: demon-hide headwrap, a broad thin supple leather forehead band with two tied straps extending compactly to the sides. Visible natural hide grain and simple stitching. Low horizontal silhouette, not a helmet, crown or metal circlet.
+Top right: demon-hide under-armor, a close-fitted thin soft leather torso garment with practical seams kept clear of shoulder and elbow movement. Flexible fitted body silhouette, modest sleeves or shoulder openings, no heavy plates, giant pauldrons, decorative chest gem or ornate cuirass. It can be worn under normal clothes.
+Bottom left: demon-hide long trousers, one complete pair with long legs, smooth inner panels and movement folds behind the knees. Tall two-leg silhouette distinct from the torso garment, not shorts or leggings on a visible person.
+Bottom right: demon-hide boots, one matched pair of tall practical leather boots with hide cords tied at the tops. Clear feet and shafts, slightly staggered three-quarter view. No armored greaves or feet inside.
+Style/medium: luminous hand-painted equipment, supple charcoal-green leather with restrained natural grain and simple muted stitching. Coherent broad shadows and solid volume, not dense photo texture. Plain low-rank equipment, each type identifiable by outline.
+Composition/framing: one complete centered equipment piece or matched pair per equal square cell, generous pure-white margins and a clean white cross gutter. Stable readable silhouettes.
+Constraints: pure white background for local removal, no person, mannequin, body part, floor, shadow, scenery, frame, aura, text, labels, watermark or UI.

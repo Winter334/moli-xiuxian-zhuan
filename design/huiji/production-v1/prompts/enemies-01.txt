@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four different adult human mountain road robbers, in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style reference ONLY. Borrow its bright, simplified painted volume, broad brush shapes and restrained surface detail. Do not reproduce the wolf, its anatomy, fur, pose or colors.
+Subjects:
+Top left: a masked roadside swordsman. Old cloth covers the lower face; a rope for tying cargo is wrapped at his waist. He carries one plain saber and leans forward watchfully. Simple worn traveling clothes.
+Top right: a log-barricade robber. A sturdy, squat figure with rough sleeves and a rusty iron hook secured at the waist. A short rough wooden cudgel in one hand gives him a compact silhouette. Do not paint the entire roadblock.
+Bottom left: a twin-blade robber. A lean adult in a low, side-on stance, one short knife held in each hand, handles bound with coarse thread. Both hands and both blades clearly visible.
+Bottom right: a fierce checkpoint robber. Broad shoulders, a heavy plain saber held across his body, coarse layered clothes and a planted guarding stance. Distinguish him from the first three by posture and outline, not just clothing color.
+Style/medium: recognizable adult human anatomy, clearly hand-painted rather than photographed or rendered. Big readable shapes, moderately simplified features and fabric folds, expressive but not cute, chibi or anime. Ordinary early-game clothing and weapons, no high-tier ornament.
+Composition/framing: one full-body figure centered in each equal square cell. Entire figures, hands, weapons and feet fit inside their own cell with generous pure-white margins. Comparable visual scale. A wide clean white gutter along both grid boundaries; no overlap between cells.
+Constraints: pure white background for local removal, no ground plane, environment, cast shadow, scenery, labels, borders, inventory props, added characters or watermark. Keep any carried gear attached to the figure. Clear silhouette and readable hands matter more than tiny texture.
+Avoid: elaborate ceremonial armor, luminous weapons, supernatural halos, all four sharing the same silhouette, realistic pores, dense hatch marks.

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Baiqu embankment entrance, an old pale stone dike leading from a riverside cultivation settlement toward luminous medicinal wetlands. A worn stone water-dividing marker stands by a broad dry landing; layered emerald herb fields and blue-green lotus water extend toward a clean mountain wall. A few restrained old nurturing seams remain between broken dike stones, with low thin spring vapor along one field edge.
+Composition/framing: wide open oblique view along the dike, clear curved path and tranquil water bands guiding the eye into the marsh. A small returning traveler with a wrapped bundle, distant Hanyue eaves near the mountain; no portrait. Gentle daylight and coherent large green, mineral-grey and pale cyan planes.
+Style/medium: refined luminous Chinese fantasy landscape painting, quiet dreamlike spatial depth.
+Constraints: an actual safe wetland entrance, not a huge dam or another maze of academy pipes. Avoid thick obscuring mist, dozens of tiny symbols, floating mountains, text, UI and watermark. No reference image.

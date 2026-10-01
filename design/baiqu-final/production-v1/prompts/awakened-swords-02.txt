@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: two complete awakened-treated swords in a strict 2-column by 1-row atlas.
+Input images: Image 1 anchors the existing baleful material family; Image 2 anchors deepsteel. Preserve their material identities and refined softly layered painting, not exact old weapon geometry.
+Left: awakened baleful sword, a compact broad straight black-silver blade with an angular reinforced shoulder step, a substantial old-style bent double guard and dark tied grip. Dense charcoal edge treatment and fine contained jade lines follow a few broad structural panels; an ominous material with no red blood or overpowering aura.
+Right: awakened deepsteel sword, a longer substantial cool pearl-grey blade with a deep central ridge, a clean long narrowing point, broad recessed shoulders and one graceful double-tier guard. Steel retains dense blue-violet shadow planes and restrained jade-white treated ridge seams. Clearly longer smoother structure and cooler material than the black baleful sword.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, clear controlled metal volume, coherent ancient sword craft.
+Constraints: full tip, grip and pommel centered inside each cell, generous pure-white outer margins and broad empty vertical gutter. No person, scabbard, grade number, labels, text, UI, ground shadow or giant glow.

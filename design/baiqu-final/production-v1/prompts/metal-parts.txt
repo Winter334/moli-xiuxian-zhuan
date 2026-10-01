@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: two distinct resonant forging-material icons in a strict 2-column by 1-row atlas.
+Input images: Image 1 anchors refined forged-material language; Image 2 references approved paint finish and broad metal planes. Do not depict finished swords.
+Left: refined resonant metal stock, a slender compact solid golden-bronze prismatic forging billet with clearly squared shoulder steps and a narrow clean oblique hexagonal cut face. Dense softly polished alloy planes and two broad subdued forging bands, distinct from a thick ingot and from cool deepsteel stock.
+Right: heavy resonant metal stock, a broad short very thick golden-bronze squared forging block with visibly layered offset stacked faces and one large wide oblique cross-section showing heavy folding strata. Substantially wider and denser than the slender refined stock, not just a larger copy or finished greatsword blade.
+Style/medium: exquisite softly layered Chinese fantasy painting, softly luminous metal, precise readable structure, no microscopic noise.
+Constraints: full separate centered forging materials on pure white, generous margins and broad empty vertical gutter. No handles, sword points, ornate weapons, text, labels, grade numbers, UI, floor shadow or watermark.

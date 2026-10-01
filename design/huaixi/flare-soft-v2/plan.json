@@ -1,0 +1,44 @@
+{
+  "region": "huaixi",
+  "version": "flare-soft-v2",
+  "variant": "flare",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "items-study",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-v2",
+      "size": "1536x1024",
+      "columns": 3,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "copper-coin",
+          "name": "灵石"
+        },
+        {
+          "id": "cloudy-marrow",
+          "name": "浊灵髓"
+        },
+        {
+          "id": "old-wood-hilt",
+          "name": "粗制淬液"
+        },
+        {
+          "id": "dried-meat",
+          "name": "肉干"
+        },
+        {
+          "id": "iron-birch-sword",
+          "name": "铁剑"
+        },
+        {
+          "id": "hide-jacket",
+          "name": "夹皮短衣"
+        }
+      ]
+    }
+  ]
+}

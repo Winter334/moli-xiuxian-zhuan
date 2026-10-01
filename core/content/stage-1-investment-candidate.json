@@ -1,0 +1,9 @@
+{
+  "version": "stage-1-investment-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-investment-candidate.1-dual.1-slots.1",
+  "panelWeapons": [
+    { "baseId": "bamboo-edge", "id": "heavy-bamboo-edge", "name": "厚刃青锋", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "48" }, { "stat": "agility", "mode": "flat", "value": "4" }] },
+    { "baseId": "sand-gauntlet", "id": "forged-gauntlet", "name": "重锻拳套", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "34" }, { "stat": "defense", "mode": "flat", "value": "20" }] },
+    { "baseId": "jade-staff", "id": "plain-jade-staff", "name": "素玉杖", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "44" }, { "stat": "maxMp", "mode": "flat", "value": "55" }] }
+  ]
+}

@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: four painted enemy cutouts for a Chinese cultivation RPG.
+Primary request: exactly four separate subjects in a strict 2-column by 2-row atlas, reading order.
+Input images: Image 1 is only the approved refined softly layered painting reference, not a species, setting or facing reference.
+Top left: uprooted channel wood-wight, a compact gnarled wooden torso pulled into a hunched shape by several thick roots, an old cracked array core held between roots, a few mud-stained stone-plug fragments. No invented human face; the broad leading roots sweep LEFT.
+Top right: blood-reflection gel spirit, a complete thin semi-translucent red-violet human-like outline made of folded gel, red array veins embedded inside and one dense extended arm reaching LEFT. No clothes or detailed face; colored edge masses keep the body readable.
+Bottom left: misaligned water-binding array spirit, a concentrated grey-gold sand knot amid three coherent cyan light cords, visibly directional and asymmetrical with the cords whipping LEFT. Not a decorative mandala or humanoid skeleton; no invented face.
+Bottom right: spirit-reflecting bat, complete winged creature flying LEFT with a clearly left-facing muzzle, cold pale vein patterns crossing dark soft blue-grey wing membranes. Wings fully contained, active curled claws and dense readable painted body.
+Style/medium: exquisite luminous softly layered fantasy painting, finished volumes, controlled edges, local spiritual effects with colored cores.
+Constraints: all subjects centered in their own cells, full silhouettes including wings, roots and light cords. Broad empty white cross gutter, generous pure-white outer margins. No terrain, ground shadows, props extending across cells, text, labels, UI or watermark.

@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: a warm vine-draped stone wall at the plateau edge. Monumental blue-white rock planes descend behind several broad green curtains of long hanging vines. An old timber walkway wraps a rock platform; a small warm spring emerges at the bottom. Shade-facing spiritual leaves hold a soft moist light. Dry channel fragments remain mostly behind vegetation.
+Style/medium: finely painted Chinese fantasy environment, warm green reflected light in cool cliff shade, clear rock mass and supple vine drapery. Controlled detail, no noisy leaf-by-leaf tessellation.
+Composition/framing: oblique near view along the wall and its receding ledges; a few large curtain shapes reveal depth and a quiet open rock gap. Not the previous valley viewed again.
+Constraints: no omnipresent glowing vegetation, giant celestial structures, sprawling industrial canals, modern objects, readable text, UI or watermark.
+Progression: move beyond gritty tangled jungle toward clean pale cliff planes and elegant coherent green drapery, soft jade translucence in shaded leaves and quiet dreamlike spacing between ledges. Age shows through structure, not dirt everywhere. Restrained spirit-domain mood, not neon vines.

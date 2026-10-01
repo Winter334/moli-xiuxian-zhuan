@@ -1,0 +1,36 @@
+{
+  "region": "baiqu-final",
+  "version": "submission-retry-v3",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "authorization": "The user explicitly allows repeated independent retries in this final batch until assets are complete.",
+  "jobs": [
+    {
+      "id": "liquids",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v3",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/liquids.txt",
+      "items": [
+        {
+          "id": "clear-spring-saliva",
+          "name": "澄泉灵涎"
+        },
+        {
+          "id": "harmonizing-elixir",
+          "name": "调元药液"
+        },
+        {
+          "id": "foundation-insight",
+          "name": "蕴元灵露"
+        }
+      ]
+    }
+  ]
+}

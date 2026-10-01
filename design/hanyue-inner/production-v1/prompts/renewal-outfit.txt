@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four empty silk cultivation garments, strict 2-column by 2-row atlas.
+Input images: Images 1 and 2 reference the approved coherent slightly masculine classical wardrobe and refined paint finish only. New garments are supple woven silk, not their short leather jackets or armor.
+Top left: a softly folded pearl-green square silk headcloth arranged as a modest classical scholar wrap, broad smooth central fold, two short cloth tails, fine continuous edge binding. No head, hat frame or armored forehead plate.
+Top right: a complete softly flowing knee-length pearl-green cultivation robe, classical crossed collar, broad moderately tapered sleeves, layered diagonal front lap and a simple woven waist sash. Airy continuous silk drape and long rounded side slits visibly distinguish it from previous short jackets and sleeveless beast-hide armor. Slightly masculine understated proportions, not dress-shaped breast or waist contours.
+Bottom left: full pearl-green silk trousers, straight broad draped legs, soft knee folds and simple tied waist, smooth narrow cuffs. Flowing woven planes instead of irregular hide paneling.
+Bottom right: one pair of low soft pearl-green silk shoes, gently curved toe and modest crossed cloth binding at the instep, delicate dark teal sole. Clearly shoes rather than tall leather boots.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, carefully modeled smooth silk, restrained thread sheen and coherent family construction.
+Constraints: no wearer, mannequin, skin, modern zipper, rigid metal plates, giant aura or gender switch. Complete objects centered in separate cells with broad empty cross gutter and generous pure-white margins. No text, UI, labels, ground shadow or watermark.

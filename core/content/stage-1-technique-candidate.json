@@ -1,0 +1,13 @@
+{
+  "version": "stage-1-dual-candidate.1-slots.1",
+  "rulesVersion": "rules-dual.1-slots.1",
+  "actionChanges": [
+    { "id": "blazing-bolt", "coefficient": "2.5" }
+  ],
+  "techniqueChanges": [
+    { "id": "breathing", "weaponType": null },
+    { "id": "verdant", "weaponType": "sword", "effects": [], "weaponMatch": { "modifiers": [], "effects": ["hit-mend"], "actionDamagePercent": "0" } },
+    { "id": "mountain", "weaponType": "gauntlet", "modifiers": [{ "stat": "defense", "mode": "flat", "value": "2" }, { "stat": "magicDefense", "mode": "flat", "value": "1" }], "weaponMatch": { "modifiers": [{ "stat": "defense", "mode": "flat", "value": "3" }, { "stat": "magicDefense", "mode": "flat", "value": "2" }], "effects": [], "actionDamagePercent": "0" } },
+    { "id": "flame", "weaponType": "staff", "weaponMatch": { "modifiers": [], "effects": ["hit-mana"], "actionDamagePercent": "0.28" } }
+  ]
+}

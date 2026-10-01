@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted accessory and artifact icon atlas.
+Primary request: four distinct small cultivation objects in a strict 2-column by 2-row grid.
+Input images: Image 1 supplies refined metal painting, Image 2 supplies the existing fused-marrow crystal language, not object silhouettes to copy.
+Top left: nurturing pendant, an oval layered crystal pendant with a small dark bronze array center, several translucent jade and muted mauve crystal planes spreading around it and a short classical tied suspension loop. Clearly a wearable pendant, not a loose marrow bead or crystal ore.
+Top right: life-pivot orb, a substantial single black spiritual-iron bead casing with a few large open inset windows showing multiple small green-blue stone-eye crystals gathered inside. Small suspension eye, softly pulsing local green light; not a pendant slab, human eyeball or gemstone sphere.
+Bottom left: mountain-cleaving pendant, a broad angular red-pattern gold talisman plate enclosing a dark fused blade-shaped middle and one clearly treated pale wood binding strip. A compact heavy trapezoid silhouette with a short tie, no readable talisman text or complete knife.
+Bottom right: returning-breath lamp, one graceful shallow green-patinated bronze oil lamp with a low stable foot, softly worn bright rim, a few tiny root strands at the base and a small clear blue-green inner ember. Physical lamp, not a necklace, ordinary candle or hovering fire spirit.
+Style/medium: exquisite luminous softly layered painting, coherent fine materials, restrained local effects, readable large outlines.
+Constraints: complete centered separate objects, pure white background, generous margins and broad empty cross gutter. No names, statistics, grade badges, large halo, ground shadow, UI or watermark.

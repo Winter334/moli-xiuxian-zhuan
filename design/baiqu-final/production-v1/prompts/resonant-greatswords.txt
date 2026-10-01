@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four members of ONE heavy resonant greatsword family in a strict 2-column by 2-row atlas.
+Input images: Image 1 references approved softly refined metal/weapon painting, not its ordinary sword size. All new members are clearly two-handed heavy weapons: broad thick blunt-shouldered golden-bronze blades with controlled narrowing tips and long grips, never slender swords.
+Top left: rough-forged heavy resonant sword, shortest thick flat broad blade, square shoulder block, simple straight substantial guard and long tied grip. Broad irregular forging planes, full intact weapon.
+Top right: finished heavy resonant sword, a visibly longer broad thick blade with a strong raised ridge and sloped full shoulders, a heavy downturned ancient guard and a clean two-handed dark cord grip. More orderly layered facets and distinctly shaped guard, not rough sword recolored.
+Bottom left: spirit-nurtured heavy resonant sword, long broad blade with two recessed thick side channels and a broad softly curving narrowing point, cloud-head crossguard with wide separated wings and long pale jade-wrapped grip. Restrained green treatment planes remain within the blade.
+Bottom right: awakened heavy resonant sword, a broad thick blade with pronounced offset shoulder steps and a dominant central layered ridge, double-tier squared open guard and a long dark-jade collared two-handed grip. Fine contained pearl-jade treatment on broad warm bronze planes; distinct stepped silhouette.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, large finished metal volumes and coherent ancient two-handed weapon craft.
+Constraints: complete weapons including full tip and pommel stay centered inside separate cells; broad empty white cross gutter and ample pure-white outer margins. No scabbard, person, text, grade labels, UI, floor shadow or enormous effects.

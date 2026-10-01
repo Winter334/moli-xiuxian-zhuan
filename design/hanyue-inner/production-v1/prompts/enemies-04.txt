@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four complete ancient academy construct cutouts in a strict 2-column by 2-row atlas.
+Input images: Image 1 references refined softly layered painting; Image 2 references classical academy construct language only. These are new distinct constructs, not copies.
+Top left: array guardian, complete upright construct with elegant overlapping dark bronze armor, restrained red-gold conducting seams and visible pale chest-core glow, a short ancient halberd on its forward arm aimed LEFT. Narrow imposing shoulders and guarded silhouette, not a living official.
+Top right: material-store bronze sentinel, broad barrel-like chest and belly plates surrounding a recessed array core, blocky brass forearms raised LEFT, compact stocky legs and orderly articulated joints. Visibly heavier and broader than the first guardian.
+Bottom left: load-moving iron-bone work puppet, complete tall open iron framework, very wide horizontal arm structure with massive work fists and compact cracked central core, a few layered warm force seams. Different exposed mechanical-bone silhouette, not a human skeleton or armored general. One fist drives LEFT.
+Bottom right: gate-sealing stone sentinel, stout full-bodied construct made of tightly interlocking broad pale stone lamellae, a small protected marrow core and red-gold seams between plates. Square heavy head and broad stone forearm turned LEFT, no sword and no invented organic face.
+Style/medium: exquisite luminous Chinese fantasy painting, softly modeled broad metal and mineral planes, restrained local array glow.
+Constraints: all bodies and attacks face LEFT while staying centered and fully inside individual cells. Pure-white background, broad empty cross gutter and generous outer margins. No pedestal, floor shadow, text, labels, UI or watermark.

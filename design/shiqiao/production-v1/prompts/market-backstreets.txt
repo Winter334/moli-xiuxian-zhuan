@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: the shallow reed flats outside Stonebridge town, left behind when the river changed course.
+Scene/backdrop: broad pale silt exposed between shallow ribbons of water, tall reed masses edging a narrow path. A few dark charred roots washed into the reeds and one distant hide-drying rack toward the townward bank. The wet ground carries a few broad dragging trails and footprints, not a carpet of tiny debris.
+Composition/framing: low open view across the pale flat, a sweeping shallow water ribbon leading into softly extended distance. Reeds act as large asymmetrical side masses, leaving the middle spacious and readable. Town roofs are at most a small remote hint, not the subject.
+Style/medium: painted environment with coherent simplified shadows, large calm value areas and a gently unfamiliar spaciousness. Fine reed detail is concentrated only near the path edge.
+Lighting/mood: cool silver morning water, grey-green reeds, soft clay-pink silt, airy quiet light.
+Constraints: independently composed, no reference image. This is a natural shallow river flat, not a town backstreet, garden or desert. No visible enemy lineup, fantasy gate, scattered bright flecks, text, watermark or UI.

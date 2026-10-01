@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four refined item icons in a strict 2-column by 2-row atlas.
+Input images: Image 1 references approved refined material painting; Image 2 anchors the existing quenching-liquid category only, not a sword handle.
+Top left: spirit-beast rib meat, a broad pale rose-red thick ribside muscle strip with clean creamy fascia seams and one partly folded plain spirit-sealing paper wrap beneath. Distinct long layered muscle silhouette from the compact dark crimson heart-meat lump, not a cooked dish or anatomical gore.
+Top right: awakened spirit wood, a compact thick split wood segment with an oblique warm ivory end grain, gently closing rounded grain loops and a deep cool jade-brown outer bark plane. More concentrated knotted material than ordinary straight timber; no whole tree, branching bonsai, glowing face or crystal.
+Bottom left: resonant metal ingot, ONE broad short stepped golden-bronze metal billet with clear thick trapezoidal faces and a pronounced central raised ridge, a muted pearl-yellow alloy sheen. Distinct large stepped geometry and coherent warm metal from the existing flat dark-steel and blue-grey deepsteel ingots; refined forging, not gold coins or a decorated bar with writing.
+Bottom right: awakened quenching liquid, concentrated pale amber-jade liquid in a squat octagonal dark-celadon glass vial with a wide short neck and small fitted stopper, a visible luminous liquid plane. Distinct short faceted vessel from rustic open clay pots and tall slim birch-liquid bottles; not a wooden sword hilt.
+Style/medium: exquisite softly layered Chinese fantasy painting, polished coordinated finish and large readable structures.
+Constraints: complete centered separate objects, broad white cross gutter and generous pure-white outer margins. No text, grade labels, UI, ground shadow, giant aura or watermark.

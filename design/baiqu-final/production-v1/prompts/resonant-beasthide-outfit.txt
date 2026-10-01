@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four empty resonant-treated beast-hide garments in a strict 2-column by 2-row atlas.
+Input images: Image 1 anchors approved classical slightly masculine supple beast-hide armor; Image 2 is its cloth-and-hide family companion. Preserve coherent polished paint, but do not copy cloth jacket construction.
+Top left: broad supple dark jade-grey beast-hide forehead wrap, large stepped overlapping reinforced center and broad short tied tails, muted golden-bronze worked border folded into the hide. No head or full helmet.
+Top right: complete sleeveless beast-hide armor with broad shoulders, orderly overlapping flexible double-front layers, ancient cross-lapped opening and tied side construction. Large worked bronze-grey resonant planes follow the layered joins, broad softer hide faces remain visible. Distinct from short sleeved cloth jacket and long silk robe, no rigid steel cuirass or breast-shaped contour.
+Bottom left: full relatively straight beast-hide trousers with broad doubled articulated knee folds and stepped side-overlap reinforcements, smooth inner hem and modest bronze worked seam panels. Hide remains supple, not cloth folds or hard greaves.
+Bottom right: one pair of taller supple beast-hide boots with doubled broad collar fold, tied upper wrap, long continuous hide fronts and substantial folded bronze-grey heel reinforcement. Clearly taller than cloth-set boots, not plated metal legs.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, finished supple hide and restrained resonant treatment, coherent masculine-leaning old cultivation craft.
+Constraints: centered complete empty pieces within individual cells, broad empty white cross gutter and generous pure-white margins. No wearer, skin, mannequin, modern zipper, gender switch, huge aura, text, labels, UI, floor shadow or watermark.

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: two stone platforms projecting from the cliff above Hanyue's earthfire shaft, connected by a narrow rockside walkway. Distant academy rooms rise at different heights beyond the warm hollow. Removed fire-distribution fittings leave a few empty sockets; old gathering arrays cup restrained golden-red fire at two recesses.
+Composition/framing: elevated lateral view across the two platforms and the shaft, a broad coral-red rock face meeting clean ivory architecture, cool pale daylight at the upper opening. Connected deep shadow planes and a few concentrated warm lights suggest depth.
+Style/medium: refined luminous Chinese fantasy painting, airy dreamlike architectural space, controlled warm-cool contrast.
+Constraints: platforms supported by real cliff masonry, not freely floating islands; earthfire facilities, not a volcano apocalypse or giant celestial reactor. Avoid dense pipes and mechanisms, featured creatures, readable text, UI and watermark. No reference image.

@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four separately packaged azure-metal treatment sands, strict 2-column by 2-row grid. All contain the SAME finely ground teal-grey metallic sand; distinguish packaging STRUCTURE and large outline, not four arbitrary colors.
+Input images: Image 1 supplies refined soft material painting only, not a metal ingot form.
+Top left: forehead-pattern sand in one long narrow oval folded-paper packet, broad open flap reveals a strip of sand; slim single horizontal silhouette.
+Top right: torso-pattern sand in one wide shallow rectangular open wooden case, one broad compartment filled with sand and simple folded liner; broad single box silhouette.
+Bottom left: leg-pattern sand in two long tapered cloth sachets joined by a tie, one open mouth reveals sand, paired vertical soft silhouette.
+Bottom right: footwear-pattern sand in two low squat round clay canisters side by side, one lid tipped open close beside it to expose sand; short paired round silhouette.
+Style/medium: exquisite softly layered painterly objects, calm pale cloth, paper, dark wood and muted grey-green metal, detailed enough to feel finished but not grain-by-grain noise. Small-image recognition comes from clear open shapes.
+Constraints: these are sand packages, NOT helmets, breastplates, leggings, boots or complete equipment. No item names, body-part pictograms, grades, UI badges or labels used as substitutes for object design. Packaging does not imply recipe ingredients or quantity. Pure white background, broad empty cross gutter, generous margins, no ground shadow, aura, UI, frame or watermark.

@@ -1,0 +1,79 @@
+{
+  "region": "art-repairs",
+  "version": "missing-v1",
+  "quality": "high",
+  "scope": "One missing Wangchuan harbor scene, six unfinished refined weapons/metals and the sole current divine art. No other regions, characters, enemy regeneration, rules or layout changes.",
+  "jobs": [
+    {
+      "id": "cloudfoot-waystation",
+      "name": "望川外埠",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v3",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/cloudfoot-waystation.txt",
+      "note": "Fresh explicit authorization beyond the previously stopped replacement. Exactly the same prompt, size, model, quality and reference inputs."
+    },
+    {
+      "id": "weapons-and-metals",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-refined-v5",
+      "size": "1024x1536",
+      "columns": 2,
+      "rows": 3,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/item-readability/refined-production-v3/prompts/weapons-and-metals.txt",
+      "items": [
+        {
+          "id": "iron-birch-sword",
+          "name": "铁剑"
+        },
+        {
+          "id": "wood-hilt-dark-steel-sword",
+          "name": "粗炼乌钢剑"
+        },
+        {
+          "id": "scrap-iron",
+          "name": "碎铁料"
+        },
+        {
+          "id": "dark-steel-scrap",
+          "name": "乌钢碎料"
+        },
+        {
+          "id": "iron-blade",
+          "name": "百炼铁料"
+        },
+        {
+          "id": "dark-steel-blade",
+          "name": "乌钢精料"
+        }
+      ],
+      "note": "Fresh explicit authorization beyond the previously stopped replacement; preserve identical prompt and inputs."
+    },
+    {
+      "id": "divine-art",
+      "kind": "atlas",
+      "target": "techniques",
+      "variant": "flare",
+      "assetSuffix": "flare-divine-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/art-repairs/missing-v1/prompts/divine-art.txt",
+      "items": [
+        {
+          "id": "circulating-qi",
+          "name": "周天罡气"
+        }
+      ],
+      "note": "An illustration of circulating protective qi, not a physical seal, book, gear item or new player portrait. Pure-white local extraction retains the colored condensed-qi strokes."
+    }
+  ]
+}

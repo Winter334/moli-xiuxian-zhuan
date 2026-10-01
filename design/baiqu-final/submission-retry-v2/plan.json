@@ -1,0 +1,122 @@
+{
+  "region": "baiqu-final",
+  "version": "submission-retry-v2",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "jobs": [
+    {
+      "id": "resonant-greatswords",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v2",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-greatswords.txt",
+      "items": [
+        {
+          "id": "old-wood-hilt-resonant-greatblade-weapon",
+          "name": "粗炼鸣金重剑"
+        },
+        {
+          "id": "iron-birch-hilt-resonant-greatblade-weapon",
+          "name": "鸣金重剑"
+        },
+        {
+          "id": "spiritwood-hilt-resonant-greatblade-weapon",
+          "name": "养灵鸣金重剑"
+        },
+        {
+          "id": "awakened-hilt-resonant-greatblade-weapon",
+          "name": "苏灵鸣金重剑"
+        }
+      ]
+    },
+    {
+      "id": "talisman-adept",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v2",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/submission-retry-v2/prompts/talisman-adept.txt",
+      "items": [
+        {
+          "id": "leaf-talisman-adept",
+          "name": "掠药符修"
+        }
+      ]
+    },
+    {
+      "id": "materials-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v2",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/old-wood-hilt-flare-refined-v3.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/materials-02.txt",
+      "items": [
+        {
+          "id": "spirit-rib-meat",
+          "name": "灵兽肋肉"
+        },
+        {
+          "id": "awakened-wood",
+          "name": "苏灵木"
+        },
+        {
+          "id": "resonant-ingot",
+          "name": "鸣金锭"
+        },
+        {
+          "id": "awakened-hilt",
+          "name": "苏灵淬液"
+        }
+      ]
+    },
+    {
+      "id": "liquids",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v2",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/liquids.txt",
+      "items": [
+        {
+          "id": "clear-spring-saliva",
+          "name": "澄泉灵涎"
+        },
+        {
+          "id": "harmonizing-elixir",
+          "name": "调元药液"
+        },
+        {
+          "id": "foundation-insight",
+          "name": "蕴元灵露"
+        }
+      ]
+    }
+  ]
+}

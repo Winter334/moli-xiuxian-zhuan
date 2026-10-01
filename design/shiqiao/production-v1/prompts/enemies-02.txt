@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four river wetland creatures in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Images 1 and 2 are painting-style references ONLY for readable painted volume and broad grouped textures. Do not inherit their poses or orientation.
+Subjects:
+Top left: red-backed demon badger, low heavy body, strong digging forelegs and dark reddish mud-stained back fur. Head and bared mouth thrust toward screen-left, hindquarters on the right. Threatening wild badger, not a red panda or a mascot.
+Top right: green-bellied marsh python, thick muscular snake coiled into one compact complete shape, green-tinted belly scales visible on the raised neck. Head extends toward screen-left, tail stays curled inside the cell. No vines, branch limbs or invented face.
+Bottom left: yellow-miasma toad, large squat toad with inflated yellow throat sacs and broad grey-olive skin masses. Head and mouth clearly toward screen-left, ready to expel poison. Only a tiny attached yellowish breath at the left mouth if needed; no surrounding fog blanket or ground.
+Bottom right: jade-shell clam, a heavy thick oval bivalve whose overlapping dark shell plates enclose cloudy jade seams. The hinged opening and striking shell lips point LEFT; no eyes, human face, arms, legs or stone robot. Compact shell volume distinct from a round gemstone.
+Direction: all creatures face or attack toward the LEFT edge while centered in their cells. Head, mouth and body orientation for animals must be left-facing; the faceless clam's opening and clamping direction face left without adding a face.
+Style/medium: luminous painted creatures, coherent simplified shadows, fur and scales grouped in broad masses, restrained spiritual color. Not photographic texture or chibi monsters.
+Composition/framing: one complete isolated creature per equal square cell, generous pure-white margins and a clean white cross gutter. Every coil, foot and shell edge stays inside its cell.
+Constraints: pure white background for local removal, no scene, ground patch, cast shadow, frame, text, labels, watermark or UI. No ambient aura around every creature.

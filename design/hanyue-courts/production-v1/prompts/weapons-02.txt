@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: refined painted deepsteel sword-family atlas, exactly three complete swords in one row.
+Input images: Images 1 and 2 reference refined soft sword painting and classical construction only, not silhouettes or color schemes.
+Left: coarse deepsteel sword, a thick broad straight blade with a blunt stepped shoulder and long centered tip, substantial dark-blue mass and faint red-gold depth within its wide cross-section. Plain short flat guard and wrapped grip, heavy but serviceable.
+Middle: refined deepsteel sword, a broad blade with a clearly raised wide central spine, flared upper shoulder and precisely shaped long point, large low double-curved guard and sturdy layered grip fittings. Heavy solid architecture unlike the narrower black-alloy sword family.
+Right: spirit-treated deepsteel sword, a broad full-length stepped blade with a smooth central channel, strong faceted shoulder and an elegant substantial open-frame guard. Worked pale jade channels integrated into broad dark metal planes, refined tied grip, limited local light.
+Style/medium: exquisite softly layered luminous Chinese fantasy painting, dense finely modeled metal, restrained red-gold internal traces, clear silhouettes and purposeful grade differences in blade/guard geometry, not colors alone.
+Constraints: strict three-column by one-row grid, complete swords inclined similarly and centered in individual cells, broad empty white gutters and generous margins. No giant ornamental greatswords, labels, grade numbers, gem overload, large halos, ground shadow, UI or watermark.

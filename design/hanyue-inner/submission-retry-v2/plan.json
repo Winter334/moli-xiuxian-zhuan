@@ -1,0 +1,144 @@
+{
+  "region": "hanyue-inner",
+  "version": "submission-retry-v2",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "originalPlan": "design/hanyue-inner/production-v1/plan.json",
+  "jobs": [
+    {
+      "id": "manor-inner-threshold",
+      "name": "内院阵台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v2",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/manor-inner-threshold.txt"
+    },
+    {
+      "id": "heartward-path",
+      "name": "归枢长阶",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-hanyue-inner-v2",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/heartward-path.txt"
+    },
+    {
+      "id": "enemies-04",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v2",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/shrine-gate-warden-flare-wangchuan-v1.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/enemies-04.txt",
+      "items": [
+        {
+          "id": "edict-enforcer",
+          "name": "护枢禁卫",
+          "cellBounds": [
+            0,
+            0,
+            750,
+            772
+          ]
+        },
+        {
+          "id": "vault-bronze-sentinel",
+          "name": "护材铜卫",
+          "cellBounds": [
+            750,
+            0,
+            786,
+            772
+          ]
+        },
+        {
+          "id": "frenzied-bone-general",
+          "name": "叠劲工傀",
+          "cellBounds": [
+            0,
+            772,
+            800,
+            764
+          ]
+        },
+        {
+          "id": "unbroken-stone-sentinel",
+          "name": "封枢石卫",
+          "cellBounds": [
+            800,
+            772,
+            736,
+            764
+          ]
+        }
+      ]
+    },
+    {
+      "id": "renewal-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-hanyue-inner-v2",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/hanyue-inner/production-v1/prompts/renewal-outfit.txt",
+      "items": [
+        {
+          "id": "renewal-headwrap",
+          "name": "回春巾",
+          "cellBounds": [
+            0,
+            0,
+            768,
+            720
+          ]
+        },
+        {
+          "id": "renewal-jacket",
+          "name": "回春法衣",
+          "cellBounds": [
+            768,
+            0,
+            768,
+            907
+          ]
+        },
+        {
+          "id": "renewal-leggings",
+          "name": "回春长裤",
+          "cellBounds": [
+            0,
+            720,
+            768,
+            816
+          ]
+        },
+        {
+          "id": "renewal-boots",
+          "name": "回春履",
+          "cellBounds": [
+            768,
+            907,
+            768,
+            629
+          ]
+        }
+      ]
+    }
+  ]
+}

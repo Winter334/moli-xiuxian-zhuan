@@ -1,0 +1,17 @@
+# Local image-service credentials.
+/keys.txt
+/.env
+/.env.*
+!/.env.example
+/references/
+/node_modules/
+**/node_modules/
+/dist/
+**/dist/
+/.local/
+/test-results/
+/playwright-report/
+/coverage/
+/output/
+/docs/reports/
+*.log

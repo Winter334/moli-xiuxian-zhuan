@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted treatment-material icon atlas.
+Primary request: four packages of the SAME finely ground black spiritual iron sand, separately treated for different garment regions, strict 2-column by 2-row grid. All are SAND, not equipment parts.
+Input images: Image 1 shows an earlier azure-sand package for manufacturing identity only, not shapes to copy. Image 2 supplies refined soft material painting.
+Top left: forehead treatment sand in a slim flat folded charcoal brocade envelope, triangular overlapping flaps opened enough to reveal a narrow dark-silver granular strip. Single low pointed silhouette, not the earlier oval paper packet.
+Top right: torso treatment sand in one broad round shallow dark wooden case with three large open shallow compartments and a close-set partial lid. Visible dark sand, broad circular divided construction, not a rectangular undivided earlier box.
+Bottom left: leg treatment sand in two tall narrow rectangular paper-lined wooden cartons joined loosely by one short tie, both open tops showing sand. Paired upright angular silhouette, not cloth sachets.
+Bottom right: foot treatment sand in two short hexagonal wood canisters, one open with its fitted flat cap immediately beside it, dark fine sand inside. Low paired angular shapes, not round clay jars.
+Style/medium: exquisite soft luminous painting, restrained dark materials, quiet pale liners and readable sand fields without grain-by-grain noise.
+Constraints: no helmets, armor, trousers or boots; no body-part pictograms, text, labels or grade numbers replacing structural design. Pure white background, wide empty cross gutter, generous margins, no ground shadow, giant aura, UI or watermark. Packaging is illustration only, not recipe cost.

@@ -1,0 +1,312 @@
+{
+  "version": "stage-1.9.0",
+  "rulesVersion": "rules-9.0.0",
+  "schemaVersion": 14,
+  "reincarnation": {
+    "minimumLevel": 6,
+    "retrainingBonus": "0.5",
+    "realmRewards": [
+      { "level": 6, "points": "2" }, { "level": 9, "points": "5" },
+      { "level": 12, "points": "9" }, { "level": 13, "points": "18" }
+    ],
+    "explorationNodes": [
+      { "id": "quarry-depth", "name": "矿脉清剿", "points": "2", "target": { "kind": "region", "regionId": "quarry", "wins": "20" } },
+      { "id": "ruins-depth", "name": "遗地清剿", "points": "4", "target": { "kind": "region", "regionId": "ruins", "wins": "20" } },
+      { "id": "array-victory", "name": "破开阵眼", "points": "2", "target": { "kind": "challenge", "challengeId": "garden-array", "wins": "1" } }
+    ]
+  },
+  "foundationMethods": [
+    { "id": "human", "name": "人道筑基", "successChance": "0.9", "extraCosts": [], "modifiers": [
+      { "stat": "maxHp", "mode": "percent", "value": "0.05" }, { "stat": "maxMp", "mode": "percent", "value": "0.05" }
+    ] },
+    { "id": "earth", "name": "地道筑基", "successChance": "0.8", "extraCosts": [
+      { "itemId": "ore", "quantity": "10", "failureQuantity": "5" }, { "itemId": "essence", "quantity": "2", "failureQuantity": "1" }
+    ], "modifiers": [
+      { "stat": "maxHp", "mode": "percent", "value": "0.1" }, { "stat": "maxMp", "mode": "percent", "value": "0.1" },
+      { "stat": "attack", "mode": "percent", "value": "0.08" }, { "stat": "magicAttack", "mode": "percent", "value": "0.08" },
+      { "stat": "defense", "mode": "percent", "value": "0.08" }, { "stat": "magicDefense", "mode": "percent", "value": "0.08" }
+    ] },
+    { "id": "heaven", "name": "天道筑基", "successChance": "0.7", "extraCosts": [
+      { "itemId": "ore", "quantity": "20", "failureQuantity": "10" }, { "itemId": "essence", "quantity": "4", "failureQuantity": "2" },
+      { "itemId": "clear-spirit-core", "quantity": "1", "failureQuantity": "0" }
+    ], "modifiers": [
+      { "stat": "maxHp", "mode": "percent", "value": "0.2" }, { "stat": "maxMp", "mode": "percent", "value": "0.2" },
+      { "stat": "attack", "mode": "percent", "value": "0.15" }, { "stat": "magicAttack", "mode": "percent", "value": "0.15" },
+      { "stat": "defense", "mode": "percent", "value": "0.15" }, { "stat": "magicDefense", "mode": "percent", "value": "0.15" }
+    ] }
+  ],
+  "achievements": [
+    { "id": "heaven-foundation", "name": "天道筑基", "description": "亲自成功完成一次天道筑基。", "foundationMethodId": "heaven" }
+  ],
+  "challenges": [
+    { "id": "garden-array", "name": "药圃阵眼", "unlock": { "regionId": "ruins", "kills": "1" }, "maxLevel": 12,
+      "enemy": {
+        "id": "array-guardian", "name": "镇圃石傀", "level": 13,
+        "allocation": { "level": 13, "rank": "boss", "multipliers": {
+          "maxHp": "1.5", "maxMp": "0", "attack": "0.9", "magicAttack": "0", "defense": "1", "magicDefense": "1", "agility": "0.8"
+        } },
+        "maxHp": "1800", "maxMp": "0", "attack": "144", "magicAttack": "0", "defense": "60", "magicDefense": "30", "agility": "32",
+        "hpRegen": "0", "mpRegen": "0", "attackIntervalMs": 3000, "critChance": "0.05", "critMultiplier": "1.5",
+        "actionId": "array-crush", "effects": [], "cultivation": "0", "stones": "2",
+        "drops": [{ "itemId": "clear-spirit-core", "quantity": "1", "chance": 0.6 }], "equipmentDrops": []
+      }
+    }
+  ],
+  "openingTiers": [
+    { "requiredPoints": "0", "slots": 2, "candidates": 5, "draws": 3, "designations": 0 },
+    { "requiredPoints": "20", "slots": 2, "candidates": 5, "draws": 4, "designations": 0 },
+    { "requiredPoints": "60", "slots": 3, "candidates": 5, "draws": 4, "designations": 0 },
+    { "requiredPoints": "140", "slots": 3, "candidates": 5, "draws": 4, "designations": 1 }
+  ],
+  "fates": [
+    { "id": "sword-heart", "name": "剑心通明", "rarity": "rare", "weight": 4, "effects": [
+      { "kind": "stat", "when": "sword", "modifier": { "stat": "attack", "mode": "percent", "value": "0.12" } },
+      { "kind": "experience", "target": "sword", "value": "0.25" }
+    ] },
+    { "id": "unyielding", "name": "傲骨铮铮", "rarity": "rare", "weight": 4, "effects": [
+      { "kind": "stat", "modifier": { "stat": "maxHp", "mode": "percent", "value": "0.2" } },
+      { "kind": "stat", "modifier": { "stat": "defense", "mode": "percent", "value": "0.08" } }
+    ] },
+    { "id": "spirit-vessel", "name": "灵蕴充盈", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "stat", "modifier": { "stat": "maxMp", "mode": "percent", "value": "0.25" } }
+    ] },
+    { "id": "light-step", "name": "身轻如燕", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "stat", "modifier": { "stat": "agility", "mode": "percent", "value": "0.2" } }
+    ] },
+    { "id": "keen-insight", "name": "天生慧根", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "technique", "value": "0.3" }
+    ] },
+    { "id": "natural-breath", "name": "吐纳自如", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "meditation", "value": "0.25" }
+    ] },
+    { "id": "herbal-affinity", "name": "药灵体", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "alchemy", "value": "0.35" }
+    ] },
+    { "id": "artisan-heart", "name": "匠心独具", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "forging", "value": "0.35" }
+    ] },
+    { "id": "versatile-craft", "name": "多才多艺", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "experience", "target": "alchemy", "value": "0.15" },
+      { "kind": "experience", "target": "forging", "value": "0.15" }
+    ] },
+    { "id": "clear-furnace", "name": "丹心通明", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "production-success", "target": "alchemy", "value": "0.05" }
+    ] },
+    { "id": "cave-find", "name": "洞中奇遇", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "gift-stones", "amount": "20" }
+    ] },
+    { "id": "battle-spirit", "name": "以战养灵", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "combat", "effect": { "id": "fate-kill-mana", "name": "以战养灵", "kind": "restore-percent", "trigger": "kill", "resource": "mp", "amount": "0.02" } }
+    ] },
+    { "id": "born-pugilist", "name": "拳意天成", "rarity": "rare", "weight": 4, "effects": [
+      { "kind": "stat", "when": "body", "modifier": { "stat": "attack", "mode": "percent", "value": "0.12" } },
+      { "kind": "experience", "target": "body", "value": "0.25" }
+    ] },
+    { "id": "spell-insight", "name": "法意自明", "rarity": "rare", "weight": 4, "effects": [
+      { "kind": "stat", "modifier": { "stat": "magicAttack", "mode": "percent", "value": "0.12" } },
+      { "kind": "experience", "target": "spell", "value": "0.25" }
+    ] },
+    { "id": "dual-path", "name": "武法双修", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "stat", "modifier": { "stat": "attack", "mode": "percent", "value": "0.08" } },
+      { "kind": "stat", "modifier": { "stat": "magicAttack", "mode": "percent", "value": "0.08" } }
+    ] },
+    { "id": "clear-ward", "name": "清灵护体", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "stat", "modifier": { "stat": "magicDefense", "mode": "percent", "value": "0.25" } }
+    ] },
+    { "id": "battle-insight", "name": "百战悟道", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "combat-cultivation", "value": "0.25" }
+    ] },
+    { "id": "martial-versatility", "name": "百艺会通", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "experience", "target": "sword", "value": "0.15" },
+      { "kind": "experience", "target": "body", "value": "0.15" },
+      { "kind": "experience", "target": "spell", "value": "0.15" }
+    ] },
+    { "id": "composed-casting", "name": "气定神闲", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "mana-cost", "value": "-0.12" }
+    ] },
+    { "id": "steady-forge", "name": "百炼成器", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "production-success", "target": "forging", "value": "0.05" }
+    ] },
+    { "id": "resourceful", "name": "拾遗有术", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "item-drop", "itemIds": ["herb", "ore"], "value": "0.3" }
+    ] },
+    { "id": "shrewd-buyer", "name": "通商识货", "rarity": "common", "weight": 10, "effects": [
+      { "kind": "purchase-discount", "itemIds": ["healing-pill", "mana-pill"], "value": "0.125" }
+    ] },
+    { "id": "reckless-edge", "name": "锋芒毕露", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "stat", "modifier": { "stat": "attack", "mode": "percent", "value": "0.25" } },
+      { "kind": "stat", "modifier": { "stat": "maxHp", "mode": "percent", "value": "-0.12" } }
+    ] },
+    { "id": "fierce-spirit", "name": "灵焰偏炽", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "stat", "modifier": { "stat": "magicAttack", "mode": "percent", "value": "0.25" } },
+      { "kind": "mana-cost", "value": "0.15" }
+    ] },
+    { "id": "fortunate-star", "name": "福星高照", "rarity": "uncommon", "weight": 6, "effects": [
+      { "kind": "luck", "value": "0.15" }
+    ] }
+  ],
+  "proficiencyRules": {
+    "combatXpPerAction": "1", "eliteXpMultiplier": "1.5",
+    "realmXpMultipliers": ["1", "1.2", "1.4", "1.6", "1.8", "2", "2.25", "2.5", "2.75", "3", "3.25", "3.5", "4", "6"],
+    "successBase": "0.9", "minimumSuccess": "0.5", "qualityWeightPerLevel": "0.1", "alchemyExtraChancePerLevel": "0.01"
+  },
+  "proficiencies": [
+    {
+      "id": "sword", "name": "剑道", "xpBase": "100", "xpGrowth": "1.5", "maxLevel": 20,
+      "perLevel": [{ "stat": "attack", "mode": "percent", "value": "0.01" }],
+      "milestones": [
+        { "level": 3, "name": "连势", "modifiers": [], "successBonus": "0", "ability": { "kind": "sword-followup", "everyActions": 4, "coefficient": "1" } },
+        { "level": 6, "name": "小成", "modifiers": [{ "stat": "attack", "mode": "percent", "value": "0.03" }], "successBonus": "0" },
+        { "level": 10, "name": "精通", "modifiers": [{ "stat": "agility", "mode": "flat", "value": "2" }, { "stat": "attack", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 15, "name": "大成", "modifiers": [{ "stat": "attack", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 20, "name": "圆熟", "modifiers": [{ "stat": "attack", "mode": "percent", "value": "0.07" }], "successBonus": "0" }
+      ]
+    },
+    {
+      "id": "body", "name": "体术", "xpBase": "100", "xpGrowth": "1.5", "maxLevel": 20,
+      "perLevel": [{ "stat": "maxHp", "mode": "percent", "value": "0.01" }, { "stat": "defense", "mode": "percent", "value": "0.01" }],
+      "milestones": [
+        { "level": 3, "name": "护体", "modifiers": [], "successBonus": "0", "ability": { "kind": "body-ward", "hpThreshold": "0.4", "maxHpFraction": "0.2" } },
+        { "level": 6, "name": "小成", "modifiers": [{ "stat": "defense", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 10, "name": "精通", "modifiers": [{ "stat": "maxHp", "mode": "percent", "value": "0.05" }, { "stat": "magicDefense", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 15, "name": "大成", "modifiers": [{ "stat": "defense", "mode": "percent", "value": "0.08" }], "successBonus": "0" },
+        { "level": 20, "name": "圆熟", "modifiers": [{ "stat": "maxHp", "mode": "percent", "value": "0.1" }, { "stat": "defense", "mode": "percent", "value": "0.07" }], "successBonus": "0" }
+      ]
+    },
+    {
+      "id": "spell", "name": "道法", "xpBase": "100", "xpGrowth": "1.5", "maxLevel": 20,
+      "perLevel": [{ "stat": "magicAttack", "mode": "percent", "value": "0.01" }, { "stat": "maxMp", "mode": "percent", "value": "0.01" }],
+      "milestones": [
+        { "level": 3, "name": "灵潮", "modifiers": [], "successBonus": "0", "ability": { "kind": "spell-surge", "casts": 3, "powerBonus": "0.5" } },
+        { "level": 6, "name": "小成", "modifiers": [{ "stat": "magicAttack", "mode": "percent", "value": "0.03" }], "successBonus": "0" },
+        { "level": 10, "name": "精通", "modifiers": [{ "stat": "magicAttack", "mode": "percent", "value": "0.05" }, { "stat": "magicDefense", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 15, "name": "大成", "modifiers": [{ "stat": "magicAttack", "mode": "percent", "value": "0.05" }], "successBonus": "0" },
+        { "level": 20, "name": "圆熟", "modifiers": [{ "stat": "magicAttack", "mode": "percent", "value": "0.07" }], "successBonus": "0" }
+      ]
+    },
+    {
+      "id": "alchemy", "name": "丹道", "xpBase": "20", "xpGrowth": "1.5", "maxLevel": 20, "perLevel": [],
+      "milestones": [
+        { "level": 3, "name": "回春合炼", "modifiers": [], "successBonus": "0.02" },
+        { "level": 6, "name": "回灵合炼", "modifiers": [], "successBonus": "0.02" },
+        { "level": 10, "name": "精通", "modifiers": [], "successBonus": "0", "extraOutputChance": "0.02" },
+        { "level": 15, "name": "大成", "modifiers": [], "successBonus": "0", "extraOutputChance": "0.02" },
+        { "level": 20, "name": "圆熟", "modifiers": [], "successBonus": "0", "extraOutputChance": "0.02" }
+      ]
+    },
+    {
+      "id": "forging", "name": "炼器", "xpBase": "20", "xpGrowth": "1.5", "maxLevel": 20, "perLevel": [],
+      "milestones": [
+        { "level": 3, "name": "精工", "modifiers": [], "successBonus": "0.02", "ability": { "kind": "quality-reroll" } },
+        { "level": 6, "name": "小成", "modifiers": [], "successBonus": "0.02", "qualityWeightBonus": "0.2" },
+        { "level": 10, "name": "精通", "modifiers": [], "successBonus": "0", "qualityWeightBonus": "0.3" },
+        { "level": 15, "name": "大成", "modifiers": [], "successBonus": "0", "qualityWeightBonus": "0.3" },
+        { "level": 20, "name": "圆熟", "modifiers": [], "successBonus": "0", "qualityWeightBonus": "0.4" }
+      ]
+    }
+  ],
+  "settings": {
+    "restHpFraction": "0.05",
+    "baseMpRegenFraction": "0.05",
+    "supplyCooldownMs": 10000,
+    "supplyItemId": "healing-pill",
+    "stalemateMs": 120000,
+    "battleLimitMs": 900000,
+    "reserveCapacity": "30000",
+    "reserveBands": [{ "until": "15000", "efficiency": "1" }, { "until": "24000", "efficiency": "0.5" }, { "until": "30000", "efficiency": "0.2" }],
+    "practicePerSecond": "1",
+    "combatPracticePerAction": "1",
+    "starterStones": "30",
+    "starterItems": { "healing-pill": "5", "herb": "6" },
+    "starterEquipmentId": "wood-sword",
+    "starterTechniqueId": "breathing",
+    "baseActionId": "strike",
+    "breakthroughItemId": "foundation-pill",
+    "breakthroughQuantity": "1"
+  },
+  "realms": [
+    { "level": 0, "name": "凡人", "required": "60", "meditation": "1", "maxHp": "100", "maxMp": "20", "attack": "10", "defense": "2", "agility": "10", "magicAttack": "4", "magicDefense": "1" },
+    { "level": 1, "name": "炼气一层", "required": "180", "meditation": "1.1", "maxHp": "120", "maxMp": "24", "attack": "12", "defense": "3", "agility": "11", "magicAttack": "5", "magicDefense": "1.5" },
+    { "level": 2, "name": "炼气二层", "required": "360", "meditation": "1.2", "maxHp": "145", "maxMp": "28", "attack": "15", "defense": "4", "agility": "12", "magicAttack": "7", "magicDefense": "2" },
+    { "level": 3, "name": "炼气三层", "required": "720", "meditation": "1.3", "maxHp": "170", "maxMp": "32", "attack": "18", "defense": "5", "agility": "13", "magicAttack": "9", "magicDefense": "2.5" },
+    { "level": 4, "name": "炼气四层", "required": "1200", "meditation": "1.4", "maxHp": "200", "maxMp": "36", "attack": "22", "defense": "7", "agility": "14", "magicAttack": "12", "magicDefense": "3.5" },
+    { "level": 5, "name": "炼气五层", "required": "1800", "meditation": "1.5", "maxHp": "235", "maxMp": "40", "attack": "27", "defense": "9", "agility": "15", "magicAttack": "15", "magicDefense": "4.5" },
+    { "level": 6, "name": "炼气六层", "required": "2700", "meditation": "1.6", "maxHp": "275", "maxMp": "45", "attack": "33", "defense": "11", "agility": "16", "magicAttack": "19", "magicDefense": "5.5" },
+    { "level": 7, "name": "炼气七层", "required": "4000", "meditation": "1.7", "maxHp": "325", "maxMp": "50", "attack": "40", "defense": "14", "agility": "18", "magicAttack": "24", "magicDefense": "7" },
+    { "level": 8, "name": "炼气八层", "required": "5600", "meditation": "1.8", "maxHp": "385", "maxMp": "55", "attack": "48", "defense": "17", "agility": "20", "magicAttack": "30", "magicDefense": "8.5" },
+    { "level": 9, "name": "炼气九层", "required": "7600", "meditation": "1.9", "maxHp": "455", "maxMp": "60", "attack": "58", "defense": "21", "agility": "22", "magicAttack": "37", "magicDefense": "10.5" },
+    { "level": 10, "name": "炼气十层", "required": "10000", "meditation": "2", "maxHp": "540", "maxMp": "66", "attack": "70", "defense": "25", "agility": "24", "magicAttack": "45", "magicDefense": "12.5" },
+    { "level": 11, "name": "炼气十一层", "required": "13000", "meditation": "2.1", "maxHp": "640", "maxMp": "72", "attack": "84", "defense": "30", "agility": "26", "magicAttack": "54", "magicDefense": "15" },
+    { "level": 12, "name": "炼气十二层", "required": "17000", "meditation": "2.2", "maxHp": "760", "maxMp": "80", "attack": "100", "defense": "36", "agility": "28", "magicAttack": "64", "magicDefense": "18" },
+    { "level": 13, "name": "筑基初期", "required": "120000", "meditation": "3", "maxHp": "1200", "maxMp": "120", "attack": "160", "defense": "60", "agility": "40", "magicAttack": "105", "magicDefense": "30" }
+  ],
+  "baseStats": {
+    "hpRegen": "0",
+    "mpRegen": "1",
+    "attackIntervalMs": 2000,
+    "critChance": "0.05",
+    "critMultiplier": "1.5"
+  },
+  "effects": [
+    { "id": "hit-mend", "name": "回春", "trigger": "hit", "kind": "restore", "resource": "hp", "amount": "2" },
+    { "id": "hit-mana", "name": "引灵", "trigger": "hit", "kind": "restore", "resource": "mp", "amount": "1" },
+    { "id": "action-ward", "name": "护身", "trigger": "action", "kind": "shield", "amount": "3" },
+    { "id": "thorn", "name": "荆棘", "trigger": "hurt", "kind": "damage", "damageType": "physical", "amount": "3" },
+    { "id": "kill-mend", "name": "归元", "trigger": "kill", "kind": "restore", "resource": "hp", "amount": "5" }
+  ],
+  "actions": [
+    { "id": "array-crush", "name": "镇关连击", "mpCost": "0", "damageType": "physical", "coefficient": "0.6", "hits": 2 },
+    { "id": "strike", "name": "基础攻击", "mpCost": "0", "damageType": "physical", "coefficient": "1", "hits": 1 },
+    { "id": "double-strike", "name": "连击", "mpCost": "4", "damageType": "physical", "coefficient": "0.7", "hits": 2 },
+    { "id": "spark", "name": "灵焰", "mpCost": "6", "damageType": "magical", "coefficient": "1.5", "hits": 1 },
+    { "id": "heavy-strike", "name": "崩山", "mpCost": "5", "damageType": "physical", "coefficient": "1.8", "hits": 1 }
+  ],
+  "affixes": [
+    { "id": "keen", "name": "锋锐", "min": "1", "max": "4", "kind": "stat", "stat": "attack", "mode": "flat" },
+    { "id": "steady", "name": "坚实", "min": "1", "max": "3", "kind": "stat", "stat": "defense", "mode": "flat" },
+    { "id": "mending", "name": "生息", "min": "1", "max": "3", "kind": "effect", "effectId": "hit-mend" },
+    { "id": "spirit", "name": "聚灵", "min": "1", "max": "2", "kind": "effect", "effectId": "hit-mana" },
+    { "id": "arcane", "name": "蕴灵", "min": "1", "max": "4", "kind": "stat", "stat": "magicAttack", "mode": "flat" }
+  ],
+  "equipment": [
+    { "id": "wood-sword", "name": "青木剑", "slot": "weapon", "category": "sword", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "3" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "iron-sword", "name": "寒铁剑", "slot": "weapon", "category": "sword", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "8" }], "effects": ["hit-mana"], "affixPool": ["keen", "steady", "mending"], "affixCount": 1 },
+    { "id": "stone-gauntlet", "name": "玄岩拳套", "slot": "weapon", "category": "gauntlet", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "4" }, { "stat": "defense", "mode": "flat", "value": "6" }], "effects": ["action-ward"], "affixPool": ["keen", "mending"], "affixCount": 1 },
+    { "id": "jade-staff", "name": "灵玉杖", "slot": "weapon", "category": "staff", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "14" }, { "stat": "maxMp", "mode": "flat", "value": "20" }], "effects": ["hit-mend"], "affixPool": ["spirit", "arcane"], "affixCount": 1 }
+  ],
+  "techniques": [
+    { "id": "breathing", "name": "吐纳诀", "unlock": { "level": 0 }, "actionId": "strike", "modifiers": [], "effects": ["hit-mana"], "xpCap": "1800", "practiceBonuses": [{ "stat": "attack", "value": "4" }] },
+    { "id": "verdant", "name": "长春功", "unlock": { "regionId": "bamboo", "kills": "5" }, "actionId": "double-strike", "modifiers": [{ "stat": "hpRegen", "mode": "flat", "value": "0.5" }], "effects": ["hit-mend"], "xpCap": "3600", "practiceBonuses": [{ "stat": "attack", "value": "10" }] },
+    { "id": "flame", "name": "灵焰诀", "unlock": { "level": 3 }, "actionId": "spark", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "4" }], "effects": [], "xpCap": "3600", "practiceBonuses": [{ "stat": "magicAttack", "value": "16" }] },
+    { "id": "mountain", "name": "镇岳功", "unlock": { "regionId": "quarry", "kills": "5" }, "actionId": "heavy-strike", "modifiers": [{ "stat": "defense", "mode": "flat", "value": "2" }, { "stat": "magicDefense", "mode": "flat", "value": "1" }], "effects": ["action-ward"], "xpCap": "3600", "practiceBonuses": [{ "stat": "attack", "value": "6" }, { "stat": "defense", "value": "3" }] }
+  ],
+  "items": [
+    { "id": "clear-spirit-core", "name": "澄灵核", "kind": "material", "unlock": { "regionId": "ruins", "kills": "1" }, "sellPrice": "1" },
+    { "id": "herb", "name": "青灵草", "kind": "material", "unlock": { "level": 0 }, "buyPrice": "3", "sellPrice": "1" },
+    { "id": "ore", "name": "玄铁砂", "kind": "material", "unlock": { "regionId": "bamboo", "kills": "5" }, "buyPrice": "8", "sellPrice": "2" },
+    { "id": "essence", "name": "凝灵髓", "kind": "material", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "5" },
+    { "id": "healing-pill", "name": "回春丹", "kind": "recovery", "unlock": { "level": 0 }, "buyPrice": "8", "sellPrice": "2", "use": { "kind": "restore", "resource": "hp", "amount": "60" } },
+    { "id": "mana-pill", "name": "回灵丹", "kind": "recovery", "unlock": { "level": 0 }, "buyPrice": "10", "sellPrice": "2", "use": { "kind": "restore", "resource": "mp", "amount": "30" } },
+    { "id": "attack-pill", "name": "培元丹", "kind": "growth", "unlock": { "regionId": "bamboo", "kills": "5" }, "sellPrice": "3", "use": { "kind": "growth", "amount": "1", "scale": "30", "stat": "attack" } },
+    { "id": "foundation-pill", "name": "筑基丹", "kind": "breakthrough", "unlock": { "regionId": "quarry", "kills": "5" }, "sellPrice": "20" }
+  ],
+  "recipes": [
+    { "id": "healing", "training": { "difficulty": 1, "xp": "2" }, "extraOutputEligible": true, "name": "回春丹方", "unlock": { "level": 0 }, "costs": [{ "itemId": "herb", "quantity": "2" }], "stones": "1", "outputId": "healing-pill", "outputQuantity": "1" },
+    { "id": "mana", "training": { "difficulty": 2, "xp": "4" }, "extraOutputEligible": true, "name": "回灵丹方", "unlock": { "level": 0 }, "costs": [{ "itemId": "herb", "quantity": "2" }], "stones": "2", "outputId": "mana-pill", "outputQuantity": "1" },
+    { "id": "attack", "training": { "difficulty": 2, "xp": "4" }, "extraOutputEligible": true, "name": "培元丹方", "unlock": { "regionId": "bamboo", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "3" }, { "itemId": "ore", "quantity": "1" }], "stones": "3", "outputId": "attack-pill", "outputQuantity": "1" },
+    { "id": "healing-refinement", "name": "回春合炼方", "alchemyLevel": 3, "extraOutputEligible": true, "training": { "difficulty": 3, "xp": "5" }, "unlock": { "level": 0 }, "costs": [{ "itemId": "herb", "quantity": "5" }], "stones": "2", "outputId": "healing-pill", "outputQuantity": "3" },
+    { "id": "mana-refinement", "name": "回灵合炼方", "alchemyLevel": 6, "extraOutputEligible": true, "training": { "difficulty": 6, "xp": "10" }, "unlock": { "level": 0 }, "costs": [{ "itemId": "herb", "quantity": "5" }], "stones": "4", "outputId": "mana-pill", "outputQuantity": "3" },
+    { "id": "foundation", "training": { "difficulty": 8, "xp": "20" }, "name": "筑基丹方", "unlock": { "regionId": "quarry", "kills": "5" }, "costs": [{ "itemId": "herb", "quantity": "30" }, { "itemId": "ore", "quantity": "15" }, { "itemId": "essence", "quantity": "10" }], "stones": "100", "outputId": "foundation-pill", "outputQuantity": "1" }
+  ],
+  "enemies": [
+    { "id": "bamboo-spirit", "level": 0, "name": "竹灵", "maxHp": "34", "maxMp": "12", "attack": "7", "defense": "1", "agility": "8", "hpRegen": "0", "mpRegen": "1", "attackIntervalMs": 3000, "critChance": "0", "critMultiplier": "1.5", "actionId": "strike", "effects": ["hit-mend"], "cultivation": "4", "stones": "3", "drops": [{ "itemId": "herb", "quantity": "2", "chance": 1 }], "equipmentDrops": [{ "equipmentId": "iron-sword", "chance": 0.02 }], "magicAttack": "0", "magicDefense": "1" },
+    { "id": "thorn-vine", "level": 1, "name": "荆棘藤", "maxHp": "42", "maxMp": "10", "attack": "5", "defense": "3", "agility": "6", "hpRegen": "0", "mpRegen": "1", "attackIntervalMs": 3000, "critChance": "0", "critMultiplier": "1.5", "actionId": "strike", "effects": ["thorn"], "cultivation": "5", "stones": "4", "drops": [{ "itemId": "herb", "quantity": "3", "chance": 1 }], "equipmentDrops": [{ "equipmentId": "iron-sword", "chance": 0.02 }], "magicAttack": "0", "magicDefense": "1" },
+    { "id": "stone-guardian", "level": 3, "name": "矿脉石卫", "maxHp": "150", "maxMp": "20", "attack": "21", "defense": "14", "agility": "10", "hpRegen": "0", "mpRegen": "1", "attackIntervalMs": 4000, "critChance": "0.05", "critMultiplier": "1.5", "actionId": "heavy-strike", "effects": ["action-ward"], "cultivation": "16", "stones": "10", "drops": [{ "itemId": "ore", "quantity": "2", "chance": 1 }, { "itemId": "herb", "quantity": "1", "chance": 1 }], "equipmentDrops": [{ "equipmentId": "stone-gauntlet", "chance": 0.03 }], "magicAttack": "0", "magicDefense": "5" },
+    { "id": "ruin-adept", "level": 6, "name": "遗迹灵影", "maxHp": "360", "maxMp": "40", "attack": "10", "defense": "18", "agility": "24", "hpRegen": "0.5", "mpRegen": "1", "attackIntervalMs": 3000, "critChance": "0.1", "critMultiplier": "1.5", "actionId": "spark", "effects": ["hit-mend"], "cultivation": "45", "stones": "25", "drops": [{ "itemId": "essence", "quantity": "1", "chance": 1 }, { "itemId": "herb", "quantity": "2", "chance": 1 }], "equipmentDrops": [{ "equipmentId": "jade-staff", "chance": 0.04 }], "magicAttack": "30", "magicDefense": "12" }
+  ],
+  "regions": [
+    { "id": "bamboo", "name": "青竹林", "description": "青灵草产地，竹灵回春，荆藤反刺。", "unlock": { "level": 0 }, "enemies": ["bamboo-spirit", "thorn-vine"], "firstClearEquipmentId": "iron-sword" },
+    { "id": "quarry", "name": "玄铁矿脉", "description": "玄铁砂产地，石卫以护盾与重击守护矿脉。", "unlock": { "regionId": "bamboo", "kills": "5" }, "enemies": ["stone-guardian"], "firstClearEquipmentId": "stone-gauntlet" },
+    { "id": "ruins", "name": "凝灵遗迹", "description": "筑基凝灵髓每胜必得，灵影以法术和回复迎战。", "unlock": { "regionId": "quarry", "kills": "5" }, "enemies": ["ruin-adept"], "firstClearEquipmentId": "jade-staff" }
+  ]
+}

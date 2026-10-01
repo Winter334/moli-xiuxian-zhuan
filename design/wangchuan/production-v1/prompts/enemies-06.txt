@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: one painted enemy cutout for a Chinese cultivation RPG.
+Primary request: one tall Hanyue stone gate guardian, a human-shaped old Chinese stone sentry with thick carved stone limbs, grounded broad feet and worn geometric robe-like carved planes. Local faded array lines at its soles, one heavy stone arm raised into a preemptive blow toward screen-left. Not a living human in armor or a Western knight; not a mountain-sized statue.
+Input images: Image 1 is a painting reference only: soft completed volume, cool-warm reflections, coherent shadow and edge hierarchy. Do not copy species, pose or facing.
+Direction: body front, head front and raised-arm strike clearly face screen-left in a three-quarter stance. Centered on the canvas, never front-facing or right-facing.
+Style/medium: exquisite luminous painted stone, broad carefully modeled facets and selective patina, understated residual spiritual light. No unnecessary jewelry or dense carvings.
+Constraints: complete full body and all arm extensions inside generous pure white margins. Single guardian only. No gate, stairs, pedestal, ground, cast shadow, huge aura, text, UI, frame or watermark.

@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: a sheltered resting ledge behind a mountain ridge, beside the hunter's path that leads out of a secluded mountain homeland.
+Scene/backdrop: a broad gray rock wall shelters a small level stone terrace. A low dry-stone windbreak and a cold, unlit fire hollow imply earlier travelers. Beyond the sheltered ledge the mountains open into quiet, immense distance; one footpath continues toward the watershed.
+Composition/framing: independently composed landscape, viewed from within the shelter toward the open mountains. The enclosing rock and the distant open air form two clear large shapes, with the resting ledge readable between them. This is an outdoor stopping place, not a tent camp, village, house or mine.
+Style/medium: luminous painterly environment art, recognizable landforms with an understated dreamlike sense of distance. Coherent broad value groups, connected color planes and selective brushwork; let large quiet areas remain quiet instead of filling every surface with small strokes.
+Lighting/mood: cool shaded stone against gentle early light over the far ridges; sheltered, still, a little unfamiliar.
+Constraints: convey a usable mountain rest stop without a bed, furnace or merchant stall. Early-game travelers do not limit the scale of the surrounding mountains. Environmental details explain the place, not a mandatory inventory to display. No characters, enemies, text, border, UI or watermark.
+Avoid: photographic microtexture, uniformly busy foliage, mosaic-like broken colors, floating palaces, glowing runic gates, decorative orbs, reference to another scene's layout.

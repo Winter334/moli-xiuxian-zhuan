@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: deep backwater pools winding between small raised riverbank islands under old waterside trees.
+Scene/backdrop: slow dark pools, eroded high ground and a stand of mature trees whose roots reach the water. A dry strip of old embankment threads between trees back toward the town. Sparse shed bark and animal traces belong near the roots, not scattered across the entire scene.
+Composition/framing: close low view beneath one broad tree canopy, its trunk and large roots making the foreground silhouette; a long dark pool opens toward pale far-bank light. Contrast the dense sheltered canopy with the quiet reflective water.
+Style/medium: painterly environment, cohesive masses of foliage rather than individually sparkling leaves, clear large shapes and an almost suspended calm. Natural scale may feel grand without introducing high-tier magical structures.
+Lighting/mood: deep green canopy, muted indigo water, silver-blue reflection and a small warm patch on dry earth. Restrained luminous distance.
+Constraints: no reference image, no planted market garden, fenced orchard, village repeated from another scene, enemy portraits, ornamental magical rings, text, labels, watermark or UI. Avoid noisy fine details across all surfaces.

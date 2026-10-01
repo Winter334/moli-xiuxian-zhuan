@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted equipment icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four empty garments from ONE azure-treated cloth-and-hide cultivation outfit, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is the newly approved slightly masculine classical short jacket. Preserve wardrobe identity, cross-collar, natural broad shoulders and refined soft paint; extend the family, not a female alternative.
+Top left: folded cloth headwrap with integrated thin hide forehead band, wider crossed cloth folds and one short neat tie. Pale slate cloth and a broad muted teal worked border make its construction readable, no rigid helmet.
+Top right: roomy short cross-collared jacket with wide sleeves and integrated shoulder/back hide reinforcement, same modest classical wardrobe as the reference. Azure treatment follows broad lapel and cuff bands and clear shoulder panels, not tiny added pinstripes. No modern zipper or breast-shaped corset.
+Bottom left: one complete pair of roomy traditional long trousers, visibly gathered narrow ankle cuffs, broad cloth knees reinforced with supple hide. Teal treated side bands and clear layered knee folds, empty garment with no legs inside.
+Bottom right: one pair of soft short leather boots with a folded upper cuff and distinct layered sole, restrained broad teal treated cuff/heel panels, not tall armored greaves.
+Style/medium: exquisite luminous softly layered painting, precise folds and refined supple materials. Pale blue-grey, muted teal and modest dark hide; no gritty low-quality cloth. Unified slightly masculine proportions across the entire set.
+Constraints: azure treatment is fixed INTO existing supple cloth or hide, not rigid metal plate armor. Every garment remains empty, no mannequin, skin or human head. Complete separate objects centered, generous white margins and wide clean white cross gutter. No ornate gems, large aura, cast shadow, text, UI, labels or watermark.

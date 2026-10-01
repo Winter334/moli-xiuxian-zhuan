@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly three creatures across one row of three equal square cells, left to right.
+Input images: Image 1 is the approved black-backed mountain wolf, a painting-style and wolf-family reference. Keep the broadly painted readable form; for the new wolf, share the believable wolf anatomy while making the stronger body and blue-green back identifiable. Do not repeat the old portrait or create another black-backed wolf.
+Subjects:
+Left: a blue-green-backed demon wolf, more robust than an ordinary mountain wolf, with a cool green-blue sheen across the back fur in daylight. Alert and confrontational, full animal visible, grouped fur masses. No cloud wreath, antlers, extra tails or elaborate magical aura.
+Center: a charred-root wood creature, an old burned root mass with a thick cracked charcoal shell, several gripping root tendrils and one large raised root used to strike. Uneven organic outline, a few broad charcoal planes and dark wood beneath. No robot joints, human carved face, flame body or glowing furnace.
+Right: a ridge-backed giant boar, huge powerful shoulders, a back ridge rising like rough stone, coarse dark mane and long strong tusks used to crowd travelers against the rock wall. A low driving posture. Its wedge-shaped stone-like back distinguishes it from a regular rounded rock boar. No literal mountain scenery, metal armor or serpent traits.
+Style/medium: hand-painted volume, broad expressive forms and simplified connected shadows, readable at portrait size. Not photorealistic, not an over-detailed game render. These are early spiritual mountain creatures; strong anatomy and materials, only restrained intrinsic color.
+Composition/framing: one complete creature per equal square cell; entire tails, tusks and roots inside their own cell with ample pure-white margin. Wide white vertical gutters divide the three cells; no overlap or shared ground. Comparable portrait framing without pretending that the creatures have equal size in the world.
+Constraints: pure white background for local removal, no environment, cast shadows, captions, text, border or watermark. No particles or decorative aura to delete around the silhouettes.

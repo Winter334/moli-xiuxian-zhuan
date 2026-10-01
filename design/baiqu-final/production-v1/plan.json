@@ -1,0 +1,528 @@
+{
+  "region": "baiqu-final",
+  "version": "production-v1",
+  "authorization": "The user explicitly requested the final batch plus any omissions, and allowed additional independent retries until all required assets are complete.",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "All remaining current non-player raster slots: four Baiqu locations, six enemies and 46 item IDs. The user subsequently requested removal of the unused old-house story entry; its prompt was removed before any API submission. Existing mounted art, player imagery, new gameplay, numeric content rules and Discord work are excluded.",
+  "scopeCounts": {
+    "scenes": 4,
+    "enemies": 6,
+    "icons": 46,
+    "assets": 56,
+    "originalRequests": 19
+  },
+  "identity": "No player art; Discord avatar and nickname remain separate work.",
+  "enemyDirection": "Every new body, face and leading attack points screen-left; fully contained and centered within its cell.",
+  "progression": "Clean luminous Chinese fantasy wetland ecology and everyday cultivation river trade; no larger megastructures than Hanyue or a sudden cosmic landscape.",
+  "itemDesign": "Refined softly layered painting, classical slightly masculine clothing, broad structural and material differences rather than recolors. Existing same-ID art is reused. Pill supports and pictured quantities are composition only.",
+  "jobs": [
+    {
+      "id": "forest-edge-camp",
+      "name": "千渠埠",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-baiqu-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/forest-edge-camp.txt"
+    },
+    {
+      "id": "oldwood-edge",
+      "name": "百渠堤口",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-baiqu-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/oldwood-edge.txt"
+    },
+    {
+      "id": "oldwood-fringe",
+      "name": "百渠药泽",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-baiqu-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/oldwood-fringe.txt"
+    },
+    {
+      "id": "condensing-spring-cavern",
+      "name": "凝露泉窟",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-baiqu-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/condensing-spring-cavern.txt"
+    },
+    {
+      "id": "enemies-01",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/enemies-01.txt",
+      "items": [
+        {
+          "id": "withering-fungus",
+          "name": "缠渠藤妖"
+        },
+        {
+          "id": "jade-scale-moth",
+          "name": "碧背泽蜥"
+        },
+        {
+          "id": "leaf-talisman-adept",
+          "name": "掠药符修"
+        },
+        {
+          "id": "woodland-crossbowman",
+          "name": "伏泽弩修"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/enemies-02.txt",
+      "items": [
+        {
+          "id": "spring-jade-toad",
+          "name": "盘泉玉蟾"
+        },
+        {
+          "id": "jade-toad-chief",
+          "name": "抱玉蟾魁"
+        }
+      ]
+    },
+    {
+      "id": "materials-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/materials-01.txt",
+      "items": [
+        {
+          "id": "feral-blood-essence",
+          "name": "泽兽精粹"
+        },
+        {
+          "id": "beast-core-shard",
+          "name": "聚灵砂核"
+        },
+        {
+          "id": "marsh-lotus-seed",
+          "name": "泽心莲实"
+        },
+        {
+          "id": "carapace-fragment",
+          "name": "坚甲碎片"
+        }
+      ]
+    },
+    {
+      "id": "materials-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/old-wood-hilt-flare-refined-v3.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/materials-02.txt",
+      "items": [
+        {
+          "id": "spirit-rib-meat",
+          "name": "灵兽肋肉"
+        },
+        {
+          "id": "awakened-wood",
+          "name": "苏灵木"
+        },
+        {
+          "id": "resonant-ingot",
+          "name": "鸣金锭"
+        },
+        {
+          "id": "awakened-hilt",
+          "name": "苏灵淬液"
+        }
+      ]
+    },
+    {
+      "id": "liquids",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/baiqu-final/production-v1/prompts/liquids.txt",
+      "items": [
+        {
+          "id": "clear-spring-saliva",
+          "name": "澄泉灵涎"
+        },
+        {
+          "id": "harmonizing-elixir",
+          "name": "调元药液"
+        },
+        {
+          "id": "foundation-insight",
+          "name": "蕴元灵露"
+        }
+      ]
+    },
+    {
+      "id": "pills",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/spirit-jerky-flare-v5.png",
+        "public/assets/art/icons/essence-broth-flare-hanyue-inner-v1.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/pills.txt",
+      "items": [
+        {
+          "id": "woodland-roast",
+          "name": "养元丹"
+        },
+        {
+          "id": "foundation-pill",
+          "name": "筑基丹"
+        },
+        {
+          "id": "jade-fluid-foundation-pill",
+          "name": "玉液筑基丹"
+        },
+        {
+          "id": "ninefold-foundation-pill",
+          "name": "九转筑基丹"
+        }
+      ]
+    },
+    {
+      "id": "metal-parts",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/deepsteel-blade-flare-hanyue-courts-v3.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/metal-parts.txt",
+      "items": [
+        {
+          "id": "resonant-blade",
+          "name": "鸣金精料"
+        },
+        {
+          "id": "resonant-greatblade",
+          "name": "鸣金重料"
+        }
+      ]
+    },
+    {
+      "id": "upgrade-sands",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/azure-body-shell-flare-wangchuan-v1.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/upgrade-sands.txt",
+      "items": [
+        {
+          "id": "resonant-head-shell",
+          "name": "鸣金束额砂"
+        },
+        {
+          "id": "resonant-body-shell",
+          "name": "鸣金护衣砂"
+        },
+        {
+          "id": "resonant-leg-shell",
+          "name": "鸣金护腿砂"
+        },
+        {
+          "id": "resonant-foot-shell",
+          "name": "鸣金护履砂"
+        }
+      ]
+    },
+    {
+      "id": "awakened-swords-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/awakened-swords-01.txt",
+      "items": [
+        {
+          "id": "awakened-iron-blade-sword",
+          "name": "苏灵铁剑"
+        },
+        {
+          "id": "awakened-dark-steel-blade-sword",
+          "name": "苏灵乌钢剑"
+        },
+        {
+          "id": "awakened-azure-iron-blade-sword",
+          "name": "苏灵青纹剑"
+        }
+      ]
+    },
+    {
+      "id": "awakened-swords-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/spiritwood-baleful-sword-flare-hanyue-courts-v1.png",
+        "public/assets/art/icons/spiritwood-deepsteel-sword-flare-hanyue-courts-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/awakened-swords-02.txt",
+      "items": [
+        {
+          "id": "awakened-baleful-blade-sword",
+          "name": "苏灵玄煞剑"
+        },
+        {
+          "id": "awakened-deepsteel-blade-sword",
+          "name": "苏灵沉渊剑"
+        }
+      ]
+    },
+    {
+      "id": "resonant-swords",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-swords.txt",
+      "items": [
+        {
+          "id": "old-wood-hilt-resonant-blade-weapon",
+          "name": "粗炼鸣金剑"
+        },
+        {
+          "id": "iron-birch-hilt-resonant-blade-weapon",
+          "name": "鸣金剑"
+        },
+        {
+          "id": "spiritwood-hilt-resonant-blade-weapon",
+          "name": "养灵鸣金剑"
+        },
+        {
+          "id": "awakened-hilt-resonant-blade-weapon",
+          "name": "苏灵鸣金剑"
+        }
+      ]
+    },
+    {
+      "id": "resonant-greatswords",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-greatswords.txt",
+      "items": [
+        {
+          "id": "old-wood-hilt-resonant-greatblade-weapon",
+          "name": "粗炼鸣金重剑"
+        },
+        {
+          "id": "iron-birch-hilt-resonant-greatblade-weapon",
+          "name": "鸣金重剑"
+        },
+        {
+          "id": "spiritwood-hilt-resonant-greatblade-weapon",
+          "name": "养灵鸣金重剑"
+        },
+        {
+          "id": "awakened-hilt-resonant-greatblade-weapon",
+          "name": "苏灵鸣金重剑"
+        }
+      ]
+    },
+    {
+      "id": "resonant-hide-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-hide-outfit.txt",
+      "items": [
+        {
+          "id": "hide-lined-resonant-head-shell",
+          "name": "鸣金夹皮头巾"
+        },
+        {
+          "id": "hide-lined-resonant-body-shell",
+          "name": "鸣金夹皮短衣"
+        },
+        {
+          "id": "hide-lined-resonant-leg-shell",
+          "name": "鸣金夹皮长裤"
+        },
+        {
+          "id": "hide-lined-resonant-foot-shell",
+          "name": "鸣金软皮靴"
+        }
+      ]
+    },
+    {
+      "id": "resonant-beasthide-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-beasthide-outfit.txt",
+      "items": [
+        {
+          "id": "beasthide-lined-resonant-head-shell",
+          "name": "鸣金妖皮护额"
+        },
+        {
+          "id": "beasthide-lined-resonant-body-shell",
+          "name": "鸣金妖甲"
+        },
+        {
+          "id": "beasthide-lined-resonant-leg-shell",
+          "name": "鸣金妖皮长裤"
+        },
+        {
+          "id": "beasthide-lined-resonant-foot-shell",
+          "name": "鸣金妖皮靴"
+        }
+      ]
+    },
+    {
+      "id": "resonant-renewal-outfit",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-baiqu-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/renewal-jacket-flare-hanyue-inner-v2.png",
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/baiqu-final/production-v1/prompts/resonant-renewal-outfit.txt",
+      "items": [
+        {
+          "id": "renewal-lined-resonant-head-shell",
+          "name": "鸣金回春巾"
+        },
+        {
+          "id": "renewal-lined-resonant-body-shell",
+          "name": "鸣金回春法衣"
+        },
+        {
+          "id": "renewal-lined-resonant-leg-shell",
+          "name": "鸣金回春长裤"
+        },
+        {
+          "id": "renewal-lined-resonant-foot-shell",
+          "name": "鸣金回春履"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: a quiet old nurturing courtyard beneath a broad banyan tree in Hanyue. Layered foliage opens to pale daylight over a still shallow pond and a low stone sitting terrace. Large roots enter an old lamp niche at the foot of a partly root-bound stone figure. A small bronze lamp keeps a soft green-blue ember; a few fine roots curve slowly despite the calm air.
+Style/medium: elegant luminous Chinese fantasy painting, clean leafy light, soft jade reflections, clear interlocked trunk and stone forms, composed dreamlike stillness.
+Composition/framing: tree canopy frames an intimate side-courtyard view, pond surface and stone seating create a broad calm foreground. Lamp and old figure form a modest off-center focus.
+Constraints: an old courtyard invaded by roots, not a giant sacred world-tree or a haunted graveyard. No huge aura, swarms of spirits, readable carvings, UI or watermark. No reference image; do not repeat another location's layout.

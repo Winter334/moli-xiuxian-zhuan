@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Hanyue's tall-windowed array-patrol gallery, linking layered rooms of the mountain academy. A broad empty stone corridor has very high windows on one side; beyond them white walls and grey-green roofs emerge against soft mountain air. Restrained red-gold metal array seams branch in wall recesses toward water gates, earthfire rooms and cultivation caverns; several channels have been neatly stripped.
+Composition/framing: long calm perspective with large window-light rectangles and deep gallery shadows. Architecture and sunlit distant roofs lead, not wiring or controls. A few old suspended metal fittings imply the absent wardens.
+Style/medium: refined softly layered Chinese fantasy painting, pearl daylight, ordered dreamlike repetition and softly luminous clean stone.
+Constraints: no giant guardians or crowds, no industrial hallway, steampunk pipes, battlefield wreckage, dense decorative symbols, readable text, UI or watermark. No reference image.

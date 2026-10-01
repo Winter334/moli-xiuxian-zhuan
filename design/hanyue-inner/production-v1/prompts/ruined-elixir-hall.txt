@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Hanyue's abandoned alchemy halls layered inside a mountain. Lofty stone chambers and pale galleries ascend around empty furnace pedestals. Soft earthfire warms the lower recesses; high spring vapor rests in a thin pearl band. One broken array core has a few detached overlapping luminous prohibition fragments above its empty seat, a small local impossibility.
+Composition/framing: view from a raised gallery across an open hall into successively higher rooms, emphasizing architectural tiers and serene empty space. Broad jade-grey walls, warm coral furnace light and clean overhead daylight; removed equipment racks are a quiet secondary detail.
+Style/medium: exquisite luminous Chinese cultivation fantasy painting, elegant soft edges and clear monumental interior shapes.
+Constraints: an evacuated everyday academy alchemy workshop, not a tomb, temple throne room or hall packed with loot. Do not depict readable inscriptions, crowds, giant spell circles, dense machinery, UI or watermark. No reference image.

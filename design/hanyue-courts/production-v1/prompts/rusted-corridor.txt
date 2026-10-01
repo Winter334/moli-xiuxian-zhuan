@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide interior environment painting.
+Primary request: Hanyue's blade-calibration gallery, a spacious old Chinese workshop corridor with high open windows, deep wooden eaves and pale stone floor. Long sunlight and column shadows alternate. A shallow still water trough beside the wall reflects a few resting old blades; a thin blue-green reflection subtly moves within otherwise calm water. A simple testing stone and a wooden tension-thread rack indicate the old craft.
+Style/medium: precise softly layered luminous Chinese fantasy painting, clear architecture, quiet dreamlike depth, refined broad material planes.
+Composition/framing: long eye-level perspective through the gallery toward a sunlit courtyard, water trough in the near left side and rhythmic columns along the right. Open floor, no cluttered wall of equipment.
+Constraints: subtle local remaining magic, not a haunted dungeon or armory packed with hundreds of swords. No dominant characters, modern workshop machinery, full-screen runes, readable text, UI or watermark. No reference image.

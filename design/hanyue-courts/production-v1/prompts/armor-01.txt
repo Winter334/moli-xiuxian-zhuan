@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted empty cultivation outfit atlas.
+Primary request: four empty pieces of ONE black-alloy-treated cloth-and-hide outfit, strict 2-column by 2-row grid.
+Input images: Image 1 is the approved slightly masculine wide-sleeved classical short jacket. Preserve this wardrobe family and finely finished soft painting, not a modern or female alternative.
+Top left: layered folded cloth headwrap with a broad soft hide forehead band, deep charcoal worked edging and one neat classical tie. Large crossed folds and a single broad angular seam panel, not a helmet.
+Top right: roomy short cross-collared jacket with broad sleeves and integrated hide reinforcement at shoulders and back. Wide double-layer lapel edging and stepped charcoal shoulder patches carry the black-alloy treatment; continuous restrained silver-dark worked seams, not rigid metal plates.
+Bottom left: complete roomy traditional cloth trousers with supple thick hide knee panels, gathered ankle cuffs and a broad overlapping dark worked side panel. Natural activity folds and coherent large construction, no legs inside.
+Bottom right: one pair of soft short hide boots with layered sole and a clearly doubled folded cuff, a broad dark treated heel/upper panel. Practical classical shoes, not rigid armored greaves.
+Style/medium: exquisite luminous softly layered painting, calm grey cloth and deep black-silver treatment, soft material and consistent slightly masculine proportions. Painting remains refined, not dirtied to signal a harmful material.
+Constraints: garments stay supple and empty; no person, mannequin, visible skin, body-shaped corset or modern fastener. Generous white margins, full separate objects and broad empty cross gutter. No oversized aura, readable runes, text, UI, badges, cast shadow or watermark.

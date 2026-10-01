@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting.
+Primary request: Hanyue's sand-silted spring channel inside the mountain. Wide Chinese stone arches divide several stepped passages; a long high crack admits clear daylight. Shallow spring water follows old stone faces past pale accumulated sand. One short raised channel edge still draws a narrow strand of water over a small height difference through faint old array lines. An upper material-carrying path overlooks the lower channel.
+Style/medium: luminous Chinese dreamlike fantasy painting, softly polished rock and turquoise-grey shallow water, large cool shadow planes and one coherent daylight shaft. Clean but visibly unused.
+Composition/framing: broad cross-level view under one foreground arch, diagonal watercourse leading to distant lit openings. Architecture and terrain remain spatially understandable.
+Constraints: not a sewer, industrial tunnel or catastrophically shattered ruin. No giant levitating river, heavy fog, busy magical text, dominant enemy, UI or watermark. No reference image.

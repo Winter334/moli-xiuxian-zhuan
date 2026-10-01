@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four complete beings, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is a painting-style reference only, softly layered bright volume, coherent shadows and selective edge detail; not wolf anatomy or facing.
+Top left: wealth-seeking wandering wraith, a grey-green fading adult soul silhouette reaching grasping hands LEFT, loose drifting clothing remains, no skeleton, coins, treasure chest or modern money. Dense readable central planes, light translucent edges contained close to the body.
+Top right: earthfire root spirit, a compact knot of charred living roots with green liquid light beneath a few fissures and two short ember tongues. Roots thrust left. A vegetal being, no invented face, humanoid armor or separate fireball background.
+Bottom left: vinebound spirit ape, long-armed powerful ape with sparse supple vines looping around shoulders and forearms, hunched leftward striking pose. Vines integrated and contained, no trees or cage. Different from an armored bark giant.
+Bottom right: spring-drinking vine spirit, stout twisting root base with a few thick raised leafy tendrils whipping left. Split outer bark reveals thin fibers and restrained damp green sap. No human face, no pot or forest patch. Clear broad plant structure, not a tangled ball of spaghetti.
+Direction: head and body fronts face LEFT where present; faceless plants use explicit leftward thrust and movement. Center every complete subject within its own cell.
+Style/medium: refined non-photographic luminous painting, grouped material volume and controlled edges, mild local spiritual qualities without decorative giant halos.
+Constraints: pure white background and broad empty white cross gutter, ample margin around every root, hand and tail. No ground or cast shadow, text, labels, UI, frames or watermark.

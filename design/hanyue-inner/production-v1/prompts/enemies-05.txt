@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four unusual full enemy cutouts in a strict 2-column by 2-row atlas.
+Input images: Image 1 references only approved luminous softly layered painting and finish.
+Top left: warped fungus puppet, an abandoned irregular wooden frame lifted by thick fungus cords, visibly unequal arms, heavy cold-veined ivory-grey fungal membranes and contained blue-green gel in joints. Full stooped frame and its longer striking arm aim LEFT. Not a human zombie.
+Top right: rift-chasing gel wight, a compact agile semi-transparent teal creature with a small faceless forward head mass, folded springing legs and two dense gel arms, fine contained marrow light in the torso. Full body leans LEFT, one arm becomes a solid forward strike, colored edges maintain readable anatomy.
+Bottom left: crevice-stalking spirit wight, a taller slender faceless purple-grey spirit with exceptionally long folded arms and tapered flexible legs, torso bending into a compressed stalking posture, large denser violet hand extending LEFT. Clearly distinct lanky proportions from the compact teal gel wight, no wall or scenery.
+Bottom right: pale fungus-tendril spirit, one dark mineral-and-red-gold-metal root knot supporting a dense fan of long ivory-blue fungal tendrils, gel clinging in a few contained drops. The lower tendrils gather into one leftward sweeping bundle; no face, skeleton, plant pot or human body.
+Style/medium: exquisite luminous softly layered fantasy painting, controlled broad forms, carefully painted pale materials with visible cool colored edges.
+Constraints: centered complete subjects including tendrils and arms, broad empty white cross gutter, generous pure-white outer margins. No scenery, shadow, fog background, text, UI, labels or watermark; nothing crosses cells.

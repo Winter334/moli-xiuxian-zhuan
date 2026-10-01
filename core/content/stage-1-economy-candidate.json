@@ -1,0 +1,39 @@
+{
+  "version": "stage-1-economy-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-economy-candidate.1-dual.1-slots.1",
+  "clearStones": {
+    "foothill": "5",
+    "bamboo": "10",
+    "quarry": "20",
+    "pool": "30",
+    "ruins": "40"
+  },
+  "unbuyableMaterials": [
+    "dew-flower"
+  ],
+  "forgeCosts": {
+    "forge-iron-sword": { "ore": "10", "copper": "10", "spirit-bamboo": "4" },
+    "forge-stone-gauntlet": { "ore": "8", "armor": "4", "hide": "8" },
+    "forge-green-staff": { "spirit-bamboo": "6", "copper": "14", "hide": "4" }
+  },
+  "growthCosts": {
+    "early": { "herb": "3", "primary": "4", "stones": "8" },
+    "middle": { "herb": "4", "primary": "2", "extra": { "itemId": "dew-flower", "quantity": "2" }, "stones": "18" },
+    "late": { "herb": "5", "primary": "1", "extra": { "itemId": "heartwood", "quantity": "2" }, "stones": "36" }
+  },
+  "enemyChanges": [
+    { "id": "hill-wolf", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.025 }, { "itemId": "hide", "quantity": "1", "chance": 0.015 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.001 }] },
+    { "id": "hill-boar", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.02 }, { "itemId": "hide", "quantity": "1", "chance": 0.02 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.001 }] },
+    { "id": "bamboo-snake", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.01 }, { "itemId": "spirit-bamboo", "quantity": "1", "chance": 0.015 }, { "itemId": "blood", "quantity": "1", "chance": 0.015 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.001 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.0005 }] },
+    { "id": "spine-badger", "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.01 }, { "itemId": "armor", "quantity": "1", "chance": 0.015 }, { "itemId": "blood", "quantity": "1", "chance": 0.015 }, { "itemId": "defense-pill", "quantity": "1", "chance": 0.001 }] },
+    { "id": "bamboo-snake-elite", "allocation": { "level": 2, "rank": "elite", "multipliers": { "maxHp": "0.85", "maxMp": "0", "attack": "2.2", "defense": "1.2", "agility": "1.1", "magicAttack": "0", "magicDefense": "1.1" } }, "drops": [{ "itemId": "herb", "quantity": "1", "chance": 0.015 }, { "itemId": "spirit-bamboo", "quantity": "1", "chance": 0.025 }, { "itemId": "blood", "quantity": "1", "chance": 0.025 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.002 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.001 }] },
+    { "id": "iron-lizard", "attackMultiplier": "2", "drops": [{ "itemId": "ore", "quantity": "1", "chance": 0.01 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.02 }, { "itemId": "dense-ore", "quantity": "1", "chance": 0.015 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.0015 }] },
+    { "id": "flame-lizard", "drops": [{ "itemId": "copper", "quantity": "1", "chance": 0.015 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.02 }, { "itemId": "blood", "quantity": "1", "chance": 0.015 }, { "itemId": "attack-pill-middle", "quantity": "1", "chance": 0.0015 }] },
+    { "id": "iron-lizard-elite", "attackMultiplier": "2.4", "drops": [{ "itemId": "ore", "quantity": "1", "chance": 0.02 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 0.03 }, { "itemId": "dense-ore", "quantity": "1", "chance": 0.03 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.003 }] },
+    { "id": "stone-crab", "attackMultiplier": "1.7", "drops": [{ "itemId": "dew-flower", "quantity": "1", "chance": 0.035 }, { "itemId": "warm-jade", "quantity": "1", "chance": 0.025 }, { "itemId": "armor", "quantity": "1", "chance": 0.015 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.0015 }] },
+    { "id": "cold-snake", "drops": [{ "itemId": "dew-flower", "quantity": "1", "chance": 0.035 }, { "itemId": "warm-jade", "quantity": "1", "chance": 0.025 }, { "itemId": "blood", "quantity": "1", "chance": 0.015 }, { "itemId": "vitality-pill-middle", "quantity": "1", "chance": 0.0015 }], "magicAttackMultiplier": "1.5" },
+    { "id": "garden-guardian", "attackMultiplier": "1.6", "hpMultiplier": "1.6", "drops": [{ "itemId": "essence", "quantity": "1", "chance": 0.03 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.03 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.0015 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.0005 }] },
+    { "id": "root-vine", "attackMultiplier": "1.4", "hpMultiplier": "1.6", "drops": [{ "itemId": "moon-fungus", "quantity": "1", "chance": 0.03 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.03 }, { "itemId": "vitality-pill-late", "quantity": "1", "chance": 0.0015 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.0005 }] },
+    { "id": "garden-guardian-elite", "attackMultiplier": "1.8", "hpMultiplier": "1.6", "drops": [{ "itemId": "essence", "quantity": "1", "chance": 0.05 }, { "itemId": "heartwood", "quantity": "1", "chance": 0.05 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.003 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.001 }] }
+  ]
+}

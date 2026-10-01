@@ -1,0 +1,44 @@
+{
+  "version": "stage-1-combat-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-combat-candidate.1-dual.1-slots.1",
+  "schemaVersion": 14,
+  "manaSupply": {
+    "itemId": "mana-pill",
+    "cooldownMs": 10000
+  },
+  "manaPill": {
+    "amount": "90",
+    "buyPrice": "12"
+  },
+  "playerActions": [
+    { "id": "measured-strike", "name": "沉拳", "mpCost": "2", "damageType": "physical", "coefficient": "1.05", "hits": 1 },
+    { "id": "blazing-bolt", "name": "凝焰", "mpCost": "18", "damageType": "magical", "coefficient": "3.2", "hits": 1 }
+  ],
+  "equipmentAttack": {
+    "stone-gauntlet": "10",
+    "sand-gauntlet": "12",
+    "forged-gauntlet": "18",
+    "green-staff": "12",
+    "jade-staff": "20",
+    "plain-jade-staff": "30"
+  },
+  "techniqueChanges": [
+    { "id": "mountain", "actionId": "measured-strike", "effects": [], "practiceBonuses": [{ "stat": "attack", "value": "6" }, { "stat": "defense", "value": "3" }] },
+    { "id": "flame", "actionId": "blazing-bolt", "effects": [], "practiceBonuses": [{ "stat": "magicAttack", "value": "16" }] }
+  ],
+  "flameModifiers": [],
+  "manualPrices": {
+    "verdant-manual": "80",
+    "mountain-manual": "100",
+    "flame-manual": "100"
+  },
+  "firstClearStones": {
+    "foothill": "30",
+    "bamboo": "160"
+  },
+  "forgeCosts": {
+    "forge-iron-sword": { "stones": "60", "materials": { "ore": "4", "copper": "4", "spirit-bamboo": "2" } },
+    "forge-stone-gauntlet": { "stones": "60", "materials": { "ore": "6", "hide": "4" } },
+    "forge-green-staff": { "stones": "60", "materials": { "spirit-bamboo": "3", "copper": "6", "hide": "2" } }
+  }
+}

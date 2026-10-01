@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly two items in a strict 2-column by 1-row grid, left to right.
+Input images: Image 1 is the existing iron-birch source material family; preserve plausible wood identity, not its exact silhouette. Image 2 supplies newly approved finely completed soft painting, not a metal design.
+Left: spirit-treated wood, one squared timber section cut open along a broad exposed face, a separate thin lamina folded outward to reveal pale green infused grain and embedded silken fiber lines. Clearly processed rectangular timber, unlike an ordinary round bark log or driftwood sticks. Soft restrained green translucence follows wood grain, not foliage.
+Right: spiritwood quenching liquid in one low broad hexagonal glass flask with sloped shoulders and a short stoppered neck. Clear green liquid visible through large calm glass planes. Distinct broad silhouette from tall birch-resin bottle and open crude clay pot. Plain restrained traditional workshop vessel, no elaborate jewels or label.
+Style/medium: exquisite luminous soft painterly volume, precise edges and coherent reflections; material elegance without photorealistic scratches, dense grain or magical aura.
+Constraints: pure white background, wide clean center gutter, complete separate objects centered with ample margins. No tools, ground shadow, text, label, frame, UI or watermark.

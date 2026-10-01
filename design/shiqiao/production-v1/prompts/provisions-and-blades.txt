@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly three icons in one strict horizontal row of three equal square cells, left to right.
+Input images: Image 1 references the accepted painted dried-meat material; Image 2 references a practical painted sword. Preserve broad readable volume, not identical arrangement or surface detail.
+Subjects:
+Left: rich jerky, a small overlapping fan of several flat dark red-brown dense meat slices, finely fibrous and neatly cut. Flat food-slice silhouette, no pills, beads, bone, bottle, ornate platter or large package.
+Middle: finished dark-steel sword, one complete practical straight double-edged sword with even smooth near-black blade, clean cool cutting edge, modest guard and well-finished birch-wood grip. Polished but not ornate, no runic flames, no scabbard. Diagonal across its cell, tip and pommel both inside.
+Right: crudely quenched dark-steel sword, same basic family of practical complete straight swords, simple old-wood grip, mottled dark blade finish from coarse quenching and slightly uneven edge. Clearly a finished sword, not metal stock. Similar category silhouette is acceptable; distinguish rough finish without making it broken. Diagonal across its cell, full tip and pommel.
+Style/medium: bright painted game icons, solid simplified volumes, coherent broad reflected light and concentrated material detail. Subtle unusual light, not photographic microtexture or high-tier magical effects.
+Composition/framing: one complete centered icon per equal square cell, generous pure-white margins, two clean white vertical gutters. Each sword stays fully within its own cell; no object overlaps another.
+Constraints: pure white background for local removal, no shadow, landscape, frame, text, labels, watermark or UI. No exaggerated fantasy serrations or gilded royal fittings.

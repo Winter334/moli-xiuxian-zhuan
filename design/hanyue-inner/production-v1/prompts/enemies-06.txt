@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four painted spirit and creature cutouts in a strict 2-column by 2-row atlas.
+Input images: Image 1 references approved refined softly layered paint only, not animal species or facing.
+Top left: wandering earthfire spirit, a low folded dark-red and coral flame body with a dense ember-sand center and a contained leftward leading tongue. A few warm marrow flecks inside, no face or stone base.
+Top right: gathering-fire spirit, a taller compact golden-coral spiral flame around ONE clearly visible lustrous gold marrow core, broad cupping outer flames and trailing flame folds. The main dense flame lobe drives LEFT. Distinct upright cupped structure from the low dark-red wandering fire, not simply a brighter recolor.
+Bottom left: fivefold furnace prohibition, exactly five thick separated bent bands of old abstract rune-light hovering around one cracked dark array core, staggered in depth and gathered into a leftward launching shape. Dusky bronze-violet outer planes and contained pale warm edges, not an ornamental flat magic circle or five independent objects. No readable glyphs or face.
+Bottom right: soft-wing spirit moth, complete left-facing slender moth with broad supple silver-blue membranes crossing with cold-white vein bands, wings gracefully bent in mid-stroke and a dense muted mauve body. All wings, antennae and legs visible; oblique leftward flying pose instead of a frontal specimen.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, dense colored forms with delicate contained supernatural light.
+Constraints: subjects centered and complete in individual cells, broad white cross gutter and generous pure-white margins. No floor shadow, scenery, giant aura, text, labels, UI or watermark.

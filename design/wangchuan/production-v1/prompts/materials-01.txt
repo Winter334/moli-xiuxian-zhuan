@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four materials, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 is the user-approved refined metal painting reference: softly modeled full volume, elegant edge hierarchy and luminous reflected color. Keep its finish quality, not its exact ingot shape or dark-steel identity.
+Top left: azure ore, one short chunky irregular grey-white rock exposing a large branching teal mineral seam and a broken rocky face. Raw mineral, not a metal ingot or smooth gemstone.
+Top right: earthfire coal, two compact angular black coal chunks, one exposing a restrained deep ember-red internal band. Broad readable broken planes, not ordinary brown charcoal sticks or glowing lava.
+Bottom left: azure iron ingot, a substantial rectangular softly beveled casting with a stepped top shoulder, blue-grey metal and broad teal veins clearly penetrating the exposed end. Distinct large silhouette from the tall trapezoidal dark-steel reference. No jewels or aura.
+Bottom right: refined azure forging stock, two short flattened folded-metal billets stacked at an offset, broad teal laminated cross-section visible. A rectangular stock block, NOT a finished sword blade, ore or another casting. Distinct structure and polished worked planes.
+Style/medium: refined soft painterly material rendering, complete clear volume, controlled warm-cool light. Simple material never means rough unfinished illustration. Legible at 28 pixels.
+Constraints: subjects centered in separate cells, ample white margin and broad empty white cross gutter. No rock ground patch, cast shadows, decorative light effects, text, labels, frames, UI or watermark.

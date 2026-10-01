@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four paired low and higher grade items in a strict 2-column by 2-row grid, reading order left to right then top to bottom. Different grade must be visible from the large silhouette and material treatment at 28-40 px.
+Top left, crude quenching liquid: low wide OPEN coarse grey-brown clay crock, broad irregular lip and opaque dirty dark liquid visible from above. Squat rounded heavy silhouette with one large unglazed patch. No narrow neck or stopper.
+Top right, birch-resin quenching liquid: tall narrow STOPPERED glass flask, long clearly visible neck, small dark stopper, broad translucent amber liquid column and a clean bright glass edge. Tall bottle silhouette with amber liquid, not a beige open pottery pot. Ordinary filtered resin liquid, not an ornate potion or magical artifact.
+Bottom left, dried meat: several long thin uneven brown dried strips loosely tied in one narrow hanging bundle, irregular ends and an obvious long fibrous food silhouette. Rough everyday field provisions, not pills.
+Bottom right, rich jerky: three broad dense dark-red rectangular meat slices arranged in a flat stepped fan. Even cut edges and broad continuous red meat planes, a few visible fibrous lines only. Short wide flat food silhouette, clearly distinct from long tied strips. No round pills or elaborate dish.
+Composition/framing: one complete centered icon per equal square cell, about 80 percent of the cell span, broad pure-white margins and a clean white cross gutter. Objects remain fully isolated; no colored background.
+Style/medium: luminous readable painted game icons with broad material masses and clear volume, simplified texture. Meaningful coarse versus finished design, not tiny scratches or recolors.
+Constraints: pure white background for local removal, no cast shadow, frame, ground, text, labels, badges, watermark or UI. No reference images. Containers and multiple meat pieces are illustration arrangements only, not new recipe materials, costs, stack units or item effects. No floating aura.

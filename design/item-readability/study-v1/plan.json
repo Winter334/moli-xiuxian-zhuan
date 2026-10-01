@@ -1,0 +1,148 @@
+{
+  "region": "item-readability",
+  "version": "study-v1",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Redesign the 4 mounted swords and 12 representative paired materials, consumables and torso garments; no full item-catalog generation, scenes, enemies, techniques or player art",
+  "designIntent": "Same-family identity must not erase material tier or craft grade. Require a large structural/silhouette cue plus a broad material/craft cue visible at 28-40 px, not only hue, scratches or microscopic patterns.",
+  "qualityBoundary": "Shared item-ID art expresses material and crafting variant, not a particular instance quality or a guarantee that every higher-tier item beats every lower-tier item in all stats.",
+  "referencesPolicy": "Use currently mounted art as references; unmounted originals were removed.",
+  "jobs": [
+    {
+      "id": "weapons",
+      "promptFile": "design/item-readability/study-v1/prompts/weapons.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-readable-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "wood-hilt-sword",
+          "name": "粗炼铁剑",
+          "signature": "short narrow straight blade, tiny bar guard, rough cord grip, broad unpolished grey planes"
+        },
+        {
+          "id": "iron-birch-sword",
+          "name": "铁剑",
+          "signature": "long slender diamond-ridge blade, arched guard, neat grip, clear bright steel planes"
+        },
+        {
+          "id": "wood-hilt-dark-steel-sword",
+          "name": "粗炼乌钢剑",
+          "signature": "wide dark leaf-shaped blade, short block guard, heavy unfinished shoulder planes"
+        },
+        {
+          "id": "dark-steel-sword",
+          "name": "乌钢剑",
+          "signature": "wide shouldered tapered dark blade, substantial twin-wing stepped guard, bright bevel bands and fitted metal collar"
+        }
+      ]
+    },
+    {
+      "id": "metals",
+      "promptFile": "design/item-readability/study-v1/prompts/metals.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-readable-v1",
+      "size": "1536x1024",
+      "columns": 3,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "scrap-iron",
+          "name": "碎铁料",
+          "signature": "two or three bent narrow farm-tool strips and one open hook"
+        },
+        {
+          "id": "crude-iron-ingot",
+          "name": "粗铁锭",
+          "signature": "low irregular rounded casting cake with one broad slag patch"
+        },
+        {
+          "id": "iron-blade",
+          "name": "百炼铁料",
+          "signature": "broad flat bright rectangular forging slab, clearly thin edge"
+        },
+        {
+          "id": "dark-steel-scrap",
+          "name": "乌钢碎料",
+          "signature": "three large dark curved armor fragments fanned into an angular shell silhouette"
+        },
+        {
+          "id": "dark-steel-ingot",
+          "name": "乌钢锭",
+          "signature": "tall clean trapezoidal casting block with clipped shoulders"
+        },
+        {
+          "id": "dark-steel-blade",
+          "name": "乌钢精料",
+          "signature": "short thick hexagonal forged billet with a large faceted end face, no point or hilt"
+        }
+      ]
+    },
+    {
+      "id": "quench-and-food",
+      "promptFile": "design/item-readability/study-v1/prompts/quench-and-food.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-readable-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "items": [
+        {
+          "id": "old-wood-hilt",
+          "name": "粗制淬液",
+          "signature": "low wide open coarse clay crock, opaque dirty liquid"
+        },
+        {
+          "id": "iron-birch-hilt",
+          "name": "桦脂淬液",
+          "signature": "tall narrow stoppered glass flask with clear amber liquid"
+        },
+        {
+          "id": "dried-meat",
+          "name": "肉干",
+          "signature": "long thin uneven dried strips in one loose tied bundle"
+        },
+        {
+          "id": "rich-jerky",
+          "name": "精肉脯",
+          "signature": "three broad dense red rectangular slices in a flat stepped fan"
+        }
+      ]
+    },
+    {
+      "id": "body-armor",
+      "promptFile": "design/item-readability/study-v1/prompts/body-armor.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-readable-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "hide-jacket",
+          "name": "夹皮短衣",
+          "signature": "loose broad-sleeved cloth work jacket, large mismatched hide patches"
+        },
+        {
+          "id": "beasthide-jacket",
+          "name": "妖皮内甲",
+          "signature": "close-fitted sleeveless soft-hide under-armor, curved overlapping leather panels and high waist"
+        }
+      ]
+    }
+  ]
+}

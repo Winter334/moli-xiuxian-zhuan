@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: an abandoned riverside cargo shed concealed by reeds, now used by robbers to hide stolen goods.
+Scene/backdrop: one weathered timber loading shed at the old landing, open doorway and a broad dark interior containing a few connected stacks of cargo sacks. Worn hauling grooves cut into the posts, a dragging trail runs to the muddy shore. Two small armed human silhouettes can stand near the entrance, subordinate to the building.
+Composition/framing: oblique exterior view from the reed-framed bank. One large sloping roof and the shaded doorway dominate; pale water visible through a side gap gives quiet depth. Strong roof silhouette, no complicated maze of small rooms.
+Style/medium: expressive environment painting with broad joined shadow masses and simplified timber planes. Slightly stretched quiet space, readable working structure rather than horror.
+Lighting/mood: low soft daylight striking weathered timber, cool mauve interior shadows and pale moss-green riverside light.
+Constraints: independently composed without references. This is a cargo shed, not a scripture cave, library, martial trial or stone shrine. No book displays, sacred scrolls, magical barriers, gore, text, labels, logo, watermark or UI. Avoid cluttering every visible floor patch.

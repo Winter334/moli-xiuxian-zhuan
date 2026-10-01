@@ -1,0 +1,55 @@
+{
+  "region": "huaixi",
+  "version": "sunburst-composition-v4",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "referencePolicy": "Use currently mounted art as references; unmounted originals were removed.",
+  "unchanged": {
+    "scenes": [
+      "qingshi-village"
+    ],
+    "categories": [
+      "enemies",
+      "icons",
+      "techniques"
+    ]
+  },
+  "jobs": [
+    {
+      "id": "village-outskirts",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v4",
+      "size": "1792x784",
+      "promptFile": "design/huaixi/sunburst-composition-v4/prompts/village-outskirts.txt",
+      "references": []
+    },
+    {
+      "id": "abandoned-road",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v4",
+      "size": "1792x784",
+      "promptFile": "design/huaixi/sunburst-composition-v4/prompts/abandoned-road.txt",
+      "references": []
+    },
+    {
+      "id": "stony-trail",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v4",
+      "size": "1792x784",
+      "promptFile": "design/huaixi/sunburst-composition-v4/prompts/stony-trail.txt",
+      "references": []
+    },
+    {
+      "id": "hermit-stone-chamber",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-v4",
+      "size": "1792x784",
+      "promptFile": "design/huaixi/sunburst-composition-v4/prompts/hermit-stone-chamber.txt",
+      "references": []
+    }
+  ]
+}

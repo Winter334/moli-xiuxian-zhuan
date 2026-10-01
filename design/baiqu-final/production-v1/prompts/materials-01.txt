@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: four distinct refined item icons in a strict 2-column by 2-row atlas.
+Input images: Image 1 references the approved softly layered finished material painting, not its subjects.
+Top left: concentrated marsh-beast essence, one compact folded thick emerald viscous mass with a broad glossy crest and a few fine contained moving inner light strands. Much denser and smaller-lobed than raw flowing spirit gel, not a glass bead, pill or bottle.
+Top right: spirit-gathering sand nucleus, a small irregular squat mineral nodule formed of densely compacted pale gold-grey sand layers, one angular cleft revealing gathered muted jade light. Clearly granular and layered, not a smooth bare marrow bead or large array-machine core.
+Bottom left: medicinal lotus seeds, a small coherent arrangement of three mature deep blue-green seeds beside one opened thick seed shell showing a warm luminous ivory kernel. Seeds dominate; no whole lotus flower, large plant, bag or bowl. Distinct plant structure rather than round glass gems.
+Bottom right: hard carapace fragments, three thick overlapping slate-teal organic armor shards, broad curved surfaces and a distinctly layered pale cut edge, one large asymmetrical shell plate. Clearly hard creature armor rather than smooth metal ingots or supple hides.
+Style/medium: exquisite softly layered Chinese fantasy painting, carefully finished broad surfaces and controlled restrained local spiritual light.
+Constraints: complete centered objects in separate cells with broad empty white cross gutter and generous pure-white margins. No text, labels, UI, grade numbers, ground shadow or watermark.

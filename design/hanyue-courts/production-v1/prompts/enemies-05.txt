@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: single painted enemy cutout.
+Primary request: Hanyue's blood-reflecting array shade, an upright complete human-shaped spiritual body gathered from translucent deep red array light and denser crimson-grey painted bands, clearly facing screen-LEFT with a broad left-reaching combat arm. A few pale marrow-like light paths inside the chest connect its folded volume. The body is a reflected formation, not a bleeding human, vampire, flame creature or clothed monk.
+Input images: Image 1 supplies refined soft painting and finished edges only; not creature design, anatomy or direction.
+Style/medium: exquisite luminous Chinese fantasy painting, restrained soft red depth and clear large folds, readable on both white and dark backgrounds. Spiritual face plane may be featureless.
+Constraints: entire centered figure, complete leading hand and trailing wisps, generous margins, pure white background. No enclosing mandala, giant aura, ground, shadow, gore, readable symbols, UI, labels or watermark.

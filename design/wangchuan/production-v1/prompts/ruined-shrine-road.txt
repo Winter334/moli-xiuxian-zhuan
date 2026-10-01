@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: broad spring-guiding stone stairs ascending a mountainside toward the layered white walls and double-eaved roofs of Hanyue's old cultivation complex. This is a mountain institution, not a tiny ruined shrine. Large stairs turn through green woodland; a nearby old stone spring trough bears very faint array lines, pulling a narrow stream across one small broken gap. Roots enter one inactive reservoir platform.
+Style/medium: luminous Chinese dreamlike fantasy painting, quiet sunlight on pale walls, soft warm spring haze at different depths, clear architecture and green shadow. Refined completed forms with restrained surface detail.
+Composition/framing: side-oblique view across a broad turn of the stairs; architectural layers rise diagonally, separated by calm wall planes and shade. The small water anomaly is local and legible, not a giant levitating river.
+Constraints: no floating mountain clusters, vast column arrays, endless megastructure, full-screen runes, modern objects, readable text, UI or watermark.
+Progression: the clearest step toward an immortal domain in this approach. Quiet clean stone flights, pearl-white walls, gently extended corridors of space and luminous layered air suggest a place shaped by cultivation. Show age through a few breaks and roots rather than dirt or random rubble. Keep the locally suspended stream small; do not exhaust later-world spectacle.

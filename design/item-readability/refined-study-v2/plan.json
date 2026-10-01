@@ -1,0 +1,81 @@
+{
+  "region": "item-readability",
+  "version": "refined-study-v2",
+  "variant": "flare",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Publish only the six confirmed representative items: two torso garments, two swords and two metal ingots. Replace their prior readable-v1 mappings without regenerating images or expanding to the remaining ten items.",
+  "feedback": "The prior readable-v1 batch is not approved: torso garments imply different genders, and ordinary material was rendered too coarsely beside the refined scenes and enemies.",
+  "designIntent": "Separate object simplicity from illustration quality. Use refined softly layered painted volume, controlled edge rhythm and coherent lighting across all six items. Include restrained classical cultivation design language in collars, borders, ties and sword fittings. Preserve large structural differences without photorealistic microtexture or generic luxury decoration.",
+  "garmentInvariant": "Use a coherent slightly masculine classical cultivation wardrobe, not deliberately gender-neutral clothing. Both empty adult garments have broad natural shoulders and restrained natural waist proportions; distinguish sleeves, layering and coverage, not an abrupt male-versus-female style split. This is art direction, not an equipment gender restriction.",
+  "jobs": [
+    {
+      "id": "refined-items-study",
+      "promptFile": "design/item-readability/refined-study-v2/prompt.txt",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-refined-study-v2",
+      "size": "1536x1024",
+      "columns": 3,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "referenceRoles": [
+        "User-approved enemy painting: softly layered volume, deliberate brushwork, cool-warm reflected light and edge hierarchy; not the animal subject or pose.",
+        "User-approved scene: refinement and luminous color relationships; not landscape composition, background content or magical effects."
+      ],
+      "items": [
+        {
+          "id": "hide-jacket",
+          "name": "夹皮短衣",
+          "previewOnly": false,
+          "cellBounds": [
+            0,
+            0,
+            540,
+            495
+          ],
+          "signature": "Slightly masculine classical short jacket, roomy sleeves, cross collar, neat lapel borders and integrated hide reinforcement; refined painting of modest cultivation-world clothing."
+        },
+        {
+          "id": "wood-hilt-sword",
+          "name": "粗炼铁剑",
+          "previewOnly": false,
+          "signature": "Short narrow straight iron blade, compact plain bar guard and cloth grip; restrained imperfect forging, complete usable sword, polished illustration."
+        },
+        {
+          "id": "crude-iron-ingot",
+          "name": "粗铁锭",
+          "previewOnly": false,
+          "signature": "Low flat rough cast iron cake, simple rounded perimeter, calm matte forged planes rather than noisy granular texture."
+        },
+        {
+          "id": "beasthide-jacket",
+          "name": "妖皮内甲",
+          "previewOnly": false,
+          "signature": "Slightly masculine sleeveless supple hide under-armor, broad shoulders, natural waist and restrained classical lapel or edge motifs; same wardrobe as the jacket, not a feminine corset."
+        },
+        {
+          "id": "dark-steel-sword",
+          "name": "乌钢剑",
+          "previewOnly": false,
+          "cellBounds": [
+            460,
+            495,
+            564,
+            529
+          ],
+          "signature": "Broad shouldered dark blade, fitted twin-wing guard and continuous pale bevels; refined ordinary metalwork, no jewels or magical aura."
+        },
+        {
+          "id": "dark-steel-ingot",
+          "name": "乌钢锭",
+          "previewOnly": false,
+          "signature": "Tall clean trapezoidal dark-steel ingot with broad softly modeled facets and restrained blue-grey reflections."
+        }
+      ]
+    }
+  ]
+}

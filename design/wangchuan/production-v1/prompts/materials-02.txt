@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four items, strict 2-column by 2-row grid, reading order.
+Input images: Image 1 provides the newly approved refined soft paint and luminous volume, not metal subject matter. Image 2 provides the existing lower meat family's material and form, not a duplicate to redraw.
+Top left: verdant botanical spirit essence, a squat wide-mouth clear greenish glass vessel showing an ample emerald liquid surface and one suspended leaf-shaped liquid inclusion. Wider and more open than tall quenching-liquid bottles; liquid dominant, not an invented potion label.
+Top right: wind-pattern spiritual fiber, a broad loose loop of pearly pale-green thread with two clearly separated flowing tails, softly bent into a wind-swept crescent. A fiber skein, not a marble, liquid bottle or cloth roll.
+Bottom left: spiritual beast meat, one long curved thick boneless cut of red-purple meat, a smooth large pale tendon running the length and restrained blue-lilac reflected light in the cut plane. Longer and more tapered than the reference's compact lower meat; not just a recolor, no gore or supernatural flames.
+Bottom right: wind-condensing feather, one complete long elegant dark eagle flight feather, a broad tapering vane and pale inner shaft branching into several calm white bands. A clear elongated single feather, not a rolled scroll, map, bundle of fibers or weapon.
+Style/medium: exquisite softly layered painted material, completed volume and deliberate soft-hard edge rhythm, restrained spiritual color, no dense microtexture.
+Constraints: pure white background, broad clean cross gutter, complete objects centered with generous margins. No ground shadow, extra props, labels, text, UI, watermark or large magical aura.

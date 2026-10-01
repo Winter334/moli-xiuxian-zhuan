@@ -1,0 +1,37 @@
+{
+  "version": "stage-1-monster-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-monster-candidate.1-dual.1-slots.1",
+  "schemaVersion": 14,
+  "enemyEffects": [
+    { "id": "enemy-spines", "name": "硬刺", "trigger": "hurt", "kind": "damage", "damageType": "physical", "amount": "6" },
+    { "id": "enemy-opening-ward", "name": "残阵护体", "trigger": "encounter", "kind": "shield", "amount": "25" }
+  ],
+  "equipmentChanges": [
+    { "id": "iron-sword", "affixPool": [], "affixCount": 0 },
+    { "id": "stone-gauntlet", "affixPool": [], "affixCount": 0 },
+    { "id": "green-staff", "affixPool": [], "affixCount": 0 },
+    { "id": "sand-gauntlet", "affixPool": [], "affixCount": 0, "effects": ["heavy-ward"] }
+  ],
+  "enemyChanges": [
+    { "baseId": "hill-wolf", "id": "hill-wolf", "allocation": { "level": 0, "rank": "normal", "multipliers": { "maxHp": "0.3", "maxMp": "0", "attack": "0.5", "defense": "0.5", "agility": "0.8", "magicAttack": "0", "magicDefense": "0.5" } }, "actionId": "strike", "effects": [], "drops": [{ "itemId": "herb", "quantity": "1", "chance": 1 }, { "itemId": "hide", "quantity": "2", "chance": 1 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.01 }] },
+    { "baseId": "hill-boar", "id": "hill-boar", "allocation": { "level": 0, "rank": "normal", "multipliers": { "maxHp": "0.42", "maxMp": "0", "attack": "0.8", "defense": "1", "agility": "0.6", "magicAttack": "0", "magicDefense": "0.8" } }, "actionId": "strike", "effects": [] },
+    { "baseId": "bamboo-snake", "id": "bamboo-snake", "allocation": { "level": 1, "rank": "normal", "multipliers": { "maxHp": "0.5", "maxMp": "0", "attack": "0.85", "defense": "1", "agility": "1", "magicAttack": "0", "magicDefense": "0.8" } }, "actionId": "strike", "mpRegen": "0", "effects": [] },
+    { "baseId": "spine-badger", "id": "spine-badger", "allocation": { "level": 1, "rank": "normal", "multipliers": { "maxHp": "0.55", "maxMp": "0", "attack": "0.75", "defense": "1.4", "agility": "0.75", "magicAttack": "0", "magicDefense": "1" } }, "actionId": "strike", "effects": ["enemy-spines"] },
+    { "baseId": "iron-lizard", "id": "iron-lizard", "allocation": { "level": 3, "rank": "normal", "multipliers": { "maxHp": "0.9", "maxMp": "0", "attack": "1.15", "defense": "3.6", "agility": "0.8", "magicAttack": "0", "magicDefense": "0.8" } }, "actionId": "strike", "effects": [], "drops": [{ "itemId": "ore", "quantity": "2", "chance": 1 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 1 }, { "itemId": "armor", "quantity": "1", "chance": 1 }, { "itemId": "blood", "quantity": "1", "chance": 1 }, { "itemId": "dense-ore", "quantity": "1", "chance": 1 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.015 }] },
+    { "baseId": "flame-lizard", "id": "flame-lizard", "allocation": { "level": 3, "rank": "normal", "multipliers": { "maxHp": "0.7", "maxMp": "0.625", "attack": "0.3", "defense": "1", "agility": "1", "magicAttack": "1.5", "magicDefense": "2" } }, "actionId": "spark", "effects": [], "drops": [{ "itemId": "copper", "quantity": "2", "chance": 1 }, { "itemId": "stone-marrow", "quantity": "1", "chance": 1 }, { "itemId": "blood", "quantity": "1", "chance": 1 }, { "itemId": "attack-pill-middle", "quantity": "1", "chance": 0.015 }] },
+    { "baseId": "stone-crab", "id": "stone-crab", "allocation": { "level": 5, "rank": "normal", "multipliers": { "maxHp": "0.9", "maxMp": "0", "attack": "0.925", "defense": "2.2", "agility": "0.7", "magicAttack": "0", "magicDefense": "0.9" } }, "actionId": "strike", "effects": [] },
+    { "baseId": "cold-snake", "id": "cold-snake", "allocation": { "level": 5, "rank": "normal", "multipliers": { "maxHp": "0.75", "maxMp": "0.6", "attack": "0.3", "defense": "1", "agility": "1.3", "magicAttack": "1.1", "magicDefense": "1.8" } }, "actionId": "spark", "effects": [] },
+    { "baseId": "garden-guardian", "id": "garden-guardian", "allocation": { "level": 6, "rank": "normal", "multipliers": { "maxHp": "1.3", "maxMp": "0.8", "attack": "0.95", "defense": "2", "agility": "1", "magicAttack": "0", "magicDefense": "1.4" } }, "actionId": "heavy-strike", "attackIntervalMs": 5000, "effects": ["enemy-opening-ward"], "drops": [{ "itemId": "essence", "quantity": "1", "chance": 1 }, { "itemId": "heartwood", "quantity": "1", "chance": 1 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.01 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.005 }] },
+    { "baseId": "root-vine", "id": "root-vine", "allocation": { "level": 6, "rank": "normal", "multipliers": { "maxHp": "1.15", "maxMp": "0", "attack": "0.9", "defense": "1.3", "agility": "0.85", "magicAttack": "0", "magicDefense": "1.8" } }, "actionId": "strike", "attackIntervalMs": 4000, "effects": [], "drops": [{ "itemId": "moon-fungus", "quantity": "1", "chance": 1 }, { "itemId": "heartwood", "quantity": "1", "chance": 1 }, { "itemId": "vitality-pill-late", "quantity": "1", "chance": 0.01 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.005 }] },
+    { "baseId": "bamboo-snake", "id": "bamboo-snake-elite", "name": "壮年青竹蛇", "eliteOf": "bamboo-snake", "allocation": { "level": 1, "rank": "elite", "multipliers": { "maxHp": "0.75", "maxMp": "0", "attack": "1.2", "defense": "1.4", "agility": "1.1", "magicAttack": "0", "magicDefense": "1.1" } }, "actionId": "strike", "mpRegen": "0", "effects": [], "cultivation": "8", "drops": [{ "itemId": "herb", "quantity": "2", "chance": 1 }, { "itemId": "spirit-bamboo", "quantity": "3", "chance": 1 }, { "itemId": "blood", "quantity": "2", "chance": 1 }, { "itemId": "attack-pill", "quantity": "1", "chance": 0.04 }, { "itemId": "vitality-pill", "quantity": "1", "chance": 0.02 }] },
+    { "baseId": "iron-lizard", "id": "iron-lizard-elite", "name": "厚甲铁背蜥", "eliteOf": "iron-lizard", "allocation": { "level": 4, "rank": "elite", "multipliers": { "maxHp": "0.95", "maxMp": "0", "attack": "1.1", "defense": "2.8", "agility": "0.85", "magicAttack": "0", "magicDefense": "1" } }, "actionId": "strike", "effects": [], "cultivation": "20", "drops": [{ "itemId": "ore", "quantity": "3", "chance": 1 }, { "itemId": "stone-marrow", "quantity": "2", "chance": 1 }, { "itemId": "armor", "quantity": "2", "chance": 1 }, { "itemId": "blood", "quantity": "1", "chance": 1 }, { "itemId": "dense-ore", "quantity": "2", "chance": 1 }, { "itemId": "defense-pill-middle", "quantity": "1", "chance": 0.03 }] },
+    { "baseId": "garden-guardian", "id": "garden-guardian-elite", "name": "完整护圃木傀", "eliteOf": "garden-guardian", "allocation": { "level": 7, "rank": "elite", "multipliers": { "maxHp": "1.4", "maxMp": "0.8", "attack": "1", "defense": "1.8", "agility": "1", "magicAttack": "0", "magicDefense": "1.6" } }, "actionId": "heavy-strike", "attackIntervalMs": 5000, "effects": ["enemy-opening-ward"], "cultivation": "55", "drops": [{ "itemId": "essence", "quantity": "2", "chance": 1 }, { "itemId": "heartwood", "quantity": "2", "chance": 1 }, { "itemId": "defense-pill-late", "quantity": "1", "chance": 0.02 }, { "itemId": "attack-pill-late", "quantity": "1", "chance": 0.01 }] }
+  ],
+  "encounters": {
+    "foothill": { "hill-wolf": 1, "hill-boar": 1 },
+    "bamboo": { "bamboo-snake": 45, "spine-badger": 45, "bamboo-snake-elite": 10 },
+    "quarry": { "iron-lizard": 45, "flame-lizard": 45, "iron-lizard-elite": 10 },
+    "pool": { "stone-crab": 1, "cold-snake": 1 },
+    "ruins": { "garden-guardian": 45, "root-vine": 45, "garden-guardian-elite": 10 }
+  }
+}

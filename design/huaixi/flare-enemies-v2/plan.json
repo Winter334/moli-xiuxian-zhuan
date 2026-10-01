@@ -1,0 +1,28 @@
+{
+  "region": "huaixi",
+  "version": "flare-enemies-v2",
+  "variant": "flare",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "enemies-study",
+      "kind": "atlas",
+      "target": "enemies",
+      "assetSuffix": "flare-v2",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "black-backed-wolf",
+          "name": "黑背山狼"
+        },
+        {
+          "id": "fire-thrower",
+          "name": "赤囊毒蟾"
+        }
+      ]
+    }
+  ]
+}

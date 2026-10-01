@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: Yunping high plateau: immense green meadow undulates across a few long white rock ridges, with a distant wall of mountain peaks and slow cloud shadows. Wangchuan has shrunk to a thin settled line beside the remote river. Sparse large grazing beasts and small dark circling birds convey an inhabited wilderness; one low abandoned stone channel is a secondary trace, not the landscape's theme.
+Style/medium: refined Chinese fantasy landscape painting, broad fresh greens, cool white rock, clear high-altitude blue daylight, gently unreal luminous distance.
+Composition/framing: low wide meadow view toward an immense mountain screen. Strong open sky and long meadow bands; detail concentrated in one near rock ridge. Natural grandeur without supernatural megastructures.
+Constraints: no cliff-path template, reed marsh, dense ruins, oversized creatures in the foreground, floating mountains, modern objects, text, UI or watermark.
+Progression: increasingly serene and dreamlike beyond the city, with unusually pure green meadows, clean ivory ridges, quiet enormous cloud shadows and slightly extended luminous distance. Let the land feel spiritually permeated while remaining a natural high plateau, no saturated aura or impossible monumental architecture.

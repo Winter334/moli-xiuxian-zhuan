@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted enemy cutout atlas for a Chinese cultivation RPG.
+Primary request: exactly four different enemies in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is a painting-style reference ONLY. Borrow its clear hand-painted masses, simplified surface texture and readable volume; do not copy the wolf, fur, pose or anatomy.
+Subjects:
+Top left: a fire-using robber cultivator in worn practical robes, a small charcoal pouch attached at the belt. One hand makes a compact short tongue of fire immediately beside the palm. Limited localized fire expresses his existing ignition technique, not a vast aura or high-tier immortal power.
+Top right: an armored bandit chief, a heavy adult figure with mismatched old iron plates riveted over a thick hide coat, one practical worn weapon, and a squared commanding stance. No royal armor, banners or entourage.
+Bottom left: a desperate saber outlaw, lean adult body leaning into a quick forward slash, with a thin well-ground plain saber and a few tied pouches attached at the waist. The weapon, hands and trailing clothes remain completely inside the cell.
+Bottom right: a thick-armored rock boar, a stocky natural boar with thick dry mud crust and tough hide over its shoulders and back. Head lowered to butt, whole body visible. Heavy rounded low silhouette, no metal armor strapped onto it.
+Style/medium: expressive painting with broad connected color areas, simplified faces, folds and fur. Recognizable human and animal proportions, not chibi, anime, photography or detailed 3D. Keep subjects rustic and early-game; material and silhouette carry their identity.
+Composition/framing: one full figure in each equal square cell, entire limbs, weapons, tusks and fire tongue inside its cell with ample pure-white padding. Clean white gutters at the central grid boundaries, no overlaps.
+Constraints: pure white background for local removal, no environment, ground patch, shadow, labeling, text, border or watermark. All gear belongs to its figure. No detached decorations, floating sparkles or full-body aura.

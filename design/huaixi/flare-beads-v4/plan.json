@@ -1,0 +1,28 @@
+{
+  "region": "huaixi",
+  "version": "flare-beads-v4",
+  "variant": "flare",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "beads-and-pill-study",
+      "kind": "atlas",
+      "target": "icons",
+      "assetSuffix": "flare-v4",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "references": [],
+      "items": [
+        {
+          "id": "cloudy-marrow",
+          "name": "浊灵髓"
+        },
+        {
+          "id": "clear-marrow",
+          "name": "清灵髓"
+        }
+      ]
+    }
+  ]
+}

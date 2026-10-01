@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: Hanyue's outer terrace just beyond an old mountain gate, a broad pale stone platform following a high green cliff. Layered white courtyard walls and deep double-eaved roofs rise above it; a side path curls toward quiet old array platforms. Near the terrace edge, a small worked rock face has pale jade-like veins and a few old chisel marks. The return road descends toward distant mountains.
+Style/medium: luminous dreamlike Chinese fantasy painting, clean quiet surfaces, carefully completed forms and a few soft painterly edges. Age through roots, worn steps and one broken spring trough, not random rubble.
+Composition/framing: wide elevated oblique view along the cliff terrace, one strong curving foreground edge, clear successive mountain and architecture planes, unbroken calm sky light.
+Constraints: cultivation architecture feels beyond a village but remains a mountain institution. No floating mountain clusters, endless megastructures, giant magic diagrams, modern objects, readable text, UI or watermark. No reference image; choose an independent composition.

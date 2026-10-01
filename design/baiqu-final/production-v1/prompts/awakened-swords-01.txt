@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: three complete refined sword icons in a strict 3-column by 1-row atlas.
+Input images: Image 1 anchors the narrow silver iron-sword family and approved paint; Image 2 anchors the broad dark steel family. Keep their material identities, but depict newly awakened-treated members.
+Left: awakened iron sword, a refined long narrow straight silver blade with a clear diamond ridge and an elegant broad shallow-curved ancient guard, slim ordered cord grip and quiet jade-silver treatment planes inset along the main ridge. Distinct continuous longer blade and finished guard than the short rustic base sword; no giant aura.
+Middle: awakened dark-steel sword, a broad charcoal leaf-like tapering blade with heavy shoulders, a large compact angular double-wing guard and clean dark grip collars. A restrained jade-grey treated ridge and a few broad controlled forging panels, substantially broader than the silver iron sword, not the same sword recolored.
+Right: awakened azure-iron sword, a slim broad-shouldered cool blue-silver blade with a subtle concave taper and split cloud-head guard, darker azure longitudinal treated planes and a pale wrapped grip. Distinct blue-mineral body and guard construction from both iron and dark steel.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, coherent soft metal planes and ancient cultivation craft. Refined but restrained late qi-refinement weapons.
+Constraints: complete separate swords angled upright within each cell, full tip and pommel, broad white gutters and ample pure-white outer margins. No scabbards, hands, text, labels, UI, ground shadow, grade numbers or huge effects.

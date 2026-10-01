@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: wide location painting for a Chinese cultivation RPG.
+Primary request: a dangerous mountainside detour around a great rockfall, where an old path winds past rough natural rock shelters.
+Scene/backdrop: a large exposed collapse scar interrupts the slope. The remaining path skirts its edge, passing broad rock shelves whose shallow recesses could shelter beasts or roadside robbers. A little dark cloth and a few opened bundles beneath one shelf suggest temporary human use, never a permanent village.
+Composition/framing: a bold diagonal mountainside dominates the image, with a narrow traversable line wrapping around a few massive broken rocks. View obliquely across the scar into deep open space. Emphasize the relationship of huge stable stone planes, the vulnerable route and the sheltered recesses. Do not fill the slope with individually outlined rubble.
+Style/medium: expressive but controlled painterly landscape, coherent large color areas, softened textures and selective edge detail. Slightly unreal spatial scale without introducing unrelated wonders.
+Lighting/mood: warm late light on broad pale stone, restrained muted violet in the recesses and cool distant air. Rough, exposed, uneasy.
+Constraints: natural collapse and an old mountain path; not an underground mine, cavern dungeon or bandit fortress. No enemies or heroes, no text, border, UI or watermark. Props are optional supporting evidence, not the organizing principle.
+Avoid: photoreal pebble noise, fragmented colors everywhere, a whole settlement of sheds, treasure piles, decorative glow, copying another location's framing.

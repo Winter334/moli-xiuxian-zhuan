@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: refined painted metal-family inventory atlas.
+Primary request: two grades of spiritual metal at two manufacturing stages, strict 2-column by 2-row grid. Distinguish STRUCTURE and large material planes, not merely four colors.
+Input images: Image 1 is the approved dark-steel ingot painting reference, Image 2 is earlier refined stock. Preserve painting quality, but give these new material families different large shapes.
+Top left: baleful black spiritual iron, one short wide low block with a shallow arched top, a few broad casting notches and deep almost black cool metal faces. Thin bright internal seams emerge at one cut face; not the earlier trapezoid ingot or broken scrap.
+Top right: refined baleful stock, a long narrow clean waisted billet with broad faceted ends and controlled continuous silver-black seams. Clearly refined forging stock, not a sword blade, ingot or bundle of rods.
+Bottom left: deepsteel ingot, one very thick nearly cubic heavy metal block with large bevels and a deep stepped central casting recess. Dark blue-grey mass, red-gold traces visibly sunk within the broad cross-section, not a recolored low baleful block.
+Bottom right: refined deepsteel stock, a short thick dense square-section slug, precisely cut chamfered faces and a small flat forge-gripping step. Visually short and weighty, not the long waisted baleful stock or a miniature sword.
+Style/medium: exquisite luminous softly layered painting, meaningful dark material with readable edges, polished broad planes and restrained internal light. No gritty texture noise.
+Constraints: pure white background, broad empty cross gutter, full centered objects, generous margins. No text, price, grade numerals, badges, UI, cast shadow, large aura or watermark.

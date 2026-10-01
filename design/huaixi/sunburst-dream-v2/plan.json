@@ -1,0 +1,15 @@
+{
+  "region": "huaixi",
+  "version": "sunburst-dream-v2",
+  "variant": "sunburst",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "qingshi-village",
+      "kind": "scene",
+      "assetSuffix": "sunburst-v2",
+      "size": "1792x784",
+      "references": []
+    }
+  ]
+}

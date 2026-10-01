@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly six metal crafting materials in a strict 3-column by 2-row grid. The TOP row is iron, the BOTTOM row dark steel. The three columns are scrap, cast ingot and refined stock. Every state and material tier must have a distinct major shape, not only a color change.
+Subjects, reading order:
+Top left, iron scrap: two or three bent narrow grey farm-tool strips plus one open hooked fragment, forming an airy irregular strip-and-hook silhouette. One broad rusty orange patch, not a mound of tiny rubble.
+Top middle, crude iron ingot: a low flattened irregular rounded casting cake, a broad slag-dark patch on the upper plane, blunt rough edge. Obvious thick solid casting, wider than tall, no coin disk or money mark.
+Top right, refined iron stock: one broad flat rectangular silver forging slab with a visibly thin side edge and a few broad regular hammer planes. Straight manufactured outline distinct from the rounded casting cake; not a long pencil-like rod, sharpened blade or complete weapon.
+Bottom left, dark-steel scrap: three LARGE curved blackened armor or broken-blade plates, loosely fanned into a jagged angular shell silhouette. Dark cool metal interiors and narrow bright fracture edges. Much broader fragments than the thin hooked iron scrap; no heap of many small specks.
+Bottom middle, dark-steel ingot: one tall clean trapezoidal cast block with clipped upper shoulders, broad dense near-black faces and a cool bright sloping top plane. Taller and more geometric than the low irregular iron cake; no currency symbol.
+Bottom right, refined dark-steel stock: one short thick hexagonal forged billet, angled so its large six-sided end face is readable, smooth dense dark metal with broad cool bevel planes. Clearly refined material, not a sword blade: no sharp tip, hilt, guard or ornamental rune.
+Readability: the outline and casting-versus-forging geometry are primary identifiers; material color and broad finish planes are secondary. At 28-40 px the iron and steel members must not become identical little grey blocks. Use a few large forms, no clutter or fine texture carpet.
+Composition/framing: one complete centered material icon per equal square cell, comparable scale and generous white margins. Clean broad white grid gutters. No fragment overlaps another cell.
+Style/medium: bright painted game icons, clear volume, controlled simplified reflections and broad material masses. Not photos or hyperreal microtexture.
+Constraints: pure white background for local removal, no shadow, scenery, cloth under every item, frame, labels, text, badge, watermark or UI. No reference images, no magic aura. Grouped scrap is one inventory icon, not a changed resource yield.

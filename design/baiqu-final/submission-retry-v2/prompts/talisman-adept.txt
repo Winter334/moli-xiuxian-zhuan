@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: ONE complete painted enemy cutout on a square white canvas.
+Input images: Images 1 and 2 are approved refined softly layered creature-painting references only, not species or direction.
+Subject: adult hostile herb-plundering talisman cultivator, layered pale grey-green classical robe, belt herb pouch and small open medicine box containing dark seeds and sand nodules. Intent human face and full body turned LEFT. Fingers emit a short contained slender talisman light toward LEFT, very close to the hand rather than reaching toward the canvas edge. Not an ancient ghost, healer or player portrait.
+Style/medium: exquisite luminous softly layered Chinese fantasy painting, refined anatomy and clear large silhouette.
+Composition/framing: full body including head, both feet, robe hem, hands and the entire short talisman effect centered within the middle 70 percent of the square. At least 15 percent EMPTY PURE WHITE margin on every side, including left of the attack. Do not enlarge the body or effect to fill the canvas.
+Constraints: body, face and main attack face LEFT. No terrain, ground shadow, wide aura, text, labels, UI or watermark. No cropped or edge-touching body, cloth, pouch, box or spell.

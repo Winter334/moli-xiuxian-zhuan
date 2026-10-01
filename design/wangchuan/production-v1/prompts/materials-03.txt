@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: refined painted inventory icon atlas for a Chinese cultivation RPG.
+Primary request: exactly three items in a strict 3-column by 1-row grid, left to right.
+Input images: Image 1 is the established bare-marrow-bead family reference. Image 2 is a painting refinement reference only, not a metal subject.
+Left: luminous marrow, one bare semi-transparent softly rounded bead, distinctly rounded lenticular oval rather than a perfectly spherical pearl, warm ivory core holding one broad coherent luminous crescent. No halo or stand. Preserve the family's jade-glass tactile volume without duplicating the reference's internal texture.
+Middle: jade marrow, one larger-looking squat rounded barrel bead, opaque pale mint jade with a few layered curved internal bands, broad solid jade face and flattened ends. Distinct bead contour and substantial layered jade material from the luminous translucent oval, not merely green recoloring.
+Right: fused marrow crystal, a compact three-pronged angular crystalline cluster grown from a shared base, clear grey-lilac faces with pale green and amber layers overlapping deep in the crystal heart. Clearly faceted and branched, NEVER another smooth bead, medicine pill or metal.
+Style/medium: exquisite soft painterly volume and polished edge hierarchy, controlled warm-cool reflections, restrained luminosity.
+Constraints: centered complete subject in each equal cell, wide white gutters and generous margins. Pure white background. No containers, supports, jewelry fitting, ground shadow, floating decorative aura, text, label, UI or watermark.

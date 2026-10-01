@@ -1,0 +1,610 @@
+{
+  "region": "wangchuan",
+  "version": "production-v1",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Wangchuan presentation region only: 11 scenes, 21 new enemy cutouts, 30 new item icons and 1 previously approved pill icon to publish. Stonebridge unfinished work proceeds separately; no replacement of existing assets, Hanyue outer terrace or courtyard expansion, player art, techniques, content rules or UI redesign.",
+  "enemyDirection": "All new enemies face screen-left while centered in their atlas cells. Existing enemies are reused unchanged.",
+  "processingNote": "Process only jobs with saved originals. Replacement originals are processed using their separate plan. One torso icon changed after processing; preserve its current file and record both fingerprints in technical-checks.json rather than overwrite the concurrent edit.",
+  "progression": "User clarified before submission: gradually leave mundane visual feeling as cultivation progresses, with cleaner dreamlike light, space and material and an emerging transcendent domain. Calibrate the transition: recognizable luminous working city, cleaner spiritual landscapes, then serene locally supernatural Hanyue architecture; no premature celestial megastructures, uniform glow or emptied functioning settlements.",
+  "reuse": {
+    "enemies": [
+      "bark-armored-shanxiao"
+    ],
+    "icons": [
+      "condensed-marrow",
+      "profound-marrow",
+      "clear-marrow",
+      "earth-vein-dew",
+      "iron-birch-wood",
+      "rich-beast-meat",
+      "tough-beast-hide",
+      "lustrous-hide",
+      "hundred-coin-string",
+      "silver-ingot",
+      "dark-steel-ingot"
+    ],
+    "previouslyUnpublished": [
+      {
+        "id": "spirit-jerky",
+        "name": "培元丹",
+        "output": "public/assets/art/icons/spirit-jerky-flare-v5.png",
+        "note": "Publish the user-approved cloth-and-pills sample now that its shop and material sources are in this region; no new generation request."
+      }
+    ]
+  },
+  "itemDesign": {
+    "style": "Use the newly approved refined-study-v2 objects as painting references; simple materials must still be finely painted.",
+    "lineages": "Azure metal is a separate material family; ore, ingot and refined stock have different structures. Swords share their iron, dark-steel or azure family but also differ in large guard, shoulder and blade structure. Spirit-treated finishes are not merely recolors.",
+    "garments": "Slightly masculine classical Chinese cultivation wardrobe, coherent cross collars, borders and ties. Preserve supple cloth or hide construction; azure treatment is not rigid metal plate armor.",
+    "upgradeSand": "All four are sand, not helmet or armor components. Distinct open container silhouettes convey the existing separately packaged treatment patterns; no inventory-unit, recipe or effect change.",
+    "marrow": "Two higher marrow grades continue the accepted bare-bead family, with structural internal differences. Fused marrow crystal is an angular clustered crystal, not a third bead."
+  },
+  "jobs": [
+    {
+      "id": "cloudfoot-waystation",
+      "name": "望川外埠",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/cloudfoot-waystation.txt"
+    },
+    {
+      "id": "waystation-duel",
+      "name": "回风崖口",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/waystation-duel.txt"
+    },
+    {
+      "id": "reed-marsh",
+      "name": "叠泉台地",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/reed-marsh.txt"
+    },
+    {
+      "id": "stone-training-ground",
+      "name": "临风演武台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/stone-training-ground.txt"
+    },
+    {
+      "id": "pine-ravine",
+      "name": "青岚灵谷",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/pine-ravine.txt"
+    },
+    {
+      "id": "stoneforge-hamlet",
+      "name": "望川西市",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/stoneforge-hamlet.txt"
+    },
+    {
+      "id": "stonefang-wilds",
+      "name": "云屏高原",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/stonefang-wilds.txt"
+    },
+    {
+      "id": "thornwild-slope",
+      "name": "盘藤石壁",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/thornwild-slope.txt"
+    },
+    {
+      "id": "baleful-valley",
+      "name": "地火裂谷",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/baleful-valley.txt"
+    },
+    {
+      "id": "ruined-shrine-road",
+      "name": "引泉长阶",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/ruined-shrine-road.txt"
+    },
+    {
+      "id": "shrine-gate-duel",
+      "name": "涵岳山门",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-wangchuan-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/wangchuan/production-v1/prompts/shrine-gate-duel.txt"
+    },
+    {
+      "id": "enemies-01",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-01.txt",
+      "items": [
+        {
+          "id": "stonebreaker-adept",
+          "name": "盘崖妖雕"
+        },
+        {
+          "id": "brocade-horn-deer",
+          "name": "锦角妖鹿"
+        },
+        {
+          "id": "razorleaf-mantis",
+          "name": "裂叶妖螳"
+        },
+        {
+          "id": "miasma-serpent",
+          "name": "雾毒青蛇"
+        }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-02.txt",
+      "items": [
+        {
+          "id": "vein-stone-spirit",
+          "name": "浊脉石灵"
+        },
+        {
+          "id": "spring-wisp",
+          "name": "泉华水魅"
+        },
+        {
+          "id": "swift-shadow-wight",
+          "name": "掠影山鬼"
+        },
+        {
+          "id": "jade-inlaid-puppet",
+          "name": "引渠石傀"
+        }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-03.txt",
+      "items": [
+        {
+          "id": "twin-saber-outlaw",
+          "name": "双刀劫修"
+        },
+        {
+          "id": "iron-robed-cultivator",
+          "name": "铁衣劫修"
+        },
+        {
+          "id": "withered-staff-cultivator",
+          "name": "枯杖劫修"
+        },
+        {
+          "id": "baleful-saber-cultivator",
+          "name": "煞刀劫修"
+        }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png",
+        "public/assets/art/enemies/fire-thrower-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-04.txt",
+      "items": [
+        {
+          "id": "ironplume-vulture",
+          "name": "铁翎妖鹫"
+        },
+        {
+          "id": "stoneback-rhino",
+          "name": "岩背妖犀"
+        },
+        {
+          "id": "windskimming-falcon",
+          "name": "掠风妖隼"
+        },
+        {
+          "id": "burrowing-centipede",
+          "name": "钻地毒蚣"
+        }
+      ]
+    },
+    {
+      "id": "enemies-05",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-05.txt",
+      "items": [
+        {
+          "id": "coinbound-wraith",
+          "name": "逐财游魂"
+        },
+        {
+          "id": "kindling-wisp",
+          "name": "地火木魅"
+        },
+        {
+          "id": "vinebound-ape",
+          "name": "缚藤妖猿"
+        },
+        {
+          "id": "baleful-vine-spirit",
+          "name": "汲泉藤妖"
+        }
+      ]
+    },
+    {
+      "id": "enemies-06",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/enemies-06.txt",
+      "items": [
+        {
+          "id": "shrine-gate-warden",
+          "name": "镇阶石卫"
+        }
+      ]
+    },
+    {
+      "id": "materials-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/materials-01.txt",
+      "items": [
+        {
+          "id": "azure-ore",
+          "name": "青纹矿"
+        },
+        {
+          "id": "ember-coal",
+          "name": "地火煤"
+        },
+        {
+          "id": "azure-iron-ingot",
+          "name": "青纹铁"
+        },
+        {
+          "id": "azure-iron-blade",
+          "name": "青纹精料"
+        }
+      ]
+    },
+    {
+      "id": "materials-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png",
+        "public/assets/art/icons/rich-beast-meat-flare-shiqiao-v1.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/materials-02.txt",
+      "items": [
+        {
+          "id": "verdant-essence",
+          "name": "草木灵露"
+        },
+        {
+          "id": "windwoven-fiber",
+          "name": "风纹灵丝"
+        },
+        {
+          "id": "spirit-beast-meat",
+          "name": "蕴灵兽肉"
+        },
+        {
+          "id": "weathered-route-chart",
+          "name": "凝风长翎"
+        }
+      ]
+    },
+    {
+      "id": "materials-03",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "references": [
+        "public/assets/art/icons/profound-marrow-flare-shiqiao-v1.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/materials-03.txt",
+      "items": [
+        {
+          "id": "luminous-marrow",
+          "name": "莹灵髓"
+        },
+        {
+          "id": "jade-marrow",
+          "name": "玉灵髓"
+        },
+        {
+          "id": "marrow-crystal",
+          "name": "灵髓晶"
+        }
+      ]
+    },
+    {
+      "id": "materials-04",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "references": [
+        "public/assets/art/icons/iron-birch-wood-flare-huiji-v1.png",
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/materials-04.txt",
+      "items": [
+        {
+          "id": "spirit-treated-wood",
+          "name": "养灵木"
+        },
+        {
+          "id": "spiritwood-hilt",
+          "name": "养灵淬液"
+        }
+      ]
+    },
+    {
+      "id": "upgrade-sands",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1024x1024",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/icons/dark-steel-ingot-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/upgrade-sands.txt",
+      "items": [
+        {
+          "id": "azure-head-shell",
+          "name": "青纹束额砂"
+        },
+        {
+          "id": "azure-body-shell",
+          "name": "青纹护衣砂"
+        },
+        {
+          "id": "azure-leg-shell",
+          "name": "青纹护腿砂"
+        },
+        {
+          "id": "azure-foot-shell",
+          "name": "青纹护履砂"
+        }
+      ]
+    },
+    {
+      "id": "weapons-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x512",
+      "columns": 3,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/weapons-01.txt",
+      "items": [
+        {
+          "id": "wood-hilt-azure-sword",
+          "name": "粗炼青纹剑"
+        },
+        {
+          "id": "azure-iron-sword",
+          "name": "青纹剑"
+        },
+        {
+          "id": "spiritwood-azure-sword",
+          "name": "养灵青纹剑"
+        }
+      ]
+    },
+    {
+      "id": "weapons-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x768",
+      "columns": 2,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/wood-hilt-sword-flare-refined-study-v2.png",
+        "public/assets/art/icons/dark-steel-sword-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/weapons-02.txt",
+      "items": [
+        {
+          "id": "spiritwood-iron-sword",
+          "name": "养灵铁剑"
+        },
+        {
+          "id": "spiritwood-dark-steel-sword",
+          "name": "养灵乌钢剑"
+        }
+      ]
+    },
+    {
+      "id": "armor-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/armor-01.txt",
+      "items": [
+        {
+          "id": "hide-lined-azure-head-shell",
+          "name": "青纹夹皮头巾"
+        },
+        {
+          "id": "hide-lined-azure-body-shell",
+          "name": "青纹夹皮短衣"
+        },
+        {
+          "id": "hide-lined-azure-leg-shell",
+          "name": "青纹夹皮长裤"
+        },
+        {
+          "id": "hide-lined-azure-foot-shell",
+          "name": "青纹软皮靴"
+        }
+      ]
+    },
+    {
+      "id": "armor-02",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-wangchuan-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "backgroundRemoval": "white-background",
+      "references": [
+        "public/assets/art/icons/beasthide-jacket-flare-refined-study-v2.png",
+        "public/assets/art/icons/hide-jacket-flare-refined-study-v2.png"
+      ],
+      "promptFile": "design/wangchuan/production-v1/prompts/armor-02.txt",
+      "items": [
+        {
+          "id": "beasthide-lined-azure-head-shell",
+          "name": "青纹妖皮护额"
+        },
+        {
+          "id": "beasthide-lined-azure-body-shell",
+          "name": "青纹妖甲"
+        },
+        {
+          "id": "beasthide-lined-azure-leg-shell",
+          "name": "青纹妖皮长裤"
+        },
+        {
+          "id": "beasthide-lined-azure-foot-shell",
+          "name": "青纹妖皮靴"
+        }
+      ]
+    }
+  ]
+}

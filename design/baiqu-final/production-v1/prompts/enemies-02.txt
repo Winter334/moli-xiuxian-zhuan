@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: two complete related jade-toad enemy cutouts in a strict 2-column by 1-row atlas.
+Input images: Images 1 and 2 reference approved refined soft creature-painting finish only. Do not copy the red poison sacs or wolf body.
+Left: spring jade toad, complete robust crouching jade-grey toad with a clearly LEFT-facing blunt face, four visible powerful limbs and a softly luminous pale jade throat and belly visible through thick supple skin. Ordinary muscular amphibian stance, forelimbs braced and hindquarters ready to thrust left; natural jade-grey back planes and restrained contained spring light.
+Right: jade-toad chief, a visibly heavier broad-bellied member of the SAME species, compact tucked powerful hindlimbs and thick front limbs cupping around its luminous jade chest as if holding spring light. Head and full body face LEFT, more imposing squat volume and broader neck than the first, not a crown, extra horns, decorative jewelry or a different species.
+Style/medium: exquisite luminous softly layered Chinese fantasy creature painting, finished volume and mineral-jade inner light, clear non-photographic skin planes.
+Constraints: centered complete separate subjects with ample pure-white margins and broad empty vertical gutter. No pool, terrain, ground shadow, giant aura, text, labels, UI or watermark. Keep all limbs within each cell.

@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide painted environment for a Chinese cultivation RPG.
+Primary request: a windward cliff pass behind Wangchuan. A sweeping pale rock shoulder and narrow mountain road overlook a broad river valley and the distant Chinese city's streets. One large eagle occupies a rocky nesting shelf, subordinate to the immense natural landscape. A bright opening between remote peaks hints at white waterfalls and green highlands farther along the path.
+Style/medium: refined Chinese fantasy landscape painting, airy cool daylight, warm ivory stone, deep teal-green valley, luminous quiet dreamlike distance. Large organized planes, selective detail, no noisy all-over stippling.
+Composition/framing: view diagonally along the cliff face rather than straight at a centered path. Near cliff sweeps through the panorama, open distant valley balances it. Eagle visible as a complete natural silhouette, not a cropped character portrait.
+Constraints: nature can be grand at low player level. No floating buildings, giant magical rings, modern objects, readable text, UI, watermark or mist hiding the landforms.
+Progression: clearer and quieter than a rugged mundane mountain road, with clean sweeping ivory rock, unusually limpid far light and a still dreamlike opening between peaks. Preserve real cliff identity and natural scale without gritty debris, thick haze or overblown supernatural effects.

@@ -1,0 +1,55 @@
+{
+  "version": "stage-1-equipment-candidate.1-dual.1-slots.1",
+  "rulesVersion": "rules-equipment-candidate.1-dual.1-slots.1",
+  "schemaVersion": 14,
+  "techniqueAcquisition": "manuals",
+  "equipmentQualities": [
+    { "id": "plain", "name": "寻常", "rarity": "common", "weight": 60, "statMultiplier": "1", "effectMultiplier": "1" },
+    { "id": "fine", "name": "精良", "rarity": "uncommon", "weight": 30, "statMultiplier": "1.3", "effectMultiplier": "1.15" },
+    { "id": "superior", "name": "上乘", "rarity": "rare", "weight": 10, "statMultiplier": "1.65", "effectMultiplier": "1.3" }
+  ],
+  "effects": [
+    { "id": "heavy-ward", "name": "厚甲护身", "trigger": "action", "kind": "shield", "amount": "5" }
+  ],
+  "equipment": [
+    { "id": "wood-sword", "name": "青木剑", "slot": "weapon", "category": "sword", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "5" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "leather-gauntlet", "name": "牛皮护手", "slot": "weapon", "category": "gauntlet", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "3" }, { "stat": "defense", "mode": "flat", "value": "2" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "jujube-staff", "name": "枣木杖", "slot": "weapon", "category": "staff", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "5" }, { "stat": "maxMp", "mode": "flat", "value": "5" }], "effects": [], "affixPool": [], "affixCount": 0 },
+    { "id": "iron-sword", "name": "寒铁剑", "slot": "weapon", "category": "sword", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "18" }, { "stat": "agility", "mode": "flat", "value": "2" }], "effects": ["hit-mana"], "affixPool": ["keen", "steady", "mending"], "affixCount": 1 },
+    { "id": "stone-gauntlet", "name": "玄岩拳套", "slot": "weapon", "category": "gauntlet", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "12" }, { "stat": "defense", "mode": "flat", "value": "8" }], "effects": ["action-ward"], "affixPool": ["keen", "mending"], "affixCount": 1 },
+    { "id": "green-staff", "name": "青纹木杖", "slot": "weapon", "category": "staff", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "16" }, { "stat": "maxMp", "mode": "flat", "value": "20" }, { "stat": "mpRegen", "mode": "flat", "value": "0.5" }], "effects": [], "affixPool": ["arcane", "steady", "mending"], "affixCount": 1 },
+    { "id": "bamboo-edge", "name": "竹节青锋", "slot": "weapon", "category": "sword", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "38" }, { "stat": "agility", "mode": "flat", "value": "4" }], "effects": ["hit-mana", "hit-mend"], "affixPool": ["keen", "steady"], "affixCount": 1 },
+    { "id": "sand-gauntlet", "name": "沉砂拳套", "slot": "weapon", "category": "gauntlet", "modifiers": [{ "stat": "attack", "mode": "flat", "value": "28" }, { "stat": "defense", "mode": "flat", "value": "18" }], "effects": ["heavy-ward", "thorn"], "affixPool": ["keen", "mending"], "affixCount": 1 },
+    { "id": "jade-staff", "name": "灵玉杖", "slot": "weapon", "category": "staff", "modifiers": [{ "stat": "magicAttack", "mode": "flat", "value": "34" }, { "stat": "maxMp", "mode": "flat", "value": "45" }, { "stat": "mpRegen", "mode": "flat", "value": "1" }], "effects": ["hit-mend"], "affixPool": ["spirit", "arcane"], "affixCount": 1 }
+  ],
+  "items": [
+    { "id": "ore", "name": "玄铁砂", "kind": "material", "unlock": { "regionId": "bamboo", "kills": "20" }, "buyPrice": "8", "sellPrice": "2" },
+    { "id": "dense-ore", "name": "凝纹铁", "kind": "material", "unlock": { "regionId": "quarry", "kills": "1" }, "sellPrice": "4" },
+    { "id": "heartwood", "name": "凝灵木芯", "kind": "material", "unlock": { "regionId": "ruins", "kills": "1" }, "sellPrice": "6" },
+    { "id": "verdant-manual", "name": "长春功抄本", "kind": "manual", "unlock": { "regionId": "bamboo", "kills": "20" }, "buyPrice": "180", "sellPrice": "45" },
+    { "id": "flame-manual", "name": "灵焰诀抄本", "kind": "manual", "unlock": { "regionId": "bamboo", "kills": "20" }, "buyPrice": "240", "sellPrice": "60" },
+    { "id": "mountain-manual", "name": "镇岳功抄本", "kind": "manual", "unlock": { "regionId": "bamboo", "kills": "20" }, "buyPrice": "240", "sellPrice": "60" }
+  ],
+  "recipes": [
+    { "id": "forge-wood-sword", "training": { "difficulty": 1, "xp": "8" }, "name": "青木剑制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "timber", "quantity": "4" }, { "itemId": "hide", "quantity": "1" }], "stones": "4", "outputKind": "equipment", "outputId": "wood-sword", "outputQuantity": "1" },
+    { "id": "forge-leather-gauntlet", "training": { "difficulty": 1, "xp": "8" }, "name": "牛皮护手制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "hide", "quantity": "3" }, { "itemId": "timber", "quantity": "1" }], "stones": "4", "outputKind": "equipment", "outputId": "leather-gauntlet", "outputQuantity": "1" },
+    { "id": "forge-jujube-staff", "training": { "difficulty": 1, "xp": "8" }, "name": "枣木杖制法", "unlock": { "level": 0 }, "costs": [{ "itemId": "timber", "quantity": "5" }, { "itemId": "hide", "quantity": "1" }], "stones": "4", "outputKind": "equipment", "outputId": "jujube-staff", "outputQuantity": "1" },
+    { "id": "forge-iron-sword", "training": { "difficulty": 3, "xp": "20" }, "name": "寒铁剑制法", "unlock": { "regionId": "bamboo", "kills": "20" }, "costs": [{ "itemId": "ore", "quantity": "10" }, { "itemId": "copper", "quantity": "10" }, { "itemId": "spirit-bamboo", "quantity": "12" }], "stones": "120", "outputKind": "equipment", "outputId": "iron-sword", "outputQuantity": "1" },
+    { "id": "forge-stone-gauntlet", "training": { "difficulty": 3, "xp": "20" }, "name": "玄岩拳套制法", "unlock": { "regionId": "bamboo", "kills": "20" }, "costs": [{ "itemId": "ore", "quantity": "8" }, { "itemId": "armor", "quantity": "10" }, { "itemId": "hide", "quantity": "16" }], "stones": "120", "outputKind": "equipment", "outputId": "stone-gauntlet", "outputQuantity": "1" },
+    { "id": "forge-green-staff", "training": { "difficulty": 3, "xp": "20" }, "name": "青纹木杖制法", "unlock": { "regionId": "bamboo", "kills": "20" }, "costs": [{ "itemId": "spirit-bamboo", "quantity": "20" }, { "itemId": "copper", "quantity": "14" }, { "itemId": "hide", "quantity": "8" }], "stones": "120", "outputKind": "equipment", "outputId": "green-staff", "outputQuantity": "1" },
+    { "id": "forge-bamboo-edge", "training": { "difficulty": 7, "xp": "50" }, "name": "竹节青锋制法", "unlock": { "regionId": "ruins", "kills": "1" }, "costs": [{ "itemId": "dense-ore", "quantity": "8" }, { "itemId": "heartwood", "quantity": "8" }, { "itemId": "spirit-bamboo", "quantity": "24" }, { "itemId": "copper", "quantity": "20" }], "stones": "500", "outputKind": "equipment", "outputId": "bamboo-edge", "outputQuantity": "1" },
+    { "id": "forge-sand-gauntlet", "training": { "difficulty": 7, "xp": "50" }, "name": "沉砂拳套制法", "unlock": { "regionId": "ruins", "kills": "1" }, "costs": [{ "itemId": "dense-ore", "quantity": "8" }, { "itemId": "heartwood", "quantity": "8" }, { "itemId": "armor", "quantity": "20" }, { "itemId": "hide", "quantity": "24" }], "stones": "500", "outputKind": "equipment", "outputId": "sand-gauntlet", "outputQuantity": "1" },
+    { "id": "forge-jade-staff", "training": { "difficulty": 7, "xp": "50" }, "name": "灵玉杖制法", "unlock": { "regionId": "ruins", "kills": "1" }, "costs": [{ "itemId": "dense-ore", "quantity": "8" }, { "itemId": "heartwood", "quantity": "8" }, { "itemId": "warm-jade", "quantity": "16" }, { "itemId": "spirit-bamboo", "quantity": "24" }], "stones": "500", "outputKind": "equipment", "outputId": "jade-staff", "outputQuantity": "1" }
+  ],
+  "manuals": {
+    "verdant": "verdant-manual",
+    "flame": "flame-manual",
+    "mountain": "mountain-manual"
+  },
+  "materialDrops": {
+    "spine-badger": [{ "itemId": "armor", "quantity": "1", "chance": 1 }],
+    "iron-lizard": [{ "itemId": "dense-ore", "quantity": "1", "chance": 1 }],
+    "garden-guardian": [{ "itemId": "heartwood", "quantity": "1", "chance": 1 }],
+    "root-vine": [{ "itemId": "heartwood", "quantity": "1", "chance": 1 }]
+  }
+}

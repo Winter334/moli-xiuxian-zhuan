@@ -1,0 +1,97 @@
+{
+  "region": "shiqiao",
+  "version": "submission-retry-v2",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "originalPlan": "design/shiqiao/production-v1/plan.json",
+  "authorization": "2026-10-01 user explicitly requested resubmission and authorized one replacement for the same class of unresolved submission in future",
+  "jobs": [
+    {
+      "id": "market-backstreets",
+      "name": "镇外芦滩",
+      "promptFile": "design/shiqiao/production-v1/prompts/market-backstreets.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v2",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "scripture-cave",
+      "name": "废埠匪窝",
+      "promptFile": "design/shiqiao/production-v1/prompts/scripture-cave.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v2",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "old-ferry-bank",
+      "name": "沧流故渡",
+      "promptFile": "design/shiqiao/production-v1/prompts/old-ferry-bank.txt",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-shiqiao-v2",
+      "size": "1792x784",
+      "references": []
+    },
+    {
+      "id": "enemies-03",
+      "technicalNote": "The two columns have different row gutters; per-item bounds restore the complete right-column subjects. Two left-column near-edge warnings remain. At thresholds 230, 240 and 245 the four main components are separate and inside their assigned cells; left separator row y=677 has minimum RGB 248, right separator row y=752 has minimum RGB 253. No second image-generation request was made.",
+      "promptFile": "design/shiqiao/production-v1/prompts/enemies-03.txt",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-shiqiao-v2",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [
+        "public/assets/art/enemies/black-backed-wolf-flare-v2.png"
+      ],
+      "items": [
+        {
+          "id": "brocade-marten",
+          "name": "锦皮妖貂",
+          "cellBounds": [
+            0,
+            0,
+            764,
+            678
+          ]
+        },
+        {
+          "id": "rending-shanxiao",
+          "name": "裂爪泽魈",
+          "cellBounds": [
+            764,
+            0,
+            772,
+            752
+          ]
+        },
+        {
+          "id": "ravine-ambusher",
+          "name": "伏涧妖猿",
+          "cellBounds": [
+            0,
+            678,
+            764,
+            858
+          ]
+        },
+        {
+          "id": "inverted-mark-fox",
+          "name": "逆纹妖狐",
+          "cellBounds": [
+            764,
+            752,
+            772,
+            784
+          ]
+        }
+      ]
+    }
+  ]
+}

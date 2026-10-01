@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: painted item-icon atlas for a Chinese cultivation RPG.
+Primary request: exactly four clearly different item categories in a strict 2-column by 2-row grid, reading order left to right then top to bottom.
+Input images: Image 1 is the approved crude quenching liquid, a painting-style and liquid-material reference; do not repeat its cloudy contents. Image 2 is the approved clear spirit-marrow bare bead, a series-shape reference for the new condensed marrow only. Preserve the single nude pearl direction without copying its exact colors. Do not use the bead shape for wood, hide or liquid.
+Subjects:
+Top left: hard iron-birch timber, a short stout cut piece of birch wood, its dense end grain visible and a little pale bark remaining along its length. A clearly elongated solid wood outline, no pile of stones.
+Top right: a whole beast hide, one intact broad irregular skin folded loosely enough that the overall pelt shape and edge are visible. Supple hide with grouped brown fur along part of its surface, no stitching into clothing, no attached animal head.
+Bottom left: condensed spirit marrow, a single bare round semi-translucent pearl with a compact luminous pale-jade core and a soft polished surface. A denser, quietly gathered interior than the clear-marrow reference, no stand, bottle, cloth, metal cage or ornament. Intrinsic soft light only, not a large external halo.
+Bottom right: birch-resin quenching liquid, a squat plain ceramic flask showing smooth clarified amber resin liquid at its open mouth. Clearly a practical liquid preparation, filtered and more even than the crude-liquid reference, not a weapon hilt, potion crystal, pearl or ornate immortal treasure.
+Style/medium: softly painterly volume and readily identifiable materials, simplified brush shapes, mild luminous color in the marrow only. Keep rustic wood, hide and workshop liquid humble. Category silhouette and material take priority over fine decorative textures.
+Composition/framing: one complete item or compact item arrangement centered in each equal square cell. Generous pure-white margins and a clean white cross gutter. All bark, hide edges and flask fit wholly inside their cell. Strongly distinguish timber, pelt, bead and container outlines.
+Constraints: pure white background for local removal, no cast shadow or background texture, no labels, text, border or watermark. Containers are visual presentation only, not new gameplay equipment. No extra items to fill gaps.
