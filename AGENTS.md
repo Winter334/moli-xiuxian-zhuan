@@ -120,7 +120,8 @@
 - 玩家形象不制作或接入生成素材；后续头像与名字使用Discord头像和昵称，
   正式身份接入前保留临时展示，不伪造已取得的Discord身份。
 - 开发预览：`/?preview=ui`内存预览不读写角色存档、不请求云端；
-  手机只做横屏，与桌面共用宽屏结构，竖屏仅显示转向提示。
+  手机只做横屏，与桌面共用宽屏结构；移动端Activity自动请求并锁定横屏，
+  不支持或锁定失败时保留转向提示，详见[移动端方向](docs/ui-rebuild.zh-CN.md#移动端方向)。
 - 世界观与地图：[世界观重设](docs/world-setting-rework.zh-CN.md)、
   [首段主线](docs/mainline-first-arc.zh-CN.md)、[大战余波](docs/world-upheaval.zh-CN.md)。
 - 区域内容：[开局内容关系](docs/opening-content-relations.zh-CN.md)、

@@ -48,6 +48,8 @@
 - 构建版必须从 Discord 启动；浏览器直接打开会提示返回 Discord。
   本机入口仅用于开发隧道联调，仍拒绝生产模式；VPS 使用下节的专用部署入口。
   Activity 每次启动须联网认证，已打开后的本地运行与断网保存沿用现有客户端。
+- 移动端SDK就绪后自动请求并锁定横屏，不依赖玩家手动旋转；桌面不发送此请求，
+  方向失败不阻断授权与登录，布局模式及兜底边界见[移动端方向](ui-rebuild.zh-CN.md#移动端方向)。
 
 主要入口：`src/ActivityApp.tsx`、`src/discord-activity.ts`、
 `server/client/discord-auth.ts`、`tools/activity.ts`、`server/client/activity.ts`。
@@ -108,7 +110,8 @@ Activity前后端构建通过，保留已有依赖注释及块体积警告；
 3. 保留所需的 Installation Contexts；开发测试可以使用默认 Launch Entry Point，
    不必先制作常驻机器人或自定义启动命令。
 4. URL Mappings 填入下方隧道地址后启用 Activities，勾选实际测试平台。
-   手机仅横屏，可在后台设置默认 Landscape；完整移动端安全区/PIP验收留后续批次。
+   手机仅横屏，后台默认方向建议设置Landscape；运行时自动锁定见
+   [移动端方向](ui-rebuild.zh-CN.md#移动端方向)，真实手机方向及PIP效果待部署复测。
 
 ### 2. 本机设置
 

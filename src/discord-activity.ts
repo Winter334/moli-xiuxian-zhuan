@@ -1,4 +1,4 @@
-import { DiscordSDK } from '@discord/embedded-app-sdk';
+import { Common, DiscordSDK, Platform } from '@discord/embedded-app-sdk';
 import { discordConfigSchema, discordSessionSchema, type DiscordSession } from '../shared/discord';
 
 export class ActivityLoginError extends Error {}
@@ -65,6 +65,14 @@ export class DiscordActivityConnection {
       }
       if (this.sdk.clientId !== config.clientId) throw new ActivityLoginError('Discord 应用配置已变化，请关闭后重新打开。');
       await timeout(this.sdk.ready(), 20_000, 'Discord 连接超时，请关闭 Activity 后重新打开。');
+      if (this.sdk.platform === Platform.MOBILE) {
+        // Orientation support must not delay or block account authentication.
+        void this.sdk.commands.setOrientationLockState({
+          lock_state: Common.OrientationLockStateTypeObject.LANDSCAPE,
+          picture_in_picture_lock_state: Common.OrientationLockStateTypeObject.LANDSCAPE,
+          grid_lock_state: Common.OrientationLockStateTypeObject.LANDSCAPE,
+        }).catch(() => {});
+      }
       onPhase('等待 Discord 授权');
       const { verifier, challenge } = await pkce();
       const authorization = await timeout(this.sdk.commands.authorize({
