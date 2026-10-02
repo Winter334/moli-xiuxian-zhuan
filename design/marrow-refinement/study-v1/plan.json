@@ -1,0 +1,57 @@
+{
+  "region": "marrow-refinement",
+  "version": "study-v1",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "The user approved all three revision images, now mounted for purple, scarlet and cyan marrow only. Preserve rounded natural condensation with restrained irregular silhouettes and clearer high-tier internal light. These images were generated through the project SkyAgent API, flare, high, one image per study, without reference images. This configuration records completed production, not a request to regenerate. Only mounted artwork and appearance descriptions change; other marrow images, gameplay, item IDs, values, sources and uses remain unchanged.",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "purple-marrow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-marrow-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/marrow-refinement/study-v1/prompts/purple-marrow.txt",
+      "items": [
+        { "id": "purple-marrow", "name": "紫灵髓" }
+      ]
+    },
+    {
+      "id": "scarlet-marrow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-marrow-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/marrow-refinement/study-v1/prompts/scarlet-marrow.txt",
+      "items": [
+        { "id": "scarlet-marrow", "name": "绯灵髓" }
+      ]
+    },
+    {
+      "id": "cyan-marrow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-marrow-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/marrow-refinement/study-v1/prompts/cyan-marrow.txt",
+      "items": [
+        { "id": "cyan-marrow", "name": "苍灵髓" }
+      ]
+    }
+  ]
+}

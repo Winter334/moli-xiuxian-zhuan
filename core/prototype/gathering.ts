@@ -8,10 +8,15 @@ export const MINING = {
   tags: ['mining'] as const,
   prerequisite: 'pine-ravine', location: 'stoneforge-hamlet',
 } as const;
+export const LOGGING = {
+  name: '采木', cost: '10', scaling: '1.6', max: 60, tags: ['logging'] as const,
+  prerequisite: 'green-vine-hill', location: 'forest-edge-camp',
+} as const;
 
 interface MiningSite {
   name: string; itemId: string; seconds: readonly [number, number]; levels: readonly [number, number]; xp: string;
   prerequisite: string; location: string; depletion?: number; guaranteed?: boolean;
+  skill?: 'logging'; maxQuantity?: number;
 }
 export const MINING_SITES = {
   'azure-vein': {
@@ -26,10 +31,17 @@ export const MINING_SITES = {
     name: '外台玉髓脉', itemId: 'jade-marrow', seconds: [10, 2], levels: [0, 10], xp: '10',
     prerequisite: 'shrine-gate-duel', location: 'sunken-manor-entrance', depletion: 1.5, guaranteed: true,
   },
+  'north-willow-grove': {
+    name: '北麓柳林', itemId: 'century-willow', seconds: [30, 6], levels: [8, 30], xp: '20',
+    prerequisite: LOGGING.prerequisite, location: LOGGING.location, guaranteed: true, skill: 'logging', maxQuantity: 3,
+  },
 } satisfies Record<string, MiningSite>;
 export type MiningSiteId = keyof typeof MINING_SITES;
 export const MINING_SITE_IDS = Object.keys(MINING_SITES) as MiningSiteId[];
-export const miningSiteIdSchema = z.enum(['azure-vein', 'ember-seam', 'jade-seam']);
+export const miningSiteIdSchema = z.enum(['azure-vein', 'ember-seam', 'jade-seam', 'north-willow-grove']);
+export function gatheringSkill(siteId: MiningSiteId): 'mining' | 'logging' {
+  return (MINING_SITES[siteId] as MiningSite).skill ?? 'mining';
+}
 export const miningCountSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 export const gatheringSchema = z.object({
   siteId: miningSiteIdSchema,
@@ -41,8 +53,8 @@ export const gatheringSchema = z.object({
   }
 });
 
-export function miningSpeed(sources: readonly StatSource[]): string {
-  const speed = positiveValue('1', 'activity.speed', sources, { tags: ['mining'] });
+export function miningSpeed(sources: readonly StatSource[], skill: 'mining' | 'logging' = 'mining'): string {
+  const speed = positiveValue('1', 'activity.speed', sources, { tags: [skill] });
   if (dec(speed).lte(0) || dec(speed).gt(100)) throw new Error('Unsupported activity speed');
   return speed;
 }
@@ -64,5 +76,6 @@ export function miningEfficiency(siteId: MiningSiteId, level: number, completed 
   return {
     cycleSeconds: seconds.gt(Number.MAX_SAFE_INTEGER) ? Number.MAX_SAFE_INTEGER : seconds.toNumber(),
     chance: site.guaranteed ? '1' : text(dec('.4').mul(dec('2.5').pow(progress))),
+    maxQuantity: dec(site.maxQuantity ?? 1).pow(progress).round().toNumber(),
   };
 }

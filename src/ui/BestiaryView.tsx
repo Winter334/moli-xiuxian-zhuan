@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, BookOpen, ChevronRight, Search } from 'lucide-react';
-import { ENEMIES, ITEMS, REGIONS, type LootEntry } from '../../core/prototype/content';
-import { realmName } from '../../core/prototype/growth';
+import { ENEMIES, ITEMS, REGIONS, enemyRealmName, type LootEntry } from '../../core/prototype/content';
 import { enemySchema } from '../../core/prototype/types';
 import { attackIntervalMs } from '../../core/prototype/stats';
 import { decimal, formatAmount, formatDecimal, percent } from '../format';
@@ -52,13 +51,13 @@ export function BestiaryView({ game, onBack }: ViewProps & { onBack: () => void 
       placeholder="搜索敌人或掉落物" value={query} onChange={event => setQuery(event.target.value)} /></label></div>
     <div className="bestiary-list">{entries.map(id => <button className="bestiary-entry" key={id} onClick={() => setSelected(id)}>
       <CombatAvatar enemyId={id} name={ENEMIES[id].name} /><span><strong>{ENEMIES[id].name}</strong>
-        <small>{realmName(ENEMIES[id].realm)} · 击败 {formatAmount(game.history.kills[id] ?? '0')} 次</small>
+        <small>{enemyRealmName(ENEMIES[id])} · 击败 {formatAmount(game.history.kills[id] ?? '0')} 次</small>
         <small className="bestiary-entry-loot">掉落：{[...new Set(groupedLoot(ENEMIES[id].loot).map(drop => ITEMS[drop.itemId].name))].join('、') || '无'}</small>
       </span><ChevronRight size={16} />
     </button>)}</div>
     {!entries.length && <Empty icon={<BookOpen size={26} />}>{known.length ? '未找到对应见闻' : '尚无敌人见闻'}</Empty>}
     {content && enemy && selected && <Dialog title={content.name} onClose={() => setSelected(null)}>
-      <div className="bestiary-title"><CombatAvatar enemyId={selected} name={content.name} /><div><span>{realmName(content.realm)}</span>
+      <div className="bestiary-title"><CombatAvatar enemyId={selected} name={content.name} /><div><span>{enemyRealmName(content)}</span>
         <p className="small muted">初遇于第{game.history.firstEncounters[selected].life}世 · 击败{formatAmount(game.history.kills[selected] ?? '0')}次</p></div></div>
       <p className="flavor">{content.description}</p>
       {locations.length > 0 && <p className="bestiary-locations"><span>出没地点</span>

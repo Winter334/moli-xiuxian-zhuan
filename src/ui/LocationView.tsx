@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, BookOpen, Check, Coins, Compass, Info, Pickaxe, ScrollText, Store, Swords, Users, Wind } from 'lucide-react';
+import { ArrowRight, Axe, BookOpen, Check, Coins, Compass, Info, Pickaxe, ScrollText, Store, Swords, Users, Wind } from 'lucide-react';
 import { merchantShopSchema } from '../../core/prototype/consignment';
 import { formatDecimal, percent } from '../format';
 import { ActivityView } from './ActivityPanel';
@@ -37,8 +37,8 @@ export function LocationView({ game, blocked, command, open, frame, paused, last
       {game.trainings.map(training => <button key={training.id} disabled={blocked || !training.available || training.active}
         onClick={() => void command({ type: 'train', skillId: training.id })}><Swords size={16} />{training.name}</button>)}
       {game.miningSites.map(site => <button key={site.id} disabled={blocked || !site.available || site.active}
-        title={`${site.itemName} · ${percent(Number(site.chance))}出货率 · ${formatDecimal(site.cycleSeconds)}秒/轮`}
-        onClick={() => void command({ type: 'gather', siteId: site.id })}><Pickaxe size={16} />{site.name}</button>)}
+        title={`${site.itemName} · ${percent(Number(site.chance))}出货率 · 1${site.maxQuantity > 1 ? `至${site.maxQuantity}` : ''}份 · ${formatDecimal(site.cycleSeconds)}秒/轮`}
+        onClick={() => void command({ type: 'gather', siteId: site.id })}>{site.skillId === 'logging' ? <Axe size={16} /> : <Pickaxe size={16} />}{site.name}</button>)}
       {game.manorAid && !game.manorAid.finished && <button disabled={blocked || game.manorAid.claimed}
         onClick={() => void command({ type: 'claim-manor-aid' })}><Check size={16} />{game.manorAid.claimed ? '已领取援助' : `领取${game.manorAid.name}`}</button>}
     </div>

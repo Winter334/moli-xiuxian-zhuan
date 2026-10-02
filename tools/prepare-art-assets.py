@@ -84,6 +84,14 @@ def publish_atlas(job, source, session, report):
                 if min(x, y) < 0 or min(width, height) <= 0 or right > atlas.width or bottom > atlas.height:
                     raise ValueError(f"Cell bounds outside atlas for {item['id']}")
             cell = atlas.crop((x, y, right, bottom))
+            # Irregular atlases can put a neighbor's detached fragment inside a crop.
+            for region in item.get("excludedCellRegions", []):
+                if len(region) != 4 or any(type(value) is not int for value in region):
+                    raise ValueError(f"Invalid excluded cell region for {item['id']}")
+                left, top, end_x, end_y = region
+                if not 0 <= left < end_x <= width or not 0 <= top < end_y <= height:
+                    raise ValueError(f"Excluded cell region outside crop for {item['id']}")
+                cell.paste((255, 255, 255), (left, top, end_x, end_y))
             item_removal = item.get("backgroundRemoval", removal)
             if item_removal not in {"rembg", "white-background", "white-background-open"}:
                 raise ValueError(f"Unknown background removal method for {item['id']}")

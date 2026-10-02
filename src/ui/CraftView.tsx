@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowDownWideNarrow, ArrowRight, ArrowUp, Check, Coins, Flame, Hammer, LoaderCircle, Shield, Sparkles, Swords, X } from 'lucide-react';
 import { ITEMS } from '../../core/prototype/content';
 import { equipmentSource, itemValue, rarityMultiplier } from '../../core/prototype/equipment';
-import { decimal, formatAmount, hasEnough, multiply, percent } from '../format';
+import { decimal, formatAmount, formatNumericText, hasEnough, multiply, percent } from '../format';
 import { Bonuses, Dialog, Empty, IconButton, ItemGlyph, Quantity, SearchField } from './common';
 import { type Instance, type ViewProps } from './types';
+import { CRAFT_SORT_MODES as SORT_MODES, type CraftSort } from './sort-settings';
 
 type Recipe = ViewProps['game']['recipes'][number];
 type Material = Recipe['materialCosts'][number];
@@ -17,13 +18,10 @@ type Category = (typeof CATEGORIES)[number]['id'];
 type CraftEntry = {
   id: string; output: string; name: string; category: Category; maxBatch: number; value: string;
 } & ({ kind: 'recipe'; recipe: Recipe } | { kind: 'weapon' | 'armor'; first: string; second: string });
-const SORT_MODES = [
-  { id: 'ready', label: '齐料优先' }, { id: 'name', label: '按名称' },
-  { id: 'chance', label: '成功率' }, { id: 'value', label: '参考价值' },
-] as const;
 const nameOrder = new Intl.Collator('zh-CN', { numeric: true });
 const instanced = (itemId: string) => ['equipment', 'part'].includes(ITEMS[itemId].kind);
-const referenceValue = (itemId: string) => itemValue(itemId, instanced(itemId) ? 100 : undefined);
+const referenceValue = (itemId: string, quality = 100) => itemValue(itemId, instanced(itemId) ? quality : undefined);
+const referenceQuality = (entry: CraftEntry) => entry.kind === 'recipe' ? entry.recipe.outputQuality ?? 100 : 100;
 const variableQuality = (entry: CraftEntry) => entry.kind !== 'recipe' || entry.recipe.path === 'component';
 const successChance = (entry: CraftEntry) => entry.kind === 'recipe' ? entry.recipe.successChance : '1';
 const methodName = (entry: CraftEntry) => entry.kind === 'recipe' ? entry.recipe.path === 'component' ? '精炼' : '普通炼制'
@@ -62,7 +60,7 @@ function catalog(game: ViewProps['game']): CraftEntry[] {
       id: `recipe:${recipe.id}`, kind: 'recipe', recipe, output: recipe.output, name: recipe.outputName,
       category: ['food', 'foundation-pill', 'marrow', 'equipment'].includes(ITEMS[recipe.output].kind)
         ? ITEMS[recipe.output].kind as Category : 'material',
-      maxBatch: recipe.maxBatch, value: referenceValue(recipe.output),
+      maxBatch: recipe.maxBatch, value: referenceValue(recipe.output, recipe.outputQuality),
     })),
     ...game.assemblies.map((recipe): CraftEntry => ({
       id: `weapon:${recipe.blade}:${recipe.hilt}`, kind: 'weapon', output: recipe.output, name: recipe.outputName,
@@ -93,7 +91,7 @@ function CraftOutput({ entry }: { entry: CraftEntry }) {
   const item = ITEMS[entry.output];
   return <div className="item-detail-title craft-output"><ItemGlyph kind={item.kind} slot={item.slot} itemId={entry.output} size={30} />
       <div><span className="eyebrow">{methodName(entry)}</span><h2>{entry.name}</h2>
-        {instanced(entry.output) && <span className="muted small">{variableQuality(entry) ? '成品品质浮动' : '成品品质 100'}</span>}
+        {instanced(entry.output) && <span className="muted small">{variableQuality(entry) ? '成品品质浮动' : `成品品质 ${referenceQuality(entry)}`}</span>}
       </div>
     </div>;
 }
@@ -104,11 +102,21 @@ function CraftEquipmentStats({ entry }: { entry: CraftEntry }) {
   const floating = variableQuality(entry) && !item.fixedStats;
   return <section className="craft-equipment-stats" aria-label="成品属性">
     <div className="craft-equipment-heading"><h3>成品属性</h3>
-      <span className="muted small">{floating ? '品质100参考' : item.fixedStats ? '固定属性' : '品质100'}</span>
+      <span className="muted small">{floating ? '品质100参考' : item.fixedStats ? '固定属性' : `品质${referenceQuality(entry)}`}</span>
     </div>
-    <Bonuses source={equipmentSource('craft-preview', { itemId: entry.output, quality: 100 })} />
+    <Bonuses source={equipmentSource('craft-preview', { itemId: entry.output, quality: referenceQuality(entry) })} />
     {item.effectDescription && <p className="effect-description">{item.effectDescription}</p>}
     {floating && <p className="muted small">实际属性随成品品质变化。</p>}
+  </section>;
+}
+
+function CraftConsumableEffects({ entry }: { entry: CraftEntry }) {
+  const use = entry.kind === 'recipe' ? entry.recipe.outputUse : null;
+  if (!use) return null;
+  return <section className="craft-consumable-effects" aria-label="成品使用效果">
+    <div className="craft-equipment-heading"><h3>使用效果</h3><span className="muted small">每份</span></div>
+    <p className="effect-description">{formatNumericText(use.description)}</p>
+    {use.issue && <p className="cost-warning small">当前不可使用：{use.issue}</p>}
   </section>;
 }
 
@@ -176,6 +184,7 @@ function CraftDialog({ entry, game, blocked, pending, notice, run, onClose }: {
   </div>}>
     <CraftOutput entry={entry} />
     <CraftEquipmentStats entry={entry} />
+    <CraftConsumableEffects entry={entry} />
     <dl className="craft-facts">
       <div><dt>当前成功率</dt><dd>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? percent(Number(entry.recipe.successChance)) : '必成'}</dd></div>
       <div><dt>{entry.kind === 'recipe' ? '每炉成功产出' : '每次产出'}</dt><dd>{outputCount(entry)}<small> {instanced(entry.output) ? '件' : '份'}</small></dd></div>
@@ -203,21 +212,22 @@ function CraftDialog({ entry, game, blocked, pending, notice, run, onClose }: {
   </Dialog>;
 }
 
-export function CraftView({ game, blocked, command }: ViewProps) {
+export function CraftView({ game, blocked, command, sort, onSortChange }: ViewProps & {
+  sort: CraftSort; onSortChange: (sort: CraftSort) => void;
+}) {
   const [category, setCategory] = useState<Category>('all');
   const [search, setSearch] = useState('');
-  const [onlyReady, setOnlyReady] = useState(false);
-  const [sort, setSort] = useState<(typeof SORT_MODES)[number]['id']>('ready');
+  const [showAll, setShowAll] = useState(false);
   const [selectedId, setSelectedId] = useState('');
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState('');
   const inFlight = useRef(false);
   const entries = catalog(game);
-  const filtered = category !== 'all' || Boolean(search.trim()) || onlyReady;
+  const filtered = category !== 'all' || Boolean(search.trim()) || showAll;
   const visible = entries.filter(entry => (category === 'all' || entry.category === category) &&
     (entry.name.includes(search.trim()) || entry.kind === 'recipe' && entry.recipe.name.includes(search.trim())) &&
-    (!onlyReady || entry.maxBatch > 0)).sort((a, b) => {
+    (showAll || entry.maxBatch > 0)).sort((a, b) => {
     const order = sort === 'ready' ? Number(b.maxBatch > 0) - Number(a.maxBatch > 0)
       : sort === 'chance' ? decimal(successChance(b)).cmp(successChance(a))
         : sort === 'value' ? decimal(b.value).cmp(a.value) : 0;
@@ -243,7 +253,7 @@ export function CraftView({ game, blocked, command }: ViewProps) {
     await run({ type: 'craft', recipeId: entry.recipe.id, quantity });
   };
   return <div className="page craft-view">
-    <div className="page-heading craft-heading"><h1>炉鼎</h1><span className="muted small">炼制 {refining.level} 级 · {filtered ? `${visible.length} / ${entries.length}` : entries.length} 式</span></div>
+    <div className="page-heading craft-heading"><h1>炉鼎</h1><span className="muted small">炼制 {refining.level} 级 · {visible.length !== entries.length ? `${visible.length} / ${entries.length}` : entries.length} 式</span></div>
     <div className="furnace-strip"><Flame size={22} /><strong>{game.workshop.name}<small>{game.workshop.tier}阶</small></strong>
       <span className={game.workshop.available ? 'positive' : 'cost-warning'}>{game.workshop.available ? '可开炉' : game.mode === 'sleep' ? '调息中' : '战斗中'}</span>
       <button onClick={() => { setShowUpgrade(true); setNotice(''); }}><ArrowUp size={15} />养鼎</button>
@@ -251,14 +261,14 @@ export function CraftView({ game, blocked, command }: ViewProps) {
     <div className="craft-tools">
       <div className="craft-search-row"><SearchField value={search} onChange={setSearch} placeholder="搜索配方或成品" />
         <button className="craft-sort" aria-label={`排序：${SORT_MODES[sortIndex].label}`} title={`切换为${nextSort.label}`}
-          onClick={() => setSort(nextSort.id)}><ArrowDownWideNarrow size={15} /><span>{SORT_MODES[sortIndex].label}</span></button>
-        <IconButton label="清除配方筛选" disabled={!filtered} onClick={() => { setCategory('all'); setSearch(''); setOnlyReady(false); }}><X size={15} /></IconButton>
+          onClick={() => onSortChange(nextSort.id)}><ArrowDownWideNarrow size={15} /><span>{SORT_MODES[sortIndex].label}</span></button>
+        <IconButton label="清除配方筛选" disabled={!filtered} onClick={() => { setCategory('all'); setSearch(''); setShowAll(false); }}><X size={15} /></IconButton>
       </div>
       <div className="craft-filter-row">
         <div className="craft-categories" role="group" aria-label="炼制类别">
           {CATEGORIES.map(entry => <button key={entry.id} aria-pressed={category === entry.id} onClick={() => setCategory(entry.id)}>{entry.name}</button>)}
         </div>
-        <label className="check-label"><input type="checkbox" checked={onlyReady} onChange={event => setOnlyReady(event.target.checked)} />齐料</label>
+        <label className="check-label"><input type="checkbox" checked={showAll} onChange={event => setShowAll(event.target.checked)} />显示全部</label>
       </div>
     </div>
     <div className="craft-grid">{visible.map(entry => {

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: Chinese xianxia RPG hand-painted material inventory icon
+Primary request: one small mass of clear-tide essence, a pale turquoise translucent spiritual condensate ready for use as crafting material.
+Input images: none.
+Subject: a compact, naturally uneven mass of soft coagulated essence with a few broad overlapping folds. Its low, gently lobed silhouette and pale milky inner layers make it a material, not a round spirit-marrow pearl, a faceted mineral, a bottle of medicine, or a living creature. The condensate can originate from aquatic glands, fungus marrow or a reef-spirit cavity; depict the gathered material, not an identifiable bloody organ.
+Style/medium: refined Chinese fantasy digital thick painting. Visible layered pigment strokes organize the translucent depth, folded volume and softly luminous inner planes. Some edges are soft, while the main silhouette remains clear. Polished, tactile brushwork rather than a rough sketch, smooth airbrushed slime, glass photography or a glossy CG render.
+Materials/textures: pale cyan-green condensate, softly opalescent internal strata and restrained cool highlights. Keep the sense of translucent substance through painted layers, not hard crystalline facets or photographic refraction. No ornamental carving or manufactured casing.
+Composition/framing: one complete centered material mass at a slight three-quarter angle, large enough to remain legible as a small game icon, with at least 15 percent clear margin on every side. No bowl, jar, tray, pedestal, cloth or ground.
+Lighting/mood: gentle local translucency and a little light held inside the folds. No external aura, magic orbit, flame, sparks or dramatic effects.
+Constraints: preserve the identity of a collected crafting material. No orb silhouette, gemstone jewelry, sharp crystal cluster, water splash, droplet diagram, detailed anatomy, blood, extra objects, text, labels, UI frame, watermark, vector outlines or photorealistic product rendering.
+Background: pure solid white for local background removal. No cast shadow, gradient, checkerboard or gray ground. Keep all material edges and painted highlights fully inside the margins.

@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784.
+Primary request: Crossriver Stone Flat, a bare riverside side ledge reached from the old shore path.
+Scene/backdrop: one broad natural stone terrace projects from the bank over the river. Its worn edge and a few cracks show use as a stopping place, while the narrow approach path remains visible behind. The broad river runs past below, with opposite-bank cliffs framing distant open water.
+Composition/framing: from slightly below terrace height, across the open flat stone surface to the river beyond. Give the stone terrace a strong readable silhouette and enough unoccupied space for the location's encounter. The space is natural and exposed, not a formal arena.
+Style/medium: refined Chinese fantasy environment painting, restrained luminous brush planes, clear stone volume, simple spatial depth and quietly uncanny stillness.
+Lighting/mood: cool clear daylight with a gentle warm rim on the stone, celadon water and muted green-grey cliffs.
+Constraints: no swordsman painted into the environment, weapon pile, tournament furnishings, dojo, ceremonial circle, gates, banners, treasure chest, oversized magical effects, heavy atmospheric darkness, text, frame or watermark. Full-bleed wide landscape.

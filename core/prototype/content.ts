@@ -2,6 +2,7 @@ import { BASE_STATS } from './stats';
 import { dec, text } from '../numbers';
 import type { EncounterEntry, EnemyDefinition, StatSource } from './types';
 import type { FoundationRoot } from './foundation';
+import { realmName } from './growth';
 
 export const CONTENT_VERSION = 'neko-opening-3';
 export const SLOTS = ['weapon', 'head', 'body', 'legs', 'feet', 'accessory', 'artifact', 'special'] as const;
@@ -13,7 +14,7 @@ export const MANOR_AID = {
 export const FOUNDATION = { insightItemId: 'foundation-insight' } as const;
 
 export const FOOD_EFFECTS: Record<string, {
-  name: string; durationMs: number; maxRealm: number; polarity: 'benefit' | 'cost'; source: StatSource;
+  name: string; durationMs: number; maxRealm: number; polarity: 'benefit' | 'cost'; source: StatSource; description?: string;
 }> = {
   nourished: {
     name: '饱腹', durationMs: 60_000, maxRealm: 5, polarity: 'benefit',
@@ -46,6 +47,38 @@ export const FOOD_EFFECTS: Record<string, {
   'woodland-nourishment': {
     name: '养元', durationMs: 60_000, maxRealm: 14, polarity: 'benefit',
     source: { id: 'woodland-food', flat: { hpRegen: '12000', attack: '800', defense: '800', agility: '800' } },
+  },
+  'tide-restraint': {
+    name: '牵势', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
+    description: '普攻伤害乘以0.6×自身防御/(目标防御+0.0001)，上限10倍；防御较低时反而减伤',
+    source: { id: 'tide-restraint', combat: { restraint: { coefficient: '0.6', cap: '10' } } },
+  },
+  'piercing-force': {
+    name: '贯劲', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
+    description: '扣防后伤害至少为本段攻击的10%，仍受坚固限制；普攻倍率×0.9',
+    source: {
+      id: 'piercing-force', multiplier: { attackMultiplier: '0.9' },
+      statPolarity: { multiplier: { attackMultiplier: 'cost' } },
+      combat: { minimumAttackDamageRatio: '0.1' },
+    },
+  },
+  'wound-guard': {
+    name: '守伤', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
+    description: '每段直接承伤限制至气血上限约5%；每秒损失1%气血，此代价不受限伤保护',
+    source: {
+      id: 'wound-guard', flat: { hpRegenPercent: '-0.01' },
+      statPolarity: { flat: { hpRegenPercent: 'cost' } },
+      combat: { damageTakenCap: { threshold: '0.05', value: '0.0500001' } },
+    },
+  },
+  'returning-wind': {
+    name: '回风', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
+    description: '对每个选定目标依次以0.8、1.2攻击系数出手，第二击须双方仍存活；每秒损失1%气血',
+    source: {
+      id: 'returning-wind', flat: { hpRegenPercent: '-0.01' },
+      statPolarity: { flat: { hpRegenPercent: 'cost' } },
+      combat: { attackCoefficients: ['0.8', '1.2'] },
+    },
   },
 };
 
@@ -195,6 +228,10 @@ export const ITEMS: Record<string, ItemDefinition> = {
   'awakened-wood': {
     ...material('苏灵木', 2333000),
     description: '久受灵气滋养的木料，切口的细纹仍会缓缓收拢。商会将不同产地的料段封装收贮，可取其汁液炼成苏灵淬液。',
+  },
+  'century-willow': {
+    ...material('百年青柳木', 320000),
+    description: '北麓老柳截下的木料段，青灰树皮包着浅黄木心，端面年轮细密而纹理顺直。外观朴素，木中却已含灵；配泽兽精粹与流灵凝胶注灵，可制苏灵木。',
   },
   'resonant-ingot': {
     ...material('鸣金锭', 6666000),
@@ -444,11 +481,60 @@ export const ITEMS: Record<string, ItemDefinition> = {
     description: '榕庭石龛中留存的青铜灯盏，灯座附着细根，盏沿已被磨亮。灯壁刻着吐纳纹路，芯中余光随持灯者的呼吸轻轻明灭。',
     effectDescription: '装备后命中增长归息盏熟练；1/2/3级全经验累计约为×2/×3/×4，已得里程碑卸下仍保留。',
   },
+  'purple-marrow': {
+    name: '紫灵髓', kind: 'marrow', value: '1000', marrowValue: 1000,
+    description: '轮廓略扁的紫色凝髓，圆润肩面自然起伏，乳白光层凝在半透髓质深处，局部短缕轻雾贴身散出。赤旌守隘铁卫随身收存的修行物资，可用于随机永久成长或筑基后的灵髓化悟。',
+  },
+  'edgecleaving-pendant': {
+    name: '破锋佩', kind: 'equipment', slot: 'accessory', value: '67108864',
+    fixedStats: { flat: { attack: '5000', defense: '-5000' } },
+    description: '乌银色扁薄片佩上肩作如意云头，下缘弧收，浅錾卷纹沿佩边展开，短赤编绳系成小结。真元聚向中央锋隙中断续的冷白微光，护身灵息却随之散弱。',
+  },
   'manor-command-seal': {
     name: '巡枢残印', kind: 'equipment', slot: 'special', value: '861082713',
     fixedStats: { multiplier: { maxHp: '1.3', attack: '1.3', defense: '1.3', agility: '1.3' } }, sturdyCap: 4,
     description: '印侧刻着「巡枢」二字，边角已有裂纹，印面阵线与内院石台的凹槽相合。握持时，残存灵光仍会沿掌心流动。',
     effectDescription: '坚固的中间伤害上限升至4；装备入场可将涵岳枢灵的攻防敏血压至1%。击败后回收持有残印，仅可领取一次；出售后不能重领。',
+  },
+  'clear-tide-essence': {
+    ...material('澄潮精粹', 4500000),
+    description: '浅青半透的含灵凝质，取自水兽鳃腺、蕈髓或礁灵内腔，按相同药性收存。可直接用于斗法灵液、鸣金精炼和水火合息佩。',
+  },
+  'scarlet-marrow': {
+    name: '绯灵髓', kind: 'marrow', value: '2000', marrowValue: 2000,
+    description: '绯色凝髓饱满而略偏斜，澄润外层下有温白髓光回旋，仿佛悬在髓质深处。可炼化温养自身，与其它灵髓共用累计递减。',
+  },
+  'cyan-marrow': {
+    name: '苍灵髓', kind: 'marrow', value: '5000', marrowValue: 5000,
+    description: '短厚圆卵状的苍青凝髓，深处髓心被层叠光质包围，局部淡青气丝逸出后又向本体回拢。含灵尤为凝厚，可炼化温养自身。',
+  },
+  'tide-restraint-elixir': {
+    name: '牵势灵液', kind: 'food', value: '240000000', foodEffects: ['tide-restraint'],
+    description: '束口短签封住小陶药瓶，碧润药液凝着护身气息。借自身防护牵引出手，低防配装不宜贸然服用。',
+  },
+  'piercing-force-elixir': {
+    name: '贯劲灵液', kind: 'food', value: '240000000', foodEffects: ['piercing-force'],
+    description: '小陶瓶以窄长封签收口，浅金药液凝炼穿透劲力。用于高防目标，运劲时也会减弱普攻倍率。',
+  },
+  'wound-guard-elixir': {
+    name: '守伤灵液', kind: 'food', value: '240000000', foodEffects: ['wound-guard'],
+    description: '方折封签下是乳白药液，短时封限单段重伤。维持药效持续耗损气血，不会保护自身失血的代价。',
+  },
+  'returning-wind-elixir': {
+    name: '回风灵液', kind: 'food', value: '240000000', foodEffects: ['returning-wind'],
+    description: '回折封签系在淡青药液的小陶瓶口。服后运劲轻重相接，每个目标各递两击，持续行气也会损耗气血。',
+  },
+  'waterfire-pendant': {
+    name: '水火合息佩', kind: 'equipment', slot: 'accessory', value: '720000000',
+    fixedStats: { flat: { maxHp: '500000', hpRegen: '28888' } },
+    description: '乌金佩缘托住青润、温红两瓣凝质，双叶合抱，短绳结收于云头。两股灵息沿古式片佩相合，温养护身气血。',
+    effectDescription: '气血上限+50万，气血回复+28888/秒；属性不随品质放大',
+  },
+  'sealed-spiritstone-crate': {
+    ...material('封箱灵石', 1000000), description: '封箱收存的灵石，仅供售出后计入灵石余额，不可直接使用或炼制。',
+  },
+  'bulk-spiritstones': {
+    ...material('整批灵石', 10000000), description: '捆扎成批的封装灵石，仅供售出后计入灵石余额，不是另一种货币或炼材。',
   },
 };
 
@@ -456,10 +542,17 @@ export interface LootEntry { itemId: string; chance: string; ignoreLuck?: boolea
 export interface EnemyContent {
   name: string;
   description?: string;
+  visibleRealm?: string;
   realm: number;
   xp: string;
   definition: EnemyDefinition;
   loot: LootEntry[];
+}
+export function enemyRealmName(enemy: Pick<EnemyContent, 'realm' | 'visibleRealm'>): string {
+  if (enemy.visibleRealm) return enemy.visibleRealm;
+  if (enemy.realm < 9) return realmName(Math.min(12, Math.ceil(enemy.realm * 1.5)));
+  const levels = [13, 14, 15, 17, 18, 19, 21, 22, 23];
+  return enemy.realm <= 17 ? realmName(levels[enemy.realm - 9]) : '化神初期';
 }
 const drop = (itemId: string, chance: number): LootEntry => ({ itemId, chance: String(chance) });
 const cloudyMarrow = (chance: number) => drop('cloudy-marrow', chance);
@@ -851,6 +944,7 @@ export const ENEMIES: Record<string, EnemyContent> = Object.fromEntries([
     description: '专劫寻材者药包的符修，腰间药匣混放着莲实、聚灵砂核与拆取的赤纹灵金。指间符光凝成细芒，沿衣甲难以遮护的缝隙钻入。' },
   { ...foe('woodland-crossbowman', '伏泽弩修', 12, 2584, [9900, 70000, 7000, 9000, 1],
     [drop('verdant-marrow', .015), drop('vault-bond', .03), drop('carapace-fragment', .10)], { missPunishment: '1000' }),
+    visibleRealm: '结丹初期',
     description: '藏在药泽断堤中的劫修，怀抱以妖甲硬片加固的灵弩，赤纹灵金沿弩臂接入机槽。催器时弦槽聚起细亮灵光，近身发射力道极重；专截携料归埠的修士，对手一击落空便趁隙划出伤口。' },
   { ...foe('spring-jade-toad', '盘泉玉蟾', 12, 2584, [48000, 18000, 5000, 7600, 1],
     [drop('clear-spring-saliva', .25), drop('soul-ember', .5), drop('verdant-marrow', .015)],
@@ -860,6 +954,138 @@ export const ENEMIES: Record<string, EnemyContent> = Object.fromEntries([
     [drop('clear-spring-saliva', .5), drop('soul-ember', 1), drop('verdant-marrow', .03)],
     { periodicStrike: { every: 3, coefficient: '1.5' } }),
     description: '泉窟深池的玉蟾首领，伏身收肢时如抱着一团泉光，颈腹玉色透过厚皮。它沿用两次扑击后鼓腹重撞的节奏，身躯更耐久，能在池沿与来者久久相持。' },
+  { ...foe('splitcrown-beast', '裂冠角兽', 12, 4181, [105000, 25000, 10000, 12800, 1.1],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('carapace-fragment', .1), drop('feral-blood-essence', .1)],
+    { strikes: ['0.8', '1.2'] }), visibleRealm: '结丹中期',
+    description: '前肩隆起，额上骨冠分成两道弧刃。它踏住青藤间的根茎，冠纹随呼吸明灭；来者走近，先以短角顶开身形，再低首撞出第二记重击。' },
+  { ...foe('core-shell-spirit', '抱核壳灵', 12, 2584, [15, 16000, 0, 10000, 1.1],
+    [drop('verdant-marrow', .015), drop('beast-core-shard', .18)], { sturdy: true }), visibleRealm: '结丹初期',
+    description: '细砂托着枯枝与薄壳绕核转动，壳缝中露出一线凝亮灵光。刀锋落下，只崩开少许砂粒；它随即撑起枝肢，将整副壳身撞向近处。' },
+  { ...foe('redbanner-saber-raider', '赤旌截材刀手', 12, 2584, [55000, 14000, 9000, 10500, 1.2],
+    [drop('verdant-marrow', .015), drop('vault-bond', .04), drop('carapace-fragment', .08)]), visibleRealm: '结丹初期',
+    description: '刀柄与肩甲都系着赤色结绳，接片护甲上留着反复修补的铆痕。他守在丘林偏路，将抢来的器料装进腰囊，见携料者经过便横刃拦住去路。' },
+  { ...foe('chimebone-wingbeast', '鸣骨翎兽', 12, 2584, [72000, 17000, 3000, 11000, 1.3],
+    [drop('verdant-marrow', .015), drop('spirit-rib-meat', .1), drop('soul-ember', .5)], { strikes: 3 }), visibleRealm: '结丹初期',
+    description: '两对短翼掠过林冠，空心羽骨振出清越鸣响。它骤然收翼落下，长喙、翼缘与再度探出的喙尖接连逼近，腹侧羽毛却疏薄而柔软。' },
+  { ...foe('mist-scale-chilong', '游岚鳞螭', 12, 2584, [45000, 19000, 11000, 11000, 1.1],
+    [drop('verdant-marrow', .015), drop('spirit-rib-meat', .06), drop('feral-blood-essence', .06)]), visibleRealm: '结丹初期',
+    description: '细长鳞躯盘在石隙间，颈侧薄鳍随风舒展。背鳞的云纹转身时忽明忽暗，它借一股风涌跨出岩缝，贴地咬向经过的猎物。' },
+  { ...foe('walking-root-spirit', '行根木魅', 12, 4181, [37000, 9100, 10900, 11500, 1.2],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('flowing-essence-gel', .2), drop('beast-core-shard', .2)],
+    { attackCoefficientMultiplier: '2' }), visibleRealm: '结丹初期',
+    description: '含灵粗根拢成短躯与数条支足，根端带着新裂开的湿润木纹。它搬离原先扎根的土窝，将躯干中的木气聚向前端，一条重根随之沉猛砸下。' },
+  { ...foe('renewing-wood-spider', '返青木蛛', 12, 4181, [120000, 18500, 3300, 12000, .9],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('feral-blood-essence', .15), drop('soul-ember', .5)],
+    { entryAgilityAttackRatio: '0.5', hitHealingRatio: '0.3' }), visibleRealm: '结丹中期',
+    description: '枝节般的长肢伏在树液边，腹内木髓透着嫩青。它循近身动势刺出尖肢，受创后枯下的细枝又随着刺击返青，裂开的虫躯也渐渐合拢。' },
+  { ...foe('rockmarrow-carapace', '岩髓甲兽', 12, 4181, [15000, 28000, 14000, 12500, 1.2],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('carapace-fragment', .2)]), visibleRealm: '结丹中期',
+    description: '六足贴地撑住窄薄躯体，层层背甲隆成低矮岩脊。它从石核旁抬起头，矿光在甲缝中一闪，随即以沉硬的背脊撞向近身者。' },
+  { ...foe('lanternbelly-mayfly', '腹灯游蜉', 12, 4181, [60000, 33000, 11000, 13500, 1.2],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('feral-blood-essence', .1), drop('beast-core-shard', .15)]), visibleRealm: '结丹中期',
+    description: '细长肢节悬在膜翼下，透明腹囊中浮着一圈缓缓回旋的砂光。它绕含灵树液疾飞，见别的生灵靠近便转身扑下，细肢从两侧刺向来者。' },
+  { ...foe('entwined-branch-spirit', '缠枝木魅', 12, 4181, [80000, 30000, 9000, 12500, 1.2],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('flowing-essence-gel', .5), drop('carapace-fragment', .2)],
+    { restraint: true }), visibleRealm: '结丹中期',
+    description: '藤根围成中空躯体，硬化外皮间渗出细润树脂。它挪过谷地根沟，数束枝条贴住来者护身的气息不断逼压，枝心的青光随攻守交错而起伏。' },
+  { ...foe('silverbranch-spirit', '银枝木灵', 12, 4181, [25000, 4000, 16000, 13500, 1.2],
+    [drop('verdant-marrow', .05), drop('golden-marrow', .02), drop('beast-core-shard', .3), drop('carapace-fragment', .05)],
+    { ignoreDefense: true }), visibleRealm: '结丹中期',
+    description: '纤细枝面凝着银白矿纹，根下仍滴着清亮泉水。枝身看似单薄，外皮却硬如细甲；枝尖逸出的灵芒穿过衣甲，轻而细地落在来者身上。' },
+  { ...foe('zhaochuan-material-steward', '照川夺材执事', 13, 7575, [135000, 49000, 7500, 14500, 1.2],
+    [drop('verdant-marrow', .02), drop('golden-marrow', .05), drop('vault-bond', .4), drop('soul-ember', 1)],
+    { restraint: true, rending: true }), visibleRealm: '结丹中期',
+    description: '刃脊与护袖贯着同式铜纹，腰侧悬有照川采办房的收料牌。他将石原寻材者拦在旧道边，声称此处出产应归本门，御刃压住护身气息后再逼斩近前。' },
+  { ...foe('sacback-feral-beast', '囊背荒兽', 13, 7575, [180000, 32000, 10000, 10500, 1.2],
+    [drop('verdant-marrow', .02), drop('golden-marrow', .05), drop('spirit-rib-meat', .4), drop('carapace-fragment', .1)]), visibleRealm: '结丹中期',
+    description: '宽背两侧隆起厚实肉囊，肋架撑着沉重躯体。它沿疏林啃食灵草，转身时四足缓缓挪动；察觉近身动静，便骤然压低前肩撞来。' },
+  { ...foe('bladeridge-carapace', '裂锋甲兽', 13, 7575, [72000, 20000, 16000, 15000, 1.2],
+    [drop('verdant-marrow', .02), drop('golden-marrow', .05), drop('carapace-fragment', .4)],
+    { extraStrike: { coefficient: '1.5', damageMultiplier: '2' } }), visibleRealm: '结丹中期',
+    description: '六足踏住白石，背甲外翻成一列刃脊，细长尾部擦过岩面。它旋身迎向来者，前肢扑击后长尾再度抽回，沿尾沉积的矿锋拖出一线冷光。' },
+  { ...foe('windfold-scythebeast', '折风镰兽', 13, 7575, [216000, 36000, 15000, 15000, 1.2],
+    [drop('verdant-marrow', .02), drop('golden-marrow', .05), drop('carapace-fragment', .2), drop('feral-blood-essence', .2)],
+    { entrySequence: [
+      { count: 4, coefficient: '1', damageMultiplier: '5' },
+      { count: 5, coefficient: '0.9', damageMultiplier: '1' },
+    ] }), visibleRealm: '结丹后期',
+    description: '扁长躯体嵌在迎风石缝中，背侧风囊一鼓，折叠镰肢便骤然展开。积蓄的风劲先托出数记强袭，随后细短斩势接连掠过，才落地转入近身争斗。' },
+  { ...foe('redbanner-pass-guard', '赤旌守隘铁卫', 13, 7575, [2000000, 44000, 22000, 24000, 1.2],
+    [drop('purple-marrow', 1)], { strikes: 6 }), visibleRealm: '结丹后期',
+    description: '层叠铁甲压着赤色结绳，短柄重刃的刃口已有多次重炼痕迹。他立在隘中窄段，身后堆着集中收存的物资，一旦交手便连续递刃，不给来者轻易穿过的空隙。' },
+  { ...foe('redbanner-chief', '赤旌寨主', 15, 46368, [38400000, 192000, 63000, 96000, 1.2],
+    [drop('edgecleaving-pendant', 1)], { reflectionRatio: '0.2', bullying: true }), visibleRealm: '元婴中期',
+    description: '寨主独踞侧崖外台，乌银佩片以赤绳悬在厚甲前，窄隙中凝着冷白锋光。他将灵息压向近身者薄弱的护身处，受击时甲上真元骤然回震；台后囤物深重，仍不肯让来者靠近。' },
+  { ...foe('redbanner-river-scout', '赤旌游哨', 13, 7575, [200000, 44000, 22000, 24000, 1.2],
+    [drop('golden-marrow', .05), drop('purple-marrow', .01), drop('carapace-fragment', .4)], { strikes: 2 }), visibleRealm: '结丹后期',
+    description: '赤结绳系在接片甲肩，游哨守着白石江岸的偏路，窥伺落单取材者。他递出两记短刃，退身时仍紧盯来者的料囊。' },
+  { ...foe('mooring-wraith', '系舟怨灵', 13, 7575, [250000, 40000, 16000, 22000, 1.2],
+    [drop('golden-marrow', .05), drop('purple-marrow', .01), drop('beast-core-shard', .5)], { entryStatRatio: '0.1' }), visibleRealm: '结丹后期',
+    description: '溺亡残念附在旧舟木和系缆上，湿袍似水影，短桨拖在身侧。它在废系舟处借来者攻守气息撑起身影，舟木缝间积着含灵细砂。' },
+  { ...foe('tideshell-spirit-turtle', '潮壳灵鼋', 13, 7575, [10, 45000, 0, 20000, 1.2],
+    [drop('golden-marrow', .05), drop('purple-marrow', .01), drop('carapace-fragment', .2), drop('clear-tide-essence', .05)],
+    { sturdy: true }), visibleRealm: '结丹后期',
+    description: '四条鳍足撑起低伏宽躯，背壳闭成润白层片，灵机收聚在细缝间。它守住啮食潮石的浅滩，以硬壳撞退近身者，内侧水府积有浅青凝质。' },
+  { ...foe('tidebound-bone-wight', '潮缠骨魅', 13, 10496, [100000, 61000, 19000, 32000, 1.2],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('clear-tide-essence', .1), drop('feral-blood-essence', .3)],
+    { entryHealthRatio: '0.5' }), visibleRealm: '结丹后期',
+    description: '湿藤和灵质缠住旧兽骨，肋骨撑起空腔，根束拖着骨躯挪动。它占据浅岸骨堆，借来者护身与出手气息撑开骨腔，不是死后复苏的活兽。' },
+  { ...foe('floatingblade-raider', '浮剑劫修', 13, 10496, [100000, 33000, 12000, 32000, 1],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('beast-core-shard', .5), drop('awakened-wood', .2)],
+    { extraStrike: { coefficient: '1.5', damageMultiplier: '2' } }), visibleRealm: '结丹后期',
+    description: '肩侧悬着一口小灵刃，劫修以轻甲遮住旧伤。他拦住浅滩携料散修，正面递刃之后，悬剑再聚劲重落。' },
+  { ...foe('flowpetal-water-shroom', '流萼水蕈', 13, 10496, [150000, 45000, 30000, 36000, 1.2],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('clear-tide-essence', .2)]), visibleRealm: '结丹后期',
+    description: '浅青菌冠分成数片，冠下水须束起，随浅流缓缓挪移。含灵水带滋养着成片蕈群，它驱逐靠近菌丛者；区域灵机不随单株倒下而消散。' },
+  { ...foe('mistbreathing-chilong', '吐岚鳞螭', 13, 10496, [90000, 70000, 25000, 36000, 1.2],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('spirit-rib-meat', .5), drop('beast-core-shard', .5)],
+    { entryStrikes: 5, entryAttackCoefficient: '0.9' }), visibleRealm: '结丹圆满',
+    description: '与山原鳞螭近缘的长躯伏在岸壁，体侧宽鳍与颈囊蓄着温润水岚。它先放出积存岚劲接连逼近，随后落地咬击，并非真龙或吐火异种。' },
+  { ...foe('scarletarm-tidebeast', '绯腕潮兽', 13, 10496, [81000, 80000, 22500, 24000, .9],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('feral-blood-essence', .3), drop('clear-tide-essence', .1)]), visibleRealm: '结丹后期',
+    description: '低矮囊躯下展着八条宽短腕足，腕缘有深绯褶膜。它沿浅岸争食，离水后动作缓慢，却会把数条腕足收拢为一次沉重扑击。' },
+  { ...foe('cutstream-crossbowman', '截流弩手', 13, 10496, [120000, 81000, 27000, 36000, 1.2],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('awakened-wood', .2), drop('bulk-spiritstones', .04)],
+    { entryStrikes: 3 }), visibleRealm: '结丹圆满',
+    description: '黛色帆结系在弩匣旁，截流帮弩手藏身废泊位，专夺过路舟货。敌人是劫舟者，不是正常商船上的水手；现身时先连发三矢。' },
+  { ...foe('sunkentide-nightmarebeast', '沉潮魇兽', 13, 10496, [140000, 66500, 33500, 40000, 1.2],
+    [drop('golden-marrow', .03), drop('purple-marrow', .03), drop('beast-core-shard', .5), drop('clear-tide-essence', .1)],
+    { attackAfterDamageThreshold: '10000' }), visibleRealm: '结丹圆满',
+    description: '扁阔头胸伏在深潭边缘，长尾贴腹，侧鳃翻成层叠薄褶。近身水压扰乱迟缓的进退，每次交锋后潮劲又逼近一步。' },
+  { ...foe('tideholding-reef-spirit', '抱潮礁灵', 14, 17711, [20, 88000, 55000, 54000, 1],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('clear-tide-essence', .15), drop('carapace-fragment', 1)],
+    { sturdy: true }), visibleRealm: '结丹圆满',
+    description: '浅白礁片抱住凝亮内腔，短石肢抬着低矮壳身。矿泉与潮流使它积灵，它守住石窠，以硬壳抵住来者；腔内留有浅青凝液。' },
+  { ...foe('rosycloud-spirit', '赤霞云灵', 14, 17711, [220000, 94000, 45000, 50000, .8],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('feral-blood-essence', .5), drop('beast-core-shard', .75)],
+    { strikes: 6 }), visibleRealm: '元婴初期',
+    description: '薄红云絮围着淡金灵质，边缘随暖岩升气卷动。它盘踞临水上方，将凝劲依次分成六道迎向经过者，不以火焰灼烧来敌。' },
+  { ...foe('cutstream-chief', '截流帮主', 14, 17711, [440000, 110000, 45000, 54000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('awakened-wood', .3), drop('bulk-spiritstones', .09)]), visibleRealm: '元婴初期',
+    description: '厚甲上系着黛色帆结，帮主把持旧泊位与暗船销赃。他亲自夺取独行修士所携器料，不是商盟柜主，也没有统治整条灵江。' },
+  { ...foe('mistcrown-shroom-spirit', '雾冠伞灵', 14, 17711, [240000, 135000, 20000, 36000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('clear-tide-essence', .32)],
+    { weakening: 50 }), visibleRealm: '元婴初期',
+    description: '厚菌冠罩着短支足，白雾从褶片散出。它占据潮湿石洲，以冠雾使近身者攻守失力；雾气不在战后留下长时毒伤。' },
+  { ...foe('cutstream-heavy-bladesman', '截流重刀手', 14, 17711, [88000, 90000, 30000, 48000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('carapace-fragment', .8), drop('sealed-spiritstone-crate', .6)],
+    { attackCoefficientMultiplier: '2' }), visibleRealm: '结丹圆满',
+    description: '重刀手以钩舟器拖住废泊位边的过路小舟，宽刃随身压低。他将气力集中于一次沉斩，不召出分身，也不把一击分成两段。' },
+  { ...foe('coldboil-sacbeast', '寒沸囊兽', 14, 17711, [810000, 108000, 36000, 48000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('clear-tide-essence', .2), drop('feral-blood-essence', .3)],
+    { healthBurst: { round: 20, multiplier: '4' } }), visibleRealm: '结丹圆满',
+    description: '厚躯短足撑着冷润、温热两枚背囊，它争占石洲窝地。长战使双囊失衡，第二十轮出手后将余存气血迸发出去，身体尚留一线生机。' },
+  { ...foe('boatplundering-raider', '掠舟劫修', 14, 17711, [250000, 105000, 21000, 72000, 1.3],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('awakened-wood', .3), drop('beast-core-shard', .75)]), visibleRealm: '结丹圆满',
+    description: '轻装劫修藏着折叠舟钩，沿高岸快速掠过。他专挑落单舟客出手，以敏捷和快攻逼近，不隶属于每一支沿江势力。' },
+  { ...foe('crossriver-bladesman', '横江刀客', 15, 46368, [7500000, 370000, 30000, 120000, 1.2],
+    [drop('cyan-marrow', 1), drop('cyan-marrow', 1)]), visibleRealm: '元婴中期',
+    description: '沉厚长刀横在临江石坪，磨损护腕收着精练气劲。刀客惯于夺取行旅物资，高攻与敏捷使正面交锋危险；这里不是免费切磋或盟中比武。' },
+  { ...foe('poolguard-reef-spirit', '护潭礁灵', 14, 17711, [200, 88000, 55000, 54000, 1], [], { sturdy: true }), visibleRealm: '结丹圆满',
+    description: '较大的凝灵礁片盘在飞瀑潭侧，内腔微亮，短石肢守住石窠。瀑外岩面留着三组行气刻图，须越过它的护潭袭击才能近观。' },
+  { ...foe('jiuzhang-crossing-warden', '九嶂封渡使', 14, 17711, [3900000, 125000, 15000, 60000, 1.2],
+    [drop('scarlet-marrow', 3)], { strikes: 3, reflectionRatio: '0.2' }), visibleRealm: '元婴初期',
+    description: '叠嶂纹护袖下悬着收料牌，九嶂盟一支地方成员巡段的骨干封住临江旧道。他把公共通路圈入本队经营范围，以三记连击驱逐独行散修，护身气息会回震近身者。' },
 ].map((entry) => [entry.definition.id, entry]));
 
 export interface RegionDefinition {
@@ -867,6 +1093,7 @@ export interface RegionDefinition {
   name: string; parent: string; prerequisite: string | null;
   description?: string;
   pool: string[]; groupSize: 1 | 2; groups: number; firstXp: string; repeatXp: string; challenge: boolean;
+  randomGroupSize?: boolean;
   // One-based group positions within each clear override the ordinary random pool.
   encounterPools?: Record<number, string[]>;
   firstItems?: Record<string, number>;
@@ -1100,6 +1327,72 @@ export const REGIONS: Record<string, RegionDefinition> = {
     encounterPools: { 1: ['spring-jade-toad'], 13: ['jade-toad-chief'] },
     description: '泉洞沿层叠浅池深入山腹，天隙将清光送入近处，深池则映着玉蟾颈腹的温润玉光。停用引水槽隐在湿石与藤根之间，凝润药涎留在池沿；浅池玉蟾与泽蜥盘踞其间，深处巨蟾伏身守着一片静水。',
   },
+  'green-vine-hill': {
+    ...region('青萝丘', 'forest-edge-camp', 'oldwood-fringe',
+      ['woodland-crossbowman', 'splitcrown-beast', 'core-shell-spirit', 'redbanner-saber-raider',
+        'chimebone-wingbeast', 'mist-scale-chilong'], 4200, 1400),
+    description: '药泽尽头，青藤沿白石铺上明亮丘林，林冠中传来空心羽骨的清鸣。背鳞带云纹的细螭伏在风涌石隙，粗重角兽守住含灵根茎；偏路刀手肩上的赤色结绳渐成同一标记。',
+  },
+  'renewal-valley': {
+    ...region('回生谷', 'forest-edge-camp', 'green-vine-hill',
+      ['mist-scale-chilong', 'walking-root-spirit', 'renewing-wood-spider', 'rockmarrow-carapace',
+        'lanternbelly-mayfly', 'entwined-branch-spirit'], 4800, 1600),
+    description: '岩壁环抱苍翠灵林，粗根间淌着带细润光泽的树液。木蛛枝肢伏在胶珠旁，木魅搬动含灵藤根，游蜉腹中的砂光随飞动回旋；谷中生灵各取所需，灵木与凝厚树脂也是寻材者北行的缘由。',
+  },
+  'windstone-uplands': {
+    ...region('凌风石原', 'forest-edge-camp', 'renewal-valley',
+      ['entwined-branch-spirit', 'silverbranch-spirit', 'zhaochuan-material-steward', 'sacback-feral-beast',
+        'bladeridge-carapace', 'windfold-scythebeast'], 6000, 2000),
+    description: '灵木疏立于白石高原，矿光从六足甲兽的背缝闪过，宽背荒兽沿草带巡食。照川采办队的铜纹贯通刃脊与护袖，同式收料牌悬在腰间；他们将山野也称作本门产地，拦路索取散修已得材料。',
+  },
+  'cloudbreak-pass': {
+    ...region('断云隘', 'forest-edge-camp', 'windstone-uplands', ['redbanner-pass-guard'], 0, 0),
+    groups: 2, challenge: true,
+    description: '山脊旧道在断云处收窄，两名赤旌铁卫分守前后石段，赤绳与层甲映着隘中天光。护路亭已废，寨众却仍将抢得物资集中在石墙后；越过此隘，开阔道路便通向下一城域。',
+  },
+  'redbanner-cliff': {
+    ...region('赤旌崖台', 'forest-edge-camp', 'cloudbreak-pass', ['redbanner-chief'], 0, 0),
+    groups: 1, challenge: true,
+    description: '隘侧偏道通向临崖据点外台，层层石垒围着积存的器料和药匣。赤旌寨主独踞台上，厚甲前的云头片佩凝着锋光；崖外北行道路依旧开阔，不必走入此处才能继续远行。',
+  },
+  'whitebank-road': {
+    ...region('白汀岸路', 'zhaoye-roadhead', 'cloudbreak-pass',
+      ['zhaochuan-material-steward', 'windfold-scythebeast', 'redbanner-river-scout', 'mooring-wraith', 'tideshell-spirit-turtle', 'tidebound-bone-wight'], 9600, 3200),
+    description: '山路降到白石江岸，旧系舟柱半浸浅水。夺材者和赤旌游哨仍在偏路活动，潮壳生灵守着浅滩，废舟旁的水影随着来者挪动。',
+  },
+  'flowpetal-shallows': {
+    ...region('流萼浅滩', 'zhaoye-roadhead', 'whitebank-road',
+      ['tideshell-spirit-turtle', 'tidebound-bone-wight', 'floatingblade-raider', 'flowpetal-water-shroom', 'mistbreathing-chilong', 'scarletarm-tidebeast'], 14400, 4800),
+    enemyMultiplier: '1.05',
+    description: '清亮水带绕过沙洲，浅青水蕈连片伸展。鳞螭与绯腕潮兽在水陆之间争食，浅流灵机使这一带的生灵更为强盛；上游支路通往照野飞瀑。',
+  },
+  'returning-current-bay': {
+    ...region('回澜曲湾', 'zhaoye-roadhead', 'flowpetal-shallows',
+      ['flowpetal-water-shroom', 'mistbreathing-chilong', 'scarletarm-tidebeast', 'cutstream-crossbowman', 'sunkentide-nightmarebeast', 'cutstream-heavy-bladesman'], 19200, 6400, 2),
+    randomGroupSize: true, enemyMultiplier: '1.10',
+    description: '宽江在此回流成湾，正常货舟从外侧水带驶过，截流者藏在旧泊位后。深水生灵逼近浅岸，一次探索可能同时遭遇两名来敌。',
+  },
+  'rosyreef-longshoal': {
+    ...region('霞礁长洲', 'zhaoye-roadhead', 'returning-current-bay',
+      ['mistcrown-shroom-spirit', 'coldboil-sacbeast', 'boatplundering-raider', 'tideholding-reef-spirit', 'rosycloud-spirit', 'cutstream-chief'], 24000, 8000, 2),
+    randomGroupSize: true,
+    description: '长洲伸入开阔水面，潮湿蕈群和凝灵白礁分据石岸，赤霞云灵悬在暖岩上方。截流帮把持几处废泊位，旧道尽头升向临照关渡。',
+  },
+  'crossriver-stone-flat': {
+    ...region('横江石坪', 'zhaoye-roadhead', 'whitebank-road', ['crossriver-bladesman'], 0, 0),
+    groups: 1, challenge: true,
+    description: '支坪横在江岸与高崖之间，惯于夺材的刀客占住近路。这里的交锋可留待准备充分之后，不必胜过他才能继续沿江前行。',
+  },
+  'zhaoye-waterfall': {
+    ...region('照野飞瀑', 'zhaoye-roadhead', 'flowpetal-shallows', ['poolguard-reef-spirit'], 0, 0),
+    groups: 1, challenge: true,
+    description: '大片白岩承接飞瀑，护潭礁灵盘踞凝灵石窠。外侧岩面保存奔流、回转和分散水势的三组行气刻图，交战结束后方可近观。',
+  },
+  'linzhao-crossing': {
+    ...region('临照关渡', 'zhaoye-roadhead', 'rosyreef-longshoal', ['jiuzhang-crossing-warden'], 0, 0),
+    groups: 1, challenge: true,
+    description: '旧道与临江石栈在此收窄，九嶂巡段把公共道路圈入收料通路。封渡使武力驱逐独行散修；越过他便能保留继续深入下一地域的资格。',
+  },
 };
 
 export function encounterPool(regionId: string, clearedGroups: string): readonly string[] {
@@ -1111,7 +1404,7 @@ export function encounterPool(regionId: string, clearedGroups: string): readonly
 export function encounterNeedsEntry(regionId: string, enemyIds: string[]): boolean {
   return regionId === MANOR_AID.finalRegionId || enemyIds.some(id => {
     const abilities = lookup(ENEMIES, id).definition.abilities;
-    return Boolean(abilities?.entryStatRatio || abilities?.entryHealthRatio);
+    return Boolean(abilities?.entryStatRatio || abilities?.entryHealthRatio || abilities?.entryAgilityAttackRatio);
   });
 }
 
@@ -1133,6 +1426,9 @@ export function encounterEnemy(regionId: string, enemyId: string, entry?: Encoun
     }
     if (abilities?.entryHealthRatio) {
       stats.maxHp = text(dec(stats.maxHp).plus(dec(entry.attack).plus(entry.defense).mul(abilities.entryHealthRatio)));
+    }
+    if (abilities?.entryAgilityAttackRatio) {
+      stats.attack = text(dec(stats.attack).plus(dec(entry.agility).mul(abilities.entryAgilityAttackRatio)));
     }
     if (regionId === MANOR_AID.finalRegionId && enemyId === MANOR_AID.enemyId && entry.manorSeal) {
       for (const key of ['maxHp', 'attack', 'defense', 'agility'] as const) stats[key] = text(dec(stats[key]).mul('0.01'));
@@ -1202,13 +1498,31 @@ export const SAFE_LOCATIONS: Record<string, {
     name: '百渠堤口', prerequisite: 'manor-heart',
     description: '埠外石堤在旧分水碑旁展开，苍翠药田、青碧莲泽与远处山壁一同映入眼中。残存养药纹在断石间明灭，泉气沿田沿聚成薄雾；携料修士沿堤归埠，临水石坪可作短暂停留。',
   },
+  'zhaoye-roadhead': {
+    name: '照野道口', prerequisite: 'cloudbreak-pass', meditation: true,
+    description: '隘后石台豁然开阔，山原细流在前方汇成宽江，行旅沿旧道往霁原城方向远去。道旁旧亭留着干燥石席，可歇脚调息；临江缓台的分流口适合抗流锻体，亭后货棚待江湾通路打通才开放商会。上游飞瀑仍在另一条支路，回望断云隘，侧崖据点藏在山壁间。',
+  },
 };
 
 export interface RecipeDefinition {
   name: string; path: 'ordinary' | 'component'; output: string; materials: Record<string, number>; difficulty: number;
   outputCount?: number;
+  outputQuality?: number;
 }
 export const RECIPES: Record<string, RecipeDefinition> = {
+  'refine-resonant-ingot': {
+    name: '精炼鸣金锭', path: 'ordinary', output: 'resonant-ingot', outputCount: 4, difficulty: 23,
+    materials: { 'clear-tide-essence': 1, 'carapace-fragment': 4, 'beast-core-shard': 1 },
+  },
+  'waterfire-pendant': {
+    name: '炼制水火合息佩', path: 'ordinary', output: 'waterfire-pendant', outputQuality: 130, difficulty: 25,
+    materials: { 'clear-tide-essence': 99, 'feral-blood-essence': 99, 'resonant-ingot': 29 },
+  },
+  ...Object.fromEntries(['tide-restraint-elixir', 'piercing-force-elixir', 'wound-guard-elixir', 'returning-wind-elixir']
+    .map(output => [output, {
+      name: `炼制${ITEMS[output].name}`, path: 'ordinary', output, difficulty: 33,
+      materials: { 'clear-tide-essence': 20, 'feral-blood-essence': 20, 'beast-core-shard': 40 },
+    } as RecipeDefinition])),
   'smelt-iron': { name: '熔炼粗铁锭', path: 'ordinary', output: 'crude-iron-ingot', materials: { 'scrap-iron': 3, charcoal: 1 }, difficulty: 5 },
   'smelt-dark-steel': {
     name: '熔炼乌钢锭', path: 'ordinary', output: 'dark-steel-ingot',
@@ -1221,6 +1535,10 @@ export const RECIPES: Record<string, RecipeDefinition> = {
   'infuse-spiritwood': {
     name: '炼制养灵木', path: 'ordinary', output: 'spirit-treated-wood',
     materials: { 'iron-birch-wood': 1, 'windwoven-fiber': 1, 'verdant-essence': 2 }, difficulty: 12,
+  },
+  'infuse-century-willow': {
+    name: '青柳注灵', path: 'ordinary', output: 'awakened-wood', outputCount: 2, difficulty: 20,
+    materials: { 'century-willow': 2, 'feral-blood-essence': 1, 'flowing-essence-gel': 2 },
   },
   'stitch-hide': { name: '缝制皮料', path: 'ordinary', output: 'stitched-hide', materials: { 'hide-scrap': 1, 'hemp-thread': 1 }, difficulty: 2 },
   'dry-meat': { name: '烘制肉干', path: 'ordinary', output: 'dried-meat', materials: { 'fresh-meat': 1, charcoal: 1 }, difficulty: 3 },
@@ -1433,9 +1751,9 @@ interface ShopStock {
 }
 interface ShopDefinition {
   name: string; locationId: string; prerequisite: string | null; margin: string;
-  stateKey: 'shop' | 'marketShop' | 'stoneforgeShop' | 'manorShop' | 'forestShop'; stock: ShopStock[];
+  stateKey: 'shop' | 'marketShop' | 'stoneforgeShop' | 'manorShop' | 'forestShop' | 'zhaoyeShop'; stock: ShopStock[];
 }
-export const SHOP_IDS = ['village-stall', 'market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies'] as const;
+export const SHOP_IDS = ['village-stall', 'market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies', 'zhaoye-supplies'] as const;
 export type ShopId = typeof SHOP_IDS[number];
 
 const villageStock: ShopStock[] = [
@@ -1452,6 +1770,19 @@ const villageStock: ShopStock[] = [
 ];
 
 export const SHOPS: Record<ShopId, ShopDefinition> = {
+  'zhaoye-supplies': {
+    name: '四海商盟·照野商会', locationId: 'zhaoye-roadhead', prerequisite: 'returning-current-bay', margin: '4.2', stateKey: 'zhaoyeShop',
+    stock: [
+      ...['renewal-silk', 'carapace-fragment', 'flowing-essence-gel']
+        .map((itemId): ShopStock => ({ itemId, chance: 1, min: 100, max: 250 })),
+      { itemId: 'beast-core-shard', chance: 1, min: 50, max: 150 },
+      { itemId: 'spirit-rib-meat', chance: .8, min: 20, max: 50 },
+      ...['tide-restraint-elixir', 'piercing-force-elixir', 'wound-guard-elixir', 'returning-wind-elixir']
+        .map((itemId): ShopStock => ({ itemId, chance: 1, min: 10, max: 20 })),
+      { itemId: 'awakened-hilt-resonant-blade-weapon', chance: .8, min: 1, max: 1, quality: [111, 140] },
+      { itemId: 'awakened-hilt-resonant-greatblade-weapon', chance: .8, min: 1, max: 1, quality: [111, 140] },
+    ],
+  },
   'forest-supplies': {
     name: '四海商盟·千渠商会', locationId: 'forest-edge-camp', prerequisite: 'manor-heart', margin: '3.6', stateKey: 'forestShop',
     stock: [

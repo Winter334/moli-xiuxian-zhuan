@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: panoramic environment painting for a Chinese cultivation RPG.
+Primary request: Zhaoye Roadhead, an open safe roadside stone terrace beyond the mountain pass, the first glimpse of a broader cultivated world.
+Scene/backdrop: a modest old Chinese roadside pavilion with dry stone seats overlooks a wider maintained road. Farther down, small orderly spiritual fields and scattered practical farm buildings occupy an open sunlit plain. A couple of tiny distant travelers give scale without becoming portraits.
+Composition/framing: expansive view from the terrace under one edge of the pavilion roof, clear foreground stone seats to one side, wide road and cultivated land extending laterally toward distant pale mountains. No giant city dominates the skyline.
+Style/medium: clean luminous Chinese fantasy landscape painting, broad softly layered shapes, pale blue air, varied living green field bands, warm roof timber and pearly stone. Quiet mildly dreamlike spatial openness.
+Lighting/mood: clear sunny afternoon, relief and a larger horizon after the constricted pass; ordinary cultivation life rather than ultimate paradise.
+Constraints: no new shop signs, important named NPC portrait, luxury resort, floating city, cosmic architecture, compulsory spell effects, dense fog, modern roads or vehicles, labels, UI, text or watermark.

@@ -4,6 +4,7 @@ import { rarityMultiplier } from '../../core/prototype/equipment';
 import { batchLimit, decimal, formatAmount, formatNumericText, hasEnough, multiply } from '../format';
 import { Bonuses, Dialog, Empty, formatBonus, IconButton, ItemGlyph, Quantity, SearchField, STAT_NAMES, Tabs } from './common';
 import { KIND_NAMES, SLOT_NAMES, type Instance, type Stack, type ViewProps } from './types';
+import { BAG_SORT_MODES as SORT_MODES, type BagSort } from './sort-settings';
 
 type Entry = Stack | Instance;
 const isInstance = (item: Entry): item is Instance => 'instanceId' in item;
@@ -11,10 +12,6 @@ const entryKey = (item: Entry) => isInstance(item) ? item.instanceId : item.item
 const entryKind = (item: Entry) => isInstance(item) ? item.slot ? 'equipment' : 'part' : item.kind;
 const qualityBand = (item: Entry) => isInstance(item) ? rarityMultiplier(item.quality) : undefined;
 const CATEGORY_ORDER = ['equipment', 'food', 'foundation-pill', 'insight', 'marrow', 'part', 'material'];
-const SORT_MODES = [
-  { id: 'category', label: '按类别' }, { id: 'name', label: '按名称' },
-  { id: 'quality', label: '品质优先' }, { id: 'value', label: '价值优先' },
-] as const;
 const COMPACT_INVENTORY = '(max-height: 550px) and (orientation: landscape)';
 const nameOrder = new Intl.Collator('zh-CN', { numeric: true });
 function ItemDetails({ item, amountLabel = '持有', showBonuses = true }: { item: Entry; amountLabel?: string; showBonuses?: boolean }) {
@@ -95,10 +92,11 @@ function EntryList({ items, select, prices, sell, disabled = false }: {
     {!items.length && <Empty>暂无对应物品</Empty>}
   </div>;
 }
-export function InventoryView({ game, blocked, command }: ViewProps) {
+export function InventoryView({ game, blocked, command, sort, onSortChange }: ViewProps & {
+  sort: BagSort; onSortChange: (sort: BagSort) => void;
+}) {
   const [category, setCategory] = useState('all');
   const [slotFilter, setSlotFilter] = useState('all');
-  const [sort, setSort] = useState<(typeof SORT_MODES)[number]['id']>('category');
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -185,7 +183,7 @@ export function InventoryView({ game, blocked, command }: ViewProps) {
         <div className="bag-search-row">
           <SearchField value={search} onChange={setSearch} placeholder="搜索物品" />
           <button className="bag-sort" aria-label={`排序：${SORT_MODES[sortIndex].label}`} title={`切换为${nextSort.label}`}
-            onClick={() => setSort(nextSort.id)}><ArrowDownWideNarrow size={15} /><span>{SORT_MODES[sortIndex].label}</span></button>
+            onClick={() => onSortChange(nextSort.id)}><ArrowDownWideNarrow size={15} /><span>{SORT_MODES[sortIndex].label}</span></button>
           <IconButton label="清除物品筛选" disabled={!filtered} onClick={() => { setCategory('all'); setSlotFilter('all'); setSearch(''); }}><X size={15} /></IconButton>
         </div>
         <div className="bag-categories" role="group" aria-label="物品类别">

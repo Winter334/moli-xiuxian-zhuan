@@ -18,6 +18,174 @@ const fight = (state: SimulationState, enemies = [enemy('target')]) =>
   startEncounter(state, { regionId: 'test-region', enemies });
 
 describe('prototype shared contracts', () => {
+  it('splits a multi-target action into independent segments without repeating or redirecting a target', () => {
+    const base = stats({ maxHp: '1000', attack: '1000', agility: '1000', attackSpeed: '2', critChance: '0' });
+    const initial = createSimulation({ clockMs: 0, seed: 417, base,
+      sources: [{ id: 'double-strike', combat: { attackCoefficients: ['0.8', '1.2'] } }] });
+    const foes = [enemy('left', { maxHp: '100000', agility: '0' }), enemy('right', { maxHp: '100000', agility: '0' })];
+    const hooks = { getPlayerTargetCount: () => 4 };
+    const result = advanceSimulation(fight(initial, foes).state, 500, 100, hooks);
+    const strikes = result.events.flatMap(event => event.kind === 'strike' && event.side === 'player' ? [event] : []);
+    expect(strikes.map(event => event.slot)).toEqual([1, 1, 0, 0]);
+    expect(strikes.map(event => event.incomingPower)).toEqual(['800', '1200', '800', '1200']);
+    expect(result.events.filter(event => event.kind === 'player-action-completed')).toEqual([
+      { kind: 'player-action-completed', at: 500, regionId: 'test-region', targetIds: ['right', 'left'] },
+    ]);
+    const killed = advanceSimulation(fight(initial, [foes[0], enemy('right', { maxHp: '1', agility: '0' })]).state,
+      500, 100, hooks);
+    expect(killed.events.flatMap(event => event.kind === 'strike' && event.side === 'player' ? [event.slot] : []))
+      .toEqual([1, 0, 0]);
+    expect(killed.events.filter(event => event.kind === 'enemy-defeated')).toHaveLength(1);
+  });
+
+  it('applies attack-after damage on misses and lethal hits, stopping remaining segments without losing the kill', () => {
+    const base = stats({ maxHp: '10', attack: '1000', agility: '1000', attackSpeed: '2', critChance: '0' });
+    const initial = createSimulation({ clockMs: 0, seed: 417, base,
+      sources: [{ id: 'double-strike', combat: { attackCoefficients: ['0.8', '1.2'] } }] });
+    const tidal = enemy('tidal', { maxHp: '1', agility: '0' }, { attackAfterDamageThreshold: '1010' });
+    const result = advanceSimulation(fight(initial, [enemy('survivor'), tidal]).state, 500, 100,
+      { getPlayerTargetCount: () => 2 });
+    expect(result.events.filter(event => event.kind === 'strike' && event.side === 'player')).toHaveLength(1);
+    expect(result.events.filter(event => event.kind === 'enemy-defeated')).toHaveLength(1);
+    expect(result.events.filter(event => event.kind === 'group-cleared')).toHaveLength(0);
+    expect(result.events.filter(event => event.kind === 'tidal-pressure')).toMatchObject([{ damage: '10', hpLost: '10' }]);
+    expect(result.events.filter(event => event.kind === 'fainted')).toHaveLength(1);
+    expect(result.state.battle).toBeNull();
+    const mutual = advanceSimulation(fight(initial, [tidal]).state, 500);
+    expect(mutual.events.filter(event => event.kind === 'group-cleared')).toHaveLength(1);
+    expect(mutual.events.filter(event => event.kind === 'fainted')).toHaveLength(1);
+    expect(advanceSimulation(mutual.state, 500).events).toEqual([]);
+    const missed = advanceSimulation(fight(create({ ...base, agility: '0' }),
+      [enemy('tidal', {}, { attackAfterDamageThreshold: '10' })]).state, 500);
+    expect(missed.events.find(event => event.kind === 'strike')).toMatchObject({ hit: false });
+    expect(missed.events.filter(event => event.kind === 'tidal-pressure')).toMatchObject([{ hpLost: '10' }]);
+    expect(missed.events.filter(event => event.kind === 'fainted')).toHaveLength(1);
+  });
+
+  it('caps each incoming hit before shared modifiers but never caps regeneration costs', () => {
+    const initial = createSimulation({ clockMs: 0, seed: 417,
+      base: stats({ maxHp: '1000', agility: '0', attack: '0' }),
+      sources: [{
+        id: 'guard', flat: { hpRegenPercent: '-0.1' },
+        combat: { damageTakenCap: { threshold: '0.05', value: '0.0500001' } },
+        modifiers: [{ target: 'damage.taken', operation: 'multiply', value: '0.5', tags: ['direct'] }],
+      }],
+    });
+    const entered = fight(initial, [enemy('entry', { attack: '100000', agility: '100' }, { entryStrikes: 3 })]);
+    const strikes = entered.events.filter(event => event.kind === 'strike');
+    expect(strikes).toHaveLength(3);
+    expect(strikes.every(event => event.damage === '25.00005')).toBe(true);
+    expect(entered.state.player.hp).toBe('924.99985');
+    entered.state.player.hp = '60';
+    const result = advanceSimulation(entered.state, 1000);
+    expect(result.events.filter(event => event.kind === 'fainted')).toHaveLength(1);
+    expect(result.state.player.hp).toBe('0');
+    const attacker = createSimulation({ clockMs: 0, seed: 417, sources: initial.player.sources,
+      base: stats({ maxHp: '1000', attack: '1000', agility: '1000', attackSpeed: '2', critChance: '0' }) });
+    const reflected = advanceSimulation(fight(attacker,
+      [enemy('reflector', { maxHp: '10000', agility: '0' }, { reflectionRatio: '1' })]).state, 500);
+    expect(reflected.events.find(event => event.kind === 'reflection')).toMatchObject({ damage: '50.0001' });
+  });
+
+  it('uses an attack floor before sturdy and caps the defense-based damage multiplier', () => {
+    const attacker = stats({ attack: '100', defense: '100000', critChance: '0', attackMultiplier: '2' });
+    const target = enemySchema.parse(enemy('target', { defense: '1000', agility: '0' }));
+    const floor = { minimumAttackDamageRatio: '0.1' };
+    expect(playerStrike({ rng: 7 }, attacker, target, 1).damage).toBe('0');
+    const pierced = playerStrike({ rng: 7 }, attacker, target, 1, 1, '1', floor);
+    expect(Number(pierced.damage)).toBeGreaterThan(0);
+    const sturdy = playerStrike({ rng: 7 }, attacker, { ...target, abilities: { ...target.abilities, sturdy: true } },
+      1, 1, '1', floor);
+    expect(sturdy.damage).toBe(text(dec(pierced.damage).div(10)));
+    const restrained = playerStrike({ rng: 7 }, attacker, target, 1, 1, '1',
+      { ...floor, restraint: { coefficient: '0.6', cap: '10' } });
+    expect(restrained.damage).toBe(text(dec(pierced.damage).mul(10)));
+    expect(playerStrike({ rng: 7 }, { ...attacker, defense: '0' }, target, 1, 1, '1',
+      { ...floor, restraint: { coefficient: '0.6', cap: '10' } }).damage).toBe('0');
+  });
+
+  it('preserves a per-enemy burst round across pause and reload, leaves one health and never repeats it', () => {
+    const initial = fight(create(stats({ maxHp: '10000', attack: '0', agility: '0' })), [
+      enemy('burst', { maxHp: '100', agility: '0' }, { healthBurst: { round: 3, multiplier: '4' } }),
+      enemy('other', { attackSpeed: '0.5' }),
+    ]).state;
+    const partial = advanceSimulation(initial, 2100).state;
+    expect(partial.battle!.enemies[0].nextRound).toBe(3);
+    const saved = readSimulation(JSON.parse(JSON.stringify(partial)));
+    const paused = pauseSimulationUntil(saved, 102100);
+    const result = advanceSimulation(paused, 103000);
+    expect(result.events.filter(event => event.kind === 'health-burst')).toMatchObject([{ damage: '400' }]);
+    expect(result.state.battle!.enemies.map(enemy => enemy.hp)).toEqual(['1', '10000']);
+    expect(result.events.some(event => event.kind === 'group-cleared' || event.kind === 'enemy-defeated')).toBe(false);
+    expect(advanceSimulation(result.state, 104000).events.some(event => event.kind === 'health-burst')).toBe(false);
+    const lethal = fight(create(stats({ maxHp: '1', agility: '0', attack: '0' })), [
+      enemy('burst', { attack: '100', agility: '100' }, { healthBurst: { round: 1, multiplier: '4' } }),
+    ]).state;
+    expect(advanceSimulation(lethal, 1000).events.some(event => event.kind === 'health-burst')).toBe(false);
+  });
+
+  it('preserves ordered entry batches and six independent strikes across pause and reload', () => {
+    const base = stats({ maxHp: '100000', agility: '0', defense: '0', attack: '0' });
+    const foe = enemy('sequence', { attack: '10', agility: '100' }, {
+      entrySequence: [
+        { count: 4, coefficient: '1', damageMultiplier: '5' },
+        { count: 5, coefficient: '0.9', damageMultiplier: '1' },
+      ], strikes: 6,
+    });
+    const entered = fight(create(base), [foe]);
+    const strikes = entered.events.filter(entry => entry.kind === 'strike');
+    expect(strikes).toHaveLength(9);
+    expect(strikes.slice(0, 4).every(entry => Number(entry.damage) >= 40)).toBe(true);
+    expect(strikes.slice(4).every(entry => Number(entry.damage) <= 22)).toBe(true);
+    const saved = readSimulation(JSON.parse(JSON.stringify(entered.state)));
+    const paused = pauseSimulationUntil(saved, 5000);
+    expect(paused.battle!.enemies[0].hp).toBe(saved.battle!.enemies[0].hp);
+    const resumed = advanceSimulation(paused, 6000);
+    expect(resumed.events.filter(entry => entry.kind === 'strike' && entry.side === 'enemy')).toHaveLength(6);
+    const frail = fight(create({ ...base, maxHp: '1' }), [foe]);
+    expect(frail.events.filter(entry => entry.kind === 'strike')).toHaveLength(1);
+    expect(frail.events.filter(entry => entry.kind === 'fainted')).toHaveLength(1);
+  });
+
+  it('heals only on a landed strike, permits reference overheal and preserves it in checkpoints', () => {
+    const base = stats({ maxHp: '100000', agility: '0', attack: '0' });
+    const healer = enemy('healer', { maxHp: '100', attack: '0', agility: '100' }, { hitHealingRatio: '0.3' });
+    const result = advanceSimulation(fight(create(base), [healer]).state, 1000);
+    expect(result.state.battle!.enemies[0].hp).toBe('130');
+    expect(result.events.filter(event => event.kind === 'enemy-healed')).toHaveLength(1);
+    expect(readSimulation(JSON.parse(JSON.stringify(result.state)))).toEqual(result.state);
+    const withoutHealing = structuredClone(result.state);
+    delete withoutHealing.battle!.enemies[0].definition.abilities.hitHealingRatio;
+    expect(() => readSimulation(withoutHealing)).toThrow('Invalid enemy checkpoint');
+    const misses = advanceSimulation(fight(create({ ...base, agility: '100000' }),
+      [{ ...healer, stats: { ...healer.stats, agility: '0' } }]).state, 1000);
+    expect(misses.state.battle!.enemies[0].hp).toBe('100');
+    expect(misses.events.some(event => event.kind === 'enemy-healed')).toBe(false);
+  });
+
+  it('reflects final overkill damage without defense and awards a mutual kill exactly once', () => {
+    const base = stats({ maxHp: '1', attack: '1000', defense: '9999', agility: '100000', attackSpeed: '2', critChance: '0' });
+    const result = advanceSimulation(fight(create(base), [enemy('reflector', { maxHp: '1', agility: '0' },
+      { reflectionRatio: '0.2' })]).state, 500);
+    const strike = result.events.find(event => event.kind === 'strike' && event.side === 'player')!;
+    const reflection = result.events.find(event => event.kind === 'reflection')!;
+    if (strike.kind !== 'strike') throw new Error('Missing player strike');
+    expect(strike.hpLost).toBe('1');
+    expect(reflection.damage).toBe(text(dec(strike.damage).mul('0.2')));
+    expect(result.events.filter(event => event.kind === 'enemy-defeated')).toHaveLength(1);
+    expect(result.events.filter(event => event.kind === 'group-cleared')).toHaveLength(1);
+    expect(result.events.filter(event => event.kind === 'fainted')).toHaveLength(1);
+    expect(result.state.player.hp).toBe('0');
+    expect(result.state.battle).toBeNull();
+    expect(advanceSimulation(result.state, 1000).events.some(event => event.kind === 'enemy-defeated')).toBe(false);
+    const player = stats({ attack: '0', defense: '10', agility: '0' });
+    const bully = enemySchema.parse(enemy('bully', { attack: '100', defense: '30', agility: '100' }, { bullying: true }));
+    const rng = { rng: 417 };
+    const plain = enemyStrike({ ...rng }, { ...bully, abilities: { ...bully.abilities, bullying: false } }, player, 1);
+    const amplified = enemyStrike({ ...rng }, bully, player, 1);
+    expect(Number(amplified.damage)).toBeGreaterThan(Number(plain.damage));
+  });
+
   it('caps cultivation at a gated promotion and only carries excess from a permitted breakthrough', () => {
     const before = FOUNDATION_LEVEL - 1;
     const cost = realmAt(FOUNDATION_LEVEL).entryCost;

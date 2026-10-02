@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: panoramic environment painting for a Chinese cultivation RPG.
+Primary request: Huisheng Valley, a natural green spiritual woodland enclosed by sweeping stone walls, where living roots and gently luminous tree sap form the ecological focus.
+Scene/backdrop: old living trees rise beneath a curved pale cliff shelter, thick organic roots cross the near valley floor and disappear under ferns. A few translucent resin beads sit in natural splits in the roots; tiny close-hugging green light is internal to the sap, not floating neon decoration.
+Composition/framing: a sheltered oblique view from within the root network toward a tall opening of daylight beyond the trees; asymmetrical layered trunks, one clear arching root gesture, large connected shadow masses. The valley remains readable, not an abstract tangle.
+Style/medium: refined softly layered Chinese fantasy painting, clear large forms and generous quiet spaces, deep living greens offset by silver stone and soft amber resin. Deliberate elegant brushwork, gently unreal clarity.
+Lighting/mood: cool luminous leaf shade with a small warm shaft of daylight; alive, nourishing and still dangerous, not haunted.
+Constraints: natural woodland, not a cultivated garden or ruined workshop. No mandatory creatures, faces in trees, elaborate glowing glyphs, huge mushrooms, omnipresent fog, artificial canals, cosmic effects, modern objects, labels, UI, text or watermark.

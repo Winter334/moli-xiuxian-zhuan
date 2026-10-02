@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784.
+Primary request: Zhaoye Waterfall, a bright cascade over a broad pale rock wall into a clear spiritual pool.
+Scene/backdrop: white rock faces receive a powerful fall, with a smaller sheltered shelf on the outer side. Near the pool a pale reefstone hollow collects gentle internal light. Three old groups of flowing incised lines are subtly visible on the accessible outer rock, suggesting qi diagrams, not legible writing or a glowing interface.
+Composition/framing: spacious oblique view across the pool and cascade; one coherent curtain of water is the central landform. Let the side shelf and quiet carved surface support the place's identity without crowding the foreground or turning the whole wall into a rune mural.
+Style/medium: refined Chinese fantasy painting, broad luminous shapes, tactile pale rock, clear layered water and clean dreamlike spatial depth. Grand natural scale, not cosmic megastructure.
+Lighting/mood: lucid sky light, pale mineral white, green-blue pool, small soft pearly reflections. Water spray remains close to the fall, not fog hiding all objects.
+Constraints: no hero or boss portrait, stone statue posing as the boss, dropped books, treasure reward, gigantic temple, floating mountains, beam grid, text, UI, frame or watermark. Full-bleed landscape.

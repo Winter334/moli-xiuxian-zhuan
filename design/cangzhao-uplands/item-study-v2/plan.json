@@ -1,0 +1,57 @@
+{
+  "region": "cangzhao-uplands",
+  "version": "item-study-v2",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Redesign only the three rejected Cangzhao item samples. Use visible refined thick-paint brushwork for both materials, a standard spherical purple marrow with one restrained close-hugging qi wisp, and an antique Chinese cloud-headed pendant rather than modern industrial jewelry. Use the project SkyAgent API, flare, without reference images. Do not redraw older items or generate other regional assets.",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "century-willow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-study-v2",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/item-study-v2/prompts/century-willow.txt",
+      "items": [
+        { "id": "century-willow", "name": "百年青柳木" }
+      ]
+    },
+    {
+      "id": "purple-marrow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-study-v2",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/item-study-v2/prompts/purple-marrow.txt",
+      "items": [
+        { "id": "purple-marrow", "name": "紫灵髓" }
+      ]
+    },
+    {
+      "id": "edgecleaving-pendant",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-study-v2",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/item-study-v2/prompts/edgecleaving-pendant.txt",
+      "items": [
+        { "id": "edgecleaving-pendant", "name": "破锋佩" }
+      ]
+    }
+  ]
+}

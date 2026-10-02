@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: Chinese xianxia RPG hand-painted spirit-marrow inventory icon
+Primary request: one standard perfectly round spherical purple spirit-marrow pearl, rendered in refined thick paint, with a very restrained first step of supernatural qi.
+Input images: none.
+Subject: a single spherical pearl, pale violet jade-like translucent marrow containing layered milky-white cloudlike veins. Its underlying body is clearly a standard round ball, never an elongated stone or irregular crystal. Describe the internal depth through painted layers rather than glossy photographic refraction.
+Style/medium: polished thick-painted Chinese fantasy game art. Broad curved brush strokes turn around the sphere, with layered pigment masses, warm-cool transitions, and softly edged impasto highlights. Visible hand-painted brushwork is essential; not smooth airbrushing, a glass-ball photograph, or a glossy 3D render.
+Supernatural detail: a tiny sparse lavender qi wisp emerges naturally from the internal glow, closely follows a short part of the pearl's lower edge, and curls only slightly beyond it. Keep it small and subordinate. This is the first gentle exterior manifestation after simpler bare pearls, not a legendary cosmic treasure. Paint the wisp in lightly colored brush strokes that can be preserved during white-background removal.
+Composition/framing: square canvas; one centered complete sphere with the small wisp also fully inside clean margins. The pearl remains much larger and visually stronger than the effect. No vessel, jewelry mount, cloth, or pedestal.
+Lighting/mood: restrained internal luminosity and a soft local edge glow. The rest of the sphere has painterly jade volume.
+Constraints: no altered body shape, facets, spikes, flames, full halo, complete orbital ring, planetary belt, rays, huge cloud bank, galaxy, star field, spark shower, runic circle, text, labels, frame, background scene, vector graphics, low-poly geometry, or photorealistic glass glare. Do not imply a new gameplay ability.
+Background: pure solid white for local removal. No cast shadow, gradient, checkerboard, or gray ground. The localized qi wisp belongs to the asset and must not be omitted as background.

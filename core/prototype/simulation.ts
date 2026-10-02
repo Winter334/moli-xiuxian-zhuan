@@ -1,6 +1,6 @@
 import { dec, integerAdd, maximum, minimum, text } from '../numbers';
 import { enemyStrike, playerStrike } from './combat';
-import { activeSources, damageValue, effectDuration, healingValue, regeneration } from './effects';
+import { activeSources, combatRules, damageValue, effectDuration, healingValue, regeneration } from './effects';
 import { attackIntervalMs, BASE_STATS, rebaseHealth, rescaleDeadline, resolveStats } from './stats';
 import {
   enemySchema, simulationSchema, sourceSchema, statsSchema,
@@ -9,7 +9,7 @@ import {
 } from './types';
 
 const needsRoundCounter = (abilities: ResolvedEnemy['abilities']) =>
-  Boolean(abilities.rampingDamage || abilities.mirrorOpening || abilities.arrayStrikes || abilities.periodicStrike);
+  Boolean(abilities.rampingDamage || abilities.mirrorOpening || abilities.arrayStrikes || abilities.periodicStrike || abilities.healthBurst);
 
 export function getPlayerStats(state: SimulationState): Stats {
   return resolveStats(state.player.base, activeSources(state));
@@ -49,7 +49,7 @@ export function readSimulation(raw: unknown): SimulationState {
         throw new Error('Enemy stats must already be resolved');
       }
       attackIntervalMs(resolved.attackSpeed);
-      if (dec(enemy.hp).gt(resolved.maxHp) ||
+      if ((!abilities.hitHealingRatio && dec(enemy.hp).gt(resolved.maxHp)) ||
           (dec(enemy.hp).gt(0) && enemy.nextActionAt <= state.clockMs)) throw new Error('Invalid enemy checkpoint');
     }
   }
@@ -182,6 +182,7 @@ export function applyTimedEffect(
   if (current) {
     if (JSON.stringify(current.source.modifiers) !== JSON.stringify(source.modifiers) ||
         JSON.stringify(current.source.tags) !== JSON.stringify(source.tags) ||
+        JSON.stringify(current.source.combat) !== JSON.stringify(source.combat) ||
         JSON.stringify(current.source.statPolarity) !== JSON.stringify(source.statPolarity)) {
       throw new Error('The same effect ID cannot change rules');
     }
@@ -201,6 +202,22 @@ export function applyTimedEffect(
   return { state: readSimulation(state), events };
 }
 
+function cappedIncomingDamage(state: SimulationState, amount: string): string {
+  const cap = combatRules(activeSources(state)).damageTakenCap;
+  const maxHp = getPlayerStats(state).maxHp;
+  return cap && dec(amount).gt(dec(maxHp).mul(cap.threshold)) ? text(dec(maxHp).mul(cap.value)) : amount;
+}
+
+function directDamage(state: SimulationState, amount: string, modify = true) {
+  const capped = cappedIncomingDamage(state, amount);
+  const damage = modify ? damageValue(capped, 'damage.taken', activeSources(state), {
+    tags: ['direct'], hp: state.player.hp, maxHp: getPlayerStats(state).maxHp,
+  }) : capped;
+  const hpLost = minimum(state.player.hp, damage);
+  state.player.hp = text(dec(state.player.hp).minus(hpLost));
+  return { damage, hpLost };
+}
+
 function performEnemyAction(
   state: SimulationState, slot: number, strikes: number | readonly string[], events: SimulationEvent[], hooks?: SimulationHooks,
   damageMultiplier = '1',
@@ -216,12 +233,14 @@ function performEnemyAction(
       hp: state.player.hp,
       money: enemy.definition.abilities.walletSuppressionUnit !== undefined ? hooks?.getMoney?.() : undefined,
     });
-    strike.damage = damageValue(strike.damage, 'damage.taken', activeSources(state), {
-      tags: ['direct'], hp: state.player.hp, maxHp: getPlayerStats(state).maxHp,
-    });
-    const hpLost = minimum(state.player.hp, strike.damage);
-    state.player.hp = text(dec(state.player.hp).minus(hpLost));
+    const { damage, hpLost } = directDamage(state, strike.damage);
+    strike.damage = damage;
     emit(state, events, { ...strike, kind: 'strike', at: state.clockMs, side: 'enemy', slot, hpLost }, hooks);
+    if (strike.hit && enemy.definition.abilities.hitHealingRatio) {
+      const amount = text(dec(enemy.definition.stats.maxHp).mul(enemy.definition.abilities.hitHealingRatio));
+      enemy.hp = text(dec(enemy.hp).plus(amount));
+      emit(state, events, { kind: 'enemy-healed', at: state.clockMs, slot, amount }, hooks);
+    }
     if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
   }
 }
@@ -253,50 +272,82 @@ export function startEncounter(input: SimulationState, encounter: {
   const battle = state.battle;
   for (let slot = 0; slot < battle.enemies.length && state.battle === battle; slot++) {
     const abilities = battle.enemies[slot].definition.abilities;
-    performEnemyAction(state, slot, Array<string>(abilities.entryStrikes).fill(abilities.entryAttackCoefficient ?? '1'),
-      events, hooks, abilities.entryDamageMultiplier);
+    if (abilities.entrySequence) {
+      for (const batch of abilities.entrySequence) {
+        if (state.battle !== battle) break;
+        performEnemyAction(state, slot, Array<string>(batch.count).fill(batch.coefficient), events, hooks, batch.damageMultiplier);
+      }
+    } else {
+      performEnemyAction(state, slot, Array<string>(abilities.entryStrikes).fill(abilities.entryAttackCoefficient ?? '1'),
+        events, hooks, abilities.entryDamageMultiplier);
+    }
   }
   return { state: readSimulation(state), events };
 }
 
 function performPlayerAction(state: SimulationState, events: SimulationEvent[], hooks?: SimulationHooks) {
   const battle = state.battle!;
-  const slot = battle.enemies.findIndex((entry) => dec(entry.hp).gt(0));
-  const enemy = battle.enemies[slot];
   const stats = getPlayerStats(state);
-  const alive = battle.enemies.filter((entry) => dec(entry.hp).gt(0)).length;
   state.player.nextActionAt = state.clockMs + attackIntervalMs(stats.attackSpeed);
-  const strike = playerStrike(state, stats, enemy.definition, alive, hooks?.getSturdyCap?.());
-  state.actionCounts.basicAttack = integerAdd(state.actionCounts.basicAttack, 1);
-  strike.damage = damageValue(strike.damage, 'damage.dealt', activeSources(state), {
-    tags: ['direct', 'basic-attack'], hp: state.player.hp, maxHp: stats.maxHp,
-    basicAttackOrdinal: state.actionCounts.basicAttack,
-  });
-  const hpLost = minimum(enemy.hp, strike.damage);
-  emit(state, events, { ...strike, kind: 'strike', at: state.clockMs, side: 'player', slot, hpLost }, hooks);
-  if (!strike.hit && state.battle === battle && enemy.definition.abilities.missPunishment !== undefined) {
-    const damage = enemy.definition.abilities.missPunishment;
-    const hpLost = minimum(state.player.hp, damage);
-    state.player.hp = text(dec(state.player.hp).minus(hpLost));
-    emit(state, events, { kind: 'miss-punishment', at: state.clockMs, slot, damage, hpLost }, hooks);
-    if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
-  }
-  enemy.hp = text(dec(enemy.hp).minus(hpLost));
-  if (dec(enemy.hp).eq(0)) {
-    emit(state, events, {
-      kind: 'enemy-defeated', at: state.clockMs, regionId: battle.regionId,
-      enemyId: enemy.definition.id, slot, groupSize: battle.enemies.length,
-    }, hooks);
-    if (battle.enemies.every((entry) => dec(entry.hp).eq(0))) {
-      const total = integerAdd(state.clearedGroups[battle.regionId] ?? '0', 1);
-      state.clearedGroups[battle.regionId] = total;
-      leaveBattle(state);
-      emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total }, hooks);
+  const count = hooks?.getPlayerTargetCount?.() ?? 1;
+  if (!Number.isInteger(count) || count < 1 || count > 4) throw new Error('Invalid player target count');
+  const living = battle.enemies.flatMap((enemy, slot) => dec(enemy.hp).gt(0) ? [slot] : []);
+  const slots = count > 1 ? living.reverse().slice(0, count) : living.slice(0, 1);
+  const coefficients = combatRules(activeSources(state)).attackCoefficients ?? ['1'];
+  let reflectedDeath = false;
+  for (const slot of slots) {
+    const enemy = battle.enemies[slot];
+    for (const coefficient of coefficients) {
+      if (state.battle !== battle || dec(state.player.hp).lte(0) || dec(enemy.hp).lte(0)) break;
+      const stats = getPlayerStats(state);
+      const sources = activeSources(state);
+      const alive = battle.enemies.filter((entry) => dec(entry.hp).gt(0)).length;
+      const strike = playerStrike(state, stats, enemy.definition, alive, hooks?.getSturdyCap?.(), coefficient, combatRules(sources));
+      state.actionCounts.basicAttack = integerAdd(state.actionCounts.basicAttack, 1);
+      strike.damage = damageValue(strike.damage, 'damage.dealt', sources, {
+        tags: ['direct', 'basic-attack'], hp: state.player.hp, maxHp: stats.maxHp,
+        basicAttackOrdinal: state.actionCounts.basicAttack,
+      });
+      const hpLost = minimum(enemy.hp, strike.damage);
+      emit(state, events, { ...strike, kind: 'strike', at: state.clockMs, side: 'player', slot, hpLost }, hooks);
+      if (strike.hit && state.battle === battle && enemy.definition.abilities.reflectionRatio) {
+        // Existing recoil stays unmodified; the new guard still caps each direct hit.
+        const damage = directDamage(state, text(dec(strike.damage).mul(enemy.definition.abilities.reflectionRatio)), false);
+        reflectedDeath = dec(state.player.hp).eq(0);
+        emit(state, events, { kind: 'reflection', at: state.clockMs, slot, ...damage }, hooks);
+      }
+      if (!strike.hit && state.battle === battle && enemy.definition.abilities.missPunishment !== undefined) {
+        const damage = directDamage(state, enemy.definition.abilities.missPunishment, false);
+        emit(state, events, { kind: 'miss-punishment', at: state.clockMs, slot, ...damage }, hooks);
+        if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
+      }
+      enemy.hp = text(dec(enemy.hp).minus(hpLost));
+      if (dec(enemy.hp).eq(0)) {
+        emit(state, events, {
+          kind: 'enemy-defeated', at: state.clockMs, regionId: battle.regionId,
+          enemyId: enemy.definition.id, slot, groupSize: battle.enemies.length,
+        }, hooks);
+        if (battle.enemies.every((entry) => dec(entry.hp).eq(0))) {
+          const total = integerAdd(state.clearedGroups[battle.regionId] ?? '0', 1);
+          state.clearedGroups[battle.regionId] = total;
+          leaveBattle(state);
+          emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total }, hooks);
+        }
+      }
+      if (enemy.definition.abilities.attackAfterDamageThreshold !== undefined && dec(state.player.hp).gt(0)) {
+        const amount = maximum(dec(enemy.definition.abilities.attackAfterDamageThreshold).minus(getPlayerStats(state).agility), 0);
+        const damage = directDamage(state, amount);
+        emit(state, events, { kind: 'tidal-pressure', at: state.clockMs, slot, ...damage }, hooks);
+        if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
+      }
     }
   }
   emit(state, events, {
-    kind: 'player-action-completed', at: state.clockMs, regionId: battle.regionId, targetIds: [enemy.definition.id],
+    kind: 'player-action-completed', at: state.clockMs, regionId: battle.regionId,
+    targetIds: slots.map(slot => battle.enemies[slot].definition.id),
   }, hooks);
+  // Both deaths belong to the same strike; a mutual kill still earns its reward once.
+  if (reflectedDeath) faint(state, events, hooks);
 }
 
 function expireEffects(state: SimulationState, events: SimulationEvent[]) {
@@ -377,6 +428,12 @@ export function advanceSimulation(
         }
         if (state.battle === battle && abilities.arrayStrikes && [2, 4, 6].includes(round)) {
           performEnemyAction(state, slot, [String(round / 2 + 1)], events, hooks);
+        }
+        if (state.battle === battle && abilities.healthBurst && round === abilities.healthBurst.round) {
+          const damage = directDamage(state, text(dec(enemy.hp).mul(abilities.healthBurst.multiplier)));
+          enemy.hp = '1';
+          emit(state, events, { kind: 'health-burst', at: state.clockMs, slot, ...damage }, hooks);
+          if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
         }
       }
     }

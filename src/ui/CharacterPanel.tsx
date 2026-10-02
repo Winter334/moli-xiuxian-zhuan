@@ -31,9 +31,15 @@ const skillDescriptions: Record<SkillId, string> = {
   trade: '系统买卖中积累，改善系统商店采购溢价；不改变玩家寄售定价。',
   'cloudstep-art': '领悟并运转后，在实际活动中积累功法熟练，逐步改善功法收益与代价。',
   'mountainforce-art': '领悟并运转后，在实际活动中积累功法熟练，逐步改善功法收益与代价。',
+  'surging-tide-art': '运转时聚劲于一个目标，提升攻击、攻速与普攻倍率；每次攻击行动增长一次自身熟练。',
+  'flowchasing-art': '运转时连续行气，侧重攻速并提升攻击与普攻倍率；与其它功法各自独立成长。',
+  'scattered-rain-art': '一次行动分击数个不同目标，目标不足不重复攻击；自身熟练按选定目标基础经验的均值增长。',
   footwork: '在允许的训练地点借风练步，以导气轻身磨砺步法，改善敏捷与出手能力。',
-  physique: '在允许的训练地点承压锻体，以行气抵抗阵压、锤炼筋骨，改善气血与恢复能力。',
+  physique: '在允许的训练地点承压或抗流锻体，锤炼筋骨，改善气血与恢复能力；各地训练共用体魄熟练。',
   mining: '实际开采中积累，影响出货概率与采矿效率。',
+  logging: '在北麓柳林采木中积累，改善取材周期与单次产量。',
+  'manual-mastery': '由功法或归息盏的较高累计带动；精通高于所练法门时，每级差使该门所得熟练乘1.1，各门仍独立成长。',
+  'weapon-mastery': '由剑术或重剑术的较高累计带动；精通高于所练武器技能时，每级差使其所得熟练乘1.1，不影响拳脚。',
   'returning-lamp': '装备归息盏后在实际活动中积累，其里程碑影响技能熟练收益。',
 };
 type Detail = { kind: 'stat'; id: typeof ATTRIBUTES[number]['id'] } | { kind: 'skill'; id: SkillId }
@@ -141,12 +147,26 @@ export function CharacterPanel({ game, blocked, command, goActivity }: ViewProps
         <p className="muted small">面板还包含境界、熟练、灵髓、气运及当前药效的结算影响。</p></>}
       {skill && <><div className="detail-number">{skill.level}<small> / {SKILLS[skill.id].max}级</small></div>
         <p>{skillDescriptions[skill.id]}</p>
+        {skill.bonusGroups.map(group => <section className="source-detail" key={group.bonuses.id}>
+          <div className="section-line"><h3>{group.label}</h3>
+            <span className={`small ${group.active ? 'positive' : 'muted'}`}>{group.active ? '生效中' : '未生效'}</span></div>
+          <Bonuses source={group.bonuses} />
+        </section>)}
+        {decimal(skill.experienceMultiplier).gt(1) && <section className="source-detail">
+          <h3>常驻加成</h3><p className="positive">战斗与清理修为、技能熟练获取 ×{formatAmount(skill.experienceMultiplier)}</p>
+        </section>}
+        {skill.masteryBonuses.length > 0 && <section className="source-detail">
+          <h3>关联技能熟练加成</h3>
+          <div className="bonus-lines">{skill.masteryBonuses.map(entry => <span className="positive" key={entry.id}>
+            {entry.name}<b>×{formatAmount(entry.multiplier)}</b></span>)}</div>
+        </section>}
         {skill.nextThreshold ? <><Meter label="累计熟练" value={skill.xp} max={skill.nextThreshold} />
-          <p className="muted">距下一级 {formatAmount(decimal(skill.nextThreshold).minus(skill.xp).toFixed())} 熟练</p></> : <p className="positive">此艺已圆满</p>}</>}
+          <p className="muted">距下一级 {formatAmount(decimal(skill.nextThreshold).minus(skill.xp).toFixed())} 熟练</p></> : <><p className="positive">此艺已圆满</p><p>累计熟练 {formatAmount(skill.xp)}</p></>}</>}
       {detail.kind === 'fate' && <section className={`fate-section ${game.fate.tier}`}><Sparkles size={30} /><div><span className="eyebrow">{game.fate.tierName}</span>
         <h2>{game.fate.name}</h2><p className="flavor">{game.fate.description}</p><p>{game.fate.effectDescription}</p></div></section>}
       {detail.kind === 'effects' && game.effects.map(effect => <section className="source-detail" key={effect.id}>
         <div className="section-line"><h3>{effect.name}</h3><span className="muted small">{duration(String(Math.max(0, Math.ceil((effect.expiresAt - game.clockMs) / 1000))))}</span></div>
+        {effect.description && <p>{formatNumericText(effect.description)}</p>}
         <Bonuses source={effect.source} /></section>)}
       {detail.kind === 'marrow' && <><dl className="attribute-grid">{Object.entries(game.marrow).map(([key, value]) => <div key={key}>
         <dt>{{ attack: '增攻', defense: '增防', agility: '增敏', maxHp: '增血' }[key]}</dt><dd>+{formatAmount(value)}</dd></div>)}</dl>

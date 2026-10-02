@@ -16,6 +16,10 @@ export function activeSources(state: SimulationState): StatSource[] {
   ];
 }
 
+export function combatRules(sources: readonly StatSource[]): NonNullable<StatSource['combat']> {
+  return Object.assign({}, ...sources.flatMap(source => source.combat ? [source.combat] : []));
+}
+
 // Same-group increases add; named groups and explicit multipliers multiply.
 export function modifyValue(
   base: string, target: ModifierTarget, sources: readonly StatSource[], context: EffectContext = {},

@@ -94,8 +94,10 @@ export function craft(state: CharacterState, recipeId: string, quantity: number)
           bonusProduced = produced;
           produced += bonusProduced;
         }
-        awardItem(state, recipe.output, produced);
-        if (['equipment', 'part'].includes(ITEMS[recipe.output].kind)) quality = 100;
+        if (['equipment', 'part'].includes(ITEMS[recipe.output].kind)) {
+          quality = recipe.outputQuality ?? 100;
+          for (let item = 0; item < produced; item++) addInstance(state, state.instances, recipe.output, quality);
+        } else awardItem(state, recipe.output, produced);
         successes++;
       }
       xp = dec('1.2').pow(recipe.difficulty);

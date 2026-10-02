@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: Chinese xianxia RPG hand-painted inventory material icon
+Primary request: a normal century-old green willow timber section with clearly visible refined thick-paint brushwork, not a photographed log.
+Input images: none.
+Subject: one short substantial timber section in three-quarter view, with green-gray bark around a pale yellow wooden core and a readable cut end. Preserve useful natural timber proportions. Indicate dense growth rings and longitudinal grain with grouped painted strokes, not hundreds of fine engraved lines.
+Style/medium: polished thick-painted Chinese fantasy game art. Build the wood's volume with layered opaque pigment, broad confident brush strokes, warm-cool turning planes, and a few tactile impasto highlights. Visible paint handling is essential across the bark and cut face; it is not a texture filter on a smooth render. Keep the illustration finished and coordinated, not coarse or sketchy.
+Composition/framing: one centered complete subject on a square canvas, with generous clean margins. Broad bark masses and the cut end read as a coherent solid object.
+Lighting/mood: restrained soft directional illumination. Plain spirit-bearing wood; no magical light or exterior effects.
+Constraints: no photorealistic wood photography, smooth airbrush finish, glossy 3D render, vector graphics, watercolor wash, low-poly facets, microscopic bark texture, background scene, text, labels, frame, pedestal, weapon handle, metal fittings, runes, leaves, particles, or aura. Do not distort normal wood into a fantasy crystal branch.
+Background: pure solid white for local background removal. No cast shadow, gradient, checkerboard, or colored ground. The subject and all brush-painted edges stay inside the margins.

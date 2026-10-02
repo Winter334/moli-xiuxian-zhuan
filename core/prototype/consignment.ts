@@ -8,7 +8,7 @@ import { countSchema } from './types';
 
 export const CONSIGNMENT_SLOTS = 20;
 export const CONSIGNMENT_BATCH = 10000;
-export const merchantShopSchema = z.enum(['market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies']);
+export const merchantShopSchema = z.enum(['market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies', 'zhaoye-supplies']);
 export const consignmentPriceSchema = countSchema.refine(value => BigInt(value) > 0n && BigInt(value) <= 1_000_000_000_000n);
 const itemIdSchema = z.string().min(1).max(100);
 const instanceIdSchema = z.string().regex(/^item-[1-9]\d*$/).max(100);

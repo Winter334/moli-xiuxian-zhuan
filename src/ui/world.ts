@@ -10,6 +10,8 @@ export const AREAS = [
   { id: 'courts', name: '涵岳前庭', subtitle: '旧院山门', locations: ['sunken-manor-entrance', 'seal-guardian-ring', 'manor-outer-court', 'rusted-corridor', 'puppet-court', 'buried-gallery', 'stone-root-court', 'sealed-vault', 'manor-seal-gate'] },
   { id: 'inner', name: '涵岳内院', subtitle: '山腹遗迹', locations: ['manor-inner-threshold', 'rootbound-passage', 'earthfire-platform', 'ruined-elixir-hall', 'edict-corridor', 'hidden-furnace-wall', 'earthvein-workroom', 'brood-cavern', 'relic-underchannel', 'heartward-path', 'manor-heart'] },
   { id: 'marsh', name: '百渠泽地', subtitle: '山背大泽', locations: ['forest-edge-camp', 'oldwood-edge', 'oldwood-fringe', 'condensing-spring-cavern'] },
+  { id: 'uplands', name: '苍照山原', subtitle: '灵林与石原', locations: ['green-vine-hill', 'renewal-valley', 'windstone-uplands', 'cloudbreak-pass', 'redbanner-cliff', 'zhaoye-roadhead'] },
+  { id: 'zhaoye', name: '照野江路', subtitle: '灵江与长洲', locations: ['whitebank-road', 'flowpetal-shallows', 'returning-current-bay', 'rosyreef-longshoal', 'crossriver-stone-flat', 'zhaoye-waterfall', 'linzhao-crossing'] },
 ];
 export function areaFor(id: string) { return AREAS.find(area => area.locations.includes(id)) ?? AREAS[0]; }
 export function knownAreas(game: OpeningView) {
@@ -24,6 +26,8 @@ export const AREA_CENTERS: Record<string, MapPoint> = {
   village: { x: 0, y: 0 }, ridge: { x: 1100, y: -650 }, river: { x: 2250, y: -250 },
   city: { x: 3450, y: -1050 }, courts: { x: 4750, y: -500 },
   inner: { x: 5900, y: -1400 }, marsh: { x: 7100, y: -750 },
+  uplands: { x: 8250, y: -1500 },
+  zhaoye: { x: 9400, y: -850 },
 };
 // Stable geographical positions, independent of which destinations have been revealed.
 const LOCAL_POINTS: Record<string, [number, number]> = {
@@ -49,6 +53,13 @@ const LOCAL_POINTS: Record<string, [number, number]> = {
   'relic-underchannel': [130, 170], 'heartward-path': [380, 240], 'manor-heart': [420, -30],
   'forest-edge-camp': [-290, 160], 'oldwood-edge': [-200, -60],
   'oldwood-fringe': [100, -160], 'condensing-spring-cavern': [290, 120],
+  'green-vine-hill': [-360, 100], 'renewal-valley': [-160, -120],
+  'windstone-uplands': [70, -220], 'cloudbreak-pass': [240, -20],
+  'redbanner-cliff': [100, 230], 'zhaoye-roadhead': [460, 90],
+  'whitebank-road': [-350, 30], 'flowpetal-shallows': [-130, -190],
+  'returning-current-bay': [80, -40], 'rosyreef-longshoal': [260, 170],
+  'crossriver-stone-flat': [-270, 250], 'zhaoye-waterfall': [-110, -420],
+  'linzhao-crossing': [480, -90],
 };
 export function mapPoint(id: string): MapPoint {
   const center = AREA_CENTERS[areaFor(id).id];

@@ -306,6 +306,7 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .battle-heading h2 { font-size: 18px; }
 .location-view { container-type: inline-size; }
 .combat-stage { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); align-items: center; aspect-ratio: 16 / 7; min-height: 360px; max-height: 560px; padding: 24px; background-color: #252a29; background-position: center; background-size: cover; }
+.combat-stage:has(.enemy-combatant + .enemy-combatant) { aspect-ratio: auto; max-height: none; }
 .combat-side { min-width: 0; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
 .player-side { justify-self: start; }
 .enemy-side { justify-self: end; }
@@ -330,6 +331,9 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .combat-stats > span { display: flex; align-items: center; gap: 5px; min-width: 0; overflow-wrap: anywhere; }
 .combat-stats svg { flex-shrink: 0; color: #9baca2; }
 .combat-tags { display: flex; flex-wrap: wrap; gap: 5px 12px; font-size: 11px; color: #b7c8b4; min-height: 18px; }
+.enemy-abilities { color: #d6b59b; }
+.enemy-abilities > span { min-width: 0; overflow-wrap: anywhere; }
+.enemy-abilities > span[title] { cursor: help; }
 .card-charge { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .card-charge > i { position: absolute; inset: 0; transform: scaleX(0); transform-origin: left center; background: #a6dbbf24; will-change: transform; }
 .enemy-combatant .card-charge > i { background: #efba9224; }
@@ -648,7 +652,7 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .craft-tile.ready .craft-tile-stock { color: var(--jade); }
 .craft-output { padding-bottom: 12px; margin-bottom: 0; border-bottom: 0; }
 .craft-output h2 { font-size: 19px; }
-.craft-equipment-stats { margin-block: 8px 16px; }
+.craft-equipment-stats, .craft-consumable-effects { margin-block: 8px 16px; }
 .craft-equipment-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; }
 .craft-equipment-heading h3 { font-size: 12px; font-weight: 500; }
 .craft-equipment-stats .bonus-lines { margin-block: 10px; }

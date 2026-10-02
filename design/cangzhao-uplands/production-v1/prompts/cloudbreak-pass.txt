@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: panoramic environment painting for a Chinese cultivation RPG.
+Primary request: Duanyun Pass, a narrow old mountain road locally controlled by the Red Banner stronghold, not a great imperial fortress.
+Scene/backdrop: the road passes through two high pale mountain shoulders above a broken low cloud layer. Low rough stone barricades and weathered timber bracing occupy successive narrow sections; a disused modest Chinese roadside pavilion stands partly behind the first wall. Sparse red cloth ties on posts and a few stored material crates show sustained occupation.
+Composition/framing: oblique mid-distance view along the rocky ridge, foreground wall offset to one side, the road bends around the nearer cliff toward a second pinch point. Rock, road and open sky organize three broad masses; retain plausible traversal.
+Style/medium: refined Chinese fantasy painting, coherent silver stone and green-grey mountain forms, restrained red accents and warm worn timber, luminous dreamlike air without a fog blanket.
+Lighting/mood: crisp daylight through a break in high clouds, a beautiful but tense narrow route.
+Constraints: small-scale defensible road works, not a grand palace gate or a tower spanning the continent. No required combat figures, giant banners, glyph arrays, floating bridge, modern fortifications, labels, UI, text or watermark.

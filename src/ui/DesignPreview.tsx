@@ -6,6 +6,7 @@ import { ITEMS } from '../../core/prototype/content';
 import { executeDebugCommand } from '../../core/prototype/debug';
 import { reincarnateCharacter } from '../../core/prototype/reincarnation';
 import { pauseSimulationUntil } from '../../core/prototype/simulation';
+import { MANUAL_IDS } from '../../core/prototype/skills';
 import { MAX_FRAME_GAP_MS } from '../../shared/client-save';
 import type { ConnectionIssue } from '../game-client';
 import { combatFrame, EMPTY_COMBAT_FRAME } from '../combat-presentation';
@@ -18,6 +19,8 @@ const PRESETS = [
   { id: 'town', name: '石桥散修', location: 'hillside-market', level: 4, budget: 1000, cleared: 'market-gardens' },
   { id: 'city', name: '望川行客', location: 'stoneforge-hamlet', level: 7, budget: 50000, cleared: 'pine-ravine' },
   { id: 'inner', name: '涵岳探幽', location: 'manor-inner-threshold', level: 11, budget: 5000000, cleared: 'edict-corridor' },
+  { id: 'uplands', name: '苍照取材', location: 'forest-edge-camp', level: 13, budget: 7000000, cleared: 'cloudbreak-pass' },
+  { id: 'zhaoye', name: '照野江路', location: 'zhaoye-roadhead', level: 19, budget: 1000000000, cleared: 'rosyreef-longshoal' },
 ];
 function prepare(id: string) {
   const preset = PRESETS.find(entry => entry.id === id)!;
@@ -37,6 +40,24 @@ function prepare(id: string) {
   for (const [itemId, item] of selections) {
     state = executeDebugCommand(state, { type: 'item', itemId,
       quantity: item.kind === 'equipment' || item.kind === 'part' ? 1 : 25, quality: 100 });
+  }
+  if (preset.id === 'uplands') {
+    for (const itemId of ['century-willow', 'purple-marrow', 'edgecleaving-pendant']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 1, quality: 100 });
+    }
+  }
+  if (preset.id === 'zhaoye') {
+    state = executeDebugCommand(state, { type: 'region', regionId: 'zhaoye-waterfall', operation: 'complete' });
+    for (const manualId of MANUAL_IDS.filter(id => ['surging-tide-art', 'flowchasing-art', 'scattered-rain-art'].includes(id))) {
+      state = executeCharacterCommand(state, { type: 'learn-manual', manualId });
+    }
+    for (const itemId of ['clear-tide-essence', 'feral-blood-essence', 'carapace-fragment', 'beast-core-shard', 'resonant-ingot']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 120, quality: 100 });
+    }
+    for (const itemId of ['scarlet-marrow', 'cyan-marrow', 'tide-restraint-elixir', 'piercing-force-elixir',
+      'wound-guard-elixir', 'returning-wind-elixir', 'sealed-spiritstone-crate', 'bulk-spiritstones', 'waterfire-pendant']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 1, quality: itemId === 'waterfire-pendant' ? 130 : 100 });
+    }
   }
   for (const slot of ['weapon', 'head', 'body', 'legs', 'feet']) {
     const entry = Object.entries(state.instances).find(([, item]) => ITEMS[item.itemId].slot === slot);

@@ -3,9 +3,9 @@ import { Music2, Pause, Play, ScrollText, Settings, Volume2, VolumeX } from 'luc
 import { Dialog, IconButton } from './common';
 import { LOG_DISPLAY_LIMITS } from './log-settings';
 
-// 对应原作练兵场、燕岗城、近郊、地宫浅层/深层及荒兽森林（src/locations.js）。
+// 对应原作地区曲目（src/locations.js）；下一地域入口可先独立切曲。
 const AREA_TRACKS = {
-  village: 1, ridge: 1, river: 2, city: 3, courts: 4, inner: 5, marsh: 6,
+  village: 1, ridge: 1, river: 2, city: 3, courts: 4, inner: 5, marsh: 6, uplands: 6, zhaoye: 7,
 } as const;
 export type AreaTrackId = keyof typeof AREA_TRACKS;
 const DEFAULT_AREA: AreaTrackId = 'village';
@@ -18,8 +18,8 @@ function readVolume() {
     return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : DEFAULT_VOLUME;
   } catch { return DEFAULT_VOLUME; }
 }
-export function SettingsControl({ areaId, logLimit, onLogLimitChange }: {
-  areaId: AreaTrackId | null; logLimit: number; onLogLimitChange: (limit: number) => void;
+export function SettingsControl({ areaId, locationId, logLimit, onLogLimitChange }: {
+  areaId: AreaTrackId | null; locationId?: string; logLimit: number; onLogLimitChange: (limit: number) => void;
 }) {
   const audio = useRef<HTMLAudioElement>(null);
   const wantsPlay = useRef(true);
@@ -30,7 +30,7 @@ export function SettingsControl({ areaId, logLimit, onLogLimitChange }: {
   const [volume, setVolume] = useState(readVolume);
   const [error, setError] = useState('');
   const area: AreaTrackId = areaId && areaId in AREA_TRACKS ? areaId : DEFAULT_AREA;
-  const track = AREA_TRACKS[area];
+  const track = locationId === 'zhaoye-roadhead' ? 7 : AREA_TRACKS[area];
   const play = useCallback(async (reportFailure = true) => {
     const player = audio.current;
     if (!player || !wantsPlay.current || document.hidden || !player.getAttribute('src')) return false;

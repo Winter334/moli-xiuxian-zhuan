@@ -1,0 +1,177 @@
+{
+  "region": "cangzhao-uplands",
+  "version": "production-v1",
+  "authorization": "The user approved the revised item studies and requested the remaining art for this region, with correct left-facing enemies and natural species-appropriate poses.",
+  "quality": "high",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "Six implemented Cangzhao scenes and 17 first-use enemies only. The three approved item studies stay mounted. Existing crossbowman and shared item art are reused; no player art, old-art changes, gameplay changes or future-region assets.",
+  "scopeCounts": {
+    "scenes": 6,
+    "enemies": 17,
+    "assets": 23
+  },
+  "enemyDirection": "Bodies, faces and primary attack or movement point screen-left. Natural anatomy and role determine the pose; neither identical poses nor forced differences are required. Faceless spirits stay faceless. All subjects remain fully contained with margins.",
+  "progression": "Bright Chinese fantasy hills, living woodland and pale uplands transition to a locally fortified pass and an open safe roadhead. Quiet supernatural ecology, not cosmic megastructures.",
+  "references": "Text-only independent generation; no universal visual reference or copied composition.",
+  "jobs": [
+    {
+      "id": "green-vine-hill",
+      "name": "青萝丘",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/green-vine-hill.txt"
+    },
+    {
+      "id": "renewal-valley",
+      "name": "回生谷",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/renewal-valley.txt"
+    },
+    {
+      "id": "windstone-uplands",
+      "name": "凌风石原",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/windstone-uplands.txt"
+    },
+    {
+      "id": "cloudbreak-pass",
+      "name": "断云隘",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/cloudbreak-pass.txt"
+    },
+    {
+      "id": "redbanner-cliff",
+      "name": "赤旌崖台",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/redbanner-cliff.txt"
+    },
+    {
+      "id": "zhaoye-roadhead",
+      "name": "照野道口",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-cangzhao-v1",
+      "size": "1792x784",
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/zhaoye-roadhead.txt"
+    },
+    {
+      "id": "enemies-01",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "splitcrown-beast", "name": "裂冠角兽", "cellBounds": [0, 0, 780, 740] },
+        { "id": "core-shell-spirit", "name": "抱核壳灵", "cellBounds": [780, 0, 756, 740] },
+        {
+          "id": "chimebone-wingbeast", "name": "鸣骨翎兽",
+          "cellBounds": [0, 740, 720, 796],
+          "excludedCellRegions": [[690, 490, 720, 660]]
+        },
+        { "id": "mist-scale-chilong", "name": "游岚鳞螭", "cellBounds": [684, 760, 852, 776] }
+      ]
+    },
+    {
+      "id": "enemies-02",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "walking-root-spirit", "name": "行根木魅", "cellBounds": [0, 0, 768, 730] },
+        { "id": "renewing-wood-spider", "name": "返青木蛛", "cellBounds": [768, 0, 768, 710] },
+        { "id": "entwined-branch-spirit", "name": "缠枝木魅", "cellBounds": [0, 730, 768, 806] },
+        { "id": "silverbranch-spirit", "name": "银枝木灵", "cellBounds": [752, 710, 784, 826] }
+      ]
+    },
+    {
+      "id": "enemies-03",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/enemies-03.txt",
+      "items": [
+        { "id": "rockmarrow-carapace", "name": "岩髓甲兽" },
+        { "id": "sacback-feral-beast", "name": "囊背荒兽" },
+        { "id": "bladeridge-carapace", "name": "裂锋甲兽" },
+        { "id": "windfold-scythebeast", "name": "折风镰兽" }
+      ]
+    },
+    {
+      "id": "enemies-04",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-v1",
+      "size": "1536x1536",
+      "columns": 2,
+      "rows": 2,
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/enemies-04.txt",
+      "items": [
+        { "id": "redbanner-saber-raider", "name": "赤旌截材刀手", "cellBounds": [0, 0, 710, 750] },
+        {
+          "id": "zhaochuan-material-steward", "name": "照川夺材执事",
+          "cellBounds": [710, 0, 826, 748],
+          "excludedCellRegions": [[430, 728, 580, 748]]
+        },
+        { "id": "redbanner-pass-guard", "name": "赤旌守隘铁卫", "cellBounds": [0, 750, 752, 786] },
+        {
+          "id": "redbanner-chief", "name": "赤旌寨主",
+          "cellBounds": [760, 716, 776, 820],
+          "excludedCellRegions": [[0, 0, 776, 12]]
+        }
+      ]
+    },
+    {
+      "id": "enemies-05",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-cangzhao-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "references": [],
+      "promptFile": "design/cangzhao-uplands/production-v1/prompts/enemies-05.txt",
+      "items": [
+        { "id": "lanternbelly-mayfly", "name": "腹灯游蜉" }
+      ]
+    }
+  ]
+}

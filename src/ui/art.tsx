@@ -41,6 +41,14 @@ export const SCENE_ART: Record<string, string> = {
   ...Object.fromEntries([
     'forest-edge-camp', 'oldwood-edge', 'oldwood-fringe', 'condensing-spring-cavern',
   ].map(id => [id, `/assets/art/scenes/${id}-sunburst-baiqu-v1.webp`])),
+  ...Object.fromEntries([
+    'green-vine-hill', 'renewal-valley', 'windstone-uplands',
+    'cloudbreak-pass', 'redbanner-cliff', 'zhaoye-roadhead',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-cangzhao-v1.webp`])),
+  ...Object.fromEntries([
+    'whitebank-road', 'flowpetal-shallows', 'returning-current-bay', 'rosyreef-longshoal',
+    'crossriver-stone-flat', 'zhaoye-waterfall', 'linzhao-crossing',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-zhaoye-v1.webp`])),
 };
 export const ENEMY_AVATARS: Record<string, string> = {
   ...Object.fromEntries([
@@ -97,6 +105,21 @@ export const ENEMY_AVATARS: Record<string, string> = {
     'withering-fungus', 'jade-scale-moth', 'woodland-crossbowman', 'spring-jade-toad', 'jade-toad-chief',
   ].map(id => [id, `/assets/art/enemies/${id}-flare-baiqu-v1.png`])),
   'leaf-talisman-adept': '/assets/art/enemies/leaf-talisman-adept-flare-baiqu-v2.png',
+  ...Object.fromEntries([
+    'splitcrown-beast', 'core-shell-spirit', 'redbanner-saber-raider', 'chimebone-wingbeast',
+    'mist-scale-chilong', 'walking-root-spirit', 'renewing-wood-spider', 'rockmarrow-carapace',
+    'lanternbelly-mayfly', 'entwined-branch-spirit', 'silverbranch-spirit',
+    'zhaochuan-material-steward', 'sacback-feral-beast', 'bladeridge-carapace',
+    'windfold-scythebeast', 'redbanner-pass-guard', 'redbanner-chief',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-cangzhao-v1.png`])),
+  ...Object.fromEntries([
+    'redbanner-river-scout', 'mooring-wraith', 'tideshell-spirit-turtle', 'tidebound-bone-wight',
+    'floatingblade-raider', 'flowpetal-water-shroom', 'mistbreathing-chilong', 'scarletarm-tidebeast',
+    'cutstream-crossbowman', 'sunkentide-nightmarebeast', 'cutstream-heavy-bladesman',
+    'mistcrown-shroom-spirit', 'coldboil-sacbeast', 'boatplundering-raider',
+    'tideholding-reef-spirit', 'rosycloud-spirit', 'cutstream-chief', 'crossriver-bladesman',
+    'poolguard-reef-spirit', 'jiuzhang-crossing-warden',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-zhaoye-v1.png`])),
 };
 export const PLAYER_ART: { avatar?: string } = {};
 export const ITEM_ICONS: Record<string, string> = {
@@ -193,12 +216,28 @@ export const ITEM_ICONS: Record<string, string> = {
   ...Object.fromEntries([
     'clear-spring-saliva', 'harmonizing-elixir', 'foundation-insight',
   ].map(id => [id, `/assets/art/icons/${id}-flare-baiqu-v3.png`])),
+  ...Object.fromEntries([
+    'century-willow', 'edgecleaving-pendant',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-cangzhao-study-v2.png`])),
+  ...Object.fromEntries([
+    'clear-tide-essence', 'waterfire-pendant',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-zhaoye-study-v1.png`])),
+  ...Object.fromEntries([
+    'tide-restraint-elixir', 'piercing-force-elixir', 'wound-guard-elixir',
+    'returning-wind-elixir', 'sealed-spiritstone-crate', 'bulk-spiritstones',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-zhaoye-v1.png`])),
+  ...Object.fromEntries([
+    'purple-marrow', 'scarlet-marrow', 'cyan-marrow',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-marrow-study-v1.png`])),
 };
 export const TECHNIQUE_ART: Record<string, string> = {
   ...Object.fromEntries([
     'cloudstep-art', 'mountainforce-art',
   ].map(id => [id, `/assets/art/techniques/${id}-flare-v3.png`])),
   'circulating-qi': '/assets/art/techniques/circulating-qi-flare-divine-v3.png',
+  ...Object.fromEntries([
+    'surging-tide-art', 'flowchasing-art', 'scattered-rain-art',
+  ].map(id => [id, `/assets/art/techniques/${id}-flare-zhaoye-v1.png`])),
 };
 
 export function SceneArt({ locationId, name }: { locationId: string; name: string }) {

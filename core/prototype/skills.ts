@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { dec, minimum, text } from '../numbers';
+import { dec, exactAdd, text } from '../numbers';
 import { realmAt, skillThreshold } from './growth';
-import { MINING } from './gathering';
+import { LOGGING, MINING } from './gathering';
 import { positiveValue } from './effects';
 import { nonnegativeSchema, type StatSource } from './types';
 
@@ -32,10 +32,25 @@ export const MANUALS = {
     prerequisite: 'stony-trail', location: 'hermit-stone-chamber',
     description: '与《穿云诀》同匣收存的旧册，纸页完整。图中所绘皆是聚气运劲的方法，着重将气力贯入一击。',
   },
+  'surging-tide-art': {
+    name: '奔潮诀', cost: '120000000', scaling: '1.8', max: 30, tags: ['manual'],
+    prerequisite: 'zhaoye-waterfall', location: 'zhaoye-roadhead',
+    description: '瀑侧岩面留下的聚流行气图。真元如汇流般聚向一处，积势随出手骤然倾下，余势推动下一次运转。',
+  },
+  'flowchasing-art': {
+    name: '逐流诀', cost: '120000000', scaling: '1.8', max: 30, tags: ['manual'],
+    prerequisite: 'zhaoye-waterfall', location: 'zhaoye-roadhead',
+    description: '瀑侧岩面留下的回流行气图。真元沿身内次序连续流转，前一动作的余势接入下一动作，出手轻捷而不断。',
+  },
+  'scattered-rain-art': {
+    name: '散雨诀', cost: '120000000', scaling: '1.8', max: 30, tags: ['manual'],
+    prerequisite: 'zhaoye-waterfall', location: 'zhaoye-roadhead',
+    description: '瀑侧岩面留下的分流行气图。将一股真元分引为数道，随动作落向不同来敌，势如细雨分落，不将余劲反复打在同一处。',
+  },
 } as const;
 export type ManualId = keyof typeof MANUALS;
 export const MANUAL_IDS = Object.keys(MANUALS) as ManualId[];
-export const manualIdSchema = z.enum(['cloudstep-art', 'mountainforce-art']);
+export const manualIdSchema = z.enum(['cloudstep-art', 'mountainforce-art', 'surging-tide-art', 'flowchasing-art', 'scattered-rain-art']);
 export const TRAININGS = {
   footwork: {
     name: '身法', actionName: '借风练步', cost: '40', scaling: '1.8', max: 50,
@@ -49,12 +64,28 @@ export const TRAININGS = {
 export type TrainingId = keyof typeof TRAININGS;
 export const TRAINING_IDS = Object.keys(TRAININGS) as TrainingId[];
 export const trainingIdSchema = z.enum(['footwork', 'physique']);
+export function trainingAt(id: TrainingId, location: string) {
+  if (location === TRAININGS[id].location) {
+    return { actionName: TRAININGS[id].actionName, prerequisite: TRAININGS[id].prerequisite, xp: '1' };
+  }
+  return id === 'physique' && location === 'zhaoye-roadhead'
+    ? { actionName: '抗流锻体', prerequisite: 'cloudbreak-pass', xp: '32' } : null;
+}
 export const ARTIFACT_SKILLS = {
   'returning-lamp': { name: '归息盏', cost: '600000', scaling: '20', max: 3 },
 } as const;
 export type ArtifactSkillId = keyof typeof ARTIFACT_SKILLS;
+export const MASTERIES = {
+  'manual-mastery': { name: '功法造诣', cost: '60', scaling: '1.8', max: 300 },
+  'weapon-mastery': { name: '武器精通', cost: '40', scaling: '1.8', max: 300 },
+} as const;
+export type MasteryId = keyof typeof MASTERIES;
+const MASTERY_CHILDREN: Record<MasteryId, readonly SkillId[]> = {
+  'manual-mastery': [...MANUAL_IDS, 'returning-lamp'],
+  'weapon-mastery': ['sword', 'greatsword'],
+};
 export const SKILLS = {
-  ...BASIC_SKILLS, ...MANUALS, ...TRAININGS, mining: MINING, ...ARTIFACT_SKILLS,
+  ...BASIC_SKILLS, ...MANUALS, ...TRAININGS, mining: MINING, logging: LOGGING, ...ARTIFACT_SKILLS, ...MASTERIES,
   greatsword: { name: '重剑术', cost: '40', scaling: '1.8', max: 60, tags: ['weapon'] as const },
 };
 export type WeaponSkill = 'unarmed' | 'sword' | 'greatsword';
@@ -66,8 +97,12 @@ export const skillsSchema = z.object({
   combat: progress(300), unarmed: progress(60), sword: progress(60), toughness: progress(200),
   rest: progress(50), refining: progress(999), trade: progress(999),
   'cloudstep-art': progress(30).optional(), 'mountainforce-art': progress(30).optional(),
+  'surging-tide-art': progress(30).optional(), 'flowchasing-art': progress(30).optional(),
+  'scattered-rain-art': progress(30).optional(),
   footwork: progress(50).optional(), physique: progress(50).optional(),
   mining: progress(60).optional(),
+  logging: progress(60).optional(),
+  'manual-mastery': progress(300).optional(), 'weapon-mastery': progress(300).optional(),
   'returning-lamp': progress(3).optional(),
   greatsword: progress(60).optional(),
 }).strict();
@@ -85,10 +120,38 @@ export function initialSkills(): SkillProgress {
   return Object.fromEntries(Object.keys(BASIC_SKILLS).map((id) => [id, { level: 0, xp: '0' }])) as SkillProgress;
 }
 
+function progressAt(id: SkillId, xp: string) {
+  let level = 0;
+  while (level < SKILLS[id].max && dec(xp).gte(threshold(id, level + 1))) level++;
+  return { level, xp };
+}
+
+// Legacy saves remain byte-stable on read, including pending transaction payloads.
+export function masteryProgress(skills: SkillProgress, id: MasteryId) {
+  return skills[id] ?? progressAt(id, text(MASTERY_CHILDREN[id].reduce((highest, child) =>
+    dec(skills[child]?.xp ?? '0').gt(highest) ? dec(skills[child]!.xp) : highest, dec(0))));
+}
+
 export function manualSource(id: ManualId, level: number): StatSource {
   const manual = MANUALS[id];
   if (!Number.isInteger(level) || level < 0 || level > manual.max) throw new Error('Invalid manual level');
   const progress = dec(level).div(manual.max);
+  if (!('attribute' in manual)) {
+    const force = id === 'surging-tide-art';
+    const speed = id === 'flowchasing-art';
+    return {
+      id: `manual:${id}`, tags: ['manual'],
+      statPolarity: { multiplier: {
+        attack: 'benefit', attackSpeed: 'benefit',
+        ...(id !== 'scattered-rain-art' ? { attackMultiplier: 'benefit' as const } : {}),
+      } },
+      multiplier: {
+        attack: text(dec(force ? '1.15' : '1.05').plus(progress.mul(force ? '.30' : '.10'))),
+        attackSpeed: text(dec(speed ? '1.15' : '1.05').plus(progress.mul(speed ? '.30' : '.10'))),
+        ...(id !== 'scattered-rain-art' ? { attackMultiplier: text(dec('1.25').plus(progress.mul('.50'))) } : {}),
+      },
+    };
+  }
   return {
     id: `manual:${id}`,
     tags: ['manual'],
@@ -98,6 +161,10 @@ export function manualSource(id: ManualId, level: number): StatSource {
       maxHp: text(dec('.75').plus(progress.mul('.25'))),
     },
   };
+}
+
+export function manualTargetCount(id: ManualId | undefined, level = 0): number {
+  return id === 'scattered-rain-art' ? 2 + Math.round(2 * level / MANUALS[id].max) : 1;
 }
 
 const restMilestones = [
@@ -142,22 +209,41 @@ export function insightExperienceMultiplier(points = '0'): string {
   return text(dec(points).plus(1).pow('0.07'));
 }
 
+function masteryMultiplier(parentLevel: number, level: number): string {
+  return text(dec('1.1').pow(Math.max(0, parentLevel - level)));
+}
+
+export function masteryBonuses(skills: SkillProgress, id: MasteryId) {
+  const parent = masteryProgress(skills, id);
+  return MASTERY_CHILDREN[id].flatMap(child => {
+    const progress = skills[child];
+    const multiplier = progress ? masteryMultiplier(parent.level, progress.level) : '1';
+    return dec(multiplier).gt(1) ? [{ id: child, name: SKILLS[child].name, multiplier }] : [];
+  });
+}
+
 export function gainSkill(
   skills: SkillProgress, id: SkillId, amount: string, realm: number, insight?: string, sources: readonly StatSource[] = [],
 ): boolean {
   nonnegativeSchema.parse(amount);
   const skill = skills[id];
   if (!skill) throw new Error('Cannot train an unlearned skill');
-  if (skill.level === SKILLS[id].max) return false;
+  const parentId = (Object.keys(MASTERIES) as MasteryId[]).find(parent => MASTERY_CHILDREN[parent].includes(id));
+  const parent = parentId ? skills[parentId] ??= masteryProgress(skills, parentId) : undefined;
+  const parentMultiplier = parent ? dec(masteryMultiplier(parent.level, skill.level)) : dec(1);
   const definition = SKILLS[id];
   const base = text(dec(amount).mul(allExperienceMultiplier(skills)).mul(realmAt(realm).skillXpMultiplier)
-    .mul(insightExperienceMultiplier(insight)));
+    .mul(insightExperienceMultiplier(insight)).mul(parentMultiplier));
   const earned = dec(positiveValue(base, 'experience.skill', sources, {
     tags: ['skill', ...('tags' in definition ? definition.tags : [])],
   })).toDecimalPlaces(2);
-  skill.xp = minimum(dec(skill.xp).plus(earned), threshold(id, SKILLS[id].max));
+  skill.xp = exactAdd(skill.xp, text(earned));
   const before = skill.level;
   while (skill.level < SKILLS[id].max && dec(skill.xp).gte(threshold(id, skill.level + 1))) skill.level++;
+  if (parent && parentId && dec(skill.xp).gt(parent.xp)) {
+    const gap = exactAdd(skill.xp, `-${parent.xp}`);
+    Object.assign(parent, progressAt(parentId, exactAdd(parent.xp, dec(gap).lt(earned) ? gap : text(earned))));
+  }
   return skill.level !== before;
 }
 

@@ -23,8 +23,9 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
   const [selectedKey, setSelectedKey] = useState('');
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState('');
-  const manuals = game.manuals.map(manual => ({ ...manual, kind: 'manual' as const }));
-  const arts = game.divineArts.map(art => ({ ...art, kind: 'divine' as const }));
+  const manuals = game.manuals.filter(manual => manual.unlocked || manual.learned)
+    .map(manual => ({ ...manual, kind: 'manual' as const }));
+  const arts = game.divineArts.filter(art => art.learned).map(art => ({ ...art, kind: 'divine' as const }));
   const entries: Entry[] = [...manuals, ...arts];
   const selected = entries.find(entry => entryKey(entry) === selectedKey);
   const disabled = blocked || pending;
@@ -66,7 +67,7 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
         </div>{action(entry)}</header>
         {entry.unlocked && <p className="flavor">{entry.description}</p>}
         <div className="manual-effects"><span className="manual-effect-label">{entry.learned ? '运转效果' : '入门参考'}</span>
-          <Bonuses source={entry.bonuses} /></div>
+          <Bonuses source={entry.bonuses} />{entry.targetCount > 1 && <span>最多{entry.targetCount}个不同目标</span>}</div>
         {entry.learned ? <div className="manual-growth">
           <span className="manual-level">{entry.level}<small> / {entry.maxLevel}级</small></span>
           <div className="manual-proficiency"><div>
@@ -111,6 +112,7 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
       <section className="practice-effects">
         <h3>{selected.kind === 'manual' && !selected.learned ? '入门运转效果' : '运转效果'}</h3>
         <Bonuses source={selected.bonuses} />
+        {selected.kind === 'manual' && selected.targetCount > 1 && <p className="small">每次行动最多攻击{selected.targetCount}个不同目标</p>}
       </section>
       {selected.kind === 'manual' ? <section className="practice-progress">
         <h3>功法熟练</h3>
@@ -118,7 +120,7 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
           <Meter label="累计熟练" value={selected.xp} max={selected.nextThreshold} />
           <p className="muted small">距下一级 {formatAmount(decimal(selected.nextThreshold).minus(selected.xp).toFixed())} 熟练</p>
         </> : <p className="positive small">已达{selected.maxLevel}级，功法圆满</p> : <p className="muted small">尚未领悟</p>}
-        <p className="muted small">运转后随实际活动积累熟练，提升功法收益并减轻代价。领悟不自动运转。</p>
+        <p className="muted small">运转后随实际战斗积累自身熟练，领悟不自动运转。</p>
       </section> : <p className="muted small">{selected.requirement}，与功法分别运转；不消耗功法运转位。</p>}
     </Dialog>}
   </div>;

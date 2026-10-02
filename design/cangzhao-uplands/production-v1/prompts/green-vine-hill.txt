@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: panoramic environment painting for a Chinese cultivation RPG.
+Primary request: Qingluo Hill, the bright rolling woodland above a medicinal wetland, a living natural frontier rather than ruins or a designed trial.
+Scene/backdrop: pale stone outcrops break through rounded green hills, blue-green vines trail across sunlit rock, layered tree crowns recede toward a wide clear sky. A modest narrow gatherers' track threads between the outcrops.
+Composition/framing: low hillside viewpoint looking across successive gently rising slopes; a broad coherent pale rock shape and climbing vines anchor the near ground, woodland opens into spacious distance. Do not repeat a symmetrical road-to-gate composition.
+Style/medium: refined Chinese fantasy landscape painting, softly layered broad brush shapes, clean luminous color planes, a restrained dreamlike clarity. Concentrate detail near the vine-covered rocks, simplify distant crowns.
+Lighting/mood: fresh daylight, soft jade leaf light and pearly white stone, clear air and quiet wildness. Fantastical ecology without obvious magic effects.
+Constraints: location identity matters more than including every described element. No required enemy portraits, monumental temple, floating mountains, giant runes, modern objects, labels, UI, text or watermark. Not a dark misty forest, not photographic microtexture or fragmented mosaic brushwork.

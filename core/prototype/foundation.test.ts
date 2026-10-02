@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { dec, text } from '../numbers';
 import { checkProgress, readClientSave } from '../../shared/client-save';
-import { executeCharacterCommand, getCharacterView } from './character';
+import { advanceCharacter, executeCharacterCommand, getCharacterView } from './character';
 import { addInstance, createCharacter, readCharacter, synchronizeCharacter } from './character-state';
 import { FOUNDATION, ITEMS } from './content';
 import { FOUNDATION_DIVINE_ART } from './divine-arts';
@@ -23,6 +23,23 @@ const saved = (character: ReturnType<typeof createCharacter>) =>
   readClientSave(JSON.parse(JSON.stringify({ format: 'opening-client-2', tradeRevision: '0', character, playedMs: 0 })));
 
 describe('foundation pills', () => {
+  it('reads legacy foundation savings unchanged and promotes them only through normal advancement', () => {
+    const state = executeCharacterCommand(ready(), { type: 'use', itemId: pills[0][0], quantity: 1 });
+    state.cultivation = text(dec(realmAt(FOUNDATION_LEVEL + 1).entryCost).plus(7));
+    const before = structuredClone(state);
+    expect(saved(state).character).toEqual(before);
+    getCharacterView(state);
+    expect(state).toEqual(before);
+    const promoted = advanceCharacter(state, 1);
+    expect(promoted.level).toBe(FOUNDATION_LEVEL + 1);
+    expect(promoted.cultivation).toBe('7');
+    expect(promoted.foundationRoot).toBe(state.foundationRoot);
+    expect(promoted.learnedDivineArts).toEqual(state.learnedDivineArts);
+    expect(promoted.inventory).toEqual(state.inventory);
+    expect(promoted.skills).toEqual(state.skills);
+    expect(() => checkProgress(saved(state), saved(promoted), 0, 1)).not.toThrow();
+  });
+
   it('requires the exact realm, full cultivation and one owned pill before spending anything', () => {
     for (const [itemId] of pills) {
       const low = createCharacter(0, 19);

@@ -29,7 +29,9 @@ export const historySchema = z.object({
     attempts: countSchema, successes: countSchema, produced: countSchema, bonusProduced: countSchema,
   }).strict()),
   bestCraftedQuality: z.record(catalogKey(ITEMS), z.number().int().min(10).max(999)),
-  mining: z.record(catalogKey(MINING_SITES), z.object({ cycles: countSchema, successes: countSchema }).strict()),
+  mining: z.record(catalogKey(MINING_SITES), z.object({
+    cycles: countSchema, successes: countSchema, produced: countSchema.optional(),
+  }).strict()),
   gathered: counts(ITEMS),
   used: counts(ITEMS),
   absorbedMarrow: counts(ITEMS),
@@ -98,7 +100,12 @@ export function validateHistory(state: CharacterState) {
   const gathered: Record<string, string> = {};
   for (const [id, entry] of Object.entries(history.mining)) {
     if (BigInt(entry.successes) > BigInt(entry.cycles)) throw new Error('Invalid mining history');
-    incrementRecord(gathered, MINING_SITES[id as keyof typeof MINING_SITES].itemId, entry.successes);
+    const produced = entry.produced ?? entry.successes;
+    const max = id === 'north-willow-grove' ? 3n : 1n;
+    if (BigInt(produced) < BigInt(entry.successes) || BigInt(produced) > BigInt(entry.successes) * max) {
+      throw new Error('Invalid gathering quantity history');
+    }
+    incrementRecord(gathered, MINING_SITES[id as keyof typeof MINING_SITES].itemId, produced);
   }
   for (const id of new Set([...Object.keys(gathered), ...Object.keys(history.gathered)])) {
     if (BigInt(gathered[id] ?? '0') !== BigInt(history.gathered[id] ?? '0')) throw new Error('Invalid gathered item history');

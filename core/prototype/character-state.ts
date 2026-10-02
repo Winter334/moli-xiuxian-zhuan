@@ -8,10 +8,10 @@ import { drawFate, FATES, FATE_TIERS, fateIdSchema, fateSource } from './fates';
 import { furnaceTierSchema } from './furnace';
 import { foundationBase, foundationRootSchema, FOUNDATION_ROOTS, type FoundationRoot } from './foundation';
 import { FOUNDATION_LEVEL, gainCultivation, LEVEL_CAP, realmAt, realmName } from './growth';
-import { gatheringSchema, MINING, MINING_SITES, miningCountSchema, miningEfficiency } from './gathering';
+import { gatheringSchema, gatheringSkill, LOGGING, MINING, MINING_SITES, miningCountSchema, miningEfficiency } from './gathering';
 import { historySchema, initialHistory, markMilestone, validateHistory } from './history';
 import { RECENT_LOG_LIMIT } from './log';
-import { ARTIFACT_SKILLS, gainSkill, initialSkills, MANUAL_IDS, MANUALS, manualIdSchema, manualSource, SKILL_IDS, SKILLS, skillSources, skillsSchema, threshold, TRAINING_IDS, TRAININGS, trainingIdSchema, type ArtifactSkillId, type SkillId, type WeaponSkill } from './skills';
+import { ARTIFACT_SKILLS, gainSkill, initialSkills, MANUAL_IDS, MANUALS, manualIdSchema, manualSource, SKILL_IDS, SKILLS, skillSources, skillsSchema, threshold, TRAINING_IDS, TRAININGS, trainingAt, trainingIdSchema, type ArtifactSkillId, type SkillId, type WeaponSkill } from './skills';
 import { createSimulation, getPlayerStats, readSimulation, updatePlayerStats } from './simulation';
 import { countSchema, enemySchema, nonnegativeSchema, simulationSchema, sourceSchema, type EffectTag, type PlayerUpdate } from './types';
 
@@ -65,6 +65,7 @@ export const characterSchema = z.object({
   stoneforgeShop: shopSchema.optional(),
   manorShop: shopSchema.optional(),
   forestShop: shopSchema.optional(),
+  zhaoyeShop: shopSchema.optional(),
   log: z.array(z.object({ at: z.number().int().nonnegative(), message: z.string().max(500) }).strict()).max(RECENT_LOG_LIMIT),
 }).strict();
 export type CharacterState = z.infer<typeof characterSchema>;
@@ -245,8 +246,7 @@ export function readCharacter(raw: unknown): CharacterState {
     const skill = state.skills[id];
     if (!skill) continue;
     if (dec(skill.xp).lt(threshold(id, skill.level)) ||
-        (skill.level < SKILLS[id].max && dec(skill.xp).gte(threshold(id, skill.level + 1))) ||
-        (skill.level === SKILLS[id].max && !dec(skill.xp).eq(threshold(id, skill.level)))) {
+        (skill.level < SKILLS[id].max && dec(skill.xp).gte(threshold(id, skill.level + 1)))) {
       throw new Error('Invalid skill progress');
     }
   }
@@ -258,15 +258,17 @@ export function readCharacter(raw: unknown): CharacterState {
     if (state.skills[id] && !cleared(state, TRAININGS[id].prerequisite)) throw new Error('Training prerequisite is not complete');
   }
   if (state.training && (!state.skills[state.training] || state.simulation.mode !== 'rest' ||
-      state.locationId !== TRAININGS[state.training].location)) throw new Error('Invalid training activity');
+      !trainingAt(state.training, state.locationId) ||
+      !cleared(state, trainingAt(state.training, state.locationId)!.prerequisite))) throw new Error('Invalid training activity');
   if (state.skills.mining && !cleared(state, MINING.prerequisite)) throw new Error('Mining prerequisite is not complete');
+  if (state.skills.logging && !cleared(state, LOGGING.prerequisite)) throw new Error('Logging prerequisite is not complete');
   if (state.jadeSeamCompletions !== undefined && (!state.skills.mining || !cleared(state, 'shrine-gate-duel'))) {
     throw new Error('Invalid depleted mining progress');
   }
   if (state.gathering) {
     const activity = state.gathering;
     const site = MINING_SITES[activity.siteId];
-    if (!state.skills.mining || state.training || state.simulation.mode !== 'rest' ||
+    if (!state.skills[gatheringSkill(activity.siteId)] || state.training || state.simulation.mode !== 'rest' ||
         state.locationId !== site.location || !cleared(state, site.prerequisite) ||
         (activity.siteId === 'jade-seam' && state.jadeSeamCompletions === undefined)) throw new Error('Invalid gathering activity');
     const completed = activity.siteId === 'jade-seam' ? state.jadeSeamCompletions! : 0;
@@ -276,7 +278,8 @@ export function readCharacter(raw: unknown): CharacterState {
     }
   }
   if (state.manorAidClaimed && !cleared(state, MANOR_AID.prerequisite)) throw new Error('Invalid assistance acquisition');
-  if (state.level < FOUNDATION_LEVEL - 1 && dec(state.cultivation).gte(realmAt(state.level + 1).entryCost)) {
+  if ((state.level < FOUNDATION_LEVEL - 1 || (state.level > FOUNDATION_LEVEL && state.level < LEVEL_CAP)) &&
+      dec(state.cultivation).gte(realmAt(state.level + 1).entryCost)) {
     throw new Error('Unsettled cultivation');
   }
   if (state.level === FOUNDATION_LEVEL - 1 && dec(state.cultivation).gt(realmAt(FOUNDATION_LEVEL).entryCost)) {
@@ -293,7 +296,8 @@ export function readCharacter(raw: unknown): CharacterState {
   if (!inRegion && state.simulation.mode === 'idle') throw new Error('Idle outside a region');
   if (inRegion && battle) {
     const region = REGIONS[state.locationId];
-    if (battle.regionId !== state.locationId || battle.enemies.length !== region.groupSize ||
+    if (battle.regionId !== state.locationId || (region.randomGroupSize
+        ? ![1, 2].includes(battle.enemies.length) : battle.enemies.length !== region.groupSize) ||
         (region.challenge && cleared(state, state.locationId))) throw new Error('Invalid active region');
     if (encounterNeedsEntry(battle.regionId, battle.enemies.map(enemy => enemy.definition.id)) !== (battle.entry !== undefined)) {
       throw new Error('Invalid encounter entry checkpoint');

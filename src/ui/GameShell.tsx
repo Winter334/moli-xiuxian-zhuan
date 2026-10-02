@@ -13,6 +13,7 @@ import { LocationView } from './LocationView';
 import { LogPanel } from './LogPanel';
 import { SettingsControl } from './SettingsControl';
 import { useLogSettings } from './log-settings';
+import { useSortSettings } from './sort-settings';
 import { PracticeView } from './PracticeView';
 import { ReincarnationDialog } from './ReincarnationDialog';
 import { SaveRecoveryDialog } from './SaveRecoveryDialog';
@@ -40,6 +41,7 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
 }) {
   const socialState = useSocial(social);
   const [logSettings, setLogSettings] = useLogSettings(Boolean(previewControls));
+  const [sortSettings, setSortSettings] = useSortSettings(Boolean(previewControls));
   const [page, setPage] = useState<Page>('world');
   const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | 'saves' | 'policies' | null>(null);
   const [displayError, setDisplayError] = useState('');
@@ -68,7 +70,7 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           {game && <time className="world-date">{game.calendar.year}年{game.calendar.month}月{game.calendar.day}日</time>}</div>
         <div className="topbar-tools">
           {previewControls && <details className="preview-menu"><summary title="预览角色设置">预览</summary><div className="preview-controls">{previewControls}</div></details>}
-          <SettingsControl areaId={(game ? areaFor(game.locationId).id : null) as AreaTrackId | null} logLimit={logSettings.limit}
+          <SettingsControl areaId={(game ? areaFor(game.locationId).id : null) as AreaTrackId | null} locationId={game?.locationId} logLimit={logSettings.limit}
             onLogLimitChange={limit => setLogSettings(current => ({ ...current, limit }))} />
           <IconButton label="切换全屏" onClick={() => { const operation = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
             void operation?.catch(() => setDisplayError('此环境暂不支持全屏')); }}><Expand size={17} /></IconButton>
@@ -110,9 +112,11 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           </div>}
           <WorldChatView state={socialState} client={social} visible={page === 'chat'} />
           {page === 'map' && <WorldView {...props} camera={mapCamera} onArrive={() => setPage('world')} />}
-          {page === 'bag' && <InventoryView {...props} />}
+          {page === 'bag' && <InventoryView {...props} sort={sortSettings.bag}
+            onSortChange={bag => setSortSettings(current => ({ ...current, bag }))} />}
           {page === 'practice' && <PracticeView {...props} />}
-          {page === 'craft' && <CraftView {...props} />}
+          {page === 'craft' && <CraftView {...props} sort={sortSettings.craft}
+            onSortChange={craft => setSortSettings(current => ({ ...current, craft }))} />}
           {page === 'journal' && <JournalView {...props} openBestiary={() => setPage('bestiary')} openReincarnation={() => setOverlay('reincarnation')} />}
           {page === 'bestiary' && <BestiaryView {...props} onBack={() => setPage('journal')} />}
           {service && <div className="page service-page"><div className="page-heading">

@@ -22,7 +22,7 @@ export const statFields = {
 export const statsSchema = z.object(statFields).strict();
 export const effectTagSchema = z.enum([
   'basic-attack', 'direct', 'rest', 'meditation', 'regeneration', 'weapon', 'manual',
-  'divine-art', 'skill', 'equipment', 'supply', 'benefit', 'cost', 'mining',
+  'divine-art', 'skill', 'equipment', 'supply', 'benefit', 'cost', 'mining', 'logging',
   'refining', 'ordinary', 'component', 'assembly', 'trade', 'training', 'activity',
   'kill', 'clear', 'loot', 'fixed',
 ]);
@@ -72,6 +72,12 @@ export const sourceSchema = z.object({
     multiplier: statPolaritySchema.optional(),
   }).strict().optional(),
   modifiers: z.array(modifierSchema).max(100).optional(),
+  combat: z.object({
+    restraint: z.object({ coefficient: nonnegativeSchema, cap: nonnegativeSchema }).strict().optional(),
+    minimumAttackDamageRatio: nonnegativeSchema.optional(),
+    damageTakenCap: z.object({ threshold: nonnegativeSchema, value: nonnegativeSchema }).strict().optional(),
+    attackCoefficients: z.tuple([scalarSchema, scalarSchema]).optional(),
+  }).strict().optional(),
 }).strict();
 export type EffectTag = z.infer<typeof effectTagSchema>;
 export type ModifierTarget = z.infer<typeof modifierTargetSchema>;
@@ -84,7 +90,7 @@ const abilitiesSchema = z.object({
   restraint: z.boolean(),
   entryStrikes: z.union([z.literal(0), z.literal(1), z.literal(3), z.literal(4), z.literal(5)]),
   // A count means equal strikes; a tuple defines the attack coefficient of each segment.
-  strikes: z.union([z.literal(1), z.literal(2), z.literal(3),
+  strikes: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(6),
     z.tuple([attackCoefficientSchema, attackCoefficientSchema])]),
   rending: z.boolean().optional(),
   weakening: z.number().min(0).max(100).optional(),
@@ -113,6 +119,18 @@ const abilitiesSchema = z.object({
   missPunishment: nonnegativeSchema.optional(),
   currentHpAttackDivisor: attackCoefficientSchema.optional(),
   noToughnessXp: z.boolean().optional(),
+  entryAgilityAttackRatio: attackCoefficientSchema.optional(),
+  hitHealingRatio: nonnegativeSchema.refine(value => dec(value).gt(0) && dec(value).lte(1)).optional(),
+  reflectionRatio: nonnegativeSchema.refine(value => dec(value).gt(0) && dec(value).lte(1)).optional(),
+  bullying: z.boolean().optional(),
+  entrySequence: z.array(z.object({
+    count: z.number().int().min(1).max(6),
+    coefficient: attackCoefficientSchema, damageMultiplier: attackCoefficientSchema,
+  }).strict()).min(1).max(2).optional(),
+  attackAfterDamageThreshold: nonnegativeSchema.optional(),
+  healthBurst: z.object({
+    round: z.number().int().positive(), multiplier: attackCoefficientSchema,
+  }).strict().optional(),
 }).strict();
 const defaultAbilities = { ignoreDefense: false, sturdy: false, restraint: false, entryStrikes: 0, strikes: 1 } as const;
 const enemySnapshotSchema = z.object({
@@ -179,6 +197,9 @@ export interface Strike {
 export type SimulationEvent =
   | ({ kind: 'strike'; at: number; side: 'player' | 'enemy'; slot: number; hpLost: string } & Strike)
   | { kind: 'miss-punishment'; at: number; slot: number; damage: string; hpLost: string }
+  | { kind: 'reflection'; at: number; slot: number; damage: string; hpLost: string }
+  | { kind: 'tidal-pressure' | 'health-burst'; at: number; slot: number; damage: string; hpLost: string }
+  | { kind: 'enemy-healed'; at: number; slot: number; amount: string }
   | { kind: 'player-action-completed'; at: number; regionId: string; targetIds: string[] }
   | { kind: 'enemy-defeated'; at: number; regionId: string; enemyId: string; slot: number; groupSize: number }
   | { kind: 'group-cleared'; at: number; regionId: string; total: string }
@@ -200,6 +221,7 @@ export interface PlayerUpdate {
 export interface SimulationHooks {
   getMoney?: () => string;
   getSturdyCap?: () => number;
+  getPlayerTargetCount?: () => number;
   settle?: (
     state: SimulationState,
     event: SimulationEvent | { kind: 'pulse'; at: number; sleeping: boolean },

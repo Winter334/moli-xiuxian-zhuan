@@ -1,11 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Shield, Swords, Zap } from 'lucide-react';
+import { ENEMIES, enemyRealmName } from '../../core/prototype/content';
 import { attackIntervalMs } from '../../core/prototype/stats';
 import type { OpeningView } from '../../shared/opening-contracts';
 import type { CombatFrame } from '../combat-presentation';
 import { formatAmount } from '../format';
 import { CombatAvatar, SCENE_ART } from './art';
 import { Meter } from './common';
+import { enemyAbilityDetails } from './enemy-details';
 import { DiscordAvatar, useDiscordIdentity } from '../discord-identity';
 
 function usePresentationStatus(frame: CombatFrame, paused: boolean) {
@@ -90,17 +92,20 @@ export function CombatStage({ game, frame, paused }: { game: OpeningView; frame:
   const groupKey = `${game.life.number}:${battle.regionId}:${region.clearedGroups}`;
   const events = frame.events.flatMap(({ life, regionId, group, event }) =>
     life === game.life.number && regionId === battle.regionId && group === region.clearedGroups &&
-    (event.kind === 'strike' || event.kind === 'miss-punishment') ? [event] : []);
+    (event.kind === 'strike' || event.kind === 'miss-punishment' || event.kind === 'reflection' ||
+      event.kind === 'tidal-pressure' || event.kind === 'health-burst') ? [event] : []);
   const strikes = fresh ? events : [];
   const lastAction = (slot: number | 'player') => events.reduce<number | null>((latest, event) =>
     event.kind === 'strike' && (slot === 'player' ? event.side === 'player' : event.side === 'enemy' && event.slot === slot)
       ? Math.max(latest ?? event.at, event.at) : latest, null);
   const feedback = (slot: number | 'player') => {
-    const incoming = strikes.filter(event => slot === 'player' ? event.kind === 'miss-punishment' || event.side === 'enemy'
+    const incoming = strikes.filter(event => slot === 'player' ? event.kind !== 'strike' || event.side === 'enemy'
       : event.kind === 'strike' && event.side === 'player' && event.slot === slot);
     return <div className="hit-feedback" key={`${frame.sequence}:${slot}`} aria-hidden="true">
       {incoming.slice(-3).map((event, i) => <span key={i} className={event.kind === 'strike' && event.critical ? 'critical' : ''}>
-        {event.kind === 'strike' && !event.hit ? '闪避' : `${event.kind === 'miss-punishment' ? '截隙 ' : event.critical ? '暴击 ' : ''}-${formatAmount(event.hpLost)}`}
+        {event.kind === 'strike' && !event.hit ? '闪避' : `${event.kind === 'miss-punishment' ? '截隙 '
+          : event.kind === 'reflection' ? '反震 ' : event.kind === 'tidal-pressure' ? '潮压 '
+            : event.kind === 'health-burst' ? '囊爆 ' : event.kind === 'strike' && event.critical ? '暴击 ' : ''}-${formatAmount(event.hpLost)}`}
       </span>)}
     </div>;
   };
@@ -129,17 +134,24 @@ export function CombatStage({ game, frame, paused }: { game: OpeningView; frame:
     </div>
     <div className="combat-divider" aria-hidden="true"><Swords size={22} strokeWidth={1.3} /></div>
     <div className="combat-side enemy-side"><span className="combat-side-label">敌方</span>
-      {battle.enemies.map((entry, index) => <article className={`combatant enemy-combatant ${Number(entry.hp) <= 0 ? 'defeated' : ''}`}
-        key={`${groupKey}:${entry.id}:${index}`} aria-label={`${entry.name}战斗状态`}>
-        <CardCharge deadline={entry.nextActionAt} actionAt={lastAction(index)} speed={entry.stats.attackSpeed}
-          frame={frame} frozen={frozen} defeated={Number(entry.hp) <= 0} name={entry.name} />
-        <header><span className="eyebrow">{Number(entry.hp) <= 0 ? '已击败' : `第${entry.nextRound ?? 1}轮`}</span><h3>{entry.name}</h3></header>
-        <div className="combat-portrait">
-          <div key={attacks(index) ? frame.sequence : 'idle'} className={attacks(index) ? 'attack-motion' : ''}><CombatAvatar enemyId={entry.id} name={entry.name} /></div>
-        </div>
-        <Meter label="气血" value={entry.hp} max={entry.stats.maxHp} tone="red" />
-        {statLine(entry.stats)}{feedback(index)}
-      </article>)}
+      {battle.enemies.map((entry, index) => {
+        const abilities = enemyAbilityDetails(entry.abilities);
+        return <article className={`combatant enemy-combatant ${Number(entry.hp) <= 0 ? 'defeated' : ''}`}
+          key={`${groupKey}:${entry.id}:${index}`} aria-label={`${entry.name}战斗状态`}>
+          <CardCharge deadline={entry.nextActionAt} actionAt={lastAction(index)} speed={entry.stats.attackSpeed}
+            frame={frame} frozen={frozen} defeated={Number(entry.hp) <= 0} name={entry.name} />
+          <header><span className="eyebrow">{enemyRealmName(ENEMIES[entry.id])} · {Number(entry.hp) <= 0 ? '已击败' : `第${entry.nextRound ?? 1}轮`}</span><h3>{entry.name}</h3></header>
+          <div className="combat-portrait">
+            <div key={attacks(index) ? frame.sequence : 'idle'} className={attacks(index) ? 'attack-motion' : ''}><CombatAvatar enemyId={entry.id} name={entry.name} /></div>
+          </div>
+          <Meter label="气血" value={entry.hp} max={entry.stats.maxHp} tone="red" />
+          {statLine(entry.stats)}
+          {abilities.length > 0 && <div className="combat-tags enemy-abilities" aria-label="特殊能力">
+            {abilities.map(ability => <span key={ability.name} title={ability.description}>{ability.name}</span>)}
+          </div>}
+          {feedback(index)}
+        </article>;
+      })}
     </div>
   </div>;
 }

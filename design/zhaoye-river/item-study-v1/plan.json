@@ -1,0 +1,57 @@
+{
+  "region": "zhaoye-river",
+  "version": "item-study-v1",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "scope": "User-confirmed initial batch of three first-use Zhaoye item studies only. Use the project SkyAgent API and flare, without reference images, then cut and mount for user review. Do not regenerate mounted art, generate the rest of the region automatically, or alter gameplay.",
+  "quality": "high",
+  "jobs": [
+    {
+      "id": "clear-tide-essence",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-zhaoye-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/zhaoye-river/item-study-v1/prompts/clear-tide-essence.txt",
+      "items": [
+        { "id": "clear-tide-essence", "name": "澄潮精粹" }
+      ]
+    },
+    {
+      "id": "cyan-marrow",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-zhaoye-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background",
+      "references": [],
+      "promptFile": "design/zhaoye-river/item-study-v1/prompts/cyan-marrow.txt",
+      "items": [
+        { "id": "cyan-marrow", "name": "苍灵髓" }
+      ]
+    },
+    {
+      "id": "waterfire-pendant",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-zhaoye-study-v1",
+      "size": "1024x1024",
+      "columns": 1,
+      "rows": 1,
+      "backgroundRemoval": "white-background-open",
+      "references": [],
+      "promptFile": "design/zhaoye-river/item-study-v1/prompts/waterfire-pendant.txt",
+      "items": [
+        { "id": "waterfire-pendant", "name": "水火合息佩" }
+      ]
+    }
+  ]
+}

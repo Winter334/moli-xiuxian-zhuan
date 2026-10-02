@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784.
+Primary request: Returning Current Bay, an open river bend with returning water, ordinary cargo boats and an older tucked-away mooring.
+Scene/backdrop: a wide river turns back beneath a curved bank. Two modest classical Chinese wooden cargo boats sit on the open water; a partly sheltered weathered landing and mooring timbers lie behind the nearer rock shoulder. These are working boats, not pirate warships.
+Composition/framing: view from the curved elevated bank toward a large clear eddy. Broad water shapes and the bend organize the painting; boats and the older landing are sparse human-scale accents. Strong near, middle and far separation, with distant land kept simple.
+Style/medium: refined broad-brush Chinese fantasy environment painting, clear light and clean spatial order with a quiet dreamlike atmosphere. Restrained craftsmanship in boats, no photorealistic microdetail.
+Lighting/mood: soft afternoon, silver-teal water, cool green banks, muted red-brown hulls and pale warm sky. The hidden corner should be understandable without making the whole scene sinister or dark.
+Constraints: no battle, prominent characters, giant city or harbor fleet, European sailing ships, modern docks, cosmic whirlpool, magic ring, thick fog, text, border or watermark. Full-bleed landscape.

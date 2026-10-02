@@ -1,0 +1,143 @@
+{
+  "region": "zhaoye-river",
+  "version": "production-v1",
+  "authorization": "The user approved the three item studies and explicitly requested generation and mounting of all remaining Zhaoye art.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Seven implemented scenes, twenty first-use enemies, seven remaining items and three techniques only. The approved item studies and all shared mounted assets stay unchanged. No player art, later-region assets, gameplay changes or deployment.",
+  "scopeCounts": { "scenes": 7, "enemies": 20, "items": 7, "techniques": 3, "assets": 37 },
+  "enemyDirection": "Complete subjects face screen-left, including body, head and main attack or movement. Natural species-specific poses; faceless spirits remain faceless. Generous margins around limbs, equipment and restrained local effects.",
+  "references": "Independent text-only generation; no default reference images.",
+  "jobs": [
+    {
+      "id": "whitebank-road", "name": "白汀岸路", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/whitebank-road.txt"
+    },
+    {
+      "id": "flowpetal-shallows", "name": "流萼浅滩", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/flowpetal-shallows.txt"
+    },
+    {
+      "id": "returning-current-bay", "name": "回澜曲湾", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/returning-current-bay.txt"
+    },
+    {
+      "id": "rosyreef-longshoal", "name": "霞礁长洲", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/rosyreef-longshoal.txt"
+    },
+    {
+      "id": "crossriver-stone-flat", "name": "横江石坪", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/crossriver-stone-flat.txt"
+    },
+    {
+      "id": "zhaoye-waterfall", "name": "照野飞瀑", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/zhaoye-waterfall.txt"
+    },
+    {
+      "id": "linzhao-crossing", "name": "临照关渡", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-zhaoye-v1", "size": "1792x784", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/linzhao-crossing.txt"
+    },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "references": [], "promptFile": "design/zhaoye-river/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "redbanner-river-scout", "name": "赤旌游哨" },
+        { "id": "mooring-wraith", "name": "系舟怨灵" },
+        { "id": "tideshell-spirit-turtle", "name": "潮壳灵鼋" },
+        { "id": "tidebound-bone-wight", "name": "潮缠骨魅" }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "references": [], "promptFile": "design/zhaoye-river/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "floatingblade-raider", "name": "浮剑劫修", "cellBounds": [0, 0, 760, 826] },
+        { "id": "flowpetal-water-shroom", "name": "流萼水蕈", "cellBounds": [760, 0, 776, 826] },
+        { "id": "mistbreathing-chilong", "name": "吐岚鳞螭", "cellBounds": [0, 826, 820, 710] },
+        { "id": "scarletarm-tidebeast", "name": "绯腕潮兽", "cellBounds": [820, 826, 716, 710] }
+      ]
+    },
+    {
+      "id": "enemies-03", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "references": [], "promptFile": "design/zhaoye-river/production-v1/prompts/enemies-03.txt",
+      "items": [
+        { "id": "cutstream-crossbowman", "name": "截流弩手" },
+        { "id": "sunkentide-nightmarebeast", "name": "沉潮魇兽" },
+        { "id": "cutstream-heavy-bladesman", "name": "截流重刀手" },
+        { "id": "mistcrown-shroom-spirit", "name": "雾冠伞灵" }
+      ]
+    },
+    {
+      "id": "enemies-04", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "references": [], "promptFile": "design/zhaoye-river/production-v1/prompts/enemies-04.txt",
+      "items": [
+        { "id": "coldboil-sacbeast", "name": "寒沸囊兽" },
+        { "id": "boatplundering-raider", "name": "掠舟劫修" },
+        { "id": "tideholding-reef-spirit", "name": "抱潮礁灵" },
+        { "id": "rosycloud-spirit", "name": "赤霞云灵", "backgroundRemoval": "white-background-open" }
+      ]
+    },
+    {
+      "id": "enemies-05", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "references": [], "promptFile": "design/zhaoye-river/production-v1/prompts/enemies-05.txt",
+      "items": [
+        { "id": "cutstream-chief", "name": "截流帮主" },
+        { "id": "crossriver-bladesman", "name": "横江刀客" },
+        { "id": "poolguard-reef-spirit", "name": "护潭礁灵" },
+        { "id": "jiuzhang-crossing-warden", "name": "九嶂封渡使" }
+      ]
+    },
+    {
+      "id": "scarlet-marrow", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1024x1024", "columns": 1, "rows": 1,
+      "backgroundRemoval": "white-background", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/scarlet-marrow.txt",
+      "items": [{ "id": "scarlet-marrow", "name": "绯灵髓" }]
+    },
+    {
+      "id": "elixirs", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "backgroundRemoval": "white-background-open", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/elixirs.txt",
+      "items": [
+        { "id": "tide-restraint-elixir", "name": "牵势灵液" },
+        { "id": "piercing-force-elixir", "name": "贯劲灵液" },
+        { "id": "wound-guard-elixir", "name": "守伤灵液" },
+        { "id": "returning-wind-elixir", "name": "回风灵液" }
+      ]
+    },
+    {
+      "id": "spiritstone-cargo", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1024", "columns": 2, "rows": 1,
+      "backgroundRemoval": "white-background-open", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/spiritstone-cargo.txt",
+      "items": [
+        { "id": "sealed-spiritstone-crate", "name": "封箱灵石" },
+        { "id": "bulk-spiritstones", "name": "整批灵石" }
+      ]
+    },
+    {
+      "id": "techniques", "kind": "atlas", "target": "techniques", "variant": "flare",
+      "assetSuffix": "flare-zhaoye-v1", "size": "1536x1536", "columns": 2, "rows": 2,
+      "backgroundRemoval": "white-background-open", "references": [],
+      "promptFile": "design/zhaoye-river/production-v1/prompts/techniques.txt",
+      "items": [
+        { "id": "surging-tide-art", "name": "奔潮诀" },
+        { "id": "flowchasing-art", "name": "逐流诀" },
+        { "id": "scattered-rain-art", "name": "散雨诀" }
+      ]
+    }
+  ]
+}

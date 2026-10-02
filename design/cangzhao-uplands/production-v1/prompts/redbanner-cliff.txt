@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: panoramic environment painting for a Chinese cultivation RPG.
+Primary request: Red Banner Cliff Terrace, the outer ledge of a mountain raiders' occupied stronghold on a side branch off the main pass.
+Scene/backdrop: an uneven stone terrace projects from a cliff shoulder, rough low stone ramparts and repaired timber screens shelter stacks of practical material crates and small medicinal chests. A few red knotted cloth markers identify the occupants. Behind, a modest weathered Chinese timber hall is built against rock, not an enormous royal residence.
+Composition/framing: look diagonally across the broad ledge toward the hall and the open cliff edge. The outward view reveals a distant continuing road separated from this side stronghold. Clear asymmetrical masses, usable open terrace space, coherent daylight.
+Style/medium: refined softly layered Chinese fantasy painting with large readable planes, cool cliff rock, subdued old timber and local crimson accents; clear open depth and restrained supernatural atmosphere.
+Lighting/mood: bright side light with firm shelter shadows, isolated authority and stored wealth expressed by occupation rather than flashy magic.
+Constraints: do not place a giant boss portrait or throne at the center. No extra treasure spectacle, gold heaps, imperial city, floating palace, colossal gate, modern goods, labels, UI, text or watermark. This optional stronghold does not block the visible onward road.

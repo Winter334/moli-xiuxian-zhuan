@@ -5,6 +5,7 @@ import {
 } from './index';
 import { synchronizeCharacter } from './character-state';
 import { SKILLS, threshold } from './skills';
+import { dec } from '../numbers';
 
 describe('unified world calendar', () => {
   it('shares dates across creation times, meditation levels and paused encounters', () => {
@@ -22,7 +23,8 @@ describe('unified world calendar', () => {
       expect(getCharacterView(character, now).calendar).toEqual(worldCalendarAt(now));
     }
     expect(worldCalendarAt(now).dayIndex - worldCalendarAt(now - WORLD_DAY_MS).dayIndex).toBe(1);
-    expect(recovered.skills.rest).toEqual(meditating.skills.rest);
+    expect(recovered.skills.rest.level).toBe(meditating.skills.rest.level);
+    expect(dec(recovered.skills.rest.xp).gt(meditating.skills.rest.xp)).toBe(true);
     expect(recovered.simulation.player.sources).toEqual(meditating.simulation.player.sources);
     expect(recovered.simulation).not.toHaveProperty('calendarMinutes');
   });

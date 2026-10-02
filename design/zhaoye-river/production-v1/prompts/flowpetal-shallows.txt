@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784.
+Primary request: Flowpetal Shallows, a lucid stream divided by low sandbars and living aquatic mushroom colonies.
+Scene/backdrop: shallow transparent water bends around broad soft sandbars. Pale cyan petal-lobed mushroom caps spread in a few coherent colonies, with fine water roots visible near the closest group. Wet stones and low banks lead toward the wider river.
+Composition/framing: gently elevated oblique view across intersecting shallow channels. Keep the nearest mushroom colony legible, then simplify the middle distance into clear water ribbons and a broad open horizon. Not a repeating pattern of mushrooms or an inventory sheet.
+Style/medium: polished painterly Chinese fantasy, luminous broad shapes, layered cool-warm color, softly unreal clarity. Ecology carries the supernatural feeling without a giant magical spectacle.
+Lighting/mood: bright softened noon, jade-green water, muted cyan caps, pale straw-colored sand and violet-grey stone. Light penetrates the shallows; do not conceal the scene in mist.
+Constraints: no enlarged character, monster showcase, modern structures, tropical coral reef, waterfalls, floating islands, dense glowing particles, repeated tiny decorative clutter, text, frame, labels or watermark. Full-bleed landscape.

@@ -42,6 +42,7 @@ const upload = (save: ClientSave, overrides: Partial<SaveUpload> = {}): SaveUplo
 describe('client cloud save contract', () => {
   it.each(MANUAL_IDS)('reads and uploads %s snapshots after object keys are reordered', async manualId => {
     const previous = initial();
+    previous.character = executeDebugCommand(previous.character, { type: 'region', regionId: MANUALS[manualId].prerequisite, operation: 'complete' });
     previous.character = executeDebugCommand(previous.character, { type: 'travel', locationId: MANUALS[manualId].location });
     previous.character = executeCharacterCommand(previous.character, { type: 'learn-manual', manualId });
     const active = { ...previous, character: executeCharacterCommand(previous.character, { type: 'activate-manual', manualId }) };
@@ -62,7 +63,9 @@ describe('client cloud save contract', () => {
     const beforeRejection = memory.snapshot();
     const forged = structuredClone(next);
     const source = forged.character.simulation.player.sources.find(entry => entry.id === `manual:${manualId}`)!;
-    source.statPolarity!.multiplier![MANUALS[manualId].attribute] = 'cost';
+    const manual = MANUALS[manualId];
+    const attribute = 'attribute' in manual ? manual.attribute : 'attack';
+    source.statPolarity!.multiplier![attribute] = 'cost';
     await expect(service.upload(characterId, upload(forged, { baseRevision: '2' })))
       .rejects.toMatchObject({ code: 'SAVE_REJECTED' });
     expect(memory.snapshot()).toEqual(beforeRejection);
