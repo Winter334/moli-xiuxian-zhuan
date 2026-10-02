@@ -107,4 +107,10 @@ export class DiscordActivityConnection {
     if (this.session === session) this.session = null;
     return send(this.session ?? await this.login());
   };
+
+  socialSession = async (renew = false) => {
+    if (renew) this.session = null;
+    const session = this.session && this.session.expiresAt > Date.now() + 60_000 ? this.session : await this.login();
+    return { token: session.sessionToken, characterId: session.characterId, expiresAt: session.expiresAt };
+  };
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { batchLimit, duration, formatAmount, hasEnough, multiply, percent, progress } from './format';
+import { batchLimit, duration, formatAmount, formatDecimal, formatNumericText, hasEnough, multiply, percent, progress } from './format';
 
 describe('amount presentation', () => {
   it('formats common amounts without discarding fractional growth', () => {
@@ -9,6 +9,23 @@ describe('amount presentation', () => {
     expect(formatAmount('12345678')).toBe('1234.56万');
     expect(formatAmount('100000000')).toBe('1亿');
     expect(formatAmount('100000000000000000000000000000000000000')).toBe('1.00e+38');
+  });
+
+  it('bounds fractional display without abbreviating expanded integers or hiding tiny gains', () => {
+    expect(formatDecimal('1.103333333333333333333333333333333333')).toBe('1.1');
+    expect(formatDecimal('9007199254740993.129999999999999999999')).toBe('9,007,199,254,740,993.12');
+    expect(formatDecimal('-12.34567890123456789')).toBe('-12.34');
+    expect(formatAmount('0.00000000000012')).toBe('1.2e-13');
+    expect(formatDecimal('-0.00000012')).toBe('-1.2e-7');
+  });
+
+  it('shortens decimal values in generated text without rewriting identifiers or integer counts', () => {
+    expect(formatNumericText('气血回复+1.666666666666666666/秒，伤害×1.10333333333333，持续9.000000秒'))
+      .toBe('气血回复+1.66/秒，伤害×1.1，持续9秒');
+    expect(formatNumericText('修为+0.00000000000012，损失-12.3456789，获得9007199254740993份'))
+      .toBe('修为+1.2e-13，损失-12.34，获得9007199254740993份');
+    const identifiers = '地址127.0.0.1，版本neko-character-9，编号item1.234567';
+    expect(formatNumericText(identifiers)).toBe(identifiers);
   });
 
   it('compares balances above Number.MAX_SAFE_INTEGER exactly', () => {

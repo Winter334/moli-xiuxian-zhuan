@@ -4,7 +4,7 @@
 
 ## English
 
-Last updated: October 1, 2026.
+Last updated: October 2, 2026.
 
 | Item | Details |
 | --- | --- |
@@ -60,12 +60,12 @@ not every action is uploaded in real time. Cloud saves may lag behind your lates
 Disconnections, upload failures, insufficient storage, clearing local storage, device damage,
 client freezing, or conflicts between devices may affect saving and recovery.
 
-We take reasonable measures to protect save data, but do not guarantee that all data can be recovered,
-automatically merged across devices, or remain compatible with every later version.
-Incompatible updates during development may make old formats unusable.
-This does not authorize us to arbitrarily delete actual character data.
-The impact of major incompatible changes or planned resets should be explained in advance;
-progress belonging to different accounts or devices should not be overwritten without notice.
+Updates must protect existing live-test character data through compatibility or an explicit migration
+when the save structure changes. This does not guarantee recovery from every failure or automatic
+merging of progress across devices. Independent database backups are limited to the three slots
+described in the Privacy Policy and do not include local progress never uploaded.
+Major changes and their data handling should be explained in advance; old-format rejection,
+automatic character recreation, or clearing data must not substitute for protecting current player saves.
 
 When the client is closed or actually suspended, offline combat, training, or gathering rewards
 are not granted retroactively. Offline rest in safe locations explicitly supported by the game
@@ -98,6 +98,11 @@ Rankings and combat power scores are game displays, not proof of competitive-gra
 a guarantee of prizes, or an assessment of real-world value.
 
 ### 5. Acceptable Use
+
+World-channel messages are public to authenticated players in the same application.
+Do not post sensitive personal information or credentials. Channel operators may remove messages
+or temporarily mute senders under these rules. Public character information is a client-generated
+snapshot, not competitive-grade verification or a promise of a particular combat outcome.
 
 Do not:
 
@@ -189,7 +194,7 @@ For personal information requests, follow the procedure in the [Privacy Policy](
 
 ## 简体中文
 
-最后更新：2026年10月1日。
+最后更新：2026年10月2日。
 
 | 项目 | 内容 |
 | --- | --- |
@@ -236,10 +241,10 @@ Discord 控制其平台的可用性、账号状态、授权及应用访问条件
 断网、上传失败、存储空间不足、清除本地存储、设备损坏、客户端冻结或多设备冲突，
 都可能影响进度的保存和恢复。
 
-我们会采用合理措施保护保存数据，但不保证所有数据均可恢复、跨设备自动合并
-或所有版本的旧存档继续兼容。
-开发期不兼容更新可能使旧格式无法继续使用；这不等于授权我们任意删除实际角色数据。
-重大不兼容变更或计划性重置应事先说明影响，不应无提示地覆盖不同账号或设备的进度。
+更新须保护当前线上测试角色，保存结构变化时采用兼容或显式迁移；
+这不保证所有故障均可恢复或跨设备自动合并。独立数据库备份限于隐私政策所述三档，
+不包含从未上传的本地进度。重大变更及数据处理须事先说明，
+不能以旧格式拒读、自动重新建角或清空数据替代对现有玩家存档的保护。
 
 关闭或真正挂起客户端后，不补发离线战斗、训练或采集收益；
 游戏明确支持的安全地点离线休整按当时规则处理。
@@ -266,6 +271,10 @@ Discord 控制其平台的可用性、账号状态、授权及应用访问条件
 排名或战力指标是游戏展示，不是竞技级公平证明、获奖保证或现实价值评估。
 
 ### 5. 使用规范
+
+世界消息对同一应用内的已认证玩家公开，请勿发送敏感个人资料或凭据；
+管理者可按本规则删除消息或暂时禁言发送者。
+公开角色资料由客户端生成，是读取时的快照，不是竞技级校验或具体战斗结果保证。
 
 请勿：
 

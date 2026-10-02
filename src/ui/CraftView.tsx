@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDownWideNarrow, ArrowRight, ArrowUp, Check, Coins, Flame, Hammer, LoaderCircle, Shield, Sparkles, Swords, X } from 'lucide-react';
 import { ITEMS } from '../../core/prototype/content';
-import { itemValue, rarityMultiplier } from '../../core/prototype/equipment';
+import { equipmentSource, itemValue, rarityMultiplier } from '../../core/prototype/equipment';
 import { decimal, formatAmount, hasEnough, multiply, percent } from '../format';
-import { Dialog, Empty, IconButton, ItemGlyph, Quantity, SearchField } from './common';
+import { Bonuses, Dialog, Empty, IconButton, ItemGlyph, Quantity, SearchField } from './common';
 import { type Instance, type ViewProps } from './types';
 
 type Recipe = ViewProps['game']['recipes'][number];
@@ -30,6 +30,28 @@ const methodName = (entry: CraftEntry) => entry.kind === 'recipe' ? entry.recipe
   : entry.kind === 'weapon' ? '兵刃合炼' : '防具升炼';
 const outputCount = (entry: CraftEntry) => entry.kind === 'recipe' ? entry.recipe.outputCount ?? 1 : 1;
 const supplyLabel = (entry: CraftEntry) => `材料可供 ${formatAmount(String(entry.maxBatch))} ${entry.kind === 'recipe' ? '炉' : '组'}`;
+const canCraftBatch = (entry: CraftEntry, quantity: number) => entry.kind === 'recipe' && entry.recipe.available &&
+  Number.isInteger(quantity) && quantity >= 1 && quantity <= entry.maxBatch;
+
+function CraftQuickActions({ entry, disabled, craft }: {
+  entry: CraftEntry; disabled: boolean; craft: (quantity: number) => void;
+}) {
+  if (entry.kind !== 'recipe') return null;
+  // The view caps maxBatch; "all" must match the actual material limit.
+  const allAllowed = entry.recipe.materialCosts.some(material =>
+    BigInt(material.owned) / BigInt(material.required) === BigInt(entry.maxBatch));
+  return <div className="craft-quick-actions" role="group" aria-label={`快捷炼制${entry.name}`}>
+    {[1, 10, entry.maxBatch].map((amount, index) => {
+      const all = index === 2;
+      const label = all ? `炼制全部${entry.name}` : `炼制${entry.name}${amount}炉`;
+      const issue = all && !allAllowed ? '每次最多炼制10,000炉'
+        : amount > entry.maxBatch ? `材料不足${amount}炉` : null;
+      return <button key={index} aria-label={label} title={issue ?? `${label}（${amount}炉）`}
+        disabled={disabled || !canCraftBatch(entry, amount) || Boolean(issue)}
+        onClick={() => craft(amount)}>{all ? '全部' : amount}</button>;
+    })}
+  </div>;
+}
 
 function catalog(game: ViewProps['game']): CraftEntry[] {
   const counts = new Map<string, number>();
@@ -76,6 +98,20 @@ function CraftOutput({ entry }: { entry: CraftEntry }) {
     </div>;
 }
 
+function CraftEquipmentStats({ entry }: { entry: CraftEntry }) {
+  const item = ITEMS[entry.output];
+  if (item.kind !== 'equipment') return null;
+  const floating = variableQuality(entry) && !item.fixedStats;
+  return <section className="craft-equipment-stats" aria-label="成品属性">
+    <div className="craft-equipment-heading"><h3>成品属性</h3>
+      <span className="muted small">{floating ? '品质100参考' : item.fixedStats ? '固定属性' : '品质100'}</span>
+    </div>
+    <Bonuses source={equipmentSource('craft-preview', { itemId: entry.output, quality: 100 })} />
+    {item.effectDescription && <p className="effect-description">{item.effectDescription}</p>}
+    {floating && <p className="muted small">实际属性随成品品质变化。</p>}
+  </section>;
+}
+
 function InstanceChoices({ label, itemId, instances, selectedId, onSelect, disabled }: {
   label: string; itemId: string; instances: Instance[]; selectedId: string;
   onSelect: (id: string) => void; disabled: boolean;
@@ -112,21 +148,26 @@ function CraftDialog({ entry, game, blocked, pending, notice, run, onClose }: {
   const second = entry.kind !== 'recipe' ? game.instances.find(item => item.instanceId === secondId && item.itemId === entry.second && !item.equipped) : null;
   const disabled = blocked || pending;
   const canSubmit = !disabled && game.workshop.available && (entry.kind === 'recipe'
-    ? entry.recipe.available && Number.isInteger(quantity) && quantity >= 1 && quantity <= entry.maxBatch
+    ? canCraftBatch(entry, quantity)
     : Boolean(first && second && firstId !== secondId));
   useEffect(() => {
     setQuantity(value => Number.isFinite(value) ? Math.max(1, Math.min(value, entry.maxBatch)) : value);
   }, [entry.maxBatch]);
-  const submit = async () => {
-    if (!canSubmit) return;
-    const request = entry.kind === 'recipe' ? { type: 'craft' as const, recipeId: entry.recipe.id, quantity }
+  const submit = async (batchQuantity = quantity) => {
+    if (entry.kind === 'recipe'
+      ? disabled || !game.workshop.available || !canCraftBatch(entry, batchQuantity) : !canSubmit) return;
+    if (entry.kind === 'recipe') setQuantity(batchQuantity);
+    const request = entry.kind === 'recipe' ? { type: 'craft' as const, recipeId: entry.recipe.id, quantity: batchQuantity }
       : entry.kind === 'weapon' ? { type: 'assemble' as const, bladeId: firstId, hiltId: secondId }
         : { type: 'assemble-armor' as const, interiorId: firstId, exteriorId: secondId };
     if (await run(request) && entry.kind !== 'recipe') { setFirstId(''); setSecondId(''); }
   };
   const ActionIcon = pending ? LoaderCircle : entry.kind === 'weapon' ? Swords : entry.kind === 'armor' ? Shield : Flame;
   return <Dialog title={methodName(entry)} onClose={onClose} footer={<div className="craft-actions">
-    {entry.kind === 'recipe' ? <Quantity value={quantity} onChange={setQuantity} max={entry.maxBatch} label="炼制炉数" disabled={disabled} />
+    {entry.kind === 'recipe' ? <div className="craft-quantity-actions">
+      <Quantity value={quantity} onChange={setQuantity} max={entry.maxBatch} label="炼制炉数" disabled={disabled} />
+      <CraftQuickActions entry={entry} disabled={disabled || !game.workshop.available} craft={amount => void submit(amount)} />
+    </div>
       : <span className="muted small">已选 {Number(Boolean(first)) + Number(Boolean(second))} / 2 件</span>}
     <button className="primary" disabled={!canSubmit} onClick={() => void submit()}>
       <ActionIcon size={16} className={pending ? 'spinning' : undefined} />
@@ -134,13 +175,14 @@ function CraftDialog({ entry, game, blocked, pending, notice, run, onClose }: {
     </button>
   </div>}>
     <CraftOutput entry={entry} />
+    <CraftEquipmentStats entry={entry} />
     <dl className="craft-facts">
       <div><dt>当前成功率</dt><dd>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? percent(Number(entry.recipe.successChance)) : '必成'}</dd></div>
       <div><dt>{entry.kind === 'recipe' ? '每炉成功产出' : '每次产出'}</dt><dd>{outputCount(entry)}<small> {instanced(entry.output) ? '件' : '份'}</small></dd></div>
       <div><dt>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? '炼制难度' : '品质'}</dt>
         <dd>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? entry.recipe.difficulty : '浮动'}</dd></div>
     </dl>
-    {!game.workshop.available && <p className="cost-warning">请先退出战斗并结束调息。</p>}
+    {!game.workshop.available && <p className="cost-warning">请先退出战斗。</p>}
     {entry.kind === 'recipe' ? <>
       {Number(entry.recipe.extraBatchChance) > 0 && <p className="positive small">成功后有 {percent(Number(entry.recipe.extraBatchChance))} 概率额外产出一批</p>}
       <Materials materials={entry.recipe.materialCosts} quantity={quantity} />
@@ -196,6 +238,10 @@ export function CraftView({ game, blocked, command }: ViewProps) {
     } catch (error) { setNotice(error instanceof Error ? error.message : '操作未完成'); return false; }
     finally { inFlight.current = false; setPending(false); }
   };
+  const craftBatch = async (entry: CraftEntry, quantity: number) => {
+    if (entry.kind !== 'recipe' || !game.workshop.available || !canCraftBatch(entry, quantity)) return;
+    await run({ type: 'craft', recipeId: entry.recipe.id, quantity });
+  };
   return <div className="page craft-view">
     <div className="page-heading craft-heading"><h1>炉鼎</h1><span className="muted small">炼制 {refining.level} 级 · {filtered ? `${visible.length} / ${entries.length}` : entries.length} 式</span></div>
     <div className="furnace-strip"><Flame size={22} /><strong>{game.workshop.name}<small>{game.workshop.tier}阶</small></strong>
@@ -217,18 +263,23 @@ export function CraftView({ game, blocked, command }: ViewProps) {
     </div>
     <div className="craft-grid">{visible.map(entry => {
       const item = ITEMS[entry.output];
-      return <button key={entry.id} className={`craft-tile ${entry.maxBatch > 0 ? 'ready' : ''}`}
-        aria-label={`查看${entry.name}，${methodName(entry)}，成功产出${outputCount(entry)}${instanced(entry.output) ? '件' : '份'}，${supplyLabel(entry)}`} onClick={() => { setSelectedId(entry.id); setNotice(''); }}>
-        <span className="craft-tile-top"><ItemGlyph kind={item.kind} slot={item.slot} itemId={entry.output} size={24} />
-          <span>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? `难度 ${entry.recipe.difficulty}` : methodName(entry)}</span></span>
-        <strong>{entry.name}</strong>
-        <span className="craft-tile-facts"><span title="当前成功率">{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? percent(Number(entry.recipe.successChance)) : '必成'}</span>
-          <small>{entry.kind === 'recipe' ? '每炉' : '每次'} {outputCount(entry)}{instanced(entry.output) ? '件' : '份'}</small></span>
-        <span className="craft-tile-price" title={`${variableQuality(entry) ? '品质100参考' : ''}回收单价 ${entry.value} 灵石`}>
-          <Coins size={12} />{formatAmount(entry.value)}<small>{variableQuality(entry) ? '参考价' : '单价'}</small></span>
-        <span className="craft-tile-stock">{entry.maxBatch > 0 ? <><Check size={12} />可供 {formatAmount(String(entry.maxBatch))} {entry.kind === 'recipe' ? '炉' : '组'}</> : '缺少材料'}</span>
-      </button>;
+      return <article key={entry.id} className={`craft-tile-wrap ${entry.maxBatch > 0 ? 'ready' : ''}`}>
+        <button className={`craft-tile ${entry.maxBatch > 0 ? 'ready' : ''}`}
+          aria-label={`查看${entry.name}，${methodName(entry)}，成功产出${outputCount(entry)}${instanced(entry.output) ? '件' : '份'}，${supplyLabel(entry)}`} onClick={() => { setSelectedId(entry.id); setNotice(''); }}>
+          <span className="craft-tile-top"><ItemGlyph kind={item.kind} slot={item.slot} itemId={entry.output} size={24} />
+            <span>{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? `难度 ${entry.recipe.difficulty}` : methodName(entry)}</span></span>
+          <strong>{entry.name}</strong>
+          <span className="craft-tile-facts"><span title="当前成功率">{entry.kind === 'recipe' && entry.recipe.path === 'ordinary' ? percent(Number(entry.recipe.successChance)) : '必成'}</span>
+            <small>{entry.kind === 'recipe' ? '每炉' : '每次'} {outputCount(entry)}{instanced(entry.output) ? '件' : '份'}</small></span>
+          <span className="craft-tile-price" title={`${variableQuality(entry) ? '品质100参考' : ''}回收单价 ${entry.value} 灵石`}>
+            <Coins size={12} />{formatAmount(entry.value)}<small>{variableQuality(entry) ? '参考价' : '单价'}</small></span>
+          <span className="craft-tile-stock">{entry.maxBatch > 0 ? <><Check size={12} />可供 {formatAmount(String(entry.maxBatch))} {entry.kind === 'recipe' ? '炉' : '组'}</> : '缺少材料'}</span>
+        </button>
+        <CraftQuickActions entry={entry} disabled={blocked || pending || !game.workshop.available}
+          craft={quantity => void craftBatch(entry, quantity)} />
+      </article>;
     })}</div>
+    {notice && !selected && !showUpgrade && <p className="craft-notice" role="status">{notice}</p>}
     {!visible.length && <Empty icon={<Hammer size={28} />}>没有符合条件的配方</Empty>}
     {selected && <CraftDialog key={selected.id} entry={selected} game={game} blocked={blocked} pending={pending}
       notice={notice} run={run} onClose={() => { setSelectedId(''); setNotice(''); }} />}
@@ -240,7 +291,7 @@ export function CraftView({ game, blocked, command }: ViewProps) {
         <div className="furnace-upgrade-route"><div><small>当前炉鼎 · {game.workshop.tier}阶</small><h3>{game.workshop.name}</h3></div>
           {upgrade && <><ArrowRight size={20} /><div><small>升至 {upgrade.tier}阶</small><h3>{upgrade.name}</h3></div></>}</div>
         {upgrade ? <><Materials materials={upgrade.materialCosts} />
-          {!game.workshop.available && <p className="cost-warning">请先退出战斗并结束调息。</p>}</>
+          {!game.workshop.available && <p className="cost-warning">请先退出战斗。</p>}</>
           : <p className="positive"><Check size={16} /> 已达当前开放炉阶</p>}
         {notice && <p className="craft-notice" role="status">{notice}</p>}
       </div>

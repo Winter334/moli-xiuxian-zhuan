@@ -33,7 +33,7 @@ export interface CloudStore {
 }
 
 export async function initializeStorage(pool: Pool) {
-  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql'].map(async name => {
+  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql'].map(async name => {
     const sql = await readFile(new URL(`./${name}`, import.meta.url), 'utf8');
     return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') };
   }));
@@ -117,6 +117,21 @@ export class ClientRepository implements CloudStore, RankingStore {
       [hashToken(token), clientId, now],
     );
     return result.rows[0]?.character_id ?? null;
+  }
+
+  async socialIdentity(token: string, clientId: string, now: number) {
+    const result = await this.pool.query<{
+      characterId: string; userId: string; expiresAt: number; displayName: string; avatar: string | null;
+    }>(`SELECT a.character_id AS "characterId", a.user_id AS "userId",
+      s.expires_at::float8 AS "expiresAt", p.display_name AS "displayName", p.avatar_hash AS avatar
+      FROM moli_client.discord_sessions s
+      JOIN moli_client.discord_accounts a USING (application_id, user_id)
+      JOIN moli_client.discord_profiles p USING (application_id, user_id)
+      WHERE s.token_hash = $1 AND s.application_id = $2 AND s.expires_at > $3`,
+    [hashToken(token), clientId, now]);
+    const row = result.rows[0];
+    return row ? { characterId: row.characterId, userId: row.userId, expiresAt: row.expiresAt,
+      profile: discordProfile({ id: row.userId, displayName: row.displayName, avatar: row.avatar }) } : null;
   }
 
   async load(characterId: string): Promise<CloudSnapshot> {

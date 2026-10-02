@@ -17,7 +17,8 @@
 原本机开发隧道入口保留，部署步骤见[VPS测试部署](#vps测试部署)。
 图片补齐由另一会话推进，本批不修改美术文件或映射。
 
-当前不包含正式发布、应用验证/Discovery、指定社群成员限制、玩家位置同步或组队；
+同地玩家、查看资料与世界频道本批接入，见[社交系统](social-system.zh-CN.md)。
+当前不包含正式发布、应用验证/Discovery、指定社群成员限制或组队；
 运营安排继续按用户要求暂缓。VPS上的真人交易/轮回与真实双设备恢复仍待用户验收。
 客户端结算与离线边界仍见[客户端结算](client-settlement.zh-CN.md)。
 
@@ -165,7 +166,8 @@ Target 不含 `https://`，不指向 `index.html`；API与素材同走此映射�
 
 本节面向当前邀请测试，不代表正式运营或应用发布。容器使用`NODE_ENV=production`
 以运行构建产物并禁止开发身份，与游戏是否正式运营是两件事。
-按用户要求，本批不实施日志保留、人工数据删除等运营安排，也不启用数据库备份。
+日志保留、人工数据删除等运营安排仍需部署落实；用户最新确认启用同机三档备份，
+具体规则见[三档数据库备份](client-settlement.zh-CN.md#三档数据库备份)。
 
 ### 文件与安全边界
 
@@ -198,14 +200,14 @@ Target 不含 `https://`，不指向 `index.html`；API与素材同走此映射�
 开放80/443，并确保这两个端口没有被其它服务占用。启用可选的 Caddy：
 
 ```sh
-docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml --profile https up -d --build
+bash deploy/update-activity.sh /etc/moli-activity.env --https
 ```
 
 Caddy 按[配置](../deploy/Caddyfile)自动申请证书，证书数据使用独立持久化卷。
 若 VPS 已有 Caddy/Nginx，不启动`https` profile：
 
 ```sh
-docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml up -d --build
+bash deploy/update-activity.sh /etc/moli-activity.env
 ```
 
 由现有反代将游戏 HTTPS 域名的全部路径转到`http://127.0.0.1:5180`
@@ -221,11 +223,34 @@ Discord URL Mappings 的`/`改为游戏域名，不带协议或路径；OAuth2 S
 
 ### 更新与验收
 
-每次拉取`main`后重新执行对应的 Compose 构建启动命令，再核对健康检查。
+每次拉取`main`后执行下方备份保护更新入口，再核对健康检查。
 固定保留`moli-activity-vps`项目名及卷；不要使用`down -v`、清库、测试重置或自动删角色。
 已有数据库卷不会重跑首次初始化脚本，修改环境变量不会自动修改已有数据库密码；
 确需换密码时由 VPS Agent 单独处理，不通过删除卷解决。
-存档/内容版本拒读仍按当前规则处理，部署脚本不承担迁移或重置。
+当前线上存档必须兼容或显式迁移，不能以版本拒读或重新建角代替保护。
+
+本批起，首次接入备份及后续更新改用备份保护入口；先拉取并确保部署代码已提交，
+环境文件仍在仓库外。使用本项目Caddy时：
+
+```sh
+bash deploy/update-activity.sh /etc/moli-activity.env --https
+```
+
+使用已有反代时省略`--https`。脚本先构建、等待数据库健康、生成更新前备份，
+再启动新应用与定时备份服务；失败停在当前步骤，不删除角色或自动恢复。
+不要继续使用直接`up --build`绕过更新前保护；失败更新重试保留最初备份。
+定时备份的持久卷与数据库卷均须保留，重建镜像不会删除归档。
+已知异常可暂停备份：
+
+```sh
+docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml exec backup touch /backups/PAUSED
+```
+
+确认问题解决后由运维移除此固定标记；暂停期间现有三份归档不动。
+管理员在仓库外环境文件设置`SOCIAL_MODERATOR_IDS`（逗号分隔Discord用户ID），
+默认空列表，不能通过前端开启权限。原样代理WebSocket Upgrade，
+保持Discord Origin；已有Caddy配置支持升级，自有Nginx需显式配置。
+部署前同步中英政策到原Gist，并向测试玩家说明新增同地资料和聊天公开范围。
 
 测试库与 VPS 角色库隔离，不对后者运行集成/E2E或数值测试。首次上线仅核对健康、
 实际 Discord 授权、本人头像昵称、同一账号关闭重开与存档；邀请测试不扩大为正式发布，
@@ -246,12 +271,13 @@ Discord URL Mappings 的`/`改为游戏域名，不带协议或路径；OAuth2 S
 游戏代码可以继续私有，将这两份文档分别放入 Public Gist 或单独的公开文档仓库；
 用户若选择整个项目公开，公开本身不构成代码或第三方素材的开源授权。
 
-用户已确认运营者、联系邮箱、托管提供方、数据地区、日志期限和不开数据库备份的安排，
+用户已确认运营者、联系邮箱、托管提供方、数据地区、日志期限和同机三档数据库备份的安排，
 已同步填写中英两版并移除资料待填写提示；这些公开参数以隐私政策顶部为单一来源。
 这只是按用户确认填写政策，不代表本会话已核实或配置 VPS。
 运营安排按用户要求暂缓，本轮只准备 VPS 测试部署，不宣称政策中的运营流程已经落实；
 正式运营前须落实声明的日志期限、到期清理及安全措施。
-不开数据库备份不等于关闭游戏云存档，但服务器数据丢失时没有独立数据库备份可恢复。
+备份范围、轮换与同机故障边界见[三档数据库备份](client-settlement.zh-CN.md#三档数据库备份)，
+不把本地未上传进度视为已备份。
 实际部署必须能履行政策：配置私密请求渠道、人工身份核实与删除流程、
 必要记录的清理方式，不把 OAuth 会话到期或撤销授权视为已经删除账号数据。
 目前尚未实施该运营流程，没有自助删除入口，也没有承诺已通过合规或平台审核。
@@ -333,7 +359,7 @@ git pull --ff-only origin main
 
 - 第二批代码已完成，用户反馈真实登录通过，换设备取档与冲突恢复正在测试。
 - 第三批身份名录、市场隔离与独立联调已完成；VPS真人寄售/轮回验收待用户进行。
-  运营配置暂缓，独立数据库备份按用户决定不启用。
+  运营配置暂缓，同机三档备份及更新保护已接，VPS落实待验收。
 - 第四批：桌面/横屏实际验收、发布资料、应用验证及按需要启用 Discovery。
 
 官方依据：[首次接入](https://docs.discord.com/developers/activities/building-an-activity)、

@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [{
     name: 'activity-storage-sql',
     generateBundle() {
-      for (const name of ['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql']) {
+      for (const name of ['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql']) {
         this.emitFile({
           type: 'asset',
           fileName: `server/client/${name}`,

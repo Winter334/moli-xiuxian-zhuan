@@ -19,6 +19,8 @@ import { ReincarnationRepository } from './reincarnation-store';
 import { ReincarnationService } from './reincarnation';
 import { checkActivityRequest, DiscordAuth } from './discord-auth';
 import { readClientAuthMode, readDiscordConfig } from './discord-config';
+import { registerSocial } from './social';
+import { SocialRepository } from './social-store';
 
 export const SESSION_COOKIE = 'moli_client_session';
 
@@ -157,6 +159,15 @@ export async function createClientApp(
   }
   try {
     await initializeStorage(pool);
+    if (discordConfig) {
+      const moderatorIds = (process.env.SOCIAL_MODERATOR_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
+      if (moderatorIds.some(id => !/^\d{17,20}$/.test(id))) throw new Error('SOCIAL_MODERATOR_IDS must contain Discord user IDs.');
+      await registerSocial(app, {
+        applicationId: discordConfig.clientId,
+        identity: token => repository.socialIdentity(token, discordConfig.clientId, Date.now()),
+        store: new SocialRepository(pool, discordConfig.clientId), moderators: new Set(moderatorIds),
+      });
+    }
     await app.ready();
     return app;
   } catch (error) { await app.close(); throw error; }

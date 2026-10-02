@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Coins, Flame, LoaderCircle, RefreshCw, Sparkles, Swords, Trophy } from 'lucide-react';
 import { RANKING_NAMES, type RankingBoard, type RankingEntry, type RankingId, type RankingMetric } from '../../shared/rankings';
-import { formatAmount } from '../format';
+import { formatAmount, formatDecimal } from '../format';
 import { PlayerAvatar } from '../discord-identity';
 import { Empty, IconButton, Tabs } from './common';
 
@@ -9,8 +9,8 @@ const boardIcons: Record<RankingId, typeof Sparkles> = {
   cultivation: Sparkles, power: Swords, refining: Flame, money: Coins,
 };
 
-function metricText(metric: RankingMetric, exact = false) {
-  const amount = (value: string) => exact ? value : formatAmount(value);
+function metricText(metric: RankingMetric, expanded = false) {
+  const amount = (value: string) => expanded ? formatDecimal(value) : formatAmount(value);
   switch (metric.kind) {
     case 'cultivation': return `${amount(metric.xp)} 修为`;
     case 'refining': return `${metric.level}级 · ${amount(metric.xp)} 熟练`;
@@ -83,7 +83,6 @@ export function RankingsPanel({ load, lastCloudSave }: {
         {data.entries.length ? <ol className="ranking-list">
           {data.entries.map((entry, index) => <RankingRow key={index} entry={entry} />)}
         </ol> : <Empty icon={<Trophy size={28} />}>暂无收录</Empty>}
-        <p className="ranking-note">悬停数值可查看精确值。</p>
       </>}
     </div>
   </div>;

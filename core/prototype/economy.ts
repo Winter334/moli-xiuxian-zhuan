@@ -16,7 +16,7 @@ import { applyTimedEffect, getPlayerStats } from './simulation';
 
 function requireWorkshop(state: CharacterState) {
   if (state.simulation.mode !== 'rest' && state.simulation.mode !== 'idle') {
-    throw new CharacterCommandError('请先退出战斗并结束调息');
+    throw new CharacterCommandError('请先退出战斗');
   }
   return { ...FURNACES[state.furnaceTier], tier: state.furnaceTier };
 }

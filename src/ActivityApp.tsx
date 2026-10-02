@@ -7,13 +7,14 @@ import { GameClient } from './game-client';
 import { acquireLocalSaveLock, LocalSaveStore } from './local-save';
 import GameApp from './GameApp';
 import { PolicyLinks } from './ui/PolicyLinks';
+import { SocialClient } from './social-client';
 
 export default function ActivityApp() {
   const connection = useRef<DiscordActivityConnection | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [phase, setPhase] = useState('正在连接 Discord');
   const [error, setError] = useState<string | null>(null);
-  const [game, setGame] = useState<{ client: GameClient; user: DiscordUser } | null>(null);
+  const [game, setGame] = useState<{ client: GameClient; social: SocialClient; user: DiscordUser } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,7 +27,7 @@ export default function ActivityApp() {
         fetcher: connection.current!.fetcher, store: new LocalSaveStore(undefined, key),
         acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId,
       });
-      setGame({ client, user: session.user });
+      setGame({ client, social: new SocialClient(client, connection.current!.socialSession), user: session.user });
     }).catch(error => {
       const code = error && typeof error === 'object' && 'code' in error && Number.isInteger(error.code)
         ? `（错误代码 ${error.code}）` : '';
@@ -37,7 +38,7 @@ export default function ActivityApp() {
   }, [attempt]);
 
   if (game) return <DiscordIdentity.Provider value={game.user}>
-    <GameApp client={game.client} mobileActivity={new URLSearchParams(location.search).get('platform') === 'mobile'} />
+    <GameApp client={game.client} social={game.social} mobileActivity={new URLSearchParams(location.search).get('platform') === 'mobile'} />
   </DiscordIdentity.Provider>;
   const embedded = isDiscordActivity();
   return <>
@@ -47,7 +48,7 @@ export default function ActivityApp() {
       <p role={error ? 'alert' : 'status'}>{error ?? phase}</p>
       {!error && <LoaderCircle size={20} className="spinning" />}
       {error && embedded && <button onClick={() => setAttempt(current => current + 1)}><RefreshCw size={16} />重新登录</button>}
-      <p className="policy-disclosure">榜单与寄售会向本应用的其他玩家显示你的 Discord 名字和头像。</p>
+      <p className="policy-disclosure">榜单、寄售、同地玩家和世界频道会向本应用的其他玩家显示你的 Discord 名字和头像；同地玩家可查看公开配装与常态属性。</p>
       <PolicyLinks />
     </main>
   </>;

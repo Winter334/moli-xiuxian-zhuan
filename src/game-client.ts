@@ -22,6 +22,7 @@ import {
   reincarnationLookupSchema, reincarnationReceiptSchema, reincarnationRequestSchema,
   validateReincarnationReceipt, type ReincarnationRequest,
 } from '../shared/reincarnation';
+import { publicCharacterInfo } from './public-player';
 
 export interface ConnectionIssue {
   message: string;
@@ -110,6 +111,12 @@ export class GameClient {
   }
 
   getSnapshot = () => this.state;
+  getPublicCharacter = () => {
+    if (!this.local || this.state.blocked || this.state.recoveryBusy || this.state.reincarnationBusy) {
+      throw new Error('角色资料暂不可用');
+    }
+    return publicCharacterInfo(this.local.save.character);
+  };
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
     return () => { this.listeners.delete(listener); };

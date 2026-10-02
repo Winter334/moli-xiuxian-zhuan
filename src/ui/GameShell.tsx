@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, BookOpen, ChevronRight, Cloud, CloudOff, Compass, Expand, Flame, History, LoaderCircle, MoreHorizontal,
-  Mountain, Package, RefreshCw, RotateCw, Shield, Terminal, X } from 'lucide-react';
+  Mountain, Package, RefreshCw, RotateCw, Shield, Terminal, X, MessageCircle } from 'lucide-react';
 import { merchantShopSchema } from '../../core/prototype/consignment';
 import { activityName } from './ActivityPanel';
 import { CharacterPanel } from './CharacterPanel';
@@ -23,16 +23,22 @@ import { ConsignmentPanel } from './ConsignmentView';
 import { RankingsPanel } from './RankingsView';
 import type { GameSession, Page } from './types';
 import { PolicyLinks } from './PolicyLinks';
+import { useSocial } from '../use-social';
+import type { SocialClient } from '../social-client';
+import { NearbyPlayers } from './PlayerInteractions';
+import { WorldChatView } from './WorldChatView';
 
 const DebugConsole = import.meta.env.DEV ? lazy(() => import('../DebugConsole')) : null;
 const PAGES = [
   { id: 'world', label: '游历', icon: Compass }, { id: 'bag', label: '行囊', icon: Package },
   { id: 'practice', label: '修行', icon: BookOpen }, { id: 'craft', label: '炉鼎', icon: Flame },
   { id: 'journal', label: '履历', icon: History },
+  { id: 'chat', label: '世界', icon: MessageCircle },
 ] as const;
-export function GameShell({ session, previewControls, mobileActivity = false }: {
-  session: GameSession; previewControls?: ReactNode; mobileActivity?: boolean;
+export function GameShell({ session, social, previewControls, mobileActivity = false }: {
+  session: GameSession; social?: SocialClient; previewControls?: ReactNode; mobileActivity?: boolean;
 }) {
+  const socialState = useSocial(social);
   const [logSettings, setLogSettings] = useLogSettings(Boolean(previewControls));
   const [page, setPage] = useState<Page>('world');
   const [overlay, setOverlay] = useState<'reincarnation' | 'debug' | 'saves' | 'policies' | null>(null);
@@ -47,10 +53,12 @@ export function GameShell({ session, previewControls, mobileActivity = false }: 
   useEffect(() => { setOverlay(null); setPage('world'); mapCamera.current = null; lastBattle.current = null; }, [session.response?.characterId, game?.life.number]);
   useEffect(() => { if (game?.battle) lastBattle.current = game.battle.regionId; }, [game?.battle?.regionId]);
   useEffect(() => {
-    setPage(current => ['shop', 'market', 'rankings'].includes(current) ? 'world' : current);
+    setPage(current => ['shop', 'market', 'rankings', 'nearby'].includes(current) ? 'world' : current);
+    if (page === 'world' && pageRef.current) pageRef.current.scrollTop = 0;
   }, [game?.locationId]);
   useEffect(() => { if (pageRef.current) pageRef.current.scrollTop = 0; }, [page]);
   const service = page === 'shop' || page === 'market' || page === 'rankings';
+  const localPage = page === 'map' || page === 'nearby' || service;
   return <>
     <div className="orientation-gate"><RotateCw size={42} strokeWidth={1.2} /><h1>横屏入境</h1><p>请将设备转为横屏</p><span>茉莉修仙传</span></div>
     <div className={`game-shell${mobileActivity ? ' activity-mobile' : ''}`}>
@@ -77,9 +85,9 @@ export function GameShell({ session, previewControls, mobileActivity = false }: 
         : <aside className="character-panel connecting-screen"><Mountain size={32} /><span>正在读取角色</span></aside>}
       <div className="workspace-main">
         <nav className="central-nav" aria-label="主导航">{PAGES.map(({ id, label, icon: Icon }) => <button key={id} disabled={!game}
-          className={(page === id || id === 'world' && (page === 'map' || service) || id === 'journal' && page === 'bestiary') ? 'selected' : ''}
-          aria-current={page === id || id === 'world' && (page === 'map' || service) || id === 'journal' && page === 'bestiary' ? 'page' : undefined} onClick={() => setPage(id)}>
-          <Icon size={17} /><span>{label}</span></button>)}</nav>
+          className={(page === id || id === 'world' && localPage || id === 'journal' && page === 'bestiary') ? 'selected' : ''}
+          aria-current={page === id || id === 'world' && localPage || id === 'journal' && page === 'bestiary' ? 'page' : undefined} onClick={() => setPage(id)}>
+          <Icon size={17} /><span>{label}{id === 'chat' && socialState.unread > 0 && <small className="chat-unread">{socialState.unread > 99 ? '99+' : socialState.unread}</small>}</span></button>)}</nav>
         {(session.issue || displayError) && <div className="alert-bar" role="alert"><span>{session.issue?.message ?? displayError}</span>
           {session.recoveryAvailable && session.issue?.source !== 'action' &&
             <IconButton label="核对与恢复存档" onClick={() => setOverlay('saves')}><Cloud size={15} /></IconButton>}
@@ -91,8 +99,16 @@ export function GameShell({ session, previewControls, mobileActivity = false }: 
         {session.reincarnationPending && <div className="alert-bar" role="status"><span>{session.reincarnationMessage ?? '轮回待确认，本世暂停'}</span>
           <button disabled={session.reincarnationBusy || session.recoveryBusy} onClick={() => void session.reconcileReincarnation()}><RefreshCw size={15} />核对轮回</button></div>}
         {!session.reincarnationPending && session.reincarnationMessage && <p className="session-message" role="status">{session.reincarnationMessage}</p>}
-        {game && props ? <main ref={pageRef} className="page-scroll" key={game.life.number}>
-          {page === 'world' && <LocationView {...props} open={setPage} frame={session.combatFrame} paused={session.combatPaused} lastBattleId={lastBattle.current} />}
+        {game && props ? <main ref={pageRef} className={`page-scroll${page === 'chat' ? ' chat-page-scroll' : ''}`} key={game.life.number}>
+          {page === 'world' && <><LocationView key={`location:${game.locationId}`} {...props} open={setPage} frame={session.combatFrame} paused={session.combatPaused}
+            lastBattleId={lastBattle.current} nearbyCount={socialState.status === 'online' ? socialState.nearby.length : null} />
+            {game.battle && <NearbyPlayers key={game.locationId} state={socialState} client={social} />}</>}
+          {page === 'nearby' && <div className="page nearby-page"><div className="page-heading">
+            <div><span className="eyebrow">{game.locationName}</span><h1>同地道友</h1></div>
+            <IconButton label="返回当地" onClick={() => setPage('world')}><ArrowLeft size={18} /></IconButton></div>
+            <NearbyPlayers key={game.locationId} state={socialState} client={social} heading={false} />
+          </div>}
+          <WorldChatView state={socialState} client={social} visible={page === 'chat'} />
           {page === 'map' && <WorldView {...props} camera={mapCamera} onArrive={() => setPage('world')} />}
           {page === 'bag' && <InventoryView {...props} />}
           {page === 'practice' && <PracticeView {...props} />}
@@ -122,8 +138,8 @@ export function GameShell({ session, previewControls, mobileActivity = false }: 
     {overlay === 'reincarnation' && <ReincarnationDialog session={session} onClose={() => setOverlay(null)} />}
     {overlay === 'saves' && <SaveRecoveryDialog session={session} onClose={() => setOverlay(null)} />}
     {overlay === 'policies' && <Dialog title="隐私与条款" onClose={() => setOverlay(null)}>
-      <p>榜单和寄售货单会向同一应用的已登录玩家显示你的 Discord 名字和头像。</p>
-      <p>榜单另显示境界、名次、本榜指标和收录时间；寄售公开所挂商品、品质、价格和余量，不公开完整存档、行囊或当前位置。</p>
+      <p>榜单、寄售、同地道友和世界频道会向同一应用的已登录玩家显示你的 Discord 名字和头像。</p>
+      <p>同地道友可见境界与简要活动，并按需查看常态属性、战力、当前配装和运转能力；世界消息保留7天。不公开完整存档或私人行囊。</p>
       <PolicyLinks />
     </Dialog>}
     {overlay === 'debug' && game && DebugConsole && <Dialog title="测试控制台" wide onClose={() => setOverlay(null)}>

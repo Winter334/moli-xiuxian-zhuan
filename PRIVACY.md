@@ -13,7 +13,7 @@ Last updated: October 2, 2026.
 | Privacy contact email | [ws@lyrashore.com](mailto:ws@lyrashore.com) |
 | Server hosting provider and primary data storage location | netup; United States |
 | Retention period for server, reverse proxy, and security access logs | 3 months for all listed categories |
-| Database backups | Not enabled |
+| Database backups | Three independent backup slots on the same VPS: pre-update, every four hours, and daily |
 
 This policy explains how the Moli Xiuxian Zhuan Discord Activity and its supporting game servers
 process your information. "We" refers to the operator identified above.
@@ -27,7 +27,8 @@ or the server providers. For the rules governing use of the game, see our
 
 - With your authorization, we use Discord's `identify` permission to obtain your user ID,
   username, global display name, and avatar identifier. Your user ID links you to your game character;
-  your name and avatar are displayed in your character interface, leaderboards, and consignment listings.
+  your name and avatar are displayed in your character interface, leaderboards, consignment listings,
+  nearby-player lists, public player information, and the world channel.
   If no global display name is available, we use your username. We do not retrieve server-specific nicknames.
 - The server stores the Discord application ID, user ID, corresponding game character ID,
   and the time when the account link was created. We also store your verified display name,
@@ -58,6 +59,16 @@ voice, video, contacts, email addresses, or server member lists.
   changes to game assets, completed trade records, items or proceeds awaiting collection,
   and operation receipts to confirm outcomes and prevent duplicate settlement.
   These transactions involve only virtual in-game assets, not bank card or real-world payment data.
+- The social service processes your current in-game location and a brief activity status while connected,
+  to show other online players at the same location. Presence expires after loss of the game connection;
+  it is not a public map of every player's whereabouts.
+- On another same-location player's request, your client supplies a public snapshot of realm,
+  normal combat power and attributes, worn equipment and its quality/attributes, and currently active
+  cultivation techniques and abilities. Complete saves, private inventory, unequipped items, current
+  health, and consumable countdowns are not included in this snapshot.
+- Messages you voluntarily send to the in-game world channel are stored with your verified display
+  name/avatar, an application-scoped player identifier, message/request identifiers, and server time.
+  Necessary mute records are stored to limit abuse. We do not read or synchronize Discord conversations.
 
 The application does not upload the entire combat process to the server every second,
 and it does not collect Discord chat history as game history.
@@ -99,6 +110,8 @@ We process necessary information only for the following purposes:
 - Verify your Discord identity, connect you to your own character, and display your name and avatar.
 - Provide local gameplay, cloud backups, character restoration, and game features that are actually available.
 - Handle save conflicts, network retries, in-game asset settlement, and basic integrity checks.
+- Show nearby players, provide requested public character snapshots, deliver world-channel messages,
+  and enforce necessary channel moderation.
 - Troubleshoot problems, protect service security, prevent abuse, and respond to your requests.
 - Meet obligations imposed by applicable law.
 
@@ -126,8 +139,11 @@ We have not currently integrated advertising, third-party user behavior analytic
 on leaderboards and consignment listings. Leaderboards also show realm, rank, the selected metric
 (cultivation, normal combat power, refining proficiency, or current currency balance), and snapshot update time.
 Consignment listings show the listed item, quality where applicable, price, remaining quantity, and listing status/times.
-Your complete save, private inventory, equipment loadout, current location, session credentials,
-and private collection records are not disclosed through these public lists.
+Your complete save, private inventory, session credentials, and private collection records are not
+disclosed. Nearby lists disclose presence at the same in-game location, realm and brief activity;
+same-location players can request the public character snapshot described above. World-channel
+messages are visible to authenticated players throughout the same application, regardless of their
+Discord server or Activity instance. Configured operators can delete messages and temporarily mute senders.
 Test and production application identities are separated. This does not restrict participation to a specific Discord server.
 If future features expand disclosure, we will update this policy and obtain any authorization required by applicable law.
 Discord controls its own display of Activity participants.
@@ -154,9 +170,17 @@ it does not mean the corresponding digest record has automatically been removed 
 These records are retained only for authentication and necessary security checks,
 and should be removed when they no longer serve a purpose.
 Technical logs are retained for three months and then deleted.
-Separate database backups are not enabled. Game cloud saves store current character data;
-they are not historical database backups.
-If server-side data is lost, no database backup is available for recovery.
+World-channel messages are available for seven days. Expired messages are excluded from reads
+immediately and cleaned up periodically. Deleted message bodies are removed; request tombstones
+remain until the original message expires to prevent duplicate republication. Expired mute records are cleaned up.
+Independent database backups use three slots on the same VPS: a pre-update snapshot,
+a snapshot replaced every four hours, and a snapshot replaced daily. These contain account, cloud-save,
+transaction, and social records. Each slot replaces only its own previous successful archive;
+the pre-update archive can remain longer between updates. Backup access is limited to necessary operations,
+and valid deletion requests must also address relevant backup copies. Restoring a backup must not
+reintroduce data whose deletion has been confirmed.
+These backups cannot recover progress never uploaded by a client and do not protect against loss of
+the entire VPS or its disk. They are not a guarantee of recovery or unlimited save-version history.
 
 Local saves normally remain until you clear the relevant storage or the client or operating system clears it.
 We cannot directly remove every local copy on your devices.
@@ -233,7 +257,7 @@ and privacy email listed at the beginning of this policy.
 | 隐私联系邮箱 | [ws@lyrashore.com](mailto:ws@lyrashore.com) |
 | 服务器托管提供方及主要数据存储地区 | netup；美国 |
 | 服务器、反向代理及安全访问日志保留期限 | 均为3个月 |
-| 数据库备份 | 不启用 |
+| 数据库备份 | 同一VPS独立保留更新前、每4小时、每日三档 |
 
 本政策说明茉莉修仙传的 Discord Activity 及配套游戏服务器如何处理您的信息。
 “我们”指上述运营者。本政策不替代 Discord、代码仓库平台或服务器提供方自己的隐私政策。
@@ -244,7 +268,8 @@ and privacy email listed at the beginning of this policy.
 #### Discord 身份及登录信息
 
 - 经您授权，通过 Discord 的 `identify` 权限获取用户 ID、用户名、全局显示名及头像标识。
-  用户 ID 用于对应您的游戏角色，名字和头像用于本人角色界面、榜单及寄售货单展示。
+  用户 ID 用于对应您的游戏角色，名字和头像用于本人角色界面、榜单、寄售货单、
+  同地玩家、公开资料和世界频道展示。
   全局显示名缺失时使用用户名，不读取服务器专属昵称。
 - 服务器保存 Discord 应用 ID、用户 ID、对应的游戏角色 ID 及账号关联建立时间。
   另保存经核实的显示名、头像标识及资料更新时间，供榜单与寄售展示，每次成功登录后更新。
@@ -268,6 +293,14 @@ and privacy email listed at the beginning of this policy.
 - 在实际使用已开放的寄售或轮回功能时，处理相应的订单、游戏资产变更、
   成交记录、待领取物品或货款及操作回执，用于确认结果和避免重复结算。
   这里的交易仅指游戏内虚拟交易，不涉及银行卡或现实支付数据。
+- 社交服务在连接期间处理当前游戏地点与简要活动，用于显示同地在线玩家；
+  游戏连接实际失联后在线状态到期，不提供所有玩家位置的公共地图。
+- 同地玩家按需查看时，由您的客户端提供境界、常态战力与属性、
+  已穿戴器物及品质/属性、当前运转功法和神通的公开快照；
+  不包含完整存档、私人行囊、未装备物品、当前气血或消耗品倒计时。
+- 您主动发送的游戏世界频道消息与已核实的名字/头像、应用内玩家标识、
+  消息/请求编号及服务器时间一起保存；为限制滥用保存必要的禁言记录。
+  不读取或同步Discord中的聊天。
 
 本应用没有逐秒向服务器上传全部战斗过程，也没有收集 Discord 聊天历史作为游戏履历。
 
@@ -299,6 +332,7 @@ IP 地址、浏览器或客户端类型、请求时间、访问路径、响应�
 - 核实 Discord 身份，将您连接到自己的角色，并展示本人名字和头像。
 - 提供本地游玩、云备份、角色恢复及实际开放的游戏内功能。
 - 处理存档冲突、网络重试、游戏内资产结算和基础完整性检查。
+- 显示同地玩家、按需提供公开角色快照、传递世界消息及执行必要的频道管理。
 - 排查故障、保护服务安全、防止滥用，以及答复您的请求。
 - 履行适用法律规定的义务。
 
@@ -320,7 +354,10 @@ IP 地址、浏览器或客户端类型、请求时间、访问路径、响应�
 **同一 Discord 应用内的其他已认证玩家**可在榜单和寄售货单看见您的已核实显示名及头像。
 榜单还展示境界、名次、所选榜单指标（修为、常态战力、炼制熟练或当前灵石余额）和云档收录时间；
 寄售展示所挂物品、适用品质、价格、余量以及货单状态与时间。
-这些公开列表不提供完整存档、私人行囊、完整配装、当前位置、会话凭据或私人待领记录。
+不公开完整存档、私人行囊、会话凭据或私人待领记录。
+同地名单显示同一游戏地点内的在线状态、境界与简要活动，同地玩家可按需查看上文公开快照。
+世界消息对同一应用内各处的已认证玩家可见，不按Discord服务器或Activity实例分频道；
+配置的管理者可删除消息或暂时禁言发送者。
 测试与正式应用身份分开；这不代表限制为特定 Discord 服务器的成员。
 后续功能若扩大披露范围，会更新本政策，并取得适用法律要求的授权。
 Discord 自身显示 Activity 参与者的行为由 Discord 控制。
@@ -340,8 +377,14 @@ Discord 自身显示 Activity 参与者的行为由 Discord 控制。
 会话到期意味着不能继续用于认证，不意味着相关摘要记录已自动从数据库清除。
 这些记录只为认证和必要的安全核查保留，失去用途后应清理。
 技术日志保留3个月，到期删除。
-当前不启用独立数据库备份；游戏云存档保存当前角色数据，不是数据库历史备份。
-服务器端数据丢失时，没有数据库备份可用于恢复。
+世界消息可见期限为7天，过期即不再返回并定期清理；删除消息移除正文，
+原请求去重标记保留至原消息到期，避免重试重新发布。到期禁言记录定期清理。
+独立数据库备份在同一VPS保留三档：更新前、每4小时替换、每日替换，
+包含账号、云档、交易与社交记录。各档仅替换本档上一份成功归档，
+更新前副本在两次更新间可能保留较久。备份仅必要运维可访问，
+有效删除请求也需处理相关备份副本；恢复时不能重新引入已确认删除的数据。
+这些备份不能恢复从未上传的客户端进度，也不能防整台VPS或磁盘丢失，
+不构成恢复保证或无限期的存档版本历史。
 
 本地存档通常保留到您清除相关存储，或客户端、操作系统清理它为止。
 我们无法直接替您删除所有设备上的本地副本；服务器删除请求与设备本地清理需要分别处理。

@@ -2,7 +2,7 @@ import type { OpeningCommand, OpeningView } from '../../shared/opening-contracts
 import type { useGame } from '../use-game';
 
 export type GameSession = ReturnType<typeof useGame>;
-export type Page = 'world' | 'map' | 'bag' | 'practice' | 'craft' | 'journal' | 'bestiary' | 'shop' | 'market' | 'rankings';
+export type Page = 'world' | 'map' | 'bag' | 'practice' | 'craft' | 'journal' | 'bestiary' | 'shop' | 'market' | 'rankings' | 'nearby' | 'chat';
 export interface ViewProps {
   game: OpeningView;
   blocked: boolean;

@@ -31,6 +31,7 @@ services:
       ACTIVITY_PORT: "5180"
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:?Set the Discord application ID}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:?Set the server-only Discord client secret}
+      SOCIAL_MODERATOR_IDS: ${SOCIAL_MODERATOR_IDS:-}
       ACTIVITY_DATABASE_URL: postgres://moli_activity_vps:${ACTIVITY_DATABASE_PASSWORD:?Set the application database password}@postgres:5432/moli_activity_vps
     ports:
       - "127.0.0.1:${ACTIVITY_BIND_PORT:-5180}:5180"
@@ -40,6 +41,33 @@ services:
     networks:
       - database
       - web
+
+  backup:
+    image: public.ecr.aws/docker/library/postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929
+    restart: unless-stopped
+    init: true
+    command: ["/bin/bash", "/scripts/activity-backup.sh", "schedule"]
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: moli_activity_vps
+      PGUSER: moli_activity_vps
+      PGPASSWORD: ${ACTIVITY_DATABASE_PASSWORD:?Set the application database password}
+      TZ: Asia/Shanghai
+    volumes:
+      - activity_backups:/backups
+      - ./deploy/activity-backup.sh:/scripts/activity-backup.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "[[ -s /backups/quick.tar && -s /backups/daily.tar && $$(( $$(date +%s) - $$(stat -c %Y /backups/quick.tar) )) -lt 18000 && $$(( $$(date +%s) - $$(stat -c %Y /backups/daily.tar) )) -lt 90000 ]]"]
+      interval: 5m
+      timeout: 5s
+      start_period: 2m
+      retries: 3
 
   caddy:
     image: caddy:2-alpine
@@ -67,5 +95,6 @@ networks:
 
 volumes:
   activity_pgdata:
+  activity_backups:
   activity_caddy_data:
   activity_caddy_config:

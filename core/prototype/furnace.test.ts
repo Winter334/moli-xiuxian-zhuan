@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { random } from '../numbers';
-import { createCharacter, readCharacter } from './character-state';
+import { addInstance, createCharacter, readCharacter } from './character-state';
 import { executeCharacterCommand, getCharacterView, type CharacterCommand } from './character';
-import { ITEMS, RECIPES } from './content';
+import { ARMOR_ASSEMBLIES, ASSEMBLIES, ITEMS, RECIPES } from './content';
 import { componentQuality } from './equipment';
 import { refiningChance } from './economy';
 import { FURNACES, furnaceTierSchema } from './furnace';
@@ -77,31 +77,63 @@ describe('personal furnace', () => {
     }
   });
 
-  it('blocks furnace operations during combat and meditation without consuming resources', () => {
+  it('interrupts meditation for furnace operations exactly like stopping first', () => {
+    const state = createCharacter(0, 19);
+    const commands: CharacterCommand[] = [];
+    for (const recipeId of ['smelt-iron', 'iron-blade']) {
+      for (const [itemId, count] of Object.entries(RECIPES[recipeId].materials)) state.inventory[itemId] = String(count);
+      commands.push({ type: 'craft', recipeId, quantity: 1 });
+    }
+    const upgrade = FURNACES[state.furnaceTier].upgrade!;
+    for (const [itemId, count] of Object.entries(upgrade.materials)) state.inventory[itemId] = String(count);
+    commands.push({ type: 'upgrade-furnace', tier: upgrade.tier });
+    const weapon = ASSEMBLIES[0];
+    commands.push({
+      type: 'assemble',
+      bladeId: addInstance(state, state.instances, weapon.blade, 100),
+      hiltId: addInstance(state, state.instances, weapon.hilt, 100),
+    });
+    const armor = ARMOR_ASSEMBLIES[0];
+    commands.push({
+      type: 'assemble-armor',
+      interiorId: addInstance(state, state.instances, armor.interior, 100),
+      exteriorId: addInstance(state, state.instances, armor.exterior, 100),
+    });
+    const meditating = executeCharacterCommand(state, { type: 'recover', mode: 'sleep' });
+    const before = structuredClone(meditating);
+    const view = getCharacterView(meditating);
+    expect(view.workshop.available).toBe(true);
+    expect(view.workshop.upgrade!.available).toBe(true);
+    expect(view.recipes.every(recipe => recipe.available)).toBe(true);
+    const stopped = executeCharacterCommand(meditating, { type: 'recover', mode: 'rest' });
+    for (const command of commands) {
+      const result = executeCharacterCommand(meditating, command);
+      expect(result).toEqual(executeCharacterCommand(stopped, command));
+      expect(result.simulation.mode).toBe('rest');
+      expect(meditating).toEqual(before);
+    }
+  });
+
+  it('blocks furnace operations during combat without consuming resources', () => {
     const state = createCharacter(0, 19);
     const upgrade = FURNACES[state.furnaceTier].upgrade!;
     for (const [itemId, count] of Object.entries(upgrade.materials)) state.inventory[itemId] = String(count);
     const regionId = getCharacterView(state).regions.find(region => region.enterable)!.id;
-    const activities = [
-      executeCharacterCommand(state, { type: 'recover', mode: 'sleep' }),
-      executeCharacterCommand(state, { type: 'enter', regionId }),
-    ];
+    const activity = executeCharacterCommand(state, { type: 'enter', regionId });
     const commands: CharacterCommand[] = [
       { type: 'upgrade-furnace', tier: upgrade.tier },
       { type: 'craft', recipeId: 'smelt-iron', quantity: 1 },
       { type: 'assemble', bladeId: 'missing', hiltId: 'missing' },
       { type: 'assemble-armor', interiorId: 'missing', exteriorId: 'missing' },
     ];
-    for (const activity of activities) {
-      const before = structuredClone(activity);
-      const view = getCharacterView(activity);
-      expect(view.workshop.available).toBe(false);
-      expect(view.workshop.upgrade!.available).toBe(false);
-      expect(view.recipes.every(recipe => !recipe.available)).toBe(true);
-      for (const command of commands) {
-        expect(() => executeCharacterCommand(activity, command)).toThrow('请先退出战斗并结束调息');
-        expect(activity).toEqual(before);
-      }
+    const before = structuredClone(activity);
+    const view = getCharacterView(activity);
+    expect(view.workshop.available).toBe(false);
+    expect(view.workshop.upgrade!.available).toBe(false);
+    expect(view.recipes.every(recipe => !recipe.available)).toBe(true);
+    for (const command of commands) {
+      expect(() => executeCharacterCommand(activity, command)).toThrow('请先退出战斗');
+      expect(activity).toEqual(before);
     }
   });
 });

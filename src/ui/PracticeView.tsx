@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeftRight, ArrowUpRight, BookOpen, CirclePause, LockKeyhole, Play, Sparkles } from 'lucide-react';
-import { decimal, formatAmount, progress } from '../format';
+import { decimal, formatAmount, formatDecimal, progress } from '../format';
 import { TECHNIQUE_ART } from './art';
 import { Bonuses, Dialog, Empty, Meter } from './common';
 import type { ViewProps } from './types';
@@ -71,7 +71,7 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
           <span className="manual-level">{entry.level}<small> / {entry.maxLevel}级</small></span>
           <div className="manual-proficiency"><div>
             <span>{entry.nextThreshold ? '累计熟练' : '功法圆满'}</span>
-            <span title={entry.nextThreshold ? `${entry.xp} / ${entry.nextThreshold}` : entry.xp}>
+            <span title={entry.nextThreshold ? `${formatDecimal(entry.xp)} / ${formatDecimal(entry.nextThreshold)}` : formatDecimal(entry.xp)}>
               {formatAmount(entry.xp)}{entry.nextThreshold && <> / {formatAmount(entry.nextThreshold)}</>}
             </span>
           </div><progress aria-label={`${entry.name}累计熟练`} value={entry.nextThreshold ? progress(entry.xp, entry.nextThreshold) : 100} max={100} /></div>

@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { FlaskConical, Gem, Hammer, Minus, Package, Plus, Search, Shield, Swords, X } from 'lucide-react';
-import { decimal, formatAmount, multiply, progress } from '../format';
+import { decimal, formatAmount, formatDecimal, multiply, progress } from '../format';
 import { ITEM_ICONS } from './art';
 import type { Instance } from './types';
 
@@ -29,7 +29,7 @@ export function Meter({ label, value, max, tone = 'jade', compact = false }: {
   label: string; value: string; max: string; tone?: string; compact?: boolean;
 }) {
   return <div className={`meter ${tone} ${compact ? 'compact' : ''}`}>
-    <div><span>{label}</span><span title={`${value} / ${max}`}>{formatAmount(value)}<small> / {formatAmount(max)}</small></span></div>
+    <div><span>{label}</span><span title={`${formatDecimal(value)} / ${formatDecimal(max)}`}>{formatAmount(value)}<small> / {formatAmount(max)}</small></span></div>
     <progress aria-label={label} value={progress(value, max)} max={100} />
   </div>;
 }
@@ -94,7 +94,7 @@ export function formatBonus(key: string, value: string, multiplicative = false) 
   const percent = key === 'critChance' || key === 'hpRegenPercent';
   return `${decimal(value).gte(0) ? '+' : ''}${formatAmount(percent ? multiply(value, 100) : value)}${percent ? '个百分点' : ''}`;
 }
-export function Bonuses({ source }: { source: NonNullable<Instance['bonuses']> }) {
+export function Bonuses({ source }: { source: Pick<NonNullable<Instance['bonuses']>, 'flat' | 'multiplier'> }) {
   return <div className="bonus-lines">
     {Object.entries(source.flat ?? {}).map(([key, value]) =>
       <span key={`flat:${key}`} className={decimal(value).lt(0) ? 'negative' : 'positive'}>

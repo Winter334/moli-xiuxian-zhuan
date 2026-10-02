@@ -287,6 +287,11 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
   if (!parsed.success) throw new CharacterCommandError('操作参数无效');
   const command = parsed.data;
   const state = readCharacter(input);
+  const interruptsMeditation = ['craft', 'upgrade-furnace', 'assemble', 'assemble-armor'].includes(command.type) ||
+    (command.type === 'train' && command.skillId !== null) || (command.type === 'gather' && command.siteId !== null);
+  if (state.simulation.mode === 'sleep' && interruptsMeditation) {
+    state.simulation = setRecoveryMode(state.simulation, 'rest');
+  }
   switch (command.type) {
     case 'travel': {
       if (state.simulation.battle) throw new CharacterCommandError('请先撤退再前往其它地点');
@@ -354,7 +359,7 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       }
       const site = MINING_SITES[command.siteId];
       if (state.locationId !== site.location || !cleared(state, site.prerequisite) || state.simulation.mode !== 'rest') {
-        throw new CharacterCommandError('请先前往矿点所在地点并结束调息');
+        throw new CharacterCommandError('请先前往已开放的矿点所在地点并退出战斗');
       }
       if (state.gathering?.siteId === command.siteId) break;
       if (!state.skills.mining) state.skills.mining = { level: 0, xp: '0' };
@@ -465,7 +470,8 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
   const shop = state[shopDefinition.stateKey];
   const shopUnlocked = shopDefinition.prerequisite === null || cleared(state, shopDefinition.prerequisite);
   const workshop = FURNACES[state.furnaceTier];
-  const workshopAvailable = simulation.mode === 'rest' || simulation.mode === 'idle';
+  const resting = simulation.mode === 'rest' || simulation.mode === 'sleep';
+  const workshopAvailable = resting || simulation.mode === 'idle';
   const upgradeCosts = Object.entries(workshop.upgrade?.materials ?? {}).map(([itemId, required]) => ({
     itemId, name: ITEMS[itemId].name, required, owned: state.inventory[itemId] ?? '0',
   }));
@@ -560,12 +566,12 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       cycleSeconds: dec(miningEfficiency(id, state.skills.mining?.level ?? 0,
         id === 'jade-seam' ? state.jadeSeamCompletions ?? 0 : 0).cycleSeconds).div(miningSpeed(sources)).toNumber(),
       completed: id === 'jade-seam' ? state.jadeSeamCompletions ?? 0 : null,
-      available: simulation.mode === 'rest' && cleared(state, MINING_SITES[id].prerequisite), active: state.gathering?.siteId === id,
+      available: resting && cleared(state, MINING_SITES[id].prerequisite), active: state.gathering?.siteId === id,
     })),
     training: state.training ? { id: state.training, name: TRAININGS[state.training].actionName } : null,
     trainings: TRAINING_IDS.filter(id => TRAININGS[id].location === state.locationId).map(id => ({
       id, name: TRAININGS[id].actionName, skillName: TRAININGS[id].name, active: state.training === id,
-      available: simulation.mode === 'rest' && cleared(state, TRAININGS[id].prerequisite),
+      available: resting && cleared(state, TRAININGS[id].prerequisite),
     })),
     manuals: MANUAL_IDS.map((id) => {
       const manual = MANUALS[id];

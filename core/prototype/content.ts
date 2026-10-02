@@ -105,7 +105,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     ...material('韧妖皮', 500), description: '妖兽身上剥取的柔韧皮料，反复弯折仍不易开裂。裁薄后可制护额、内甲、长裤和鞋靴。',
   },
   'lustrous-hide': {
-    ...material('锦纹兽皮', 75), description: '皮面保留着鲜明的天然花纹，光泽均匀。收购皮货的商会会将这类兽皮另行归拢。',
+    ...material('锦纹兽皮', 75), description: '皮面保留着鲜明的天然花纹，光泽均匀。仅作售卖皮货，不用于炼制；售出可换取灵石。',
   },
   'silver-ingot': material('整匣灵石', 1000),
   'dark-steel-ingot': {
@@ -121,7 +121,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     ...material('风纹灵丝', 3000), description: '缠附在含灵草木与妖物身上的细丝，受风牵引时浮起浅纹。与草木灵露一同炼入铁桦木，可制养灵木。',
   },
   'weathered-route-chart': {
-    ...material('凝风长翎', 999), description: '盘崖妖雕翼上的完整长翎，羽轴内凝着细白纹路，迎风时发出低鸣。商会也收购这类完整翎羽。',
+    ...material('凝风长翎', 999), description: '盘崖妖雕翼上的完整长翎，羽轴内凝着细白纹路，迎风时发出低鸣。仅作售卖战利品，没有使用或炼制用途；售出可换取灵石。',
   },
   'azure-ore': {
     ...material('青纹矿', 2222), description: '灰白岩层中夹生的含灵矿石，断面交错着青色细纹。配以地脉浊露和地火煤熔炼，可得青纹铁。',
@@ -147,7 +147,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
   'marrow-crystal': {
     ...material('灵髓晶', 120000), description: '凝灵髓、玄灵髓与莹灵髓一同凝炼的晶体，几种色泽在晶心交叠。配合阵枢残核，可炼成养元佩。',
   },
-  'warding-notes': { ...material('工坊阵图残页', 11037), description: '夹在旧傀甲内的阵图残页，标着牵丝与聚灵部件的位置。缺损处过多，已不能照图制作，仍可卖给收购旧物的商会。' },
+  'warding-notes': { ...material('工坊阵图残页', 11037), description: '夹在旧傀甲内的阵图残页，标着牵丝与聚灵部件的位置。仅作售卖旧物，不能学习、解锁配方或用于炼制；售出可换取灵石。' },
   'vault-bond': { ...material('赤纹灵金', 1000000), description: '金色料片中贯穿着赤红灵纹，旧阵枢与守卫以它接引灵力。离开原阵后仍是贵重器料，可用于沉渊钢、断岳佩和鸣金锭的炼制。' },
   'feral-heart-meat': {
     ...material('凶兽心肉', 300000), description: '凶兽心腔附近凝聚精血的厚实肉块，切面深红，灵性比寻常筋肉更浓。配合阵枢残核聚拢药力，可炼制凝元丹。',
@@ -225,7 +225,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     ...material('铁桦木', 20), description: '山岭铁桦的坚硬木料，断面纹理细密。提取并滤净其中的木脂，可制成炼器所用的桦脂淬液。',
   },
   'whole-hide': {
-    ...material('完整兽皮', 75), description: '剥取较为完整的一张兽皮，皮面少有破洞，便于收卷。收购皮货的铺面愿意为它多出些灵石。',
+    ...material('完整兽皮', 75), description: '剥取较为完整的一张兽皮，皮面少有破洞，便于收卷。仅作售卖皮货，不用于炼制；售出可换取灵石。',
   },
   'crude-iron-ingot': {
     ...material('粗铁锭', 30), description: '碎铁料经炭火熔炼所得的低扁铸块，边缘粗钝，表面尚有炉渣。继续锻炼后可作制剑主材。',

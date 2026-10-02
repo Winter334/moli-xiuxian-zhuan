@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowDownWideNarrow, ArrowUpFromLine, Check, ChevronDown, ChevronRight, ChevronUp, Coins, FlaskConical, Package, RefreshCw, ShoppingCart, Sparkles, X } from 'lucide-react';
 import { rarityMultiplier } from '../../core/prototype/equipment';
-import { batchLimit, decimal, formatAmount, hasEnough, multiply } from '../format';
+import { batchLimit, decimal, formatAmount, formatNumericText, hasEnough, multiply } from '../format';
 import { Bonuses, Dialog, Empty, formatBonus, IconButton, ItemGlyph, Quantity, SearchField, STAT_NAMES, Tabs } from './common';
 import { KIND_NAMES, SLOT_NAMES, type Instance, type Stack, type ViewProps } from './types';
 
@@ -29,7 +29,7 @@ function ItemDetails({ item, amountLabel = '持有', showBonuses = true }: { ite
     {item.description && <p className="flavor">{item.description}</p>}
     {isInstance(item) ? <>{showBonuses && item.bonuses && <Bonuses source={item.bonuses} />}
       {item.effectDescription && <p className="effect-description">{item.effectDescription}</p>}</>
-      : item.use && <p className="effect-description">{item.use.description}</p>}
+      : item.use && <p className="effect-description">{formatNumericText(item.use.description)}</p>}
   </>;
 }
 function EquipmentComparison({ item, equipped }: { item: Instance; equipped: Instance | null }) {
@@ -62,15 +62,36 @@ function EquipmentComparison({ item, equipped }: { item: Instance; equipped: Ins
     {equipped?.effectDescription && <p className="muted small">当前器物特性：{equipped.effectDescription}</p>}
   </section>;
 }
-function EntryList({ items, select, prices }: { items: Entry[]; select: (key: string) => void; prices?: 'buy' | 'sell' }) {
+function QuickSell({ item, disabled, sell }: { item: Stack; disabled: boolean; sell: (item: Stack, quantity: number) => void }) {
+  const max = batchLimit(item.quantity, '1', 10000);
+  const allAllowed = decimal(item.quantity).eq(max);
+  return <div className="shop-quick-sell" role="group" aria-label={`售出${item.name}`}>
+    {[1, 10, max].map((amount, index) => {
+      const all = index === 2;
+      const label = all ? `售出全部${item.name}` : `售出${amount}个${item.name}`;
+      const issue = all && !allAllowed ? '每次最多售出10,000个'
+        : amount > max ? `数量不足${amount}个` : null;
+      return <button key={index} className={all ? 'quick-sell-all' : undefined} aria-label={label}
+        title={issue ?? `${label}（${amount}个），获得${formatAmount(multiply(item.sellPrice, amount))}灵石`}
+        disabled={disabled || max < 1 || Boolean(issue)} onClick={() => sell(item, amount)}>{all ? '全部' : amount}</button>;
+    })}
+  </div>;
+}
+function EntryList({ items, select, prices, sell, disabled = false }: {
+  items: Entry[]; select: (key: string) => void; prices?: 'buy' | 'sell';
+  sell?: (item: Stack, quantity: number) => void; disabled?: boolean;
+}) {
   return <div className="entry-list">
-    {items.map(item => <button className="entry" key={entryKey(item)} onClick={() => select(entryKey(item))}>
-      <ItemGlyph kind={isInstance(item) ? item.slot ? 'equipment' : 'part' : item.kind} slot={isInstance(item) ? item.slot : undefined} itemId={item.itemId} />
-      <span className="entry-name"><strong>{item.name}</strong><small>{isInstance(item) ? `${item.slot ? SLOT_NAMES[item.slot] : '精炼器料'} · 品质 ${item.quality}` : KIND_NAMES[item.kind]}</small></span>
-      {prices && <span className="entry-price">{formatAmount(prices === 'buy' ? item.buyPrice : item.sellPrice)}<small>灵石</small></span>}
-      <span className="entry-count">{isInstance(item) ? item.equipped ? <Check size={16} aria-label="已装备" /> : `#${item.instanceId.slice(5)}` : `×${formatAmount(item.quantity)}`}</span>
-      <ChevronRight size={14} />
-    </button>)}
+    {items.map(item => <div key={entryKey(item)} className={sell && !isInstance(item) ? 'shop-sale-entry' : undefined}>
+      <button className="entry" onClick={() => select(entryKey(item))}>
+        <ItemGlyph kind={isInstance(item) ? item.slot ? 'equipment' : 'part' : item.kind} slot={isInstance(item) ? item.slot : undefined} itemId={item.itemId} />
+        <span className="entry-name"><strong>{item.name}</strong><small>{isInstance(item) ? `${item.slot ? SLOT_NAMES[item.slot] : '精炼器料'} · 品质 ${item.quality}` : KIND_NAMES[item.kind]}</small></span>
+        {prices && <span className="entry-price">{formatAmount(prices === 'buy' ? item.buyPrice : item.sellPrice)}<small>灵石</small></span>}
+        <span className="entry-count">{isInstance(item) ? item.equipped ? <Check size={16} aria-label="已装备" /> : `#${item.instanceId.slice(5)}` : `×${formatAmount(item.quantity)}`}</span>
+        <ChevronRight size={14} />
+      </button>
+      {sell && !isInstance(item) && <QuickSell item={item} disabled={disabled} sell={sell} />}
+    </div>)}
     {!items.length && <Empty>暂无对应物品</Empty>}
   </div>;
 }
@@ -213,6 +234,10 @@ export function ShopView({ game, blocked, command }: ViewProps) {
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const tradeFlight = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState('');
+  const disabled = blocked || pending;
   const owner = side === 'buy' ? game.shop : game;
   const items: Entry[] = [...owner.inventory, ...owner.instances].filter(item => item.name.includes(search));
   const item = items.find(entry => entryKey(entry) === selectedId);
@@ -221,28 +246,44 @@ export function ShopView({ game, blocked, command }: ViewProps) {
     side === 'buy' ? batchLimit(game.money, price, 10000) : 10000) : 0;
   const amount = item && isInstance(item) ? 1 : quantity;
   useEffect(() => { if (selectedId && !item) setSelectedId(''); }, [selectedId, item]);
+  const tradeItem = async (side: 'buy' | 'sell', entry: Entry, quantity: number) => {
+    const limit = Math.min(isInstance(entry) ? 1 : batchLimit(entry.quantity, '1', 10000),
+      side === 'buy' ? batchLimit(game.money, entry.buyPrice, 10000) : 10000);
+    if (blocked || tradeFlight.current || !game.shop.available || !Number.isInteger(quantity) || quantity < 1 || quantity > limit ||
+      side === 'sell' && isInstance(entry) && entry.equipped) return;
+    tradeFlight.current = true;
+    setPending(true); setNotice('');
+    try {
+      if (!await command({ type: side, shopId: game.shop.id, quantity, target: isInstance(entry)
+        ? { kind: 'instance', instanceId: entry.instanceId } : { kind: 'stack', itemId: entry.itemId } })) setNotice('交易未完成');
+    } catch (error) { setNotice(error instanceof Error ? error.message : '交易未完成'); }
+    finally { tradeFlight.current = false; setPending(false); }
+  };
   if (!game.shop.available) return <Empty>当前地点不能交易</Empty>;
   return <div className="shop-view">
     <div className="section-line"><span className="wallet"><Coins size={16} />{formatAmount(game.money)} 灵石</span>
-      <button disabled={blocked || !game.shop.refreshDue} onClick={() => void command({ type: 'visit-shop', shopId: game.shop.id })}>
+      <button disabled={disabled || !game.shop.refreshDue} onClick={() => void command({ type: 'visit-shop', shopId: game.shop.id })}>
         <RefreshCw size={15} />{game.shop.refreshDue ? '查看今日货物' : '今日货物已更新'}</button></div>
     <Tabs label="商店买卖" value={side} options={[{ id: 'buy', label: '购入' }, { id: 'sell', label: '售出' }]}
-      onChange={value => { setSide(value); setSelectedId(''); setQuantity(1); }} />
+      onChange={value => { setSide(value); setSelectedId(''); setQuantity(1); setNotice(''); }} />
     <div className="list-toolbar"><SearchField value={search} onChange={setSearch} placeholder="查找交易物品" /></div>
     {game.shop.refreshDue && side === 'buy' ? <Empty icon={<ShoppingCart size={28} />}>今日货物尚未查看</Empty>
-      : <EntryList items={items} prices={side} select={key => { setSelectedId(key); setQuantity(1); }} />}
+      : <EntryList items={items} prices={side} disabled={disabled}
+        sell={side === 'sell' ? (entry, amount) => void tradeItem('sell', entry, amount) : undefined}
+        select={key => { setSelectedId(key); setQuantity(1); setNotice(''); }} />}
+    {notice && !item && <p className="negative" role="alert">{notice}</p>}
     {item && <Dialog title={side === 'buy' ? '购入物品' : '售出物品'} onClose={() => setSelectedId('')}>
       <ItemDetails item={item} amountLabel={side === 'buy' ? '在售' : '持有'} />
       <div className="item-valuation"><span>单价</span><strong>{formatAmount(price)} 灵石</strong></div>
-      {!isInstance(item) && <Quantity value={quantity} max={max} label="交易数量" onChange={setQuantity} disabled={blocked} />}
+      {!isInstance(item) && <Quantity value={quantity} max={max} label="交易数量" onChange={setQuantity} disabled={disabled} />}
       <div className="trade-total"><span>合计</span><strong>{formatAmount(multiply(price, Number.isFinite(amount) ? amount : 0))}<small> 灵石</small></strong></div>
       {side === 'sell' && isInstance(item) && item.equipped && <p className="negative">须先卸下此器物</p>}
       {side === 'buy' && !hasEnough(game.money, price, amount || 1) && <p className="negative">灵石不足</p>}
-      <button className={side === 'buy' ? 'primary full' : 'full'} disabled={blocked || !Number.isInteger(amount) || amount < 1 || amount > max ||
+      <button className={side === 'buy' ? 'primary full' : 'full'} disabled={disabled || !Number.isInteger(amount) || amount < 1 || amount > max ||
         side === 'sell' && isInstance(item) && item.equipped}
-        onClick={() => void command({ type: side, shopId: game.shop.id, quantity: amount, target: isInstance(item)
-          ? { kind: 'instance', instanceId: item.instanceId } : { kind: 'stack', itemId: item.itemId } })}>
+        onClick={() => void tradeItem(side, item, amount)}>
         {side === 'buy' ? <ShoppingCart size={16} /> : <Coins size={16} />}{side === 'buy' ? '购入' : '售出'}</button>
+      {notice && <p className="negative" role="alert">{notice}</p>}
     </Dialog>}
   </div>;
 }

@@ -11,6 +11,17 @@ export function decimal(value: string | number): Decimal {
   }
 }
 
+export function formatDecimal(value: string | number): string {
+  const amount = decimal(value);
+  if (!amount.isZero() && amount.abs().lt('0.01')) {
+    return amount.toExponential(2).replace(/\.?0+(?=e)/, '');
+  }
+  const [whole, fraction] = amount.toFixed(amount.isInteger() ? 0 : 2).split('.');
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const tail = fraction?.replace(/0+$/, '');
+  return tail ? `${grouped}.${tail}` : grouped;
+}
+
 export function formatAmount(value: string): string {
   const amount = decimal(value);
   const units = [
@@ -22,10 +33,11 @@ export function formatAmount(value: string): string {
       return `${amount.div(threshold).toFixed(2).replace(/\.?0+$/, '')}${unit}`;
     }
   }
-  const [whole, fraction] = amount.toFixed(amount.isInteger() ? 0 : 2).split('.');
-  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const tail = fraction?.replace(/0+$/, '');
-  return tail ? `${grouped}.${tail}` : grouped;
+  return formatDecimal(value);
+}
+
+export function formatNumericText(value: string): string {
+  return value.replace(/(?<![\w.])\d+\.\d{3,}(?![\w.])/g, amount => formatDecimal(amount));
 }
 
 export function percent(value: number): string {

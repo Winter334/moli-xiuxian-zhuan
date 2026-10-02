@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { ArrowUpRight, BookOpen, Check, Coins, Gem, Image, List, Sparkles, UserRound } from 'lucide-react';
 import { SKILLS, type SkillId } from '../../core/prototype/skills';
 import { TECHNIQUE_ART } from './art';
-import { batchLimit, decimal, duration, formatAmount, percent } from '../format';
+import { batchLimit, decimal, duration, formatAmount, formatNumericText, percent } from '../format';
 import { activityName } from './ActivityPanel';
 import { Bonuses, Dialog, IconButton, ItemGlyph, Meter } from './common';
 import type { ViewProps } from './types';
@@ -111,7 +111,7 @@ export function CharacterPanel({ game, blocked, command, goActivity }: ViewProps
           const allAllowed = decimal(item.quantity).eq(max);
           const disabled = blocked || using || Boolean(use.issue);
           const batchIssue = `每次最多使用${formatAmount(String(use.maxBatch))}个`;
-          return <article key={item.itemId} className="quick-item" role="listitem" title={use.issue ?? use.description}>
+          return <article key={item.itemId} className="quick-item" role="listitem" title={formatNumericText(use.issue ?? use.description)}>
             <ItemGlyph kind={item.kind} itemId={item.itemId} size={32} />
             <div className="quick-item-info"><strong>{item.name}</strong><small title={`持有 ${item.quantity} 个`}>×{formatAmount(item.quantity)}</small></div>
             <div className="quick-item-actions" role="group" aria-label={`使用${item.name}`}>

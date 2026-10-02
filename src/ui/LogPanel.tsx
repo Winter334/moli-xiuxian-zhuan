@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, Coins, Flame, Package, ScrollText, Sparkles, Swords } from 'lucide-react';
-import { timeLabel } from '../format';
+import { formatNumericText, timeLabel } from '../format';
 import { IconButton } from './common';
 import { LOG_GROUPS, visibleLogs, type LogGroup, type LogSettings } from './log-settings';
 import type { ViewProps } from './types';
@@ -28,7 +28,7 @@ export function LogPanel({ game, settings, toggleGroup }: Pick<ViewProps, 'game'
       onTouchMove={() => setFollow(false)} onPointerDown={() => setFollow(false)}
       onKeyDown={event => { if (['ArrowUp', 'PageUp', 'Home'].includes(event.key)) setFollow(false); }}>
       {entries.length ? entries.map(entry => <article className={`log-entry ${entry.group}`} key={entry.key}>
-        <time>{timeLabel(entry.at)}</time><p>{entry.message}</p></article>) : <p className="empty-line">{settings.groups.length ? '近期暂无此类记录' : '日志分类已全部关闭'}</p>}
+        <time>{timeLabel(entry.at)}</time><p>{formatNumericText(entry.message)}</p></article>) : <p className="empty-line">{settings.groups.length ? '近期暂无此类记录' : '日志分类已全部关闭'}</p>}
     </div>
     <footer><label className="check-label"><input type="checkbox" checked={follow} onChange={event => setFollow(event.target.checked)} />跟随最新</label>
       <IconButton label="回到最新日志" onClick={() => { setFollow(true); if (list.current) list.current.scrollTop = list.current.scrollHeight; }}><ArrowDown size={15} /></IconButton></footer>
