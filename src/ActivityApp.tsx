@@ -26,7 +26,7 @@ export default function ActivityApp() {
       const key = discordSaveKey(session.clientId, session.user.id);
       const client = new GameClient({
         fetcher: connection.current!.fetcher, store: new LocalSaveStore(undefined, key),
-        acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId, requireCloudBaseline: true,
+        acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId, checkPvpSessions: true,
         openedAt: openedAt.current,
       });
       setGame({ client, social: new SocialClient(client, connection.current!.socialSession), user: session.user });

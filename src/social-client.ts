@@ -139,7 +139,7 @@ export class SocialClient {
         this.socket = null; this.clearTimers(); this.rejectRequests();
         this.publish({ status: this.displaced ? 'displaced' : 'offline', nearby: [], moderator: false, sending: false });
         if (event.code === 4410) {
-          void this.game.blockOnlineSource('云端存档已变化，联机已停止。请核对并采用最新云端存档。').catch(() => {});
+          void this.game.blockOnlineSource('云端已有另一份保存版本，本地进度保留。请在存档管理选择要保留的进度。').catch(() => {});
           return;
         }
         if (this.active && !this.displaced && this.presence()) {

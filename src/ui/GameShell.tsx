@@ -73,9 +73,6 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
     if (page === 'world' && pageRef.current) pageRef.current.scrollTop = 0;
   }, [game?.locationId]);
   useEffect(() => { if (pageRef.current) pageRef.current.scrollTop = 0; }, [page]);
-  useEffect(() => {
-    if (social && session.onlineMessage && session.recoveryAvailable && !session.onlineReady) setOverlay('saves');
-  }, [social, session.onlineMessage, session.recoveryAvailable]);
   const service = page === 'shop' || page === 'market' || page === 'rankings';
   const localPage = page === 'map' || page === 'nearby' || service;
   return <>
@@ -118,7 +115,7 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
         {social && !session.onlineReady && session.onlineMessage && <div className="alert-bar" role="status">
           <span>联机未启用 · {session.onlineMessage}</span>
           <button disabled={!session.recoveryAvailable || session.recoveryBusy} onClick={() => setOverlay('saves')}>
-            <Cloud size={15} />核对云档
+            <Cloud size={15} />存档管理
           </button>
         </div>}
         {session.tradePending && <div className="alert-bar" role="status"><span>寄售待确认 · {session.tradeMessage ?? '相关资产暂由商盟保管'}</span>

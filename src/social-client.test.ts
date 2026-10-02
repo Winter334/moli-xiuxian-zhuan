@@ -98,9 +98,9 @@ describe('social client lifecycle', () => {
     expect(state).toEqual(before);
     expect(socket.sent[0]).toMatchObject({ type: 'auth', token: 'a'.repeat(43), cloudRevision: '0' });
   });
-  it('disconnects and cannot reconnect while cloud verification is missing, then resumes only when admitted', async () => {
+  it('disconnects on a real save conflict and resumes after the player resolves it', async () => {
     const { client, sockets, state, listeners } = await setup();
-    state.onlineReady = false; state.onlineMessage = '采用云端存档后才可联机';
+    state.onlineReady = false; state.onlineMessage = '请选择保留的进度';
     listeners.forEach(fn => fn());
     expect(client.getSnapshot()).toMatchObject({ status: 'offline', nearby: [], notice: state.onlineMessage });
     client.reconnectNow();

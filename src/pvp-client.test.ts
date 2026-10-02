@@ -50,7 +50,7 @@ async function setup() {
       }
     });
     const client = new GameClient({ fetcher, store: new LocalSaveStore(storage), expectedCharacterId: id,
-      requireCloudBaseline: true, wallNow: () => now, monotonicNow: () => now, acquireLock: async () => () => {} });
+      checkPvpSessions: true, wallNow: () => now, monotonicNow: () => now, acquireLock: async () => () => {} });
     clients.push(client); games.set(id, client);
     await client.initialize();
     return { client, values, fetcher, broken: (value: boolean) => { broken = value; },

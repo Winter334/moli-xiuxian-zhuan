@@ -14,7 +14,7 @@ import {
   consignmentViewSchema, type ConsignmentFilter, type ConsignmentRequest, type ConsignmentView,
 } from '../shared/consignment';
 import { acquireLocalSaveLock, LocalSaveReadError, LocalSaveStore, localFromCloud, type LocalSave } from './local-save';
-import { compareSaves, matchesCloudCheckpoint, sameClientSave, type SaveComparison } from './save-recovery';
+import { compareSaves, type SaveComparison } from './save-recovery';
 import { availableCharacter, checkReservedCapacity, reserveTrade, restoreReservation, validateTradeReceipt, type PendingTrade } from './trade-reservation';
 import { WorldClock } from './world-clock';
 import { combatFrame, EMPTY_COMBAT_FRAME, type CombatFrame } from './combat-presentation';
@@ -69,7 +69,7 @@ interface Options {
   acquireLock?: () => Promise<() => void>;
   cloudIntervalMs?: number;
   expectedCharacterId?: string;
-  requireCloudBaseline?: boolean;
+  checkPvpSessions?: boolean;
   openedAt?: number;
 }
 class RequestError extends Error {
@@ -96,10 +96,8 @@ export class GameClient {
   private readonly cloudIntervalMs: number;
   private readonly worldClock: WorldClock;
   private readonly expectedCharacterId: string | undefined;
-  private readonly requireCloudBaseline: boolean;
+  private readonly checkPvpSessions: boolean;
   private openedAt: number | null;
-  private cloudBaselineAccepted = false;
-  private cloudConnectionHealthy = true;
   private queue: Promise<unknown> = Promise.resolve();
   private local: LocalSave | null = null;
   private releaseLock: (() => void) | null = null;
@@ -127,7 +125,7 @@ export class GameClient {
     this.monotonicNow = options.monotonicNow ?? (() => performance.now());
     this.worldClock = new WorldClock(this.wallNow, this.monotonicNow);
     this.expectedCharacterId = options.expectedCharacterId;
-    this.requireCloudBaseline = options.requireCloudBaseline ?? false;
+    this.checkPvpSessions = options.checkPvpSessions ?? false;
     this.openedAt = options.openedAt ?? this.wallNow();
     this.acquireLock = options.acquireLock ?? acquireLocalSaveLock;
     this.cloudIntervalMs = options.cloudIntervalMs ?? CLOUD_SAVE_INTERVAL_MS + Math.floor(Math.random() * 15_000);
@@ -135,11 +133,12 @@ export class GameClient {
 
   getSnapshot = () => this.state;
   getOnlineRevision = () => {
-    if (!this.local || !this.state.onlineReady) throw new Error('请先核对并采用云端存档，再使用联机功能。');
+    if (!this.local || !this.state.onlineReady) throw new Error('当前保存存在冲突，请先在存档管理中选择保留的进度。');
     return this.local.cloudRevision;
   };
   prepareOnlineConnection = async () => {
     await this.finishUpload();
+    if (this.local?.pending) throw new Error('云备份回执暂未确认，稍后自动重试；本地进度保留。');
     return this.getOnlineRevision();
   };
   getPendingBattleId = () => this.local?.pendingPvp?.battleId ?? null;
@@ -170,8 +169,7 @@ export class GameClient {
       issue: { source: 'local', message: error instanceof Error ? error.message : '本地存档不可用，已暂停推进' } });
   }
   private onlineSourceReady() {
-    return (!this.requireCloudBaseline || this.cloudBaselineAccepted) && this.cloudConnectionHealthy &&
-      !this.cloudStopped && this.local?.syncConflict === null;
+    return !this.cloudStopped && this.local?.syncConflict === null;
   }
   private async persist(local: LocalSave, show = true, events: CharacterEvent[] = [], paused = false) {
     try { this.local = await this.store.write({ ...local, worldClock: this.worldClock.checkpoint() }); }
@@ -209,8 +207,6 @@ export class GameClient {
     return this.serial(async () => {
       if (this.initialized) return;
       const openedAt = this.openedAt ?? this.wallNow();
-      this.cloudBaselineAccepted = false;
-      this.cloudConnectionHealthy = true;
       this.publish({ busy: true, blocked: true });
       try {
         this.releaseLock = await this.acquireLock();
@@ -223,29 +219,6 @@ export class GameClient {
         this.local = loaded;
         if (this.local) {
           this.worldClock.restore(this.local.worldClock);
-          if (this.requireCloudBaseline) {
-            let profile: CloudProfile | null = null;
-            try {
-              profile = await this.readRecoveryProfile();
-            } catch (error) {
-              this.publish({ onlineMessage: error instanceof Error ? error.message : '云端存档尚未核对，联机功能暂不可用。' });
-            }
-            if (generation !== this.generation) return;
-            if (profile) {
-              if (matchesCloudCheckpoint(this.local, profile)) {
-                const synchronized = sameClientSave(this.local.save, profile.save);
-                this.worldClock.calibrate(profile.serverTime);
-                this.local = await this.store.write({ ...this.local, cloudRevision: profile.revision,
-                  worldClock: this.worldClock.checkpoint(),
-                  uploadedRevision: synchronized ? this.local.localRevision : this.local.uploadedRevision, pending: null });
-                this.cloudBaselineAccepted = true;
-                this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
-              } else {
-                this.recoveryProfile = profile;
-                this.publish({ onlineMessage: '本地与云端存档不一致。确认采用云端存档后才可联机；未上传进度不会合并。' });
-              }
-            }
-          }
         } else {
           const profile = cloudProfileSchema.parse(await this.request('/api/client/session', {}));
           if (this.expectedCharacterId && profile.characterId !== this.expectedCharacterId) {
@@ -254,7 +227,6 @@ export class GameClient {
           if (generation !== this.generation) return;
           this.worldClock.calibrate(profile.serverTime);
           await this.persist(localFromCloud(profile, this.wallNow()));
-          this.cloudBaselineAccepted = true;
           this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
         }
         await this.activateLocal(generation, openedAt);
@@ -281,6 +253,7 @@ export class GameClient {
       issue: this.local!.syncConflict ? { source: 'cloud', message: this.local!.syncConflict, retryable: false } : null,
       tradePending: this.local!.pendingTrade !== null, tradeStopped: !this.onlineSourceReady(),
       onlineReady: this.onlineSourceReady(),
+      onlineMessage: this.local!.syncConflict,
       tradeMessage: this.local!.syncConflict,
       reincarnationPending: this.local!.pendingReincarnation !== null,
       reincarnationMessage: this.local!.pendingReincarnation ? '轮回结果待核对，本世已暂停' : null,
@@ -431,7 +404,7 @@ export class GameClient {
 
   loadRanking = async (board: RankingId): Promise<RankingBoard> => {
     if (!this.local || !this.initialized) throw new Error('角色尚未读取');
-    if (!this.state.onlineReady) throw new Error(this.state.onlineMessage ?? '请先核对并采用云端存档，再查看榜单。');
+    if (!this.state.onlineReady) throw new Error(this.state.onlineMessage ?? '保存存在冲突，请先选择保留的进度。');
     const generation = this.generation;
     const life = this.local.save.character.life.number;
     const result = rankingBoardSchema.parse(await this.request(
@@ -450,7 +423,7 @@ export class GameClient {
     if (this.local.pendingPvp || this.state.pvpBusy) throw new CharacterCommandError('袭击正在核对，暂不能办理寄售');
     if (this.state.reincarnationBusy || this.local.pendingReincarnation) throw new CharacterCommandError('轮回正在核对，暂不能办理寄售');
     if (this.cloudStopped || this.local.syncConflict) throw new CharacterCommandError('保存或交易状态冲突，已停止新的寄售操作');
-    if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '请先核对并采用云端存档，再办理寄售。');
+    if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '保存存在冲突，请先选择保留的进度。');
     if (this.local.pendingTrade) throw new CharacterCommandError('上一笔交易尚待核对');
   }
 
@@ -645,18 +618,6 @@ export class GameClient {
       if (receipt.requiresRecovery) await this.stopOnline(receipt.message);
       return receipt.status === 'settled';
     });
-    if (applied && generation === this.generation && this.requireCloudBaseline && !this.cloudBaselineAccepted && !this.cloudStopped) {
-      try {
-        const profile = await this.readRecoveryProfile();
-        await this.serial(async () => {
-          if (generation !== this.generation || !this.local || this.local.pendingPvp ||
-              profile.revision !== this.local.cloudRevision || !sameClientSave(this.local.save, profile.save)) return;
-          this.cloudBaselineAccepted = true;
-          this.cloudConnectionHealthy = true;
-          this.publish({ onlineReady: this.onlineSourceReady(), onlineMessage: null, tradeStopped: !this.onlineSourceReady() });
-        });
-      } catch { /* Keep cloud admission closed until a fresh comparison succeeds. */ }
-    }
     return applied;
   }
 
@@ -685,7 +646,6 @@ export class GameClient {
 
   private async stopOnline(message: string) {
     this.cloudStopped = true;
-    this.cloudBaselineAccepted = false;
     if (this.local) await this.persist({ ...this.local, syncConflict: message });
     this.publish({ tradeStopped: true, tradeMessage: message, onlineReady: false, onlineMessage: message,
       issue: { source: 'cloud', message, retryable: false } });
@@ -742,7 +702,7 @@ export class GameClient {
 
   reconcileTrade = (manual = false): Promise<boolean> => {
     if (!this.initialized || !this.local?.pendingTrade || this.state.blocked ||
-        ((this.cloudStopped || (this.requireCloudBaseline && !this.cloudBaselineAccepted)) && !manual) ||
+        (this.cloudStopped && !manual) ||
         this.state.recoveryBusy) return Promise.resolve(false);
     return this.runTrade(generation => this.resolveTrade(this.local!.pendingTrade!, generation, true));
   };
@@ -828,7 +788,7 @@ export class GameClient {
         throw new CharacterCommandError('角色尚未就绪');
       }
       if (this.cloudStopped || this.local.syncConflict) throw new CharacterCommandError('保存状态冲突，不能发起轮回');
-      if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '请先核对并采用云端存档，再发起轮回。');
+      if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '保存存在冲突，请先选择保留的进度。');
       if (this.local.pending || this.local.pendingTrade) throw new CharacterCommandError('请先核对未确认的保存或寄售');
       await this.advanceFrame();
       const request = reincarnationRequestSchema.parse({
@@ -848,7 +808,7 @@ export class GameClient {
 
   reconcileReincarnation = (manual = false): Promise<boolean> => {
     if (!this.initialized || !this.local?.pendingReincarnation ||
-        ((this.cloudStopped || (this.requireCloudBaseline && !this.cloudBaselineAccepted)) && !manual) || this.state.recoveryBusy ||
+        (this.cloudStopped && !manual) || this.state.recoveryBusy ||
         this.state.issue?.source === 'local') return Promise.resolve(false);
     return this.runReincarnation(generation =>
       this.resolveReincarnation(this.local!.pendingReincarnation!, generation, true));
@@ -910,7 +870,7 @@ export class GameClient {
   sync = (): Promise<void> => {
     if (this.cloudFlight) return this.cloudFlight;
     if (!this.initialized || this.state.blocked || this.state.recoveryBusy || this.cloudStopped || this.local?.pendingPvp ||
-        (this.requireCloudBaseline && !this.cloudBaselineAccepted) || this.local?.pendingTrade ||
+        this.local?.pendingTrade ||
         this.local?.pendingReincarnation ||
         ((this.tradeFlight || this.reincarnationFlight || this.pvpFlight) && !this.local?.pending)) return Promise.resolve();
     const generation = this.generation;
@@ -948,13 +908,11 @@ export class GameClient {
           await this.persist({
             ...this.local, cloudRevision: ack.revision, uploadedRevision: pending.localRevision, pending: null,
           }, false);
-          this.cloudConnectionHealthy = true;
           this.publish({ lastCloudSave: ack.savedAt, onlineReady: this.onlineSourceReady(), onlineMessage: null,
             tradeStopped: !this.onlineSourceReady(), ...(this.state.issue?.source === 'cloud' ? { issue: null } : {}) });
         });
       } catch (error) {
         if (generation !== this.generation) return;
-        this.cloudConnectionHealthy = false;
         if (error instanceof RequestError && [400, 401, 403, 409, 413, 422].includes(error.status)) {
           await this.serial(async () => {
             if (generation === this.generation && this.local && this.releaseLock && this.state.issue?.source !== 'local') {
@@ -963,8 +921,6 @@ export class GameClient {
           }).catch(() => undefined);
         }
         if (this.state.issue?.source !== 'local') this.publish({
-          onlineReady: false, tradeStopped: true,
-          onlineMessage: '云端同步尚未确认，联机功能暂不可用；本地进度保留。',
           issue: {
             source: 'cloud', retryable: !this.cloudStopped,
             message: error instanceof RequestError ? error.message : '云备份未完成，本地进度保留，将稍后重试',
@@ -1043,7 +999,7 @@ export class GameClient {
       if (generation !== this.generation || result.status !== 'finished') return '袭击结果尚未确认，请先核对战斗，不能替换存档。';
       this.validatePvpReceipt(this.local.pendingPvp, result.receipt);
     }
-    if (this.requireCloudBaseline) {
+    if (this.checkPvpSessions) {
       const result = pvpOverviewSchema.parse(await this.request('/api/client/pvp'));
       if (result.battleId) return '当前角色的袭击尚未结束，请等待结果后再核对存档。';
     }
@@ -1089,8 +1045,8 @@ export class GameClient {
     return true;
   });
 
-  chooseSave = async (source: 'cloud'): Promise<boolean> => {
-    if (source !== 'cloud') return false;
+  chooseSave = async (source: 'local' | 'cloud'): Promise<boolean> => {
+    if (source !== 'local' && source !== 'cloud') return false;
     const chosen = this.recoveryProfile;
     if (!chosen || this.recoveryFlight) return false;
     const success = await this.runRecovery(async (generation, startedAt) => {
@@ -1103,23 +1059,25 @@ export class GameClient {
       return this.serial(async () => {
         if (generation !== this.generation || !this.releaseLock) return false;
         const comparison = compareSaves(this.local, profile, cloudBlocked);
-        const reason = comparison.cloudBlocked;
+        const reason = source === 'local' ? comparison.localBlocked : comparison.cloudBlocked;
         if (reason) throw new Error(reason);
-        const local = localFromCloud(profile, this.wallNow());
+        const local = source === 'cloud' ? localFromCloud(profile, this.wallNow()) : {
+          ...this.local!, cloudRevision: profile.revision, pending: null, syncConflict: null,
+          localRevision: String(BigInt(this.local!.localRevision) + 1n),
+        };
         try { this.local = await this.store.write(local, true); }
         catch (error) { this.failLocal(error); throw error; }
         this.worldClock.restore(this.local.worldClock);
-        this.cloudBaselineAccepted = true;
-        this.cloudConnectionHealthy = true;
         this.publish({ combatFrame: EMPTY_COMBAT_FRAME, tradeMessage: null, reincarnationMessage: null });
         await this.activateLocal(generation, startedAt);
         if (generation !== this.generation) return false;
         this.recoveryProfile = null;
         this.publish({ recovery: null, onlineMessage: null, lastCloudSave: profile.save.character.simulation.clockMs,
-          recoveryMessage: '已采用云端存档，本地原件已保留。' });
+          recoveryMessage: source === 'cloud' ? '已采用云端存档，本地原件已保留。' : '已保留本地进度，正在继续云端备份。' });
         return true;
       });
     });
+    if (success && source === 'local') await this.sync();
     return success;
   };
 
@@ -1165,8 +1123,6 @@ export class GameClient {
     this.recoveryFlight = null;
     this.pvpFlight = null;
     this.recoveryProfile = null;
-    this.cloudBaselineAccepted = false;
-    this.cloudConnectionHealthy = true;
     this.publish({ refreshing: false, tradeBusy: false, reincarnationBusy: false, pvpBusy: false, pvpCombat: null,
       recoveryBusy: false, recoveryAvailable: false, recovery: null, recoveryMessage: null,
       onlineReady: false, onlineMessage: null });
@@ -1189,8 +1145,7 @@ export class GameClient {
       await this.serial(async () => { this.releaseLock?.(); this.releaseLock = null; this.initialized = false; });
       await this.initialize();
       if (this.local?.pendingReincarnation) await this.reconcileReincarnation();
-    } else if (this.requireCloudBaseline && !this.cloudBaselineAccepted) await this.inspectSaves();
-    else if (this.local?.pendingTrade) await this.reconcileTrade();
+    } else if (this.local?.pendingTrade) await this.reconcileTrade();
     else await this.sync();
   };
   refresh = this.sync;

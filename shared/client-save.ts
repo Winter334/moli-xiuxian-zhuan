@@ -6,7 +6,6 @@ import { checkHistoryProgress } from '../core/prototype/history';
 
 export const MAX_FRAME_GAP_MS = 5000;
 export const CLOUD_SAVE_INTERVAL_MS = 60_000;
-export const CLOUD_RESUME_TOLERANCE_MS = 30_000;
 export const MAX_SAVE_BYTES = 256 * 1024;
 export const worldTimeSchema = z.object({
   serverTime: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
