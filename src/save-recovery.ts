@@ -1,5 +1,5 @@
 import { getCharacterView } from '../core/prototype';
-import type { ClientSave, CloudProfile } from '../shared/client-save';
+import { checkProgress, CLOUD_RESUME_TOLERANCE_MS, type ClientSave, type CloudProfile } from '../shared/client-save';
 import type { LocalSave } from './local-save';
 
 export interface SaveSummary {
@@ -26,6 +26,22 @@ export function sameClientSave(local: ClientSave, cloud: ClientSave): boolean {
     return value;
   };
   return JSON.stringify(ordered(local)) === JSON.stringify(ordered(cloud));
+}
+
+export function matchesCloudCheckpoint(local: LocalSave, profile: CloudProfile): boolean {
+  const cloud = profile.save;
+  if (local.characterId !== profile.characterId || local.syncConflict || local.pendingTrade ||
+      local.pendingReincarnation || local.pendingPvp) return false;
+  if (sameClientSave(local.save, cloud)) return true;
+  const clockGap = local.save.character.simulation.clockMs - cloud.character.simulation.clockMs;
+  const playedGap = local.save.playedMs - cloud.playedMs;
+  if (local.cloudRevision !== profile.revision || local.pending ||
+      clockGap < 0 || clockGap > CLOUD_RESUME_TOLERANCE_MS ||
+      playedGap < 0 || playedGap > CLOUD_RESUME_TOLERANCE_MS) return false;
+  try {
+    checkProgress(cloud, local.save, cloud.character.simulation.clockMs, profile.serverTime);
+    return true;
+  } catch { return false; }
 }
 
 export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloudBlocked: string | null): SaveComparison {

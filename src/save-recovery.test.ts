@@ -1,14 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
-import { advanceCharacter, createCharacter, executeCharacterCommand, getCharacterView } from '../core/prototype';
+import { advanceCharacter, createCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
 import { reincarnateCharacter } from '../core/prototype/reincarnation';
 import { ClientSaveService } from '../server/client/service';
 import type { CloudSnapshot, CloudStore } from '../server/client/repository';
 import { ApiError } from '../server/errors';
-import type { CloudProfile } from '../shared/client-save';
+import { CLOUD_RESUME_TOLERANCE_MS, type CloudProfile } from '../shared/client-save';
 import { discordSaveKey } from '../shared/discord';
 import { GameClient } from './game-client';
 import { LocalSaveStore, localFromCloud, type LocalSave, type SaveStorage } from './local-save';
 import { EMPTY_PVP } from '../shared/pvp';
+import { matchesCloudCheckpoint } from './save-recovery';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
 const otherId = '00000000-0000-4000-8000-000000000002';
@@ -38,8 +39,9 @@ async function setup(fetcher: typeof fetch, initial: CloudProfile | string = pro
     await store.write(local);
   }
   let now = 0;
-  const make = () => new GameClient({ fetcher, store: new LocalSaveStore(storage, key),
+  const make = (openedAt?: number) => new GameClient({ fetcher, store: new LocalSaveStore(storage, key),
     acquireLock: async () => () => {}, expectedCharacterId: characterId, requireCloudBaseline,
+    openedAt,
     wallNow: () => now, monotonicNow: () => now });
   const client = make();
   await client.initialize();
@@ -272,17 +274,20 @@ describe('explicit account save recovery', () => {
     expect(after.save.playedMs).toBe(before.save.playedMs);
     expect(after.save.character.simulation.actionCounts).toEqual(before.save.character.simulation.actionCounts);
     expect(after.save.character.simulation.player.hp).toBe(before.save.character.simulation.player.hp);
-    expect(after.save.character.simulation.clockMs).toBe(60_000);
+    expect(after.save).toEqual(before.save);
+    expect(after.wallSavedAt).toBe(60_000);
+    state.time(61_000);
+    await state.client.tick();
+    expect((await state.read())!.save.character.simulation.clockMs).toBe(before.save.character.simulation.clockMs + 1000);
     expect(state.client.getSnapshot()).toMatchObject({ blocked: false, recoveryBusy: false });
   });
 
-  it('keeps an unsynchronized cache offline without uploading or replacing it until the player adopts cloud', async () => {
+  it('keeps a cache beyond the resume window offline until the player explicitly adopts cloud', async () => {
     const cloud = profile();
     const fetcher = vi.fn<typeof fetch>().mockImplementation(async url => json(url === '/api/client/pvp'
       ? { state: EMPTY_PVP, battleId: null, serverTime: 0 } : cloud));
     const state = await setup(fetcher, cloud, local => {
-      local.save.character = advanceCharacter(local.save.character, 1000);
-      local.save.playedMs = 1000;
+      local.save.character.simulation = pauseSimulationUntil(local.save.character.simulation, CLOUD_RESUME_TOLERANCE_MS + 1);
       local.localRevision = '1';
     }, true);
     const original = state.values.get(key);
@@ -302,7 +307,7 @@ describe('explicit account save recovery', () => {
     expect(fetcher.mock.calls.every(([, init]) => init?.method === 'GET')).toBe(true);
   });
 
-  it('admits only an identical verified cloud cache regardless of JSON object key order, and fails closed when cloud is unavailable', async () => {
+  it('recognizes identical cloud content regardless of JSON object key order, and fails closed when cloud is unavailable', async () => {
     const cloud = profile();
     const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => json(cloud));
     const state = await setup(fetcher, cloud, local => {
@@ -316,6 +321,131 @@ describe('explicit account save recovery', () => {
     await offline.client.sync();
     expect(offline.values.get(key)).toBe(original);
     expect((await offline.read())!.save).toEqual(cloud.save);
+  });
+
+  it('excludes Discord login and delayed startup reads from cached progress across repeated openings', async () => {
+    const cloud = profile();
+    cloud.save.character = executeCharacterCommand(cloud.save.character, { type: 'withdraw' });
+    cloud.save.character.simulation.player.hp = '1';
+    let answer!: (response: Response) => void, started!: () => void;
+    let waiting = false;
+    const pending = new Promise<Response>(resolve => { answer = resolve; });
+    const sent = new Promise<void>(resolve => { started = resolve; });
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => {
+      if (waiting) { started(); return pending; }
+      return json(cloud);
+    });
+    const state = await setup(fetcher, cloud, undefined, true);
+    state.client.stop();
+    waiting = true;
+    state.time(10_000);
+    const reopened = state.make(2000);
+    const loading = reopened.initialize();
+    await sent;
+    const tick = reopened.tick();
+    state.time(12_000);
+    cloud.serverTime = 12_000;
+    answer(json(cloud));
+    await loading; await tick;
+    const recovered = { ...cloud.save, character: advanceCharacter(cloud.save.character, 2000) };
+    expect((await state.read())!.save).toEqual(recovered);
+    expect((await state.read())!.wallSavedAt).toBe(12_000);
+    expect(reopened.getSnapshot()).toMatchObject({ onlineReady: true, onlineMessage: null, blocked: false });
+    reopened.stop();
+    waiting = false;
+    state.time(13_000);
+    cloud.serverTime = 13_000;
+    const again = state.make();
+    await again.initialize();
+    expect((await state.read())!.save).toEqual({ ...cloud.save, character: advanceCharacter(recovered.character, 3000) });
+    expect(again.getSnapshot()).toMatchObject({ onlineReady: true, onlineMessage: null });
+    expect(fetcher.mock.calls.every(([, init]) => init?.method === 'GET')).toBe(true);
+  });
+
+  it('retains small unsynchronized progress at the resume boundary and uploads it normally', async () => {
+    const cloud = profile();
+    cloud.serverTime = CLOUD_RESUME_TOLERANCE_MS;
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async (_url, init) => {
+      if (init?.method === 'GET') return json(cloud);
+      const request = JSON.parse(String(init?.body));
+      cloud.save = request.save;
+      cloud.revision = '1';
+      return json({ characterId, requestId: request.requestId, revision: '1', savedAt: cloud.serverTime });
+    });
+    const state = await setup(fetcher, cloud, local => {
+      local.save.character = advanceCharacter(local.save.character, CLOUD_RESUME_TOLERANCE_MS);
+      local.save.playedMs = CLOUD_RESUME_TOLERANCE_MS;
+      local.localRevision = '1';
+    }, true);
+    const admitted = (await state.read())!;
+    expect(state.client.getSnapshot()).toMatchObject({ onlineReady: true, onlineMessage: null });
+    expect(admitted).toMatchObject({ uploadedRevision: '0', localRevision: '1', cloudRevision: '0', pending: null });
+    expect(admitted.save.playedMs).toBe(CLOUD_RESUME_TOLERANCE_MS);
+    expect(fetcher.mock.calls.every(([, init]) => init?.method === 'GET')).toBe(true);
+    await state.client.sync();
+    expect((await state.read())!).toMatchObject({ save: admitted.save, uploadedRevision: '1', cloudRevision: '1' });
+    expect(cloud.save).toEqual(admitted.save);
+    state.client.stop();
+    const reopened = state.make();
+    await reopened.initialize();
+    expect(reopened.getSnapshot()).toMatchObject({ onlineReady: true, onlineMessage: null });
+  });
+
+  it('bounds resume tolerance without bypassing revisions, identities, timing or pending uploads', () => {
+    const cloud = profile();
+    cloud.serverTime = CLOUD_RESUME_TOLERANCE_MS;
+    const local = localFromCloud(cloud, 0);
+    local.save.character = advanceCharacter(local.save.character, CLOUD_RESUME_TOLERANCE_MS);
+    local.save.playedMs = CLOUD_RESUME_TOLERANCE_MS;
+    local.localRevision = '1';
+    expect(matchesCloudCheckpoint(local, cloud)).toBe(true);
+    for (const edit of [
+      (changed: LocalSave) => { changed.save.character.simulation.clockMs++; },
+      (changed: LocalSave) => { changed.save.playedMs++; },
+      (changed: LocalSave) => { changed.save.playedMs = -1; },
+      (changed: LocalSave) => { changed.cloudRevision = '1'; },
+      (changed: LocalSave) => { changed.characterId = otherId; },
+      (changed: LocalSave) => { changed.save.tradeRevision = '1'; },
+      (changed: LocalSave) => { changed.save.character.life.number = '2'; },
+      (changed: LocalSave) => { changed.save.character.fateId = cloud.save.character.fateId === 'light-step' ? 'strong-arms' : 'light-step'; },
+      (changed: LocalSave) => { changed.syncConflict = 'another device'; },
+      (changed: LocalSave) => { changed.pending = { localRevision: '1', request: {
+        characterId, requestId: crypto.randomUUID(), baseRevision: '0', save: changed.save,
+      } }; },
+    ]) {
+      const changed = structuredClone(local);
+      edit(changed);
+      expect(matchesCloudCheckpoint(changed, cloud)).toBe(false);
+    }
+    expect(matchesCloudCheckpoint(local, { ...cloud, serverTime: 0 })).toBe(false);
+    expect(matchesCloudCheckpoint(local, { ...cloud, revision: '1' })).toBe(false);
+    const behind = structuredClone(cloud);
+    behind.save.character.simulation.clockMs = local.save.character.simulation.clockMs + 1;
+    expect(matchesCloudCheckpoint(local, behind)).toBe(false);
+  });
+
+  it('does not create new local progress while waiting to adopt a cloud save', async () => {
+    const cloud = profile();
+    cloud.save.character = executeCharacterCommand(cloud.save.character, { type: 'withdraw' });
+    let waiting = false, answer!: (response: Response) => void, started!: () => void;
+    const pending = new Promise<Response>(resolve => { answer = resolve; });
+    const sent = new Promise<void>(resolve => { started = resolve; });
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async url => {
+      if (url === '/api/client/pvp') return json({ state: EMPTY_PVP, battleId: null, serverTime: cloud.serverTime });
+      if (waiting) { started(); return pending; }
+      return json(cloud);
+    });
+    const state = await setup(fetcher, cloud, local => { local.save.character.money = '1'; }, true);
+    await state.client.inspectSaves();
+    waiting = true;
+    const choosing = state.client.chooseSave('cloud');
+    await sent;
+    state.time(30_000);
+    cloud.serverTime = 30_000;
+    answer(json(cloud));
+    expect(await choosing).toBe(true);
+    expect((await state.read())!.save).toEqual(cloud.save);
+    expect(state.client.getSnapshot()).toMatchObject({ onlineReady: true, onlineMessage: null });
   });
 
   it('suspends online use after an uncertain upload and resumes on the original receipt without rolling back new local progress', async () => {

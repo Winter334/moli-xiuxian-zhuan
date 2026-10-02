@@ -10,6 +10,7 @@ import { PolicyLinks } from './ui/PolicyLinks';
 import { SocialClient } from './social-client';
 
 export default function ActivityApp() {
+  const openedAt = useRef(Date.now());
   const connection = useRef<DiscordActivityConnection | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [phase, setPhase] = useState('正在连接 Discord');
@@ -26,6 +27,7 @@ export default function ActivityApp() {
       const client = new GameClient({
         fetcher: connection.current!.fetcher, store: new LocalSaveStore(undefined, key),
         acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId, requireCloudBaseline: true,
+        openedAt: openedAt.current,
       });
       setGame({ client, social: new SocialClient(client, connection.current!.socialSession), user: session.user });
     }).catch(error => {

@@ -14,7 +14,7 @@ import {
   consignmentViewSchema, type ConsignmentFilter, type ConsignmentRequest, type ConsignmentView,
 } from '../shared/consignment';
 import { acquireLocalSaveLock, LocalSaveReadError, LocalSaveStore, localFromCloud, type LocalSave } from './local-save';
-import { compareSaves, sameClientSave, type SaveComparison } from './save-recovery';
+import { compareSaves, matchesCloudCheckpoint, sameClientSave, type SaveComparison } from './save-recovery';
 import { availableCharacter, checkReservedCapacity, reserveTrade, restoreReservation, validateTradeReceipt, type PendingTrade } from './trade-reservation';
 import { WorldClock } from './world-clock';
 import { combatFrame, EMPTY_COMBAT_FRAME, type CombatFrame } from './combat-presentation';
@@ -70,6 +70,7 @@ interface Options {
   cloudIntervalMs?: number;
   expectedCharacterId?: string;
   requireCloudBaseline?: boolean;
+  openedAt?: number;
 }
 class RequestError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
@@ -96,6 +97,7 @@ export class GameClient {
   private readonly worldClock: WorldClock;
   private readonly expectedCharacterId: string | undefined;
   private readonly requireCloudBaseline: boolean;
+  private openedAt: number | null;
   private cloudBaselineAccepted = false;
   private cloudConnectionHealthy = true;
   private queue: Promise<unknown> = Promise.resolve();
@@ -126,6 +128,7 @@ export class GameClient {
     this.worldClock = new WorldClock(this.wallNow, this.monotonicNow);
     this.expectedCharacterId = options.expectedCharacterId;
     this.requireCloudBaseline = options.requireCloudBaseline ?? false;
+    this.openedAt = options.openedAt ?? this.wallNow();
     this.acquireLock = options.acquireLock ?? acquireLocalSaveLock;
     this.cloudIntervalMs = options.cloudIntervalMs ?? CLOUD_SAVE_INTERVAL_MS + Math.floor(Math.random() * 15_000);
   }
@@ -205,6 +208,7 @@ export class GameClient {
     const generation = this.generation;
     return this.serial(async () => {
       if (this.initialized) return;
+      const openedAt = this.openedAt ?? this.wallNow();
       this.cloudBaselineAccepted = false;
       this.cloudConnectionHealthy = true;
       this.publish({ busy: true, blocked: true });
@@ -212,6 +216,7 @@ export class GameClient {
         this.releaseLock = await this.acquireLock();
         if (generation !== this.generation) { this.releaseLock(); this.releaseLock = null; return; }
         const loaded = await this.store.load();
+        if (generation !== this.generation) return;
         if (loaded && this.expectedCharacterId && loaded.characterId !== this.expectedCharacterId) {
           throw new Error('本地角色与当前 Discord 账号不一致，原存档保留，已停止读取。');
         }
@@ -227,13 +232,12 @@ export class GameClient {
             }
             if (generation !== this.generation) return;
             if (profile) {
-              if (!this.local.syncConflict && !this.local.pendingTrade && !this.local.pendingReincarnation && !this.local.pendingPvp &&
-                  sameClientSave(this.local.save, profile.save)) {
-                const confirmed = localFromCloud(profile, this.wallNow());
+              if (matchesCloudCheckpoint(this.local, profile)) {
+                const synchronized = sameClientSave(this.local.save, profile.save);
+                this.worldClock.calibrate(profile.serverTime);
                 this.local = await this.store.write({ ...this.local, cloudRevision: profile.revision,
-                  save: confirmed.save, wallSavedAt: confirmed.wallSavedAt, worldClock: confirmed.worldClock,
-                  uploadedRevision: this.local.localRevision, pending: null });
-                this.worldClock.restore(this.local.worldClock);
+                  worldClock: this.worldClock.checkpoint(),
+                  uploadedRevision: synchronized ? this.local.localRevision : this.local.uploadedRevision, pending: null });
                 this.cloudBaselineAccepted = true;
                 this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
               } else {
@@ -253,7 +257,8 @@ export class GameClient {
           this.cloudBaselineAccepted = true;
           this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
         }
-        await this.activateLocal(generation);
+        await this.activateLocal(generation, openedAt);
+        if (generation === this.generation && this.initialized) this.openedAt = null;
       } catch (error) {
         this.releaseLock?.();
         this.releaseLock = null;
@@ -262,9 +267,11 @@ export class GameClient {
     });
   };
 
-  private async activateLocal(generation: number) {
-    const gap = Math.max(0, this.wallNow() - this.local!.wallSavedAt);
-    if (!this.local!.pendingReincarnation && !this.local!.pendingPvp) await this.settle(gap, false, generation);
+  private async activateLocal(generation: number, recoverUntil = this.wallNow()) {
+    const gap = Math.max(0, recoverUntil - this.local!.wallSavedAt);
+    if (!this.local!.pendingReincarnation && !this.local!.pendingPvp) await this.settle(gap, false, generation, recoverUntil);
+    if (generation !== this.generation) return;
+    await this.persist({ ...this.local!, wallSavedAt: Math.max(this.local!.wallSavedAt, this.wallNow()) }, false);
     if (generation !== this.generation) return;
     this.lastFrame = this.monotonicNow();
     this.initialized = true;
@@ -290,11 +297,11 @@ export class GameClient {
   }
 
   // Interrupted chunks are saved with their corresponding wall checkpoint.
-  private async settle(gap: number, connected: boolean, generation = this.generation) {
+  private async settle(gap: number, connected: boolean, generation = this.generation, wallUntil = this.wallNow()) {
     if (!this.local || this.local.pendingReincarnation || this.local.pendingPvp || gap <= 0) return;
     const start = this.local.save.character.simulation.clockMs;
     const target = start + gap;
-    const wallTarget = Math.max(this.local.wallSavedAt, this.wallNow());
+    const wallTarget = Math.max(this.local.wallSavedAt, wallUntil);
     const played = this.local.save.playedMs;
     while (this.local.save.character.simulation.clockMs < target && generation === this.generation) {
       const character = this.local.save.character;
@@ -970,10 +977,11 @@ export class GameClient {
     return flight;
   };
 
-  private runRecovery(work: (generation: number) => Promise<boolean>): Promise<boolean> {
+  private runRecovery(work: (generation: number, startedAt: number) => Promise<boolean>): Promise<boolean> {
     if (this.recoveryFlight) return this.recoveryFlight;
     if (!this.state.recoveryAvailable) return Promise.resolve(false);
     const generation = this.generation;
+    const startedAt = this.wallNow();
     const flights = [this.cloudFlight, this.tradeFlight, this.reincarnationFlight, this.timeFlight, this.pvpFlight];
     this.publish({ recoveryBusy: true, recoveryMessage: null });
     const flight = (async () => {
@@ -1003,7 +1011,7 @@ export class GameClient {
       });
       await Promise.all(flights);
       if (generation !== this.generation) return false;
-      return work(generation);
+      return work(generation, startedAt);
     })().catch(error => {
       if (generation === this.generation) this.publish({ recoveryMessage: error instanceof Error
         ? error.message : '未能核对存档，原进度保留，请稍后重试。' });
@@ -1012,7 +1020,7 @@ export class GameClient {
       await this.serial(async () => {
         if (generation !== this.generation) return;
         if (this.initialized && this.local && !this.state.blocked) {
-          try { await this.settle(Math.max(0, Math.floor(this.monotonicNow() - this.lastFrame)), false, generation); }
+          try { await this.persist({ ...this.local, wallSavedAt: Math.max(this.local.wallSavedAt, this.wallNow()) }, false); }
           catch (error) { this.failLocal(error); }
           this.lastFrame = this.monotonicNow();
         }
@@ -1085,7 +1093,7 @@ export class GameClient {
     if (source !== 'cloud') return false;
     const chosen = this.recoveryProfile;
     if (!chosen || this.recoveryFlight) return false;
-    const success = await this.runRecovery(async generation => {
+    const success = await this.runRecovery(async (generation, startedAt) => {
       const cloudBlocked = await this.recoveryPending(generation);
       const profile = await this.readRecoveryProfile();
       if (generation !== this.generation) return false;
@@ -1104,7 +1112,7 @@ export class GameClient {
         this.cloudBaselineAccepted = true;
         this.cloudConnectionHealthy = true;
         this.publish({ combatFrame: EMPTY_COMBAT_FRAME, tradeMessage: null, reincarnationMessage: null });
-        await this.activateLocal(generation);
+        await this.activateLocal(generation, startedAt);
         if (generation !== this.generation) return false;
         this.recoveryProfile = null;
         this.publish({ recovery: null, onlineMessage: null, lastCloudSave: profile.save.character.simulation.clockMs,
