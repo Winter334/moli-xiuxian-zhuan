@@ -26,6 +26,7 @@ export function WorldView({ game, blocked, command, onArrive, camera }: ViewProp
   const detailed = transform.k >= DETAIL_SCALE;
   const inspected = all.find(entry => entry.id === inspectedId);
   const inspectedRegion = game.regions.find(entry => entry.id === inspectedId);
+  const inspectedSafe = game.destinations.find(entry => entry.id === inspectedId);
   const overview = (width: number, height: number) => {
     const points = areas.map(area => AREA_CENTERS[area.id]);
     const minX = Math.min(...points.map(p => p.x)), maxX = Math.max(...points.map(p => p.x));
@@ -128,14 +129,18 @@ export function WorldView({ game, blocked, command, onArrive, camera }: ViewProp
             style={screen({ x: AREA_CENTERS[area.id].x, y: AREA_CENTERS[area.id].y - 470 })}>{area.name}</span>)}
           {all.map(location => {
             const region = game.regions.find(entry => entry.id === location.id);
+            const safe = game.destinations.find(entry => entry.id === location.id);
             const Icon = region ? region.challenge ? Flag : Swords : House;
             const here = location.id === game.locationId;
             return <button key={location.id} className={`map-node ${region ? 'wild' : 'safe'} ${here ? 'current' : ''} ${inspectedId === location.id ? 'selected' : ''}`}
-              style={screen(mapPoint(location.id))} aria-label={`${location.name}${here ? '，当前所在' : ''}`}
+              style={screen(mapPoint(location.id))} aria-label={`${location.name}${here ? '，当前所在' : ''}${safe
+                ? safe.canMeditate ? '，安全区，可调息' : '，安全区，普通歇息' : '，历练之地'}`}
               onFocus={event => { if (event.currentTarget.matches(':focus-visible')) focus(mapPoint(location.id), transform.k); }}
               onClick={() => void activate(location.id)} disabled={!game.battle && blocked}>
               <span className="node-symbol"><Icon size={20} strokeWidth={1.5} />{region?.completed && <Check className="node-complete" size={12} />}</span>
-              <strong>{location.name}</strong><small>{here ? '当前所在' : region ? region.completed ? '已清理' : region.challenge ? '独立挑战' : '历练' : '休整'}</small>
+              <strong>{location.name}</strong><small>{region
+                ? here ? '当前所在' : region.completed ? '已清理' : region.challenge ? '独立挑战' : '历练'
+                : `${here ? '当前 · ' : ''}${safe?.canMeditate ? '安全 · 调息' : '安全区'}`}</small>
             </button>;
           })}
         </> : areas.map(area => <button className={`map-node region-node ${areaFor(game.locationId).id === area.id ? 'current' : ''}`}
@@ -157,7 +162,8 @@ export function WorldView({ game, blocked, command, onArrive, camera }: ViewProp
         <header><span className="eyebrow">{areaFor(inspected.id).name}</span>
           <IconButton label="关闭地点概览" onClick={() => setInspectedId(null)}><X size={16} /></IconButton></header>
         <h2>{inspected.name}</h2><span className="subtle-label">{inspected.id === game.locationId ? '当前所在 · ' : ''}
-          {inspectedRegion ? inspectedRegion.challenge ? '独立挑战' : '历练之地' : '休整之地'}</span>
+          {inspectedRegion ? inspectedRegion.challenge ? '独立挑战' : '历练之地'
+            : inspectedSafe?.canMeditate ? '安全区 · 可调息' : '安全区 · 普通歇息'}</span>
         <p>{inspected.description}</p>
         {inspectedRegion && <dl><dt>探索</dt><dd>{inspectedRegion.completed ? '已清理' : `${formatAmount(inspectedRegion.clearedGroups)} / ${inspectedRegion.groupsPerClear} 组`}</dd>
           <dt>撤退落点</dt><dd>{game.destinations.find(entry => entry.id === inspectedRegion.parent)?.name ?? '安全地点'}</dd></dl>}

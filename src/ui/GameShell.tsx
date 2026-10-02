@@ -28,6 +28,9 @@ import { useSocial } from '../use-social';
 import type { SocialClient } from '../social-client';
 import { NearbyPlayers } from './PlayerInteractions';
 import { WorldChatView } from './WorldChatView';
+import { PvpModeControl } from './PvpControls';
+import { PvpCombatView } from './PvpCombatView';
+import { getPlayerStats } from '../../core/prototype/simulation';
 
 const DebugConsole = import.meta.env.DEV ? lazy(() => import('../DebugConsole')) : null;
 const PAGES = [
@@ -50,25 +53,40 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
   const mapCamera = useRef<MapCamera | null>(null);
   const lastBattle = useRef<string | null>(null);
   const game = session.response?.game;
+  const duel = session.pvpCombat?.state.attacker;
+  const activityLabel = duel ? duel.battle && !session.pvpCombat!.outcome ? '修士交锋中' : '交锋结算中' : undefined;
+  const characterGame = game && duel ? {
+    ...game, hp: duel.player.hp, stats: getPlayerStats(duel),
+    clockMs: game.clockMs + duel.clockMs,
+    effects: game.effects.flatMap(effect => {
+      const active = duel.effects.find(entry => entry.id === effect.id);
+      return active ? [{ ...effect, expiresAt: game.clockMs + active.expiresAt }] : [];
+    }),
+  } : game;
   const merchant = game?.shop.available ? merchantShopSchema.safeParse(game.shop.id) : null;
   const props = game ? { game, command: session.command, blocked: session.blocked } : null;
   useEffect(() => { setOverlay(null); setPage('world'); mapCamera.current = null; lastBattle.current = null; }, [session.response?.characterId, game?.life.number]);
   useEffect(() => { if (game?.battle) lastBattle.current = game.battle.regionId; }, [game?.battle?.regionId]);
+  useEffect(() => { if (session.pvpCombat) setPage('world'); }, [session.pvpCombat?.battle.battleId]);
   useEffect(() => {
     setPage(current => ['shop', 'market', 'rankings', 'nearby'].includes(current) ? 'world' : current);
     if (page === 'world' && pageRef.current) pageRef.current.scrollTop = 0;
   }, [game?.locationId]);
   useEffect(() => { if (pageRef.current) pageRef.current.scrollTop = 0; }, [page]);
+  useEffect(() => {
+    if (social && session.onlineMessage && session.recoveryAvailable && !session.onlineReady) setOverlay('saves');
+  }, [social, session.onlineMessage, session.recoveryAvailable]);
   const service = page === 'shop' || page === 'market' || page === 'rankings';
   const localPage = page === 'map' || page === 'nearby' || service;
   return <>
     <div className="orientation-gate"><RotateCw size={42} strokeWidth={1.2} /><h1>横屏入境</h1><p>请将设备转为横屏</p><span>茉莉修仙传</span></div>
-    <div className={`game-shell${mobileActivity ? ' activity-mobile' : ''}`}>
+    <div className={`game-shell${mobileActivity ? ' activity-mobile' : ''}${session.pvp.red ? ' pvp-red' : ''}`}>
       <header className="topbar">
         <div className="brand"><Mountain size={23} strokeWidth={1.4} /><strong>茉莉修仙传</strong></div>
         <div className="breadcrumb"><span>{game ? areaFor(game.locationId).name : '山河初卷'}</span><ChevronRight size={12} /><strong>{game?.locationName ?? '静候入世'}</strong>
           {game && <time className="world-date">{game.calendar.year}年{game.calendar.month}月{game.calendar.day}日</time>}</div>
         <div className="topbar-tools">
+          {social && <PvpModeControl session={session} online={socialState.status === 'online'} />}
           {previewControls && <details className="preview-menu"><summary title="预览角色设置">预览</summary><div className="preview-controls">{previewControls}</div></details>}
           <SettingsControl areaId={(game ? areaFor(game.locationId).id : null) as AreaTrackId | null} locationId={game?.locationId} logLimit={logSettings.limit}
             onLogLimitChange={limit => setLogSettings(current => ({ ...current, limit }))} />
@@ -83,7 +101,8 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           </div></details>
         </div>
       </header>
-      {game && props ? <CharacterPanel key={`character:${session.response!.characterId}:${game.life.number}`} {...props} goActivity={() => setPage('world')} />
+      {game && props && characterGame ? <CharacterPanel key={`character:${session.response!.characterId}:${game.life.number}`} {...props}
+        game={characterGame} activityLabel={activityLabel} goActivity={() => setPage('world')} />
         : <aside className="character-panel connecting-screen"><Mountain size={32} /><span>正在读取角色</span></aside>}
       <div className="workspace-main">
         <nav className="central-nav" aria-label="主导航">{PAGES.map(({ id, label, icon: Icon }) => <button key={id} disabled={!game}
@@ -96,15 +115,24 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           {session.issue?.retryable !== false && <IconButton label="重试" disabled={session.busy || session.reincarnationBusy} onClick={() => void session.retry()}><RefreshCw size={15} /></IconButton>}
           {!session.blocked && <IconButton label="关闭提示" onClick={() => { session.dismissIssue(); setDisplayError(''); }}><X size={15} /></IconButton>}
         </div>}
+        {social && !session.onlineReady && session.onlineMessage && <div className="alert-bar" role="status">
+          <span>联机未启用 · {session.onlineMessage}</span>
+          <button disabled={!session.recoveryAvailable || session.recoveryBusy} onClick={() => setOverlay('saves')}>
+            <Cloud size={15} />核对云档
+          </button>
+        </div>}
         {session.tradePending && <div className="alert-bar" role="status"><span>寄售待确认 · {session.tradeMessage ?? '相关资产暂由商盟保管'}</span>
           <button disabled={session.tradeBusy || session.blocked} onClick={() => void session.reconcileTrade()}><RefreshCw size={15} />核对</button></div>}
         {session.reincarnationPending && <div className="alert-bar" role="status"><span>{session.reincarnationMessage ?? '轮回待确认，本世暂停'}</span>
           <button disabled={session.reincarnationBusy || session.recoveryBusy} onClick={() => void session.reconcileReincarnation()}><RefreshCw size={15} />核对轮回</button></div>}
         {!session.reincarnationPending && session.reincarnationMessage && <p className="session-message" role="status">{session.reincarnationMessage}</p>}
+        {session.pvpPending && (!session.pvpCombat?.state.attacker.battle || session.pvpCombat.outcome) && <div className="alert-bar" role="status"><span>{session.pvpMessage ?? '袭击结果待确认，当前进度暂停'}</span>
+          <button disabled={session.pvpBusy || session.recoveryBusy} onClick={() => void session.reconcilePvp()}><RefreshCw size={15} />核对战斗</button></div>}
+        {!session.pvpPending && session.pvpMessage && <p className="session-message" role="status">{session.pvpMessage}</p>}
         {game && props ? <main ref={pageRef} className={`page-scroll${page === 'chat' ? ' chat-page-scroll' : ''}`} key={game.life.number}>
-          {page === 'world' && <><LocationView key={`location:${game.locationId}`} {...props} open={setPage} frame={session.combatFrame} paused={session.combatPaused}
+          {page === 'world' && (session.pvpCombat ? <PvpCombatView session={session} /> : <><LocationView key={`location:${game.locationId}`} {...props} open={setPage} frame={session.combatFrame} paused={session.combatPaused}
             lastBattleId={lastBattle.current} nearbyCount={socialState.status === 'online' ? socialState.nearby.length : null} />
-            {game.battle && <NearbyPlayers key={game.locationId} state={socialState} client={social} />}</>}
+            {game.battle && <NearbyPlayers key={game.locationId} state={socialState} client={social} />}</>)}
           {page === 'nearby' && <div className="page nearby-page"><div className="page-heading">
             <div><span className="eyebrow">{game.locationName}</span><h1>同地道友</h1></div>
             <IconButton label="返回当地" onClick={() => setPage('world')}><ArrowLeft size={18} /></IconButton></div>
@@ -136,7 +164,7 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           ? current.groups.filter(id => id !== group) : [...current.groups, group] }))} />}
       <footer className="statusbar"><span><i className={session.blocked ? 'status-warning' : ''} />{previewControls ? '预览环境 · 不写角色存档'
         : session.blocked ? '进度已暂停' : session.busy ? '正在保存' : '本地存档已就绪'}</span>
-        <span>{game ? `${game.locationName} · ${activityName(game)}` : ''}</span>
+        <span>{game ? `${game.locationName} · ${activityLabel ?? activityName(game)}` : ''}</span>
         <span>{previewControls ? '内存角色' : session.lastCloudSave ? `云备份 ${new Date(session.lastCloudSave).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}` : '尚无本次云备份记录'}</span></footer>
     </div>
     {overlay === 'reincarnation' && <ReincarnationDialog session={session} onClose={() => setOverlay(null)} />}

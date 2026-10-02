@@ -14,7 +14,7 @@ import {
   consignmentViewSchema, type ConsignmentFilter, type ConsignmentRequest, type ConsignmentView,
 } from '../shared/consignment';
 import { acquireLocalSaveLock, LocalSaveReadError, LocalSaveStore, localFromCloud, type LocalSave } from './local-save';
-import { compareSaves, type SaveComparison } from './save-recovery';
+import { compareSaves, sameClientSave, type SaveComparison } from './save-recovery';
 import { availableCharacter, checkReservedCapacity, reserveTrade, restoreReservation, validateTradeReceipt, type PendingTrade } from './trade-reservation';
 import { WorldClock } from './world-clock';
 import { combatFrame, EMPTY_COMBAT_FRAME, type CombatFrame } from './combat-presentation';
@@ -23,6 +23,10 @@ import {
   validateReincarnationReceipt, type ReincarnationRequest,
 } from '../shared/reincarnation';
 import { publicCharacterInfo } from './public-player';
+import { advancePvpBattle, applyPvpReceipt, pvpOutcome, startPvpBattle } from '../core/prototype/pvp';
+import { readPlayerDuel, withdraw, type PlayerDuelState } from '../core/prototype/simulation';
+import { EMPTY_PVP, pvpOverviewSchema, pvpStateSchema, pvpStatusSchema,
+  type PendingPvp, type PvpBattleInfo, type PvpOutcome, type PvpReceipt, type PvpState, type PvpStatus } from '../shared/pvp';
 
 export interface ConnectionIssue {
   message: string;
@@ -49,6 +53,13 @@ export interface ClientState {
   recoveryBusy: boolean;
   recovery: SaveComparison | null;
   recoveryMessage: string | null;
+  onlineReady: boolean;
+  onlineMessage: string | null;
+  pvp: PvpState;
+  pvpPending: boolean;
+  pvpBusy: boolean;
+  pvpMessage: string | null;
+  pvpCombat: { battle: PvpBattleInfo; state: PlayerDuelState; outcome: PvpOutcome | null; frame: CombatFrame; paused: boolean } | null;
 }
 interface Options {
   fetcher?: typeof fetch;
@@ -58,6 +69,7 @@ interface Options {
   acquireLock?: () => Promise<() => void>;
   cloudIntervalMs?: number;
   expectedCharacterId?: string;
+  requireCloudBaseline?: boolean;
 }
 class RequestError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
@@ -71,6 +83,8 @@ export class GameClient {
     tradePending: false, tradeBusy: false, tradeStopped: false, tradeMessage: null,
     reincarnationPending: false, reincarnationBusy: false, reincarnationMessage: null,
     recoveryAvailable: false, recoveryBusy: false, recovery: null, recoveryMessage: null,
+    onlineReady: false, onlineMessage: null,
+    pvp: { ...EMPTY_PVP }, pvpPending: false, pvpBusy: false, pvpMessage: null, pvpCombat: null,
   };
   private readonly listeners = new Set<() => void>();
   private readonly fetcher: typeof fetch;
@@ -81,6 +95,9 @@ export class GameClient {
   private readonly cloudIntervalMs: number;
   private readonly worldClock: WorldClock;
   private readonly expectedCharacterId: string | undefined;
+  private readonly requireCloudBaseline: boolean;
+  private cloudBaselineAccepted = false;
+  private cloudConnectionHealthy = true;
   private queue: Promise<unknown> = Promise.resolve();
   private local: LocalSave | null = null;
   private releaseLock: (() => void) | null = null;
@@ -94,10 +111,12 @@ export class GameClient {
   private tradeFlight: Promise<boolean> | null = null;
   private reincarnationFlight: Promise<boolean> | null = null;
   private recoveryFlight: Promise<boolean> | null = null;
+  private pvpFlight: Promise<boolean> | null = null;
   private recoveryProfile: CloudProfile | null = null;
   private recoveryCloudBlocked: string | null = null;
   private tickTimer: ReturnType<typeof setTimeout> | undefined;
   private cloudTimer: ReturnType<typeof setTimeout> | undefined;
+  private pvpTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(options: Options = {}) {
     this.fetcher = options.fetcher ?? ((...args) => fetch(...args));
@@ -106,11 +125,24 @@ export class GameClient {
     this.monotonicNow = options.monotonicNow ?? (() => performance.now());
     this.worldClock = new WorldClock(this.wallNow, this.monotonicNow);
     this.expectedCharacterId = options.expectedCharacterId;
+    this.requireCloudBaseline = options.requireCloudBaseline ?? false;
     this.acquireLock = options.acquireLock ?? acquireLocalSaveLock;
     this.cloudIntervalMs = options.cloudIntervalMs ?? CLOUD_SAVE_INTERVAL_MS + Math.floor(Math.random() * 15_000);
   }
 
   getSnapshot = () => this.state;
+  getOnlineRevision = () => {
+    if (!this.local || !this.state.onlineReady) throw new Error('请先核对并采用云端存档，再使用联机功能。');
+    return this.local.cloudRevision;
+  };
+  prepareOnlineConnection = async () => {
+    await this.finishUpload();
+    return this.getOnlineRevision();
+  };
+  getPendingBattleId = () => this.local?.pendingPvp?.battleId ?? null;
+  blockOnlineSource = (message: string): Promise<void> => this.serial(async () => {
+    if (this.local) await this.stopOnline(message);
+  });
   getPublicCharacter = () => {
     if (!this.local || this.state.blocked || this.state.recoveryBusy || this.state.reincarnationBusy) {
       throw new Error('角色资料暂不可用');
@@ -131,20 +163,27 @@ export class GameClient {
     return result;
   }
   private failLocal(error: unknown) {
-    this.publish({ blocked: true, recoveryAvailable: error instanceof LocalSaveReadError,
+    this.publish({ blocked: true, onlineReady: false, recoveryAvailable: error instanceof LocalSaveReadError,
       issue: { source: 'local', message: error instanceof Error ? error.message : '本地存档不可用，已暂停推进' } });
+  }
+  private onlineSourceReady() {
+    return (!this.requireCloudBaseline || this.cloudBaselineAccepted) && this.cloudConnectionHealthy &&
+      !this.cloudStopped && this.local?.syncConflict === null;
   }
   private async persist(local: LocalSave, show = true, events: CharacterEvent[] = [], paused = false) {
     try { this.local = await this.store.write({ ...local, worldClock: this.worldClock.checkpoint() }); }
     catch (error) { this.failLocal(error); throw error; }
     if (show) this.publish({
       combatFrame: combatFrame(this.state.combatFrame, local.save.character.simulation.clockMs,
-        this.monotonicNow(), events, paused || local.pendingReincarnation !== null),
+        this.monotonicNow(), events, paused || local.pendingReincarnation !== null || Boolean(local.pendingPvp)),
       response: { characterId: local.characterId, game: getCharacterView(availableCharacter(local.save.character, local.pendingTrade), this.worldClock.now()) },
       lastUpdated: local.wallSavedAt,
       tradePending: local.pendingTrade !== null,
       reincarnationPending: local.pendingReincarnation !== null,
-      tradeStopped: this.cloudStopped || local.syncConflict !== null,
+      tradeStopped: !this.onlineSourceReady(),
+      onlineReady: this.onlineSourceReady(),
+      pvpPending: Boolean(local.pendingPvp),
+      ...(!local.pendingPvp ? { pvpCombat: null } : {}),
     });
   }
   private async request(url: string, body?: unknown): Promise<unknown> {
@@ -166,6 +205,8 @@ export class GameClient {
     const generation = this.generation;
     return this.serial(async () => {
       if (this.initialized) return;
+      this.cloudBaselineAccepted = false;
+      this.cloudConnectionHealthy = true;
       this.publish({ busy: true, blocked: true });
       try {
         this.releaseLock = await this.acquireLock();
@@ -177,6 +218,30 @@ export class GameClient {
         this.local = loaded;
         if (this.local) {
           this.worldClock.restore(this.local.worldClock);
+          if (this.requireCloudBaseline) {
+            let profile: CloudProfile | null = null;
+            try {
+              profile = await this.readRecoveryProfile();
+            } catch (error) {
+              this.publish({ onlineMessage: error instanceof Error ? error.message : '云端存档尚未核对，联机功能暂不可用。' });
+            }
+            if (generation !== this.generation) return;
+            if (profile) {
+              if (!this.local.syncConflict && !this.local.pendingTrade && !this.local.pendingReincarnation && !this.local.pendingPvp &&
+                  sameClientSave(this.local.save, profile.save)) {
+                const confirmed = localFromCloud(profile, this.wallNow());
+                this.local = await this.store.write({ ...this.local, cloudRevision: profile.revision,
+                  save: confirmed.save, wallSavedAt: confirmed.wallSavedAt, worldClock: confirmed.worldClock,
+                  uploadedRevision: this.local.localRevision, pending: null });
+                this.worldClock.restore(this.local.worldClock);
+                this.cloudBaselineAccepted = true;
+                this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
+              } else {
+                this.recoveryProfile = profile;
+                this.publish({ onlineMessage: '本地与云端存档不一致。确认采用云端存档后才可联机；未上传进度不会合并。' });
+              }
+            }
+          }
         } else {
           const profile = cloudProfileSchema.parse(await this.request('/api/client/session', {}));
           if (this.expectedCharacterId && profile.characterId !== this.expectedCharacterId) {
@@ -185,6 +250,8 @@ export class GameClient {
           if (generation !== this.generation) return;
           this.worldClock.calibrate(profile.serverTime);
           await this.persist(localFromCloud(profile, this.wallNow()));
+          this.cloudBaselineAccepted = true;
+          this.publish({ lastCloudSave: profile.save.character.simulation.clockMs, onlineMessage: null });
         }
         await this.activateLocal(generation);
       } catch (error) {
@@ -197,7 +264,7 @@ export class GameClient {
 
   private async activateLocal(generation: number) {
     const gap = Math.max(0, this.wallNow() - this.local!.wallSavedAt);
-    if (!this.local!.pendingReincarnation) await this.settle(gap, false, generation);
+    if (!this.local!.pendingReincarnation && !this.local!.pendingPvp) await this.settle(gap, false, generation);
     if (generation !== this.generation) return;
     this.lastFrame = this.monotonicNow();
     this.initialized = true;
@@ -205,10 +272,18 @@ export class GameClient {
     this.publish({
       blocked: this.local!.pendingReincarnation !== null, recoveryAvailable: true,
       issue: this.local!.syncConflict ? { source: 'cloud', message: this.local!.syncConflict, retryable: false } : null,
-      tradePending: this.local!.pendingTrade !== null, tradeStopped: this.cloudStopped,
+      tradePending: this.local!.pendingTrade !== null, tradeStopped: !this.onlineSourceReady(),
+      onlineReady: this.onlineSourceReady(),
       tradeMessage: this.local!.syncConflict,
       reincarnationPending: this.local!.pendingReincarnation !== null,
       reincarnationMessage: this.local!.pendingReincarnation ? '轮回结果待核对，本世已暂停' : null,
+      pvpPending: Boolean(this.local!.pendingPvp),
+      pvpMessage: this.local!.pendingPvp ? '袭击结果待核对，当前进度已暂停。' : null,
+      pvpCombat: this.local!.pendingPvp?.battle && this.local!.pendingPvp.combat ? {
+        battle: this.local!.pendingPvp.battle, state: this.local!.pendingPvp.combat,
+        outcome: this.local!.pendingPvp.outcome,
+        frame: { ...EMPTY_COMBAT_FRAME, clockMs: this.local!.pendingPvp.combat.attacker.clockMs }, paused: true,
+      } : null,
       response: { characterId: this.local!.characterId,
         game: getCharacterView(availableCharacter(this.local!.save.character, this.local!.pendingTrade), this.worldClock.now()) },
     });
@@ -216,7 +291,7 @@ export class GameClient {
 
   // Interrupted chunks are saved with their corresponding wall checkpoint.
   private async settle(gap: number, connected: boolean, generation = this.generation) {
-    if (!this.local || this.local.pendingReincarnation || gap <= 0) return;
+    if (!this.local || this.local.pendingReincarnation || this.local.pendingPvp || gap <= 0) return;
     const start = this.local.save.character.simulation.clockMs;
     const target = start + gap;
     const wallTarget = Math.max(this.local.wallSavedAt, this.wallNow());
@@ -259,14 +334,45 @@ export class GameClient {
     await this.settle(gap, gap <= MAX_FRAME_GAP_MS);
     this.lastFrame += gap;
   }
-  tick = () => this.serial(async () => {
-    if (!this.initialized || this.state.blocked || this.state.recoveryBusy) return;
-    try { await this.advanceFrame(); }
-    catch (error) { this.failLocal(error); }
-  });
+  tick = async () => {
+    const finished = await this.serial(async () => {
+      if (!this.initialized || this.state.blocked || this.state.recoveryBusy) return false;
+      try {
+        if (this.local?.pendingPvp) return this.advancePvpFrame();
+        if (!this.state.pvpBusy) await this.advanceFrame();
+      } catch (error) { this.failLocal(error); }
+      return false;
+    });
+    if (finished) await this.reconcilePvp();
+  };
+
+  private async advancePvpFrame() {
+    const pending = this.local!.pendingPvp!;
+    if (pending.role !== 'attacker' || !pending.battle || !pending.combat || pending.outcome) return false;
+    const now = this.monotonicNow(), gap = Math.max(0, Math.floor(now - this.lastFrame));
+    this.lastFrame = now;
+    if (gap > MAX_FRAME_GAP_MS) {
+      if (this.state.pvpCombat) this.publish({ pvpCombat: { ...this.state.pvpCombat, paused: true } });
+      return false;
+    }
+    const result = advancePvpBattle(pending.combat, pending.combat.attacker.clockMs + gap);
+    const outcome = pvpOutcome(pending.battle, result.state);
+    await this.persist({ ...this.local!, pendingPvp: { ...pending, combat: result.state, outcome } }, false);
+    const events: CharacterEvent[] = result.events.map(event => ({
+      life: this.local!.save.character.life.number, regionId: `pvp:${pending.battleId}`, group: '0', event,
+    }));
+    this.publish({
+      pvpCombat: { battle: pending.battle, state: result.state, outcome, paused: outcome !== null,
+        frame: combatFrame(this.state.pvpCombat?.frame ?? EMPTY_COMBAT_FRAME,
+          result.state.attacker.clockMs, now, events) },
+      pvpMessage: outcome ? '交锋结束，正在结算。' : null,
+    });
+    return outcome !== null;
+  }
 
   private runAction = (execute: (state: CharacterState, events: CharacterEvent[]) => CharacterState | Promise<CharacterState>): Promise<boolean> => this.serial(async () => {
-    if (!this.initialized || !this.local || this.state.blocked || this.state.reincarnationBusy || this.state.recoveryBusy) return false;
+    if (!this.initialized || !this.local || this.state.blocked || this.state.reincarnationBusy || this.state.recoveryBusy ||
+        this.local.pendingPvp || this.state.pvpBusy) return false;
     this.publish({ busy: true });
     try {
       await this.advanceFrame();
@@ -318,6 +424,7 @@ export class GameClient {
 
   loadRanking = async (board: RankingId): Promise<RankingBoard> => {
     if (!this.local || !this.initialized) throw new Error('角色尚未读取');
+    if (!this.state.onlineReady) throw new Error(this.state.onlineMessage ?? '请先核对并采用云端存档，再查看榜单。');
     const generation = this.generation;
     const life = this.local.save.character.life.number;
     const result = rankingBoardSchema.parse(await this.request(
@@ -333,14 +440,217 @@ export class GameClient {
   private requireTrading() {
     if (!this.local || !this.initialized || this.state.blocked) throw new CharacterCommandError('角色尚未就绪');
     if (this.state.recoveryBusy) throw new CharacterCommandError('正在核对存档，请稍后再试');
+    if (this.local.pendingPvp || this.state.pvpBusy) throw new CharacterCommandError('袭击正在核对，暂不能办理寄售');
     if (this.state.reincarnationBusy || this.local.pendingReincarnation) throw new CharacterCommandError('轮回正在核对，暂不能办理寄售');
     if (this.cloudStopped || this.local.syncConflict) throw new CharacterCommandError('保存或交易状态冲突，已停止新的寄售操作');
+    if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '请先核对并采用云端存档，再办理寄售。');
     if (this.local.pendingTrade) throw new CharacterCommandError('上一笔交易尚待核对');
   }
 
   private async finishUpload() {
     if (this.cloudFlight) await this.cloudFlight;
     else if (this.local?.pending && !this.cloudStopped) await this.sync();
+  }
+
+  updatePvpState = (state: PvpState) => this.publish({ pvp: pvpStateSchema.parse(state) });
+  withdrawPvp = async (): Promise<boolean> => {
+    const saved = await this.serial(async () => {
+      const pending = this.local?.pendingPvp;
+      if (!pending?.combat || !pending.battle || pending.outcome || pending.role !== 'attacker' || this.state.blocked) return false;
+      try {
+        const combat = { attacker: withdraw(pending.combat.attacker), defender: withdraw(pending.combat.defender) };
+        combat.attacker.player.hp = '0';
+        const state = readPlayerDuel(combat);
+        await this.persist({ ...this.local!, pendingPvp: { ...pending, combat: state,
+          outcome: pvpOutcome(pending.battle, state, true) } }, false);
+        if (this.state.pvpCombat) this.publish({ pvpCombat: { ...this.state.pvpCombat, state,
+          outcome: this.local!.pendingPvp!.outcome, paused: true },
+          pvpMessage: '已撤退，正在结算。' });
+        return true;
+      } catch (error) { this.failLocal(error); return false; }
+    });
+    return saved ? this.reconcilePvp() : false;
+  };
+  loadPvp = async () => {
+    if (!this.state.onlineReady || !this.initialized) return;
+    const generation = this.generation;
+    const result = pvpOverviewSchema.parse(await this.request('/api/client/pvp'));
+    if (generation !== this.generation) return;
+    this.updatePvpState(result.state);
+    if (result.battleId && result.battleId !== this.local?.pendingPvp?.battleId) {
+      await this.blockOnlineSource('另一会话正在核对袭击。请等待结果后核对云档。');
+    }
+  };
+  setPvpMode = async (enabled: boolean): Promise<boolean> => {
+    if (!this.state.onlineReady || this.state.pvpBusy || this.local?.pendingPvp) return false;
+    const generation = this.generation;
+    this.publish({ pvpBusy: true, pvpMessage: null });
+    try {
+      const state = pvpStateSchema.parse(await this.request('/api/client/pvp/mode', { enabled }));
+      if (generation !== this.generation) return false;
+      this.updatePvpState(state);
+      return true;
+    } catch (error) {
+      if (generation === this.generation) {
+        this.publish({ pvpMessage: error instanceof Error ? error.message : '模式暂未确认，请稍后再试。' });
+        await this.loadPvp().catch(() => {});
+      }
+      return false;
+    } finally {
+      if (generation === this.generation) {
+        this.lastFrame = this.monotonicNow();
+        this.publish({ pvpBusy: false });
+      }
+    }
+  };
+  private runPvp(work: (generation: number) => Promise<boolean>): Promise<boolean> {
+    if (this.pvpFlight) return this.pvpFlight;
+    const generation = this.generation;
+    this.publish({ pvpBusy: true, pvpMessage: null });
+    const flight = work(generation).catch(error => {
+      if (generation === this.generation) this.publish({
+        pvpMessage: error instanceof RequestError || error instanceof CharacterCommandError
+          ? error.message : '战斗结果暂未确认，原检查点保留，请稍后核对。',
+      });
+      return false;
+    }).finally(() => {
+      if (this.pvpFlight === flight) {
+        this.pvpFlight = null;
+        this.publish({ pvpBusy: false });
+        if (this.local?.pendingPvp && this.state.issue?.source !== 'local') {
+          clearTimeout(this.pvpTimer);
+          this.pvpTimer = setTimeout(() => {
+            if (generation === this.generation) void this.reconcilePvp();
+          }, 2000);
+        }
+      }
+    });
+    this.pvpFlight = flight;
+    return flight;
+  }
+  private async freezePvp(role: PendingPvp['role'], battleId: string, target: string | null, generation: number) {
+    if (this.tradeFlight) await this.tradeFlight;
+    if (this.reincarnationFlight) await this.reincarnationFlight;
+    await this.finishUpload();
+    return this.serial(async () => {
+      if (generation !== this.generation || !this.initialized || !this.local || !this.releaseLock ||
+          this.state.blocked || this.state.recoveryBusy || !this.state.onlineReady) {
+        throw new CharacterCommandError('角色或云端存档尚未就绪，未发起袭击。');
+      }
+      if (this.local.pending || this.local.pendingTrade || this.local.pendingReincarnation || this.local.pendingPvp) {
+        throw new CharacterCommandError('请先核对已有的保存、交易或战斗。');
+      }
+      await this.advanceFrame();
+      const pending: PendingPvp = { battleId, role, target, baseRevision: this.local.cloudRevision,
+        outcome: null, battle: null, combat: null };
+      const body = { battleId, baseRevision: pending.baseRevision, save: this.local.save, ...(role === 'attacker' ? { target } : {}) };
+      if (new TextEncoder().encode(JSON.stringify(body)).byteLength > MAX_SAVE_BYTES) throw new CharacterCommandError('战斗检查点超过接收上限。');
+      await this.persist({ ...this.local, pendingPvp: pending });
+      return body;
+    });
+  }
+  attackPlayer = (target: string): Promise<boolean> => this.runPvp(async generation => {
+    if (this.local?.pendingPvp) throw new CharacterCommandError('上一场袭击尚待核对。');
+    const body = await this.freezePvp('attacker', crypto.randomUUID(), target, generation);
+    const result = pvpStatusSchema.parse(await this.request('/api/client/pvp/start', body));
+    return this.processPvp(result, generation);
+  });
+  preparePvpDefense = (battleId: string): Promise<boolean> => {
+    if (this.local?.pendingPvp?.battleId === battleId) return this.reconcilePvp();
+    if (this.pvpFlight || this.state.pvpBusy || this.state.recoveryBusy) return Promise.resolve(false);
+    return this.runPvp(async generation => {
+      const status = pvpStatusSchema.parse(await this.request(`/api/client/pvp/${battleId}`));
+      if (status.status !== 'pending' || generation !== this.generation) return false;
+      const body = await this.freezePvp('defender', battleId, null, generation);
+      return this.processPvp(pvpStatusSchema.parse(await this.request('/api/client/pvp/join', body)), generation);
+    });
+  };
+  reconcilePvp = (): Promise<boolean> => {
+    if (!this.initialized || !this.local?.pendingPvp || this.state.recoveryBusy || this.state.issue?.source === 'local') return Promise.resolve(false);
+    return this.runPvp(async generation => {
+      const pending = this.local!.pendingPvp!;
+      let result = pvpStatusSchema.parse(await this.request(`/api/client/pvp/${pending.battleId}`));
+      if (generation !== this.generation) return false;
+      if (result.status === 'unknown' && pending.role === 'attacker') {
+        result = pvpStatusSchema.parse(await this.request('/api/client/pvp/start', {
+          battleId: pending.battleId, target: pending.target, baseRevision: pending.baseRevision, save: this.local!.save,
+        }));
+      } else if (result.status === 'pending' && pending.role === 'defender') {
+        result = pvpStatusSchema.parse(await this.request('/api/client/pvp/join', {
+          battleId: pending.battleId, baseRevision: pending.baseRevision, save: this.local!.save,
+        }));
+      }
+      return this.processPvp(result, generation);
+    });
+  };
+  private validatePvpReceipt(pending: PendingPvp, receipt: PvpReceipt) {
+    const local = this.local!;
+    if (receipt.battleId !== pending.battleId || receipt.characterId !== local.characterId ||
+        receipt.baseRevision !== pending.baseRevision || receipt.life !== local.save.character.life.number ||
+        (receipt.status === 'settled' && (
+          receipt.checkpointClockMs !== local.save.character.simulation.clockMs || receipt.playedMs !== local.save.playedMs ||
+          BigInt(receipt.revision) !== BigInt(pending.baseRevision) + 1n ||
+          BigInt(receipt.tradeRevision) !== BigInt(local.save.tradeRevision) + 1n))) {
+      throw new Error('战斗回执与冻结的角色检查点不一致，原件保留。');
+    }
+  }
+  private async processPvp(result: PvpStatus, generation: number): Promise<boolean> {
+    if (generation !== this.generation || !this.local?.pendingPvp) return false;
+    if (result.status === 'active' && result.battle && this.local.pendingPvp.role === 'attacker') {
+      const battle = result.battle;
+      await this.serial(async () => {
+        if (generation !== this.generation || this.local?.pendingPvp?.battleId !== battle.battleId) return;
+        if (!this.local.pendingPvp.combat && !this.local.pendingPvp.outcome) {
+          const state = startPvpBattle(battle);
+          await this.persist({ ...this.local, pendingPvp: { ...this.local.pendingPvp, battle, combat: state } });
+          this.lastFrame = this.monotonicNow();
+          this.publish({ pvpCombat: { battle, state, outcome: null, frame: combatFrame(EMPTY_COMBAT_FRAME, 0, this.lastFrame), paused: false },
+            pvpMessage: null });
+        }
+      });
+      if (generation !== this.generation || this.local?.pendingPvp?.battleId !== battle.battleId) return false;
+      if (!this.local.pendingPvp.outcome) return false;
+      const settled = pvpStatusSchema.parse(await this.request('/api/client/pvp/finish', {
+        battleId: battle.battleId, outcome: this.local.pendingPvp.outcome,
+      }));
+      return this.processPvp(settled, generation);
+    }
+    if (result.status !== 'finished') {
+      this.publish({ pvpMessage: result.status === 'unknown' ? '原战斗暂未确认，检查点保持暂停。' : '正在等待袭击结果。' });
+      return false;
+    }
+    const applied = await this.serial(async () => {
+      if (generation !== this.generation || !this.local?.pendingPvp || !this.releaseLock) return false;
+      const pending = this.local.pendingPvp, receipt = result.receipt;
+      try { this.validatePvpReceipt(pending, receipt); }
+      catch (error) { await this.stopOnline(error instanceof Error ? error.message : '战斗回执不匹配'); return false; }
+      const revision = String(BigInt(this.local.localRevision) + 1n);
+      const save = receipt.status === 'settled' ? {
+        ...this.local.save, character: applyPvpReceipt(this.local.save.character, receipt), tradeRevision: receipt.tradeRevision,
+      } : this.local.save;
+      await this.persist({
+        ...this.local, save, pendingPvp: null, wallSavedAt: this.wallNow(), localRevision: revision,
+        ...(receipt.status === 'settled' ? { cloudRevision: receipt.revision, uploadedRevision: revision } : {}),
+      }, true, [], true);
+      this.lastFrame = this.monotonicNow();
+      this.updatePvpState(receipt.state);
+      this.publish({ pvpMessage: receipt.message, ...(receipt.status === 'settled' ? { lastCloudSave: receipt.settledAt } : {}) });
+      if (receipt.requiresRecovery) await this.stopOnline(receipt.message);
+      return receipt.status === 'settled';
+    });
+    if (applied && generation === this.generation && this.requireCloudBaseline && !this.cloudBaselineAccepted && !this.cloudStopped) {
+      try {
+        const profile = await this.readRecoveryProfile();
+        await this.serial(async () => {
+          if (generation !== this.generation || !this.local || this.local.pendingPvp ||
+              profile.revision !== this.local.cloudRevision || !sameClientSave(this.local.save, profile.save)) return;
+          this.cloudBaselineAccepted = true;
+          this.cloudConnectionHealthy = true;
+          this.publish({ onlineReady: this.onlineSourceReady(), onlineMessage: null, tradeStopped: !this.onlineSourceReady() });
+        });
+      } catch { /* Keep cloud admission closed until a fresh comparison succeeds. */ }
+    }
+    return applied;
   }
 
   loadConsignment = async (
@@ -368,8 +678,9 @@ export class GameClient {
 
   private async stopOnline(message: string) {
     this.cloudStopped = true;
+    this.cloudBaselineAccepted = false;
     if (this.local) await this.persist({ ...this.local, syncConflict: message });
-    this.publish({ tradeStopped: true, tradeMessage: message,
+    this.publish({ tradeStopped: true, tradeMessage: message, onlineReady: false, onlineMessage: message,
       issue: { source: 'cloud', message, retryable: false } });
   }
 
@@ -424,7 +735,8 @@ export class GameClient {
 
   reconcileTrade = (manual = false): Promise<boolean> => {
     if (!this.initialized || !this.local?.pendingTrade || this.state.blocked ||
-        (this.cloudStopped && !manual) || this.state.recoveryBusy) return Promise.resolve(false);
+        ((this.cloudStopped || (this.requireCloudBaseline && !this.cloudBaselineAccepted)) && !manual) ||
+        this.state.recoveryBusy) return Promise.resolve(false);
     return this.runTrade(generation => this.resolveTrade(this.local!.pendingTrade!, generation, true));
   };
 
@@ -499,7 +811,7 @@ export class GameClient {
   }
 
   submitReincarnation = (): Promise<boolean> => this.runReincarnation(async generation => {
-    if (this.state.recoveryBusy) return false;
+    if (this.state.recoveryBusy || this.local?.pendingPvp || this.state.pvpBusy) return false;
     if (this.tradeFlight) await this.tradeFlight;
     if (generation !== this.generation) return false;
     if (this.local?.pendingTrade) await this.reconcileTrade();
@@ -509,6 +821,7 @@ export class GameClient {
         throw new CharacterCommandError('角色尚未就绪');
       }
       if (this.cloudStopped || this.local.syncConflict) throw new CharacterCommandError('保存状态冲突，不能发起轮回');
+      if (!this.state.onlineReady) throw new CharacterCommandError(this.state.onlineMessage ?? '请先核对并采用云端存档，再发起轮回。');
       if (this.local.pending || this.local.pendingTrade) throw new CharacterCommandError('请先核对未确认的保存或寄售');
       await this.advanceFrame();
       const request = reincarnationRequestSchema.parse({
@@ -527,7 +840,8 @@ export class GameClient {
   });
 
   reconcileReincarnation = (manual = false): Promise<boolean> => {
-    if (!this.initialized || !this.local?.pendingReincarnation || (this.cloudStopped && !manual) || this.state.recoveryBusy ||
+    if (!this.initialized || !this.local?.pendingReincarnation ||
+        ((this.cloudStopped || (this.requireCloudBaseline && !this.cloudBaselineAccepted)) && !manual) || this.state.recoveryBusy ||
         this.state.issue?.source === 'local') return Promise.resolve(false);
     return this.runReincarnation(generation =>
       this.resolveReincarnation(this.local!.pendingReincarnation!, generation, true));
@@ -588,17 +902,18 @@ export class GameClient {
 
   sync = (): Promise<void> => {
     if (this.cloudFlight) return this.cloudFlight;
-    if (!this.initialized || this.state.blocked || this.state.recoveryBusy || this.cloudStopped || this.local?.pendingTrade ||
+    if (!this.initialized || this.state.blocked || this.state.recoveryBusy || this.cloudStopped || this.local?.pendingPvp ||
+        (this.requireCloudBaseline && !this.cloudBaselineAccepted) || this.local?.pendingTrade ||
         this.local?.pendingReincarnation ||
-        ((this.tradeFlight || this.reincarnationFlight) && !this.local?.pending)) return Promise.resolve();
+        ((this.tradeFlight || this.reincarnationFlight || this.pvpFlight) && !this.local?.pending)) return Promise.resolve();
     const generation = this.generation;
     this.publish({ refreshing: true });
     const work = async () => {
       try {
         const pending = await this.serial(async () => {
           if (generation !== this.generation || !this.local || !this.releaseLock || this.local.pendingTrade ||
-              this.local.pendingReincarnation || this.cloudStopped || this.state.recoveryBusy ||
-              ((this.tradeFlight || this.reincarnationFlight) && !this.local.pending)) return null;
+              this.local.pendingReincarnation || this.local.pendingPvp || this.cloudStopped || this.state.recoveryBusy ||
+              ((this.tradeFlight || this.reincarnationFlight || this.pvpFlight) && !this.local.pending)) return null;
           if (!this.local.pending) {
             if (this.local.localRevision === this.local.uploadedRevision) return null;
             await this.persist({
@@ -626,10 +941,13 @@ export class GameClient {
           await this.persist({
             ...this.local, cloudRevision: ack.revision, uploadedRevision: pending.localRevision, pending: null,
           }, false);
-          this.publish({ lastCloudSave: ack.savedAt, ...(this.state.issue?.source === 'cloud' ? { issue: null } : {}) });
+          this.cloudConnectionHealthy = true;
+          this.publish({ lastCloudSave: ack.savedAt, onlineReady: this.onlineSourceReady(), onlineMessage: null,
+            tradeStopped: !this.onlineSourceReady(), ...(this.state.issue?.source === 'cloud' ? { issue: null } : {}) });
         });
       } catch (error) {
         if (generation !== this.generation) return;
+        this.cloudConnectionHealthy = false;
         if (error instanceof RequestError && [400, 401, 403, 409, 413, 422].includes(error.status)) {
           await this.serial(async () => {
             if (generation === this.generation && this.local && this.releaseLock && this.state.issue?.source !== 'local') {
@@ -638,6 +956,8 @@ export class GameClient {
           }).catch(() => undefined);
         }
         if (this.state.issue?.source !== 'local') this.publish({
+          onlineReady: false, tradeStopped: true,
+          onlineMessage: '云端同步尚未确认，联机功能暂不可用；本地进度保留。',
           issue: {
             source: 'cloud', retryable: !this.cloudStopped,
             message: error instanceof RequestError ? error.message : '云备份未完成，本地进度保留，将稍后重试',
@@ -654,7 +974,7 @@ export class GameClient {
     if (this.recoveryFlight) return this.recoveryFlight;
     if (!this.state.recoveryAvailable) return Promise.resolve(false);
     const generation = this.generation;
-    const flights = [this.cloudFlight, this.tradeFlight, this.reincarnationFlight, this.timeFlight];
+    const flights = [this.cloudFlight, this.tradeFlight, this.reincarnationFlight, this.timeFlight, this.pvpFlight];
     this.publish({ recoveryBusy: true, recoveryMessage: null });
     const flight = (async () => {
       await this.serial(async () => {
@@ -710,6 +1030,15 @@ export class GameClient {
   }
 
   private async recoveryPending(generation: number): Promise<string | null> {
+    if (this.local?.pendingPvp) {
+      const result = pvpStatusSchema.parse(await this.request(`/api/client/pvp/${this.local.pendingPvp.battleId}`));
+      if (generation !== this.generation || result.status !== 'finished') return '袭击结果尚未确认，请先核对战斗，不能替换存档。';
+      this.validatePvpReceipt(this.local.pendingPvp, result.receipt);
+    }
+    if (this.requireCloudBaseline) {
+      const result = pvpOverviewSchema.parse(await this.request('/api/client/pvp'));
+      if (result.battleId) return '当前角色的袭击尚未结束，请等待结果后再核对存档。';
+    }
     const trade = this.local?.pendingTrade;
     const reincarnation = this.local?.pendingReincarnation;
     if (trade) {
@@ -752,7 +1081,8 @@ export class GameClient {
     return true;
   });
 
-  chooseSave = async (source: 'local' | 'cloud'): Promise<boolean> => {
+  chooseSave = async (source: 'cloud'): Promise<boolean> => {
+    if (source !== 'cloud') return false;
     const chosen = this.recoveryProfile;
     if (!chosen || this.recoveryFlight) return false;
     const success = await this.runRecovery(async generation => {
@@ -765,29 +1095,25 @@ export class GameClient {
       return this.serial(async () => {
         if (generation !== this.generation || !this.releaseLock) return false;
         const comparison = compareSaves(this.local, profile, cloudBlocked);
-        const reason = source === 'local' ? comparison.localBlocked : comparison.cloudBlocked;
+        const reason = comparison.cloudBlocked;
         if (reason) throw new Error(reason);
-        const local = source === 'cloud' ? localFromCloud(profile, this.wallNow()) : {
-          ...this.local!, cloudRevision: profile.revision, pending: null, syncConflict: null,
-          localRevision: String(BigInt(this.local!.localRevision) + 1n),
-          worldClock: this.worldClock.checkpoint(),
-        };
+        const local = localFromCloud(profile, this.wallNow());
         try { this.local = await this.store.write(local, true); }
         catch (error) { this.failLocal(error); throw error; }
         this.worldClock.restore(this.local.worldClock);
+        this.cloudBaselineAccepted = true;
+        this.cloudConnectionHealthy = true;
         this.publish({ combatFrame: EMPTY_COMBAT_FRAME, tradeMessage: null, reincarnationMessage: null });
         await this.activateLocal(generation);
         if (generation !== this.generation) return false;
         this.recoveryProfile = null;
-        this.publish({ recovery: null, recoveryMessage: source === 'cloud' ? '已采用云端存档，本地原件已保留。' : '已采用本地进度，正在尝试同步。' });
+        this.publish({ recovery: null, onlineMessage: null, lastCloudSave: profile.save.character.simulation.clockMs,
+          recoveryMessage: '已采用云端存档，本地原件已保留。' });
         return true;
       });
     });
-    if (success && source === 'local') await this.sync();
     return success;
   };
-
-  exportSave = (copy: 'current' | 'recovery'): string | null => this.store.exportRaw(copy);
 
   private scheduleTick(generation: number) {
     if (!this.active || generation !== this.generation) return;
@@ -799,7 +1125,7 @@ export class GameClient {
     if (!this.active || generation !== this.generation) return;
     this.cloudTimer = setTimeout(() => {
       void Promise.all([this.refreshWorldTime(), this.local?.pendingReincarnation ? this.reconcileReincarnation()
-        : this.local?.pendingTrade ? this.reconcileTrade() : this.sync()])
+        : this.local?.pendingPvp ? this.reconcilePvp() : this.local?.pendingTrade ? this.reconcileTrade() : this.sync()])
         .finally(() => this.scheduleCloud(generation));
     }, this.cloudIntervalMs);
   }
@@ -811,7 +1137,8 @@ export class GameClient {
       this.scheduleCloud(generation);
       if (generation === this.generation) {
         void this.refreshWorldTime();
-        if (this.local?.pendingReincarnation) void this.reconcileReincarnation();
+        if (this.local?.pendingPvp) void this.reconcilePvp();
+        else if (this.local?.pendingReincarnation) void this.reconcileReincarnation();
         else if (this.local?.pendingTrade) void this.reconcileTrade();
       }
     });
@@ -822,14 +1149,19 @@ export class GameClient {
     this.generation++;
     clearTimeout(this.tickTimer);
     clearTimeout(this.cloudTimer);
+    clearTimeout(this.pvpTimer);
     this.cloudFlight = null;
     this.timeFlight = null;
     this.tradeFlight = null;
     this.reincarnationFlight = null;
     this.recoveryFlight = null;
+    this.pvpFlight = null;
     this.recoveryProfile = null;
-    this.publish({ refreshing: false, tradeBusy: false, reincarnationBusy: false,
-      recoveryBusy: false, recoveryAvailable: false, recovery: null, recoveryMessage: null });
+    this.cloudBaselineAccepted = false;
+    this.cloudConnectionHealthy = true;
+    this.publish({ refreshing: false, tradeBusy: false, reincarnationBusy: false, pvpBusy: false, pvpCombat: null,
+      recoveryBusy: false, recoveryAvailable: false, recovery: null, recoveryMessage: null,
+      onlineReady: false, onlineMessage: null });
     void this.serial(async () => {
       this.releaseLock?.();
       this.releaseLock = null;
@@ -839,6 +1171,7 @@ export class GameClient {
   };
   retry = async () => {
     if (this.state.recoveryBusy) return;
+    if (this.local?.pendingPvp && this.state.issue?.source !== 'local') { await this.reconcilePvp(); return; }
     if (this.state.issue?.source === 'action') { this.publish({ issue: null }); return; }
     if (this.local?.pendingReincarnation && this.state.issue?.source !== 'local') {
       await this.reconcileReincarnation();
@@ -848,7 +1181,8 @@ export class GameClient {
       await this.serial(async () => { this.releaseLock?.(); this.releaseLock = null; this.initialized = false; });
       await this.initialize();
       if (this.local?.pendingReincarnation) await this.reconcileReincarnation();
-    } else if (this.local?.pendingTrade) await this.reconcileTrade();
+    } else if (this.requireCloudBaseline && !this.cloudBaselineAccepted) await this.inspectSaves();
+    else if (this.local?.pendingTrade) await this.reconcileTrade();
     else await this.sync();
   };
   refresh = this.sync;

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from 'react';
-import { Eye, LoaderCircle, RefreshCw, Users } from 'lucide-react';
+import { Eye, LoaderCircle, RefreshCw, Swords, Users } from 'lucide-react';
 import { PLAYER_INTERACTIONS, profileResultSchema, type NearbyPlayer, type PlayerInteractionId, type PublicPlayerInfo } from '../../shared/social';
 import type { SocialClient, SocialState } from '../social-client';
 import { PlayerAvatar } from '../discord-identity';
@@ -53,22 +53,52 @@ function ProfileDialog({ client, target, onClose }: InteractionProps) {
     </>}
   </Dialog>;
 }
+function AttackDialog({ client, target, onClose }: InteractionProps) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const issue = client.attackIssue(target);
+  return <Dialog title={`袭击${target.name}`} onClose={onClose} footer={<div className="dialog-actions">
+    <span className="negative small">{error || issue}</span>
+    <button className="danger" disabled={busy || Boolean(issue)} onClick={() => {
+      setBusy(true); setError('');
+      void client.attack(target).then(() => onClose()).catch(error => {
+        setError(error instanceof Error ? error.message : '袭击未完成。'); setBusy(false);
+      });
+    }}>{busy ? <LoaderCircle size={16} className="spinning" /> : <Swords size={16} />}确认袭击</button>
+  </div>}>
+    <div className={`public-player-heading${target.pvp.red ? ' pvp-red-name' : ''}`}>
+      <PlayerAvatar url={target.avatarUrl} size={56} /><div><h3>{target.name}</h3><span>{target.realmName}</span></div>
+    </div>
+    <p>{target.pvp.red ? '红名败者随机失去一件穿戴器物，由胜者获得。' : '主动袭击获胜会积累恶名；败者气血归零并退回安全点。'}</p>
+  </Dialog>;
+}
 const interactionViews: Record<PlayerInteractionId, { icon: typeof Eye; dialog: ComponentType<InteractionProps> }> = {
   'view-profile': { icon: Eye, dialog: ProfileDialog },
+  attack: { icon: Swords, dialog: AttackDialog },
 };
 export function NearbyPlayers({ state, client, heading = true }: { state: SocialState; client?: SocialClient; heading?: boolean }) {
   const [selected, setSelected] = useState<{ action: PlayerInteractionId; target: NearbyPlayer } | null>(null);
+  const [, refreshTime] = useState(0);
+  useEffect(() => {
+    if (state.status !== 'online') return;
+    const timer = setInterval(() => refreshTime(value => value + 1), 1000);
+    return () => clearInterval(timer);
+  }, [state.status]);
   const View = selected ? interactionViews[selected.action].dialog : null;
   return <section className="nearby-players" aria-label="同地道友">
     <div className="section-line">{heading ? <h2><Users size={17} />同地道友 <small>{state.nearby.length}</small></h2>
       : <span className="muted small">{state.status === 'online' ? `${state.nearby.length} 位道友` : '同地名单'}</span>}
       <span className="muted small">{state.status === 'connecting' ? '连接中' : state.status === 'online' ? '' : state.status === 'displaced' ? '另一设备已接入' : '未连接'}</span></div>
     {state.nearby.length ? <ul>{state.nearby.map(player => <li key={player.playerId}>
-      <PlayerAvatar url={player.avatarUrl} /><div className="nearby-who"><strong>{player.name}</strong>
-        <span>{player.realmName} · {activityNames[player.activity]}</span></div>
+      <PlayerAvatar url={player.avatarUrl} /><div className={`nearby-who${player.pvp.red ? ' pvp-red-name' : ''}`}><strong>{player.name}</strong>
+        <span>{player.realmName} · {activityNames[player.activity]}{player.pvp.enabled ? player.pvp.red ? ' · 红名' : ' · PVP' : ''}</span>
+        {player.pvp.busy && <span>袭击核对中</span>}
+        {player.pvp.protectedUntil > Date.now() && <span>败退保护 {Math.ceil((player.pvp.protectedUntil - Date.now()) / 1000)}秒</span>}</div>
       {PLAYER_INTERACTIONS.filter(action => player.interactions.includes(action.id)).map(action => {
         const Icon = interactionViews[action.id].icon;
-        return <IconButton key={action.id} label={`${action.label}：${player.name}`} disabled={!client || state.status !== 'online'}
+        const issue = action.transport === 'pvp' ? client?.attackIssue(player) : null;
+        return <IconButton key={action.id} label={`${action.label}：${player.name}${issue ? ` · ${issue}` : ''}`}
+          disabled={!client || state.status !== 'online' || Boolean(issue)}
           onClick={() => setSelected({ action: action.id, target: player })}><Icon size={17} /></IconButton>;
       })}
     </li>)}</ul> : <p className="muted small">{state.status === 'online' ? '此地暂无其他在线道友' : '同地道友暂不可用'}</p>}

@@ -212,6 +212,7 @@ function directDamage(state: SimulationState, amount: string, modify = true) {
   const capped = cappedIncomingDamage(state, amount);
   const damage = modify ? damageValue(capped, 'damage.taken', activeSources(state), {
     tags: ['direct'], hp: state.player.hp, maxHp: getPlayerStats(state).maxHp,
+    livingEnemies: state.battle?.enemies.filter(enemy => dec(enemy.hp).gt(0)).length ?? 0,
   }) : capped;
   const hpLost = minimum(state.player.hp, damage);
   state.player.hp = text(dec(state.player.hp).minus(hpLost));
@@ -285,7 +286,7 @@ export function startEncounter(input: SimulationState, encounter: {
   return { state: readSimulation(state), events };
 }
 
-function performPlayerAction(state: SimulationState, events: SimulationEvent[], hooks?: SimulationHooks) {
+function performPlayerAction(state: SimulationState, events: SimulationEvent[], hooks?: SimulationHooks, opponent?: SimulationState) {
   const battle = state.battle!;
   const stats = getPlayerStats(state);
   state.player.nextActionAt = state.clockMs + attackIntervalMs(stats.attackSpeed);
@@ -307,8 +308,11 @@ function performPlayerAction(state: SimulationState, events: SimulationEvent[], 
       strike.damage = damageValue(strike.damage, 'damage.dealt', sources, {
         tags: ['direct', 'basic-attack'], hp: state.player.hp, maxHp: stats.maxHp,
         basicAttackOrdinal: state.actionCounts.basicAttack,
+        livingEnemies: alive,
       });
-      const hpLost = minimum(enemy.hp, strike.damage);
+      const incoming = opponent ? directDamage(opponent, strike.damage) : null;
+      if (incoming) strike.damage = incoming.damage;
+      const hpLost = incoming?.hpLost ?? minimum(enemy.hp, strike.damage);
       emit(state, events, { ...strike, kind: 'strike', at: state.clockMs, side: 'player', slot, hpLost }, hooks);
       if (strike.hit && state.battle === battle && enemy.definition.abilities.reflectionRatio) {
         // Existing recoil stays unmodified; the new guard still caps each direct hit.
@@ -321,17 +325,22 @@ function performPlayerAction(state: SimulationState, events: SimulationEvent[], 
         emit(state, events, { kind: 'miss-punishment', at: state.clockMs, slot, ...damage }, hooks);
         if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
       }
-      enemy.hp = text(dec(enemy.hp).minus(hpLost));
+      enemy.hp = opponent ? opponent.player.hp : text(dec(enemy.hp).minus(hpLost));
       if (dec(enemy.hp).eq(0)) {
-        emit(state, events, {
-          kind: 'enemy-defeated', at: state.clockMs, regionId: battle.regionId,
-          enemyId: enemy.definition.id, slot, groupSize: battle.enemies.length,
-        }, hooks);
-        if (battle.enemies.every((entry) => dec(entry.hp).eq(0))) {
-          const total = integerAdd(state.clearedGroups[battle.regionId] ?? '0', 1);
-          state.clearedGroups[battle.regionId] = total;
+        if (opponent) {
           leaveBattle(state);
-          emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total }, hooks);
+          leaveBattle(opponent);
+        } else {
+          emit(state, events, {
+            kind: 'enemy-defeated', at: state.clockMs, regionId: battle.regionId,
+            enemyId: enemy.definition.id, slot, groupSize: battle.enemies.length,
+          }, hooks);
+          if (battle.enemies.every((entry) => dec(entry.hp).eq(0))) {
+            const total = integerAdd(state.clearedGroups[battle.regionId] ?? '0', 1);
+            state.clearedGroups[battle.regionId] = total;
+            leaveBattle(state);
+            emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total }, hooks);
+          }
         }
       }
       if (enemy.definition.abilities.attackAfterDamageThreshold !== undefined && dec(state.player.hp).gt(0)) {
@@ -377,15 +386,53 @@ function pulse(state: SimulationState, events: SimulationEvent[], hooks?: Simula
   settle(state, { kind: 'pulse', at: state.clockMs, sleeping }, events, hooks);
 }
 
-export function advanceSimulation(
-  input: SimulationState, targetMs: number, maxEvents = 10000, hooks?: SimulationHooks,
-): SimulationResult & { processedSteps: number } {
+export interface PlayerDuelState { attacker: SimulationState; defender: SimulationState }
+
+function synchronizeDuel(attacker: SimulationState, defender: SimulationState) {
+  if (!attacker.battle || !defender.battle || dec(attacker.player.hp).lte(0) || dec(defender.player.hp).lte(0)) {
+    leaveBattle(attacker);
+    leaveBattle(defender);
+    return;
+  }
+  for (const [owner, target] of [[attacker, defender], [defender, attacker]]) {
+    const projection = owner.battle!.enemies[0];
+    projection.definition.stats = getPlayerStats(target);
+    projection.hp = target.player.hp;
+    projection.nextActionAt = target.player.nextActionAt!;
+  }
+}
+
+export function readPlayerDuel(input: PlayerDuelState): PlayerDuelState {
+  const attacker = readSimulation(input.attacker), defender = readSimulation(input.defender);
+  if (attacker.clockMs !== defender.clockMs || attacker.rng !== defender.rng ||
+      Boolean(attacker.battle) !== Boolean(defender.battle)) throw new Error('Invalid player duel checkpoint');
+  for (const state of [attacker, defender]) {
+    if (state.battle && (state.battle.regionId !== 'pvp' || state.battle.enemies.length !== 1 ||
+        state.battle.enemies[0].definition.id !== 'pvp-player')) throw new Error('Invalid player duel opponent');
+  }
+  synchronizeDuel(attacker, defender);
+  return { attacker, defender };
+}
+
+export function startPlayerDuel(attacker: SimulationState, defender: SimulationState): PlayerDuelState {
+  const first = startEncounter(attacker, { regionId: 'pvp', enemies: [{ id: 'pvp-player', stats: getPlayerStats(defender) }] }).state;
+  const second = startEncounter(defender, { regionId: 'pvp', enemies: [{ id: 'pvp-player', stats: getPlayerStats(attacker) }] }).state;
+  synchronizeDuel(first, second);
+  return readPlayerDuel({ attacker: first, defender: second });
+}
+
+// PVE and player duels share the clock, player actions, defensive rules and effect lifecycle.
+function advanceCombat(
+  input: SimulationState, targetMs: number, maxEvents: number, hooks?: SimulationHooks, opponent?: SimulationState,
+) {
   const state = readSimulation(input);
+  const other = opponent ? readSimulation(opponent) : null;
   if (!Number.isSafeInteger(targetMs) || targetMs < state.clockMs || targetMs > Number.MAX_SAFE_INTEGER - 3_600_000 ||
       !Number.isInteger(maxEvents) || maxEvents < 1 || maxEvents > 10000) {
     throw new Error('Invalid simulation target or event budget');
   }
   const events: SimulationEvent[] = [];
+  const otherEvents: SimulationEvent[] = [];
   let processedSteps = 0;
   for (let processed = 0; processed < maxEvents; processed++) {
     const hadBattle = state.battle !== null;
@@ -393,19 +440,42 @@ export function advanceSimulation(
     const deadlines = [state.nextPulseAt, ...state.effects.map((entry) => entry.expiresAt)];
     if (state.battle) {
       deadlines.push(state.player.nextActionAt!);
-      for (const enemy of state.battle.enemies) if (dec(enemy.hp).gt(0)) deadlines.push(enemy.nextActionAt);
+      if (!other) for (const enemy of state.battle.enemies) if (dec(enemy.hp).gt(0)) deadlines.push(enemy.nextActionAt);
+    }
+    if (other) {
+      deadlines.push(other.nextPulseAt, ...other.effects.map(entry => entry.expiresAt));
+      if (other.battle) deadlines.push(other.player.nextActionAt!);
     }
     const next = Math.min(...deadlines);
     if (next > targetMs) {
       state.clockMs = targetMs;
+      if (other) other.clockMs = targetMs;
       break;
     }
     state.clockMs = next;
     expireEffects(state, events);
     if (state.nextPulseAt === next) pulse(state, events, hooks);
-    if (state.battle && state.player.nextActionAt! <= next) performPlayerAction(state, events, hooks);
+    if (other) {
+      if (!state.battle) {
+        Object.assign(other, pauseSimulationUntil(other, next));
+        synchronizeDuel(state, other);
+        break;
+      }
+      other.clockMs = next;
+      expireEffects(other, otherEvents);
+      if (other.nextPulseAt === next) pulse(other, otherEvents);
+      synchronizeDuel(state, other);
+    }
+    if (state.battle && state.player.nextActionAt! <= next) performPlayerAction(state, events, hooks, other ?? undefined);
+    if (other) {
+      other.rng = state.rng;
+      synchronizeDuel(state, other);
+      if (other.battle && other.player.nextActionAt! <= next) performPlayerAction(other, otherEvents, undefined, state);
+      state.rng = other.rng;
+      synchronizeDuel(state, other);
+    }
     const battle = state.battle;
-    if (battle) {
+    if (battle && !other) {
       for (let slot = 0; slot < battle.enemies.length && state.battle === battle; slot++) {
         const enemy = battle.enemies[slot];
         if (dec(enemy.hp).lte(0) || enemy.nextActionAt > next) continue;
@@ -439,5 +509,22 @@ export function advanceSimulation(
     }
     if (state.clockMs === targetMs || (hooks?.stopOnEncounterEnd && hadBattle && !state.battle)) break;
   }
-  return { state: readSimulation(state), events, processedSteps };
+  return { state: readSimulation(state), events, processedSteps,
+    opponent: other ? readSimulation(other) : null, opponentEvents: otherEvents };
+}
+
+export function advanceSimulation(
+  input: SimulationState, targetMs: number, maxEvents = 10000, hooks?: SimulationHooks,
+): SimulationResult & { processedSteps: number } {
+  const { state, events, processedSteps } = advanceCombat(input, targetMs, maxEvents, hooks);
+  return { state, events, processedSteps };
+}
+
+export function advancePlayerDuel(input: PlayerDuelState, targetMs: number) {
+  const duel = readPlayerDuel(input);
+  if (!duel.attacker.battle) return { state: duel, events: [] as SimulationEvent[] };
+  const result = advanceCombat(duel.attacker, targetMs, 10000, { stopOnEncounterEnd: true }, duel.defender);
+  const events: SimulationEvent[] = [...result.events, ...result.opponentEvents.map(event =>
+    event.kind === 'strike' ? { ...event, side: 'enemy' as const } : event)].sort((a, b) => a.at - b.at);
+  return { state: readPlayerDuel({ attacker: result.state, defender: result.opponent! }), events };
 }

@@ -4,6 +4,7 @@ import { reincarnationReceiptSchema, type ReincarnationReceipt } from '../../sha
 import { inTransaction } from '../database';
 import { ApiError } from '../errors';
 import type { CloudSnapshot } from './repository';
+import { requireNoPvp } from './pvp-store';
 
 export interface StoredReincarnationReceipt { hash: string; receipt: ReincarnationReceipt }
 export interface ReincarnationTransaction {
@@ -44,6 +45,7 @@ export class ReincarnationRepository implements ReincarnationStore {
         snapshot,
         receipt: id => receipt(db, characterId, id),
         replaceLife: async (save, now) => {
+          await requireNoPvp(db, characterId);
           // Wait for in-flight buyers on these rows before reading/clearing seller deliveries.
           // The next READ COMMITTED statement then includes their committed proceeds.
           await db.query(

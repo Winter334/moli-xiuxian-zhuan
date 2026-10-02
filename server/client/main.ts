@@ -21,6 +21,8 @@ import { checkActivityRequest, DiscordAuth } from './discord-auth';
 import { readClientAuthMode, readDiscordConfig } from './discord-config';
 import { registerSocial } from './social';
 import { SocialRepository } from './social-store';
+import { PvpRepository } from './pvp-store';
+import { PvpService } from './pvp';
 
 export const SESSION_COOKIE = 'moli_client_session';
 
@@ -162,11 +164,30 @@ export async function createClientApp(
     if (discordConfig) {
       const moderatorIds = (process.env.SOCIAL_MODERATOR_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
       if (moderatorIds.some(id => !/^\d{17,20}$/.test(id))) throw new Error('SOCIAL_MODERATOR_IDS must contain Discord user IDs.');
-      await registerSocial(app, {
+      const pvpStore = new PvpRepository(pool);
+      const hub = await registerSocial(app, {
         applicationId: discordConfig.clientId,
         identity: token => repository.socialIdentity(token, discordConfig.clientId, Date.now()),
+        cloudRevision: async characterId => (await repository.load(characterId)).revision,
         store: new SocialRepository(pool, discordConfig.clientId), moderators: new Set(moderatorIds),
+        pvpPlayer: id => pvpStore.player(id),
       });
+      const pvp = new PvpService(pvpStore, hub);
+      app.get('/api/client/pvp', async request => pvp.overview(await authenticate(request)));
+      app.post('/api/client/pvp/mode', async request => {
+        const input = z.object({ enabled: z.boolean() }).strict().parse(request.body);
+        return pvp.mode(await authenticate(request), input.enabled);
+      });
+      app.post('/api/client/pvp/start', async request => pvp.start(await authenticate(request), request.body));
+      app.post('/api/client/pvp/join', async request => pvp.join(await authenticate(request), request.body));
+      app.post('/api/client/pvp/finish', async request => pvp.finish(await authenticate(request), request.body));
+      app.get('/api/client/pvp/:battleId', async request => {
+        const input = z.object({ battleId: z.uuid() }).strict().parse(request.params);
+        return pvp.status(await authenticate(request), input.battleId);
+      });
+      const pvpSweep = setInterval(() => { void pvp.sweep().catch(() => console.error('PVP timeout settlement failed')); }, 2000);
+      pvpSweep.unref();
+      app.addHook('preClose', async () => { clearInterval(pvpSweep); });
     }
     await app.ready();
     return app;

@@ -6,7 +6,7 @@ import { addInstance, createCharacter, gainCharacterExperience, gainCharacterSki
 import { combatPower } from './combat-power';
 import { FOOD_EFFECTS, ITEMS, RECIPES } from './content';
 import { executeDebugCommand } from './debug';
-import { damageValue, modifyValue, regeneration } from './effects';
+import { damageValue, modifyValue, regeneration, scaledSource } from './effects';
 import { craftingRates } from './economy';
 import { MINING_SITES } from './gathering';
 import { gainSkill, initialSkills } from './skills';
@@ -112,6 +112,63 @@ describe('shared effect settlement contracts', () => {
     state.mode = 'rest';
     expect(advanceSimulation(state, 1000).state.player.hp).toBe('190');
     expect(updatePlayerStats(state, { base: { ...base, maxHp: '1100' } }).state.player.hp).toBe('200');
+  });
+
+  it('scales tagged upkeep without changing recovery, other costs or stored sources', () => {
+    const base = { ...BASE_STATS, maxHp: '1000' };
+    const supply: StatSource = {
+      id: 'contract-supply', tags: ['supply', 'benefit'],
+      flat: { hpRegen: '-8', hpRegenPercent: '-0.01', defense: '-20' },
+      multiplier: { attackMultiplier: '0.9' },
+      statPolarity: { multiplier: { attackMultiplier: 'cost' } },
+    };
+    const original = structuredClone(supply);
+    const effects = source(
+      { ...increase('source.upkeep', '-.5'), tags: ['supply'] },
+      increase('healing.received', '1'),
+    );
+    const sources: StatSource[] = [
+      supply, { id: 'equipment-upkeep', tags: ['equipment'], flat: { hpRegen: '-4' } },
+      { id: 'positive-supply', tags: ['supply'], flat: { hpRegen: '10' } }, effects,
+    ];
+    expect(scaledSource(supply, sources)).toMatchObject({
+      flat: { hpRegen: '-4', hpRegenPercent: '-0.005', defense: '-20' },
+      multiplier: { attackMultiplier: '0.9' },
+    });
+    expect(regeneration(base, sources, resolveStats(base, sources))).toBe('7');
+    let state = createSimulation({ clockMs: 0, seed: 19, base, sources, hp: '100' });
+    state.mode = 'idle';
+    expect(advanceSimulation(state, 1000).state.player.hp).toBe('107');
+    expect(supply).toEqual(original);
+    expect(readSimulation(JSON.parse(JSON.stringify(state))).player.sources).toEqual(sources);
+  });
+
+  it('checks living enemies before each incoming hit and excludes conditional mitigation from normal power', () => {
+    const sources = [source({
+      ...increase('damage.taken', '-.5'), tags: ['direct'], when: { livingEnemiesAtLeast: 2 },
+    })];
+    expect(damageValue('100', 'damage.taken', sources, { tags: ['direct'], livingEnemies: 2 })).toBe('50');
+    expect(damageValue('100', 'damage.taken', sources, { tags: ['direct'], livingEnemies: 1 })).toBe('100');
+    expect(damageValue('100', 'damage.taken', sources, { tags: ['direct'] })).toBe('100');
+    expect(damageValue('100', 'damage.taken', sources,
+      { tags: ['direct'], livingEnemies: 2, normalPower: true })).toBe('100');
+    vi.spyOn(numbers, 'random').mockReturnValue(.5);
+    const target = {
+      id: 'contract-enemy', stats: { ...BASE_STATS, maxHp: '1000', attack: '10', critChance: '0' },
+      abilities: { entryStrikes: 1 as const, strikes: 2 as const },
+    };
+    let state = createSimulation({ clockMs: 0, seed: 19, sources,
+      base: { ...BASE_STATS, maxHp: '1000', attack: '1000', critChance: '0' } });
+    state = startEncounter(state, { regionId: 'contract-region', enemies: [
+      { ...target, abilities: { ...target.abilities, reflectionRatio: '0.2' } }, { ...target, id: 'second-enemy' },
+    ] }).state;
+    expect(state.player.hp).toBe('990');
+    const result = advanceSimulation(readSimulation(JSON.parse(JSON.stringify(state))), 1000);
+    expect(result.state.battle!.enemies[0].hp).toBe('0');
+    expect(result.events.find(event => event.kind === 'reflection')).toMatchObject({ damage: '200' });
+    expect(result.events.filter(event => event.kind === 'strike' && event.side === 'enemy')
+      .map(event => event.kind === 'strike' && event.damage)).toEqual(['10', '10']);
+    expect(result.state.player.hp).toBe('770');
   });
 
   it('shares recipe and medicine previews with execution while separating fixed rewards and proficiency', () => {

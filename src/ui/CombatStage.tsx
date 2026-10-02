@@ -1,14 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Shield, Swords, Zap } from 'lucide-react';
-import { ENEMIES, enemyRealmName } from '../../core/prototype/content';
+import { ENEMIES, FOOD_EFFECTS, enemyRealmName } from '../../core/prototype/content';
 import { attackIntervalMs } from '../../core/prototype/stats';
+import { getPlayerStats, type PlayerDuelState } from '../../core/prototype/simulation';
+import type { PvpBattleInfo } from '../../shared/pvp';
 import type { OpeningView } from '../../shared/opening-contracts';
 import type { CombatFrame } from '../combat-presentation';
 import { formatAmount } from '../format';
 import { CombatAvatar, SCENE_ART } from './art';
 import { Meter } from './common';
 import { enemyAbilityDetails } from './enemy-details';
-import { DiscordAvatar, useDiscordIdentity } from '../discord-identity';
+import { DiscordAvatar, PlayerAvatar, useDiscordIdentity } from '../discord-identity';
 
 function usePresentationStatus(frame: CombatFrame, paused: boolean) {
   const [waiting, setWaiting] = useState<number | null>(null);
@@ -84,14 +86,26 @@ function CardCharge({ deadline, actionAt, speed, frame, frozen, defeated, name }
   </div>;
 }
 
-export function CombatStage({ game, frame, paused }: { game: OpeningView; frame: CombatFrame; paused: boolean }) {
+export function CombatStage({ game, frame, paused, duel }: {
+  game: OpeningView; frame: CombatFrame; paused: boolean; duel?: { battle: PvpBattleInfo; state: PlayerDuelState };
+}) {
   const identity = useDiscordIdentity();
-  const battle = game.battle!;
-  const region = game.regions.find(entry => entry.id === battle.regionId)!;
+  const battle = duel ? {
+    regionId: `pvp:${duel.battle.battleId}`, nextPlayerActionAt: duel.state.attacker.player.nextActionAt,
+    enemies: [{ id: 'pvp-player', name: duel.battle.defender.name, hp: duel.state.defender.player.hp,
+      stats: getPlayerStats(duel.state.defender), nextActionAt: duel.state.defender.player.nextActionAt,
+      nextRound: undefined, abilities: null }],
+  } : game.battle!;
+  const region = duel ? null : game.regions.find(entry => entry.id === battle.regionId)!;
+  const group = region?.clearedGroups ?? '0';
+  const playerStats = duel ? getPlayerStats(duel.state.attacker) : game.stats;
+  const playerHp = duel ? duel.state.attacker.player.hp : game.hp;
+  const playerName = duel?.battle.attacker.name ?? identity?.displayName ?? '散修';
+  const effects = duel ? duel.state.attacker.effects.map(effect => ({ id: effect.id, name: FOOD_EFFECTS[effect.id]?.name ?? effect.id })) : game.effects;
   const { frozen, fresh } = usePresentationStatus(frame, paused);
-  const groupKey = `${game.life.number}:${battle.regionId}:${region.clearedGroups}`;
+  const groupKey = `${game.life.number}:${battle.regionId}:${group}`;
   const events = frame.events.flatMap(({ life, regionId, group, event }) =>
-    life === game.life.number && regionId === battle.regionId && group === region.clearedGroups &&
+    life === game.life.number && regionId === battle.regionId && group === (region?.clearedGroups ?? '0') &&
     (event.kind === 'strike' || event.kind === 'miss-punishment' || event.kind === 'reflection' ||
       event.kind === 'tidal-pressure' || event.kind === 'health-burst') ? [event] : []);
   const strikes = fresh ? events : [];
@@ -116,40 +130,47 @@ export function CombatStage({ game, frame, paused }: { game: OpeningView; frame:
     <span title="防御"><Shield size={13} />{formatAmount(stats.defense)}</span>
     <span title="敏捷"><Zap size={13} />{formatAmount(stats.agility)}</span>
   </div>;
-  return <div className="combat-stage" style={SCENE_ART[game.locationId] ? { backgroundImage: `url("${SCENE_ART[game.locationId]}")` } : undefined}>
+  return <div className={`combat-stage${duel ? ' pvp-stage' : ''}`} style={SCENE_ART[game.locationId] ? { backgroundImage: `url("${SCENE_ART[game.locationId]}")` } : undefined}>
     <div className="combat-side player-side"><span className="combat-side-label">我方</span>
-      <article className="combatant player-combatant" aria-label="我方战斗状态">
+      <article className={`combatant player-combatant${duel && Number(playerHp) <= 0 ? ' defeated' : ''}`} aria-label="我方战斗状态">
         <CardCharge key={groupKey} deadline={battle.nextPlayerActionAt} actionAt={lastAction('player')}
-          speed={game.stats.attackSpeed} frame={frame} frozen={frozen} defeated={false} name="散修" />
-        <header><span className="eyebrow">{game.realmName}</span><h3 title={identity?.displayName}>{identity?.displayName ?? '散修'}</h3></header>
+          speed={playerStats.attackSpeed} frame={frame} frozen={frozen} defeated={Number(playerHp) <= 0} name={playerName} />
+        <header><span className="eyebrow">{duel?.battle.attacker.realmName || game.realmName}</span><h3 title={playerName}>{playerName}</h3></header>
         <div className="combat-portrait">
           <div key={attacks('player') ? frame.sequence : 'idle'} className={attacks('player') ? 'attack-motion' : ''}>
-            {identity ? <DiscordAvatar size={96} /> : <CombatAvatar name="散修" />}</div>
+            {duel ? <PlayerAvatar url={duel.battle.attacker.avatarUrl} size={96} />
+              : identity ? <DiscordAvatar size={96} /> : <CombatAvatar name="散修" />}</div>
+          {duel && feedback('player')}
         </div>
-        <Meter label="气血" value={game.hp} max={game.stats.maxHp} tone="red" />
-        {statLine(game.stats)}
-        {game.effects.length > 0 && <div className="combat-tags">{game.effects.map(effect => <span key={effect.id}>{effect.name}</span>)}</div>}
-        {feedback('player')}
+        <Meter label="气血" value={playerHp} max={playerStats.maxHp} tone="red" />
+        {statLine(playerStats)}
+        {effects.length > 0 && <div className="combat-tags">{effects.map(effect => <span key={effect.id}>{effect.name}</span>)}</div>}
+        {!duel && feedback('player')}
       </article>
     </div>
     <div className="combat-divider" aria-hidden="true"><Swords size={22} strokeWidth={1.3} /></div>
     <div className="combat-side enemy-side"><span className="combat-side-label">敌方</span>
       {battle.enemies.map((entry, index) => {
-        const abilities = enemyAbilityDetails(entry.abilities);
+        const abilities = entry.abilities ? enemyAbilityDetails(entry.abilities) : [];
         return <article className={`combatant enemy-combatant ${Number(entry.hp) <= 0 ? 'defeated' : ''}`}
           key={`${groupKey}:${entry.id}:${index}`} aria-label={`${entry.name}战斗状态`}>
           <CardCharge deadline={entry.nextActionAt} actionAt={lastAction(index)} speed={entry.stats.attackSpeed}
             frame={frame} frozen={frozen} defeated={Number(entry.hp) <= 0} name={entry.name} />
-          <header><span className="eyebrow">{enemyRealmName(ENEMIES[entry.id])} · {Number(entry.hp) <= 0 ? '已击败' : `第${entry.nextRound ?? 1}轮`}</span><h3>{entry.name}</h3></header>
+          <header><span className="eyebrow">{duel ? duel.battle.defender.realmName : enemyRealmName(ENEMIES[entry.id])} · {Number(entry.hp) <= 0 ? '已击败' : duel ? '防卫' : `第${entry.nextRound ?? 1}轮`}</span><h3 title={entry.name}>{entry.name}</h3></header>
           <div className="combat-portrait">
-            <div key={attacks(index) ? frame.sequence : 'idle'} className={attacks(index) ? 'attack-motion' : ''}><CombatAvatar enemyId={entry.id} name={entry.name} /></div>
+            <div key={attacks(index) ? frame.sequence : 'idle'} className={attacks(index) ? 'attack-motion' : ''}>
+              {duel ? <PlayerAvatar url={duel.battle.defender.avatarUrl} size={96} /> : <CombatAvatar enemyId={entry.id} name={entry.name} />}</div>
+            {duel && feedback(index)}
           </div>
           <Meter label="气血" value={entry.hp} max={entry.stats.maxHp} tone="red" />
           {statLine(entry.stats)}
           {abilities.length > 0 && <div className="combat-tags enemy-abilities" aria-label="特殊能力">
             {abilities.map(ability => <span key={ability.name} title={ability.description}>{ability.name}</span>)}
           </div>}
-          {feedback(index)}
+          {duel && duel.state.defender.effects.length > 0 && <div className="combat-tags">
+            {duel.state.defender.effects.map(effect => <span key={effect.id}>{FOOD_EFFECTS[effect.id]?.name ?? effect.id}</span>)}
+          </div>}
+          {!duel && feedback(index)}
         </article>;
       })}
     </div>

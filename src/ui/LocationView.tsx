@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, Axe, BookOpen, Check, Coins, Compass, Info, Pickaxe, ScrollText, Store, Swords, Users, Wind } from 'lucide-react';
+import { ArrowRight, Axe, BookOpen, Check, Coins, Compass, Info, Pickaxe, ScrollText, ShieldCheck, Store, Swords, Users, Wind } from 'lucide-react';
 import { merchantShopSchema } from '../../core/prototype/consignment';
 import { formatDecimal, percent } from '../format';
 import { ActivityView } from './ActivityPanel';
@@ -25,8 +25,10 @@ export function LocationView({ game, blocked, command, open, frame, paused, last
       <ScrollText size={22} /><span><strong>璇玑阁</strong><small>诸修名录</small></span><ArrowRight size={17} /></button>}
   </>;
   return <div className={`page location-view${game.battle ? '' : ' location-overview'}`}>
-    <div className="page-heading"><div><span className="eyebrow">{areaFor(game.locationId).name} · {region ? '历练之地' : '休整之地'}</span><h1>{game.locationName}</h1></div>
+    <div className="page-heading"><div><span className="eyebrow">{areaFor(game.locationId).name} · {region ? '历练之地' : '歇脚之地'}</span><h1>{game.locationName}</h1></div>
       <button onClick={() => open('map')}><Compass size={16} />山河图</button></div>
+    {game.isSafeLocation && <p className="location-safety"><ShieldCheck size={14} />安全区
+      <span>{game.canMeditate ? '可调息' : '普通歇息'}</span></p>}
     {!game.battle && <><div className="place-actions">
       {retry && <button className="primary" disabled={blocked || !retry.enterable}
         onClick={() => void command({ type: 'enter', regionId: retry.id })}><Swords size={16} />再探{retry.name}</button>}

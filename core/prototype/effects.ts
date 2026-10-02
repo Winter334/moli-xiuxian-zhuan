@@ -6,6 +6,7 @@ export interface EffectContext {
   hp?: string;
   maxHp?: string;
   basicAttackOrdinal?: string;
+  livingEnemies?: number;
   normalPower?: boolean;
 }
 
@@ -27,7 +28,8 @@ export function modifyValue(
   if (context.normalPower) {
     const periods = sources.flatMap(source => (source.modifiers ?? []).flatMap(modifier =>
       modifier.target === target && modifier.when?.everyBasicAttacks &&
-      modifier.when.hpAtMost === undefined && !modifier.tags?.some(tag => !context.tags?.includes(tag))
+      modifier.when.hpAtMost === undefined && modifier.when.livingEnemiesAtLeast === undefined &&
+      !modifier.tags?.some(tag => !context.tags?.includes(tag))
         ? [modifier.when.everyBasicAttacks] : []));
     const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
     const period = periods.reduce((length, next) => {
@@ -53,6 +55,8 @@ export function modifyValue(
       if (condition?.hpAtMost !== undefined && (context.normalPower || context.hp === undefined ||
           context.maxHp === undefined || dec(context.maxHp).lte(0) ||
           dec(context.hp).gt(dec(context.maxHp).mul(condition.hpAtMost)))) continue;
+      if (condition?.livingEnemiesAtLeast !== undefined && (context.normalPower ||
+          context.livingEnemies === undefined || context.livingEnemies < condition.livingEnemiesAtLeast)) continue;
       if (condition?.everyBasicAttacks !== undefined) {
         if (!context.basicAttackOrdinal || BigInt(context.basicAttackOrdinal) < 1n ||
             BigInt(context.basicAttackOrdinal) % BigInt(condition.everyBasicAttacks) !== 0n) continue;
@@ -92,6 +96,14 @@ export function scaledSource(source: StatSource, sources: readonly StatSource[])
       const neutral = kind === 'flat' ? 0 : 1;
       const value = dec(result[kind]![key]!).minus(neutral).mul(factor).plus(neutral);
       result[kind]![key] = kind === 'flat' ? text(value) : maximum(value, 0);
+    }
+  }
+  // Upkeep scales only negative recovery contributions, never other source costs.
+  for (const key of ['hpRegen', 'hpRegenPercent'] as const) {
+    const amount = result.flat?.[key];
+    if (amount !== undefined && dec(amount).lt(0)) {
+      const factor = positiveValue('1', 'source.upkeep', sources, { tags: source.tags });
+      result.flat![key] = text(dec(amount).mul(factor));
     }
   }
   return result;

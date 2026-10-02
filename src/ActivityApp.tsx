@@ -25,7 +25,7 @@ export default function ActivityApp() {
       const key = discordSaveKey(session.clientId, session.user.id);
       const client = new GameClient({
         fetcher: connection.current!.fetcher, store: new LocalSaveStore(undefined, key),
-        acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId,
+        acquireLock: () => acquireLocalSaveLock(key), expectedCharacterId: session.characterId, requireCloudBaseline: true,
       });
       setGame({ client, social: new SocialClient(client, connection.current!.socialSession), user: session.user });
     }).catch(error => {

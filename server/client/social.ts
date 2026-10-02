@@ -5,7 +5,9 @@ import type { WebSocket } from 'ws';
 import { REGIONS, SAFE_LOCATIONS } from '../../core/prototype/content';
 import { LEVEL_CAP, realmName } from '../../core/prototype/growth';
 import { PLAYER_INTERACTIONS, SOCIAL_TIMEOUT_MS, socialClientMessageSchema,
-  type NearbyPlayer, type PlayerInteractionId, type SocialClientMessage, type SocialServerMessage } from '../../shared/social';
+  type NearbyPlayer, type SnapshotInteractionId, type SocialClientMessage, type SocialServerMessage } from '../../shared/social';
+import { EMPTY_PVP, type PvpState } from '../../shared/pvp';
+import type { PvpPair, PvpPlayer } from './pvp-store';
 import type { PublicPlayerProfile } from '../../shared/player-profile';
 import { ApiError } from '../errors';
 import { playerInteractionHandlers } from './player-interactions';
@@ -17,9 +19,10 @@ export interface SocialIdentity {
 interface Peer {
   socket: WebSocket; identity: SocialIdentity; player: NearbyPlayer;
   locationId: string; seenAt: number; moderator: boolean;
+  sessionId: string;
 }
 interface PendingInteraction {
-  source: Peer; target: Peer; action: PlayerInteractionId; timer: ReturnType<typeof setTimeout>;
+  source: Peer; target: Peer; action: SnapshotInteractionId; timer: ReturnType<typeof setTimeout>;
   resolve: (value: { data: unknown; capturedAt: number }) => void; reject: (reason: Error) => void;
 }
 const unavailable = () => new ApiError(409, 'PLAYER_UNAVAILABLE', '对方已离开或不在线。');
@@ -31,7 +34,37 @@ export class SocialHub {
   private readonly sockets = new Set<WebSocket>();
   constructor(private readonly identity: (token: string) => Promise<SocialIdentity | null>,
     private readonly store: SocialStore, private readonly applicationId: string,
-    private readonly moderators: ReadonlySet<string>, private readonly now = Date.now) {}
+    private readonly moderators: ReadonlySet<string>, private readonly cloudRevision: (characterId: string) => Promise<string>,
+    private readonly now = Date.now, private readonly pvpPlayer?: (id: string) => Promise<PvpPlayer>) {}
+
+  pair(attackerId: string, targetId: string): PvpPair {
+    const source = [...this.peers.values()].find(peer => peer.identity.characterId === attackerId);
+    if (!source) throw unavailable();
+    const target = this.targetFor(source, targetId);
+    return { attackerId, defenderId: target.identity.characterId, locationId: source.locationId,
+      attackerName: source.player.name, defenderName: target.player.name,
+      attackerAvatar: source.player.avatarUrl, defenderAvatar: target.player.avatarUrl,
+      attackerSession: source.sessionId, defenderSession: target.sessionId };
+  }
+  check(pair: PvpPair) {
+    const current = this.pair(pair.attackerId, this.playerId(pair.defenderId));
+    if (current.attackerSession !== pair.attackerSession || current.defenderSession !== pair.defenderSession ||
+        current.locationId !== pair.locationId) throw unavailable();
+  }
+  private playerId(id: string) {
+    return createHash('sha256').update(`${this.applicationId}:${id}`).digest('hex').slice(0, 32);
+  }
+  prepare(pair: PvpPair, battleId: string) {
+    const target = this.peers.get(this.playerId(pair.defenderId));
+    if (target?.sessionId === pair.defenderSession) this.send(target.socket, { type: 'pvp-prepare', battleId });
+  }
+  notify(id: string, state: PvpState, battleId?: string) {
+    const peer = this.peers.get(this.playerId(id));
+    if (!peer) return;
+    peer.player = { ...peer.player, pvp: state };
+    this.send(peer.socket, { type: 'pvp-state', state, ...(battleId ? { battleId } : {}) });
+    this.refreshNearby(peer.locationId);
+  }
 
   private send(socket: WebSocket, message: SocialServerMessage) {
     if (socket.readyState !== 1) return;
@@ -82,7 +115,7 @@ export class SocialHub {
       if (old !== peer.locationId) this.refreshNearby(peer.locationId);
     }
   }
-  private requestTarget(source: Peer, target: Peer, action: PlayerInteractionId, fresh: boolean) {
+  private requestTarget(source: Peer, target: Peer, action: SnapshotInteractionId, fresh: boolean) {
     const key = `${target.player.playerId}:${action}`;
     const cached = this.cache.get(key);
     if (!fresh && cached?.peer === target && this.now() - cached.capturedAt < 15_000) return Promise.resolve(cached);
@@ -119,11 +152,22 @@ export class SocialHub {
         const verified = await this.identity(message.token);
         if (closed) return;
         if (!verified || verified.characterId !== message.characterId) { socket.close(4401, 'Identity rejected'); return; }
-        const playerId = createHash('sha256').update(`${this.applicationId}:${verified.characterId}`).digest('hex').slice(0, 32);
+        const revision = await this.cloudRevision(verified.characterId);
+        const pvp = await this.pvpPlayer?.(verified.characterId);
+        if (closed) return;
+        if (revision !== message.cloudRevision || (pvp?.battleId && message.pendingBattleId !== pvp.battleId)) {
+          fail(new ApiError(409, 'SAVE_CONFLICT', '云端存档已变化，请核对并采用最新云端存档后联机。'));
+          socket.close(4410, 'Cloud save revision changed');
+          return;
+        }
+        const playerId = this.playerId(verified.characterId);
         peer = {
-          socket, identity: verified, locationId: '', seenAt: this.now(), moderator: this.moderators.has(verified.userId),
+          socket, identity: verified, locationId: '', seenAt: this.now(), moderator: this.moderators.has(verified.userId), sessionId: randomUUID(),
           player: { playerId, ...verified.profile, realmName: '', activity: 'idle',
-            interactions: PLAYER_INTERACTIONS.map(entry => entry.id), updatedAt: this.now() },
+            interactions: PLAYER_INTERACTIONS.map(entry => entry.id), updatedAt: this.now(), pvp: pvp ? {
+              enabled: pvp.enabled, notoriety: pvp.notoriety, red: pvp.red, busy: pvp.busy,
+              modeAfter: pvp.modeAfter, attackAfter: pvp.attackAfter, protectedUntil: pvp.protectedUntil,
+            } : { ...EMPTY_PVP } },
         };
         // Validate before displacing an existing, valid device.
         this.setPresence(peer, message.presence);
@@ -134,7 +178,7 @@ export class SocialHub {
         }
         this.peers.set(playerId, peer);
         clearTimeout(authTimer);
-        this.send(socket, { type: 'ready', playerId, moderator: peer.moderator });
+        this.send(socket, { type: 'ready', playerId, moderator: peer.moderator, pvp: peer.player.pvp });
         this.refreshNearby(peer.locationId);
         return;
       }
@@ -146,7 +190,8 @@ export class SocialHub {
       if (message.type === 'interaction-reply') {
         const request = this.pending.get(message.requestId);
         if (!request || request.target !== peer) return;
-        const definition = PLAYER_INTERACTIONS.find(entry => entry.id === request.action)!;
+        const definition = PLAYER_INTERACTIONS.find(entry => entry.transport === 'snapshot' && entry.id === request.action)!;
+        if (definition.transport !== 'snapshot') return;
         const parsed = definition.response.safeParse(message.data);
         this.pending.delete(message.requestId); clearTimeout(request.timer);
         try {
@@ -230,9 +275,11 @@ export class SocialHub {
 
 export async function registerSocial(app: FastifyInstance, options: {
   applicationId: string; identity: (token: string) => Promise<SocialIdentity | null>; store: SocialStore; moderators: ReadonlySet<string>;
+  cloudRevision: (characterId: string) => Promise<string>;
+  pvpPlayer?: (id: string) => Promise<PvpPlayer>;
 }) {
   await app.register(websocket, { options: { maxPayload: 32 * 1024 } });
-  const hub = new SocialHub(options.identity, options.store, options.applicationId, options.moderators);
+  const hub = new SocialHub(options.identity, options.store, options.applicationId, options.moderators, options.cloudRevision, Date.now, options.pvpPlayer);
   app.get('/api/client/social', {
     websocket: true,
     preValidation: async request => {

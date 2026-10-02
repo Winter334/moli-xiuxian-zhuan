@@ -1,12 +1,14 @@
 import {
   CHAT_TEXT_LIMIT, SOCIAL_HEARTBEAT_MS, SOCIAL_PROTOCOL, chatHistorySchema, chatReceiptSchema, chatTextSchema,
   socialServerMessageSchema,
-  type ChatMessage, type NearbyPlayer, type PlayerInteractionId,
+  type ChatMessage, type NearbyPlayer, type SnapshotInteractionId,
   type SocialClientMessage, type SocialServerMessage, type presenceSchema,
 } from '../shared/social';
 import type { z } from 'zod';
 import type { GameClient } from './game-client';
 import { playerInteractionProviders } from './player-interactions';
+import { SAFE_LOCATIONS } from '../core/prototype/content';
+import { dec } from '../core/numbers';
 
 export interface SocialState {
   status: 'unavailable' | 'connecting' | 'online' | 'offline' | 'displaced';
@@ -59,7 +61,7 @@ export class SocialClient {
   private presence(): Presence | null {
     const state = this.game.getSnapshot();
     const game = state.response?.game;
-    if (!game || state.blocked || state.recoveryBusy || state.reincarnationBusy) return null;
+    if (!game || !state.onlineReady || state.blocked || state.recoveryBusy || state.reincarnationBusy) return null;
     return {
       locationId: game.locationId, level: game.level,
       activity: game.battle ? 'combat' : game.training ? 'training' : game.gathering ? 'gathering'
@@ -90,7 +92,8 @@ export class SocialClient {
     if (!presence) {
       this.generation++;
       this.clearTimers(); this.socket?.close(); this.socket = null;
-      this.rejectRequests(); this.publish({ status: 'offline', nearby: [] });
+      this.rejectRequests(); this.publish({ status: 'offline', nearby: [], moderator: false, sending: false,
+        notice: this.game.getSnapshot().onlineMessage });
       return;
     }
     if (!this.socket && !this.reconnect && !this.displaced) { void this.connect(); return; }
@@ -112,11 +115,15 @@ export class SocialClient {
       const socket = this.socketFactory(this.url());
       this.socket = socket;
       this.authTimeout = setTimeout(() => socket.close(), 12_000);
-      socket.onopen = () => {
-        const presence = this.presence();
-        if (!presence || this.socket !== socket) { socket.close(); return; }
-        this.lastPresence = JSON.stringify(presence);
-        this.send({ type: 'auth', protocol: SOCIAL_PROTOCOL, token: session.token, characterId: session.characterId, presence });
+      socket.onopen = async () => {
+        try {
+          const cloudRevision = await this.game.prepareOnlineConnection();
+          const presence = this.presence();
+          if (!presence || this.socket !== socket) { socket.close(); return; }
+          this.lastPresence = JSON.stringify(presence);
+          this.send({ type: 'auth', protocol: SOCIAL_PROTOCOL, token: session.token, characterId: session.characterId,
+            cloudRevision, presence, pendingBattleId: this.game.getPendingBattleId() });
+        } catch { socket.close(); }
       };
       socket.onmessage = event => {
         if (this.socket !== socket) return;
@@ -131,6 +138,10 @@ export class SocialClient {
         if (this.socket !== socket) return;
         this.socket = null; this.clearTimers(); this.rejectRequests();
         this.publish({ status: this.displaced ? 'displaced' : 'offline', nearby: [], moderator: false, sending: false });
+        if (event.code === 4410) {
+          void this.game.blockOnlineSource('云端存档已变化，联机已停止。请核对并采用最新云端存档。').catch(() => {});
+          return;
+        }
         if (this.active && !this.displaced && this.presence()) {
           this.reconnect = setTimeout(() => {
             this.reconnect = undefined; void this.connect(event.code === 4401 && session.expiresAt <= Date.now() + 60_000);
@@ -165,12 +176,19 @@ export class SocialClient {
     if (message.type === 'ready') {
       clearTimeout(this.authTimeout); this.retries = 0;
       this.publish({ status: 'online', playerId: message.playerId, moderator: message.moderator, notice: null });
+      this.game.updatePvpState(message.pvp);
       this.heartbeat = setInterval(() => {
         const presence = this.presence();
         if (presence) this.send({ type: 'presence', presence }); else this.update();
       }, SOCIAL_HEARTBEAT_MS);
       void this.loadLatest();
     } else if (message.type === 'nearby') this.publish({ nearby: message.players });
+    else if (message.type === 'pvp-prepare') {
+      void this.game.preparePvpDefense(message.battleId);
+    } else if (message.type === 'pvp-state') {
+      this.game.updatePvpState(message.state);
+      if (message.battleId === this.game.getPendingBattleId()) void this.game.reconcilePvp();
+    }
     else if (message.type === 'chat') {
       const newMessage = !this.state.messages.some(item => item.id === message.message.id) && !this.deleted.has(message.message.id);
       this.merge([message.message]);
@@ -235,8 +253,26 @@ export class SocialClient {
       this.publish({ sendFailed: true, notice: error instanceof Error ? error.message : '消息暂未确认。' });
     } finally { this.publish({ sending: false }); }
   };
-  interact = (action: PlayerInteractionId, target: string, fresh = false): Promise<unknown> =>
+  interact = (action: SnapshotInteractionId, target: string, fresh = false): Promise<unknown> =>
     this.request({ type: 'interaction', requestId: crypto.randomUUID(), action, target, fresh });
+  attackIssue = (target: NearbyPlayer): string | null => {
+    const state = this.game.getSnapshot(), game = state.response?.game, now = Date.now();
+    if (this.state.status !== 'online' || !state.onlineReady) return '联机未连接';
+    const current = this.state.nearby.find(player => player.playerId === target.playerId);
+    if (!current) return '对方已离开';
+    if (!game || Object.hasOwn(SAFE_LOCATIONS, game.locationId)) return '安全区禁止袭击';
+    if (state.blocked || state.recoveryBusy || state.reincarnationBusy || state.tradePending || state.tradeBusy ||
+        state.pvpPending || state.pvpBusy || state.pvp.busy || current.pvp.busy) return '正在核对其它事务';
+    if (!state.pvp.enabled || !current.pvp.enabled) return '双方须开启PVP';
+    if (dec(game.hp).lte(0)) return '气血已尽';
+    if (now < state.pvp.protectedUntil || now < current.pvp.protectedUntil) return '败退保护中';
+    if (now < state.pvp.attackAfter) return '袭击冷却中';
+    return null;
+  };
+  attack = (target: NearbyPlayer): Promise<boolean> => {
+    const issue = this.attackIssue(target);
+    return issue ? Promise.reject(new Error(issue)) : this.game.attackPlayer(target.playerId);
+  };
   moderate = async (operation: Omit<Extract<SocialClientMessage, { type: 'moderate' }>, 'type' | 'requestId'>) => {
     try { await this.request({ type: 'moderate', requestId: crypto.randomUUID(), ...operation }); this.publish({ notice: '操作已完成。' }); }
     catch (error) { this.publish({ notice: error instanceof Error ? error.message : '操作未完成。' }); }

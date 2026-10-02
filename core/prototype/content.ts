@@ -64,7 +64,7 @@ export const FOOD_EFFECTS: Record<string, {
   },
   'wound-guard': {
     name: '守伤', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
-    description: '每段直接承伤限制至气血上限约5%；每秒损失1%气血，此代价不受限伤保护',
+    description: '每段直接承伤限制至气血上限约5%；持续气血损耗不受限伤保护',
     source: {
       id: 'wound-guard', flat: { hpRegenPercent: '-0.01' },
       statPolarity: { flat: { hpRegenPercent: 'cost' } },
@@ -73,7 +73,7 @@ export const FOOD_EFFECTS: Record<string, {
   },
   'returning-wind': {
     name: '回风', durationMs: 120_000, maxRealm: 17, polarity: 'benefit',
-    description: '对每个选定目标依次以0.8、1.2攻击系数出手，第二击须双方仍存活；每秒损失1%气血',
+    description: '对每个选定目标依次以0.8、1.2攻击系数出手，第二击须双方仍存活',
     source: {
       id: 'returning-wind', flat: { hpRegenPercent: '-0.01' },
       statPolarity: { flat: { hpRegenPercent: 'cost' } },

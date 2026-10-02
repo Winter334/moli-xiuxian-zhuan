@@ -29,7 +29,7 @@ export const effectTagSchema = z.enum([
 export const modifierTargetSchema = z.enum([
   'damage.dealt', 'damage.taken', 'healing.received', 'experience.skill', 'experience.cultivation',
   'duration', 'loot.quantity', 'craft.success', 'craft.extra-batch', 'activity.speed',
-  'source.benefit', 'source.cost',
+  'source.benefit', 'source.cost', 'source.upkeep',
   'stat.maxHp', 'stat.attack', 'stat.defense', 'stat.agility', 'stat.attackSpeed',
   'stat.critChance', 'stat.critMultiplier', 'stat.attackMultiplier', 'stat.hpRegen', 'stat.hpRegenPercent',
 ]);
@@ -42,6 +42,7 @@ export const modifierSchema = z.object({
   when: z.object({
     hpAtMost: nonnegativeSchema.refine(value => dec(value).lte(1)).optional(),
     everyBasicAttacks: z.number().int().min(2).max(10000).optional(),
+    livingEnemiesAtLeast: z.number().int().min(2).max(10000).optional(),
   }).strict().optional(),
 }).strict().superRefine((modifier, ctx) => {
   if (modifier.operation === 'multiply' && dec(modifier.value).lt(0)) {

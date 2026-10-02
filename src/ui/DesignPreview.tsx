@@ -13,6 +13,7 @@ import { combatFrame, EMPTY_COMBAT_FRAME } from '../combat-presentation';
 import { IconButton } from './common';
 import { GameShell } from './GameShell';
 import type { GameSession } from './types';
+import { EMPTY_PVP } from '../../shared/pvp';
 
 const PRESETS = [
   { id: 'village', name: '初入槐溪', location: 'qingshi-village', level: 0, budget: 100, cleared: 'village-outskirts' },
@@ -111,7 +112,10 @@ export default function DesignPreview() {
     tradePending: false, tradeBusy: false, tradeStopped: false, tradeMessage: null,
     reincarnationPending: false, reincarnationBusy: false, reincarnationMessage: null,
     recoveryAvailable: false, recoveryBusy: false, recovery: null, recoveryMessage: null,
-    inspectSaves: offlineNotice, chooseSave: offlineNotice, exportSave: () => null,
+    onlineReady: false, onlineMessage: null,
+    pvp: { ...EMPTY_PVP }, pvpPending: false, pvpBusy: false, pvpMessage: null, pvpCombat: null,
+    setPvpMode: offlineNotice, reconcilePvp: offlineNotice, withdrawPvp: offlineNotice,
+    inspectSaves: offlineNotice, chooseSave: offlineNotice,
     command: useCallback(command => run((state, events) => executeCharacterCommand(state, command, Date.now(), events)), [run]),
     debugCommand: useCallback(command => run(state => executeDebugCommand(state, command)), [run]),
     loadRanking: unavailable, loadConsignment: unavailable, submitTrade: offlineNotice, reconcileTrade: offlineNotice,

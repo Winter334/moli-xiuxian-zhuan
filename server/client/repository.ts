@@ -8,6 +8,7 @@ import { createCharacter } from '../../core/prototype';
 import { inTransaction } from '../database';
 import { ApiError } from '../errors';
 import { developmentProfile, discordProfile, playerScopeSql, type PlayerScope } from './player-profile';
+import { requireNoPvp } from './pvp-store';
 
 export interface CloudSnapshot {
   save: unknown;
@@ -33,7 +34,7 @@ export interface CloudStore {
 }
 
 export async function initializeStorage(pool: Pool) {
-  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql'].map(async name => {
+  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql', '005_pvp.sql'].map(async name => {
     const sql = await readFile(new URL(`./${name}`, import.meta.url), 'utf8');
     return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') };
   }));
@@ -184,12 +185,16 @@ export class ClientRepository implements CloudStore, RankingStore {
   }
 
   async commit(characterId: string, expected: string, save: ClientSave, now: number, requestId: string, hash: string) {
-    const result = await this.pool.query(
-      `UPDATE moli_client.characters SET save = $1::jsonb, revision = revision + 1,
-       received_at = $2, last_request_id = $3, last_payload_hash = $4
-       WHERE id = $5 AND revision = $6::bigint`,
-      [JSON.stringify(save), now, requestId, hash, characterId, expected],
-    );
-    return result.rowCount === 1;
+    return inTransaction(this.pool, async db => {
+      await db.query('SELECT id FROM moli_client.characters WHERE id=$1 FOR NO KEY UPDATE', [characterId]);
+      await requireNoPvp(db, characterId);
+      const result = await db.query(
+        `UPDATE moli_client.characters SET save = $1::jsonb, revision = revision + 1,
+         received_at = $2, last_request_id = $3, last_payload_hash = $4
+         WHERE id = $5 AND revision = $6::bigint`,
+        [JSON.stringify(save), now, requestId, hash, characterId, expected],
+      );
+      return result.rowCount === 1;
+    });
   }
 }

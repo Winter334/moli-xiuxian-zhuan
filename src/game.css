@@ -376,6 +376,8 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .nearby-exploration small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
 .nearby-exploration button { font-size: 12px; }
 .location-overview > .page-heading { margin-bottom: 14px; }
+.location-safety { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; font-size: 12px; color: var(--jade); }
+.location-safety > span { margin-left: 5px; color: var(--muted); }
 .location-overview .place-actions { padding-bottom: 12px; border-bottom: 0; }
 .location-overview .place-actions:empty { display: none; }
 .place-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0 0 14px; }
@@ -809,22 +811,20 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .dialog-body > p { margin-bottom: 13px; font-size: 13px; }
 .dialog-body .meter { margin: 15px 0; }
 .dialog-actions { justify-content: flex-end; margin-top: 24px; }
-.save-recovery-heading, .save-option-heading, .save-export-actions, .save-recovery-actions { display: flex; align-items: center; gap: 8px; }
+.save-recovery-heading, .save-option-heading, .save-pending-actions, .save-recovery-actions { display: flex; align-items: center; gap: 8px; }
 .save-recovery-heading { justify-content: space-between; font-size: 13px; margin-bottom: 12px; }
 .save-options { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .save-option { min-width: 0; display: block; border: 1px solid var(--line); border-radius: 4px; padding: 12px; }
-.save-option.selected { border-color: var(--jade); }
 .save-option-heading { font-size: 13px; margin-bottom: 12px; }
-.save-option input[type="radio"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; accent-color: var(--jade); flex: 0 0 auto; }
 .save-summary { margin: 0; font-size: 12px; }
 .save-summary > div { margin-top: 9px; }
 .save-summary dt { color: var(--muted); font-size: 11px; }
 .save-summary dd { margin: 3px 0 0; overflow-wrap: anywhere; }
 .save-choice-warning { margin: 12px 0 0; color: #e2c3a1; font-size: 12px; overflow-wrap: anywhere; }
-.save-export-actions { flex-wrap: wrap; margin: 16px 0 10px; }
-.save-export-actions button { font-size: 12px; }
+.save-pending-actions { flex-wrap: wrap; margin: 16px 0 10px; }
+.save-pending-actions button { font-size: 12px; }
 .save-recovery-actions { justify-content: flex-end; flex-wrap: wrap; }
-.save-confirm { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.7; }
+.save-confirm { display: flex; align-items: flex-start; gap: 9px; margin-top: 16px; font-size: 12px; line-height: 1.7; }
 .save-confirm input { flex: 0 0 auto; margin-top: 4px; }
 .reincarnation-intro { text-align: center; color: #c4b094; padding: 4px 0 23px; border-bottom: 1px solid var(--line); }
 .reincarnation-intro h3 { font: 19px var(--serif); margin: 13px 0 5px; color: #e0d5be; }
@@ -1193,3 +1193,14 @@ progress::-moz-progress-bar { background: #8eb69c; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+.pvp-mode { display: flex; align-items: center; gap: 5px; flex-shrink: 0; color: var(--muted); }
+.pvp-mode label { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; }
+.pvp-mode input { width: 26px; height: 14px; margin: 0; accent-color: var(--jade); }
+.pvp-mode small { min-width: 12px; text-align: center; color: #d8b96d; }
+.pvp-red-name, .pvp-red-name strong, .pvp-red .discord-profile h3 { color: #ee8d8d; }
+.pvp-combat-view .battle-heading > div { min-width: 0; }
+.pvp-combat-view .battle-heading h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pvp-combat-view .battle-heading > button { flex-shrink: 0; }
+.pvp-stage .combatant h3 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pvp-stage .hit-feedback > span { font-size: 12px; }
+.pvp-stage .defeated .discord-avatar { filter: grayscale(1); opacity: .5; }

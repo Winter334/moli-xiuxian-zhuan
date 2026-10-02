@@ -44,7 +44,9 @@ const skillDescriptions: Record<SkillId, string> = {
 };
 type Detail = { kind: 'stat'; id: typeof ATTRIBUTES[number]['id'] } | { kind: 'skill'; id: SkillId }
   | { kind: 'fate' | 'effects' | 'marrow' };
-export function CharacterPanel({ game, blocked, command, goActivity }: ViewProps & { goActivity: () => void }) {
+export function CharacterPanel({ game, blocked, command, goActivity, activityLabel }: ViewProps & {
+  goActivity: () => void; activityLabel?: string;
+}) {
   const identity = useDiscordIdentity();
   const [view, setView] = useState<'portrait' | 'data'>('portrait');
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -134,7 +136,7 @@ export function CharacterPanel({ game, blocked, command, goActivity }: ViewProps
       {!consumables.length && <p className="quickbar-empty">暂无消耗品</p>}
       {useNotice && <p className="quickbar-notice negative" role="status">{useNotice}</p>}
     </section>
-    <button className="character-activity" onClick={goActivity}><i className={game.battle ? 'combat' : ''} /><span>{activityName(game)}</span>
+    <button className="character-activity" onClick={goActivity}><i className={game.battle || activityLabel ? 'combat' : ''} /><span>{activityLabel ?? activityName(game)}</span>
       <small>{game.locationName}</small><ArrowUpRight size={14} /></button>
     {detail && <Dialog title={stat?.name ?? skill?.name ?? ({ fate: '本世气运', effects: '当前药效', marrow: '灵髓积蕴' } as Record<string, string>)[detail.kind] ?? '角色详情'}
       onClose={() => { setDetail(null); setAbsorb(false); }}>

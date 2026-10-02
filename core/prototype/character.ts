@@ -6,7 +6,7 @@ import {
 } from './character-state';
 import { CharacterCommandError, commandEntry } from './command-error';
 import { combatPower, COMBAT_POWER_VERSION } from './combat-power';
-import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, FOOD_EFFECTS, ITEMS, MANOR_AID, RECIPES, REGIONS, SAFE_LOCATIONS, SHOPS, SHOP_IDS, SLOTS, encounterEnemy, encounterNeedsEntry, encounterPool, enemyRealmName, lookup, shopAtLocation, type LootEntry } from './content';
+import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, FOOD_EFFECTS, ITEMS, MANOR_AID, RECIPES, REGIONS, SAFE_LOCATIONS, SHOPS, SHOP_IDS, SLOTS, encounterEnemy, encounterNeedsEntry, encounterPool, enemyRealmName, foodEffectSource, lookup, shopAtLocation, type LootEntry } from './content';
 import { DIVINE_ARTS, DIVINE_ART_IDS, divineArtIdSchema } from './divine-arts';
 import { absorbMarrow, assemble, assembleArmor, craft, craftingRates, foodDuration, itemUseIssue, marrowAbsorptionPreview, purchasePrice, refreshShop, trade, upgradeFurnace, useItem } from './economy';
 import { activeSources, healingValue, positiveValue, scaledSource } from './effects';
@@ -525,6 +525,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     if (item.kind !== 'food' && item.kind !== 'marrow' && item.kind !== 'insight' && item.kind !== 'foundation-pill') return null;
     const food = item.kind === 'food' ? item.foodEffects!.map(id => ({
       ...lookup(FOOD_EFFECTS, id), durationMs: foodDuration(state, id),
+      source: scaledSource(foodEffectSource(id), sources),
     })) : null;
     const effectText = food?.map(effect => {
       const flat = effect.source.flat ?? {};
@@ -590,6 +591,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     locationId: state.locationId,
     locationName: (REGIONS[state.locationId] ?? SAFE_LOCATIONS[state.locationId]).name,
     locationDescription: (REGIONS[state.locationId] ?? SAFE_LOCATIONS[state.locationId]).description ?? null,
+    isSafeLocation: Object.hasOwn(SAFE_LOCATIONS, state.locationId),
     rankingsAvailable: Boolean(SAFE_LOCATIONS[state.locationId]?.rankings),
     manorAid: state.locationId === MANOR_AID.locationId ? {
       claimed: Boolean(state.manorAidClaimed), finished: cleared(state, MANOR_AID.finalRegionId), name: ITEMS[MANOR_AID.itemId].name,
@@ -670,6 +672,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     })),
     destinations: Object.entries(SAFE_LOCATIONS).filter(([id]) => isUnlocked(state, id)).map(([id, location]) => ({
       id, name: location.name, description: location.description ?? null,
+      canMeditate: Boolean(location.meditation),
       travelable: state.locationId !== id && !simulation.battle,
     })),
     battle: simulation.battle === null ? null : {

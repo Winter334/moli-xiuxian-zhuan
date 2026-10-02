@@ -3,6 +3,7 @@ import { SocialClient } from './social-client';
 import type { GameClient } from './game-client';
 import { createCharacter, getCharacterView } from '../core/prototype';
 import type { SocialClientMessage, SocialServerMessage } from '../shared/social';
+import { EMPTY_PVP } from '../shared/pvp';
 
 class Socket {
   readyState = 0;
@@ -26,9 +27,14 @@ async function setup(credentials?: () => Promise<{ token: string; characterId: s
   vi.useFakeTimers();
   const listeners = new Set<() => void>();
   const state = { response: { characterId: '00000000-0000-4000-8000-000000000001',
-    game: getCharacterView(createCharacter(Date.now(), 9)) }, blocked: false, recoveryBusy: false, reincarnationBusy: false };
+    game: getCharacterView(createCharacter(Date.now(), 9)) }, blocked: false, recoveryBusy: false, reincarnationBusy: false,
+    onlineReady: true, onlineMessage: null as string | null };
   const game = { getSnapshot: () => state, subscribe: (fn: () => void) => { listeners.add(fn); return () => listeners.delete(fn); },
-    getPublicCharacter: vi.fn() } as unknown as GameClient;
+    getPublicCharacter: vi.fn(), prepareOnlineConnection: async () => '0', getPendingBattleId: () => null,
+    updatePvpState: vi.fn(),
+    blockOnlineSource: vi.fn(async (message: string) => {
+      state.onlineReady = false; state.onlineMessage = message; listeners.forEach(fn => fn());
+    }) } as unknown as GameClient;
   const sockets: Socket[] = [];
   const client = new SocialClient(game, credentials ?? (async () => ({
     token: 'a'.repeat(43), characterId: state.response.characterId, expiresAt: Date.now() + 600_000,
@@ -39,7 +45,9 @@ async function setup(credentials?: () => Promise<{ token: string; characterId: s
   await vi.advanceTimersByTimeAsync(0);
   const socket = sockets[0];
   if (ready) {
-    socket.open(); socket.receive({ type: 'ready', playerId: 'a'.repeat(32), moderator: false });
+    socket.open();
+    await vi.advanceTimersByTimeAsync(0);
+    socket.receive({ type: 'ready', playerId: 'a'.repeat(32), moderator: false, pvp: { ...EMPTY_PVP } });
     await vi.advanceTimersByTimeAsync(0);
   }
   return { client, socket, sockets, state, listeners };
@@ -88,6 +96,25 @@ describe('social client lifecycle', () => {
     socket.close(1006);
     expect(client.getSnapshot().status).toBe('offline');
     expect(state).toEqual(before);
-    expect(socket.sent[0]).toMatchObject({ type: 'auth', token: 'a'.repeat(43) });
+    expect(socket.sent[0]).toMatchObject({ type: 'auth', token: 'a'.repeat(43), cloudRevision: '0' });
+  });
+  it('disconnects and cannot reconnect while cloud verification is missing, then resumes only when admitted', async () => {
+    const { client, sockets, state, listeners } = await setup();
+    state.onlineReady = false; state.onlineMessage = '采用云端存档后才可联机';
+    listeners.forEach(fn => fn());
+    expect(client.getSnapshot()).toMatchObject({ status: 'offline', nearby: [], notice: state.onlineMessage });
+    client.reconnectNow();
+    await vi.advanceTimersByTimeAsync(90_000);
+    expect(sockets).toHaveLength(1);
+    state.onlineReady = true; state.onlineMessage = null; listeners.forEach(fn => fn());
+    await vi.advanceTimersByTimeAsync(0);
+    expect(sockets).toHaveLength(2);
+  });
+  it('stops online access instead of retrying a server-rejected cloud revision', async () => {
+    const { socket, sockets, state } = await setup();
+    socket.close(4410);
+    await vi.advanceTimersByTimeAsync(90_000);
+    expect(state.onlineReady).toBe(false);
+    expect(sockets).toHaveLength(1);
   });
 });

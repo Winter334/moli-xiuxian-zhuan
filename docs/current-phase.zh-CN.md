@@ -46,7 +46,10 @@ GitHub代码仓库已创建，用户选择手动转为公共并完成首次推�
 只留在本机忽略目录，不随仓库发布，见[本地生图服务隔离](asset-manifest.zh-CN.md#本地生图服务隔离)。
 旧屋入口已按用户要求移除，详情见[地图收尾](world-setting-rework.zh-CN.md#第3批实施村内入口与节点收尾)。
 后续新增内容仍按区域组织美术，不续接旧全量生成待办，界面继续按反馈调整。
-同地名单、公开资料与中央世界频道已接，实施见[社交系统](social-system.zh-CN.md)；
+同地名单、公开资料与中央世界频道已接，新增云档来源核对及过期修订拒绝，
+实施见[社交系统](social-system.zh-CN.md)；用户转入原创PVP补充，
+袭击、红名锁定与穿戴装备转移已接，本机验证完成，线上未部署、真实Discord双端验收待进行，
+见[PVP专题](pvp-system.zh-CN.md)；
 同机三档备份与更新保护入口已接，VPS同步、真实双端及线上政策更新待部署验收，
 流程见[Activity更新与验收](discord-activity.zh-CN.md#更新与验收)。
 
@@ -92,13 +95,14 @@ GitHub代码仓库已创建，用户选择手动转为公共并完成首次推�
 | [调息改造](meditation-rework.zh-CN.md) | 调息规则与允许地点 |
 | [炉鼎实施记录](furnace-rework.zh-CN.md) | 自有炉鼎、升级成本与用量 |
 | [物品表达修订](item-presentation-rework.zh-CN.md) | 补给、炼器、防具与货币表达，后续武器成品筛选边界 |
-| [轮回与气运重设计](reincarnation-fate-rework.zh-CN.md) | 新版轮回流程与首批24种气运 |
+| [轮回与气运重设计](reincarnation-fate-rework.zh-CN.md) | 新版轮回流程与当前28种气运，含四种专长扩充 |
 | [统一世界历法](world-calendar.zh-CN.md) | 公共历法、校时与换货 |
 | [玩家寄售](player-consignment.zh-CN.md) | 商盟寄售规则与实施 |
 | [成就记录与璇玑阁榜单](achievements-and-rankings.zh-CN.md) | 履历、常态战力与四榜 |
 | [客户端结算与低频云存档](client-settlement.zh-CN.md) | 结算架构与离线边界 |
 | [Discord Activity接入](discord-activity.zh-CN.md) | 平台身份、开发测试配置与发布接入批次 |
 | [同地玩家与世界频道](social-system.zh-CN.md) | 在线状态、公开资料、交互注册、聊天与管理 |
+| [PVP袭击与安全区](pvp-system.zh-CN.md) | 已接单方推演、恶名/红名、穿戴掉落、断线结算与安全节点；VPS待验收 |
 | [随机事件留档](events-system.zh-CN.md) | 用户留档暂缓的事件方向 |
 | [素材清单](asset-manifest.zh-CN.md) | 音乐与美术资产状态 |
 | [内容测试控制台](debug-console.zh-CN.md) | 开发模式控制台 |

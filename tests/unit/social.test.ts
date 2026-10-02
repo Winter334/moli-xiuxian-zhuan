@@ -49,9 +49,11 @@ async function setup() {
   const app = Fastify();
   apps.push(app);
   const identities = new Map<string, SocialIdentity>();
+  const revisions = new Map<string, string>();
   const store = new MemoryChat();
   const hub = await registerSocial(app, { applicationId: '123456789012345678',
-    identity: async token => identities.get(token) ?? null, store, moderators: new Set(['100000000000000001']) });
+    identity: async token => identities.get(token) ?? null, store, moderators: new Set(['100000000000000001']),
+    cloudRevision: async characterId => revisions.get(characterId) ?? '0' });
   await app.ready();
   const open = async (index: number, locationId = 'qingshi-village') => {
     const token = String(index).padStart(43, 'a');
@@ -60,13 +62,13 @@ async function setup() {
       profile: { name: `Player ${index}`, avatarUrl: null } });
     const socket = await app.injectWS('/api/client/social', { headers: { origin: 'https://123456789012345678.discordsays.com' } });
     const take = mailbox(socket);
-    const auth = { type: 'auth', protocol: SOCIAL_PROTOCOL, token, characterId,
+    const auth = { type: 'auth', protocol: SOCIAL_PROTOCOL, token, characterId, cloudRevision: '0',
       presence: { locationId, level: 0, activity: 'idle' } };
     socket.send(JSON.stringify(auth));
     const ready = await take(item => item.type === 'ready') as Extract<SocialServerMessage, { type: 'ready' }>;
     return { socket, take, ready, auth };
   };
-  return { app, identities, store, hub, open };
+  return { app, identities, revisions, store, hub, open };
 }
 describe('social boundaries', () => {
   it('rejects foreign origins and never sends public data before identity verification', async () => {
@@ -92,6 +94,21 @@ describe('social boundaries', () => {
     replacement.send(JSON.stringify({ type: 'presence', presence: { locationId: 'hillside-market', level: 0, activity: 'idle' } }));
     await a.take(item => item.type === 'nearby' && item.players.length === 0);
     replacement.close();
+  });
+  it('rejects a stale cloud revision without displacing a valid online device', async () => {
+    const { app, open, revisions } = await setup();
+    const active = await open(1), other = await open(2);
+    revisions.set(active.auth.characterId, '1');
+    const socket = await app.injectWS('/api/client/social', { headers: { origin: 'https://123456789012345678.discordsays.com' } });
+    const take = mailbox(socket);
+    const closed = new Promise<number>(resolve => socket.on('close', resolve));
+    socket.send(JSON.stringify(active.auth));
+    expect(await take(message => message.type === 'error')).toMatchObject({ message: expect.stringContaining('云端存档') });
+    expect(await closed).toBe(4410);
+    const requestId = randomUUID();
+    active.socket.send(JSON.stringify({ type: 'chat', requestId, text: 'still online' }));
+    await active.take(message => message.type === 'result' && message.requestId === requestId);
+    await other.take(message => message.type === 'chat' && message.message.text === 'still online');
   });
   it('relays concurrent profile requests without a cyclic wait and rejects a third-party reply', async () => {
     const { open } = await setup();

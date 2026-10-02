@@ -10,6 +10,7 @@ import { inTransaction } from '../database';
 import { ApiError } from '../errors';
 import { ClientRepository, type CloudSnapshot } from './repository';
 import { playerScopeSql, type PlayerScope } from './player-profile';
+import { requireNoPvp } from './pvp-store';
 
 export interface StoredConsignmentReceipt {
   hash: string;
@@ -110,6 +111,7 @@ export class ConsignmentRepository implements ConsignmentStore {
           return rows.rows[0] ? consignmentDeliverySchema.parse(rows.rows[0]) : null;
         },
         apply: async (plan, now) => {
+          await requireNoPvp(db, characterId);
           if (plan.listing) {
             const row = plan.listing.state;
             if (plan.listing.create) {

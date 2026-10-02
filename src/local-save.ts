@@ -4,6 +4,8 @@ import {
 } from '../shared/client-save';
 import { checkReservedCapacity, pendingTradeSchema, validateReservation } from './trade-reservation';
 import { reincarnationRequestSchema } from '../shared/reincarnation';
+import { pendingPvpSchema, PVP_RULES } from '../shared/pvp';
+import { readPlayerDuel } from '../core/prototype/simulation';
 
 export const LOCAL_SAVE_KEY = 'moli.client-save.v1';
 const localSchema = z.object({
@@ -21,6 +23,7 @@ const localSchema = z.object({
   pending: z.object({ request: uploadSchema, localRevision: revisionSchema }).strict().nullable(),
   pendingTrade: pendingTradeSchema.nullable(),
   pendingReincarnation: reincarnationRequestSchema.nullable(),
+  pendingPvp: pendingPvpSchema.nullable().default(null),
   syncConflict: z.string().min(1).max(1000).nullable(),
 }).strict();
 export type LocalSave = z.infer<typeof localSchema>;
@@ -58,6 +61,14 @@ function readLocalSave(raw: unknown): LocalSave {
         pending.baseRevision !== local.cloudRevision || JSON.stringify(pending.save) !== JSON.stringify(local.save)) {
       throw new Error('待确认轮回与冻结的本世检查点不一致');
     }
+  }
+  if (local.pendingPvp && (local.pending || local.pendingTrade || local.pendingReincarnation ||
+      local.pendingPvp.baseRevision !== local.cloudRevision)) throw new Error('PVP检查点与本地身份不一致');
+  const pending = local.pendingPvp, combat = pending?.combat;
+  if (pending && combat) {
+    if (pending.role !== 'attacker' || pending.battle?.battleId !== pending.battleId ||
+        combat.attacker.clockMs > PVP_RULES.combatLimitMs) throw new Error('PVP战斗与冻结检查点不一致');
+    pending.combat = readPlayerDuel(combat);
   }
   return local;
 }
@@ -102,9 +113,6 @@ export class LocalSaveStore {
     return data;
   }
 
-  exportRaw(copy: 'current' | 'recovery'): string | null {
-    return this.storage.getItem(copy === 'current' ? this.key : `${this.key}:recovery`);
-  }
 }
 
 export function localFromCloud(profile: CloudProfile, wallNow: number): LocalSave {
@@ -114,7 +122,7 @@ export function localFromCloud(profile: CloudProfile, wallNow: number): LocalSav
     // A cloud snapshot can predate this browser's first visit.
     wallSavedAt: Math.max(0, wallNow - Math.max(0, profile.serverTime - profile.save.character.simulation.clockMs)),
     localRevision: '0', cloudRevision: profile.revision, uploadedRevision: '0', pending: null,
-    pendingTrade: null, pendingReincarnation: null, syncConflict: null,
+    pendingTrade: null, pendingReincarnation: null, pendingPvp: null, syncConflict: null,
   };
 }
 

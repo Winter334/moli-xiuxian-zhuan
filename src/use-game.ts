@@ -8,7 +8,7 @@ export function useGame(gameClient = client) {
   useEffect(gameClient.start, [gameClient]);
   return {
     ...state,
-    combatPaused: state.blocked || state.reincarnationBusy || state.recoveryBusy,
+    combatPaused: state.blocked || state.reincarnationBusy || state.recoveryBusy || state.pvpPending || state.pvpBusy,
     command: gameClient.command,
     debugCommand: gameClient.debugCommand,
     loadRanking: gameClient.loadRanking,
@@ -19,10 +19,12 @@ export function useGame(gameClient = client) {
     reconcileReincarnation: () => gameClient.reconcileReincarnation(true),
     inspectSaves: gameClient.inspectSaves,
     chooseSave: gameClient.chooseSave,
-    exportSave: gameClient.exportSave,
+    setPvpMode: gameClient.setPvpMode,
+    reconcilePvp: gameClient.reconcilePvp,
+    withdrawPvp: gameClient.withdrawPvp,
     retry: gameClient.retry,
     refresh: gameClient.refresh,
     dismissIssue: gameClient.dismissIssue,
-    blocked: state.busy || state.blocked || state.reincarnationBusy || state.recoveryBusy,
+    blocked: state.busy || state.blocked || state.reincarnationBusy || state.recoveryBusy || state.pvpPending || state.pvpBusy,
   };
 }

@@ -80,6 +80,12 @@ export const FATES = {
     effectDescription: '采矿作业速度+10%，保留小数进度；每轮出货概率、数量、熟练与矿脉衰减次数不变。',
     modifiers: [{ target: 'activity.speed', operation: 'increase', value: '0.1', tags: ['mining'] }],
   },
+  'woodland-affinity': {
+    name: '草木亲和', tier: 'ordinary',
+    description: '你与草木生机隐有相亲，枝纹木理入眼，取材之间，自知顺势落斧。',
+    effectDescription: '采木作业速度+10%，保留小数进度；每轮产量与熟练不变，不影响采矿。',
+    modifiers: [{ target: 'activity.speed', operation: 'increase', value: '0.1', tags: ['logging'] }],
+  },
   'vigorous-frame': {
     name: '筋骨健旺', tier: 'spiritual',
     description: '你骨坚筋韧，血气贯通四肢百骸，静若盘根老木，动有沉劲相随。',
@@ -113,6 +119,12 @@ export const FATES = {
     effectDescription: '各类技能熟练获取+6%。',
     modifiers: [{ target: 'experience.skill', operation: 'increase', value: '0.06' }],
   },
+  'manual-insight': {
+    name: '法悟清明', tier: 'spiritual',
+    description: '你心神于行气经义独有明悟，真元流转之间，诸般法门渐显清晰脉络。',
+    effectDescription: '功法熟练获取+10%；只作用于实际修习的功法，功法造诣沿原关联规则增长，不重复加成。',
+    modifiers: [{ target: 'experience.skill', operation: 'increase', value: '0.1', tags: ['manual'] }],
+  },
   'alchemical-flame': {
     name: '丹火灵体', tier: 'spiritual',
     description: '你体魄暗合炉火之性，火意升沉皆有所感，调火化材，自有灵韵相应。',
@@ -129,6 +141,21 @@ export const FATES = {
     modifiers: [
       { target: 'duration', operation: 'increase', value: '0.08', tags: ['supply', 'benefit'] },
       { target: 'duration', operation: 'increase', value: '-0.05', tags: ['supply', 'cost'] },
+    ],
+  },
+  'balanced-meridians': {
+    name: '药脉平和', tier: 'spiritual',
+    description: '你经脉温养而不躁，药力奔行之际，血气自有和缓之势，少受耗损。',
+    effectDescription: '药食持续失血幅度减少10%，每秒失血1%变为0.9%；不改变药效时长、正向恢复、其它属性代价或装备耗血。',
+    modifiers: [{ target: 'source.upkeep', operation: 'increase', value: '-0.1', tags: ['supply'] }],
+  },
+  'battle-composure': {
+    name: '临阵从容', tier: 'spiritual',
+    description: '你心气沉定，众敌环伺亦不自乱，守身进退之间，自留一分从容。',
+    effectDescription: '每击前至少两名敌人存活时，直接承伤减少3%；仅剩一名即失效，不减免反震、落空惩罚或药食扣血。',
+    modifiers: [
+      { target: 'damage.taken', operation: 'increase', value: '-0.03', tags: ['direct'],
+        when: { livingEnemiesAtLeast: 2 } },
     ],
   },
   'fortunate-star': {
