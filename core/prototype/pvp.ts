@@ -1,6 +1,6 @@
 import { dec, minimum } from '../numbers';
-import { addInstance, readCharacter, record, synchronizeCharacter, type CharacterState } from './character-state';
-import { ITEMS, MANOR_AID, REGIONS, SLOTS } from './content';
+import { addInstance, defeatDestination, readCharacter, record, synchronizeCharacter, type CharacterState } from './character-state';
+import { ITEMS, MANOR_AID, SLOTS } from './content';
 import { advancePlayerDuel, createSimulation, getPlayerStats, startPlayerDuel, withdraw, type PlayerDuelState } from './simulation';
 import { rebaseHealth } from './stats';
 import { realmName } from './growth';
@@ -63,7 +63,7 @@ export function applyPvpReceipt(input: CharacterState, receipt: PvpReceipt): Cha
   if (receipt.gained) addInstance(state, state.instances, receipt.gained.itemId, receipt.gained.quality);
   if (!receipt.won) {
     state.simulation = withdraw(state.simulation);
-    state.locationId = REGIONS[state.locationId]?.parent ?? state.locationId;
+    state.locationId = defeatDestination(state);
     delete state.training;
     delete state.gathering;
   }

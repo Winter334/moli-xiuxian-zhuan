@@ -4,7 +4,7 @@ import { readClientSave } from '../../shared/client-save';
 import * as combat from './combat';
 import { advanceCharacter, executeCharacterCommand, getCharacterView } from './character';
 import { createCharacter, isUnlocked, readCharacter, synchronizeCharacter, type CharacterState } from './character-state';
-import { FOOD_EFFECTS, ITEMS, REGIONS, SAFE_LOCATIONS } from './content';
+import { FOOD_EFFECTS, ITEMS, REGIONS, SAFE_LOCATIONS, foodEffectSource } from './content';
 import { executeDebugCommand } from './debug';
 import { MINING_SITE_IDS, MINING_SITES } from './gathering';
 import { MANUALS, TRAINING_IDS, TRAININGS } from './skills';
@@ -126,8 +126,15 @@ describe('region exploration lifecycle', () => {
     expect(getCharacterView(revisited).regions.find(region => region.id === challengeId)?.explorable).toBe(false);
   });
 
-  it('requires withdrawal before moving and returns defeats to the designated safety without healing', () => {
-    const away = executeDebugCommand(initial(), { type: 'travel', locationId: remoteSafeId });
+  it.each([regionId, Object.keys(REGIONS).find(id => !SAFE_LOCATIONS[REGIONS[id].parent].meditation &&
+    Object.values(SAFE_LOCATIONS).some(location => location.meditation &&
+      location.prerequisite === REGIONS[id].prerequisite))!])('requires withdrawal before moving and returns defeats to the nearest meditation safety without healing (%s)', regionId => {
+    const opened = executeDebugCommand(initial(), { type: 'region', regionId, operation: 'open' });
+    const away = executeDebugCommand(opened, { type: 'travel', locationId: remoteSafeId });
+    const destination = SAFE_LOCATIONS[REGIONS[regionId].parent].meditation
+      ? REGIONS[regionId].parent
+      : Object.keys(SAFE_LOCATIONS).find(id => SAFE_LOCATIONS[id].meditation &&
+        SAFE_LOCATIONS[id].prerequisite === REGIONS[regionId].prerequisite)!;
     const fighting = executeCharacterCommand(away, { type: 'enter', regionId });
     expect(away.locationId).not.toBe(REGIONS[regionId].parent);
     fighting.simulation.clearedGroups[regionId] = String(BigInt(fighting.simulation.clearedGroups[regionId] ?? '0') + 1n);
@@ -151,19 +158,26 @@ describe('region exploration lifecycle', () => {
     }));
     fighting.simulation.battle!.enemies[0].nextActionAt = 1;
     const defeated = advanceCharacter(fighting, 1);
-    expect(defeated.locationId).toBe(REGIONS[regionId].parent);
+    expect(defeated.locationId).toBe(destination);
+    expect(isUnlocked(defeated, defeated.locationId)).toBe(true);
+    expect(getCharacterView(defeated).canMeditate).toBe(true);
     expect(defeated.simulation.mode).toBe('rest');
     expect(defeated.simulation.player.hp).toBe('0');
     expect(defeated.simulation.battle).toBeNull();
     expect(defeated.history.defeats).toBe('1');
     expect(defeated.history.withdrawals).toBe('0');
+    expect(defeated.simulation.clearedGroups).toEqual(fighting.simulation.clearedGroups);
+    expect(defeated.inventory).toEqual(fighting.inventory);
+    expect(executeCharacterCommand(defeated, { type: 'recover', mode: 'sleep' }).simulation.mode).toBe('sleep');
 
-    const idle = arrive();
+    const idle = executeCharacterCommand(away, { type: 'arrive', regionId });
     idle.simulation.player.hp = '0.00001';
     const effectId = Object.keys(FOOD_EFFECTS).find(id => dec(FOOD_EFFECTS[id].source.flat?.hpRegenPercent ?? 0).lt(0))!;
-    idle.simulation = applyTimedEffect(idle.simulation, { id: effectId, ...FOOD_EFFECTS[effectId] }).state;
+    idle.simulation = applyTimedEffect(idle.simulation, {
+      id: effectId, durationMs: FOOD_EFFECTS[effectId].durationMs, source: foodEffectSource(effectId),
+    }).state;
     const fainted = advanceCharacter(idle, 1000);
-    expect(fainted.locationId).toBe(REGIONS[regionId].parent);
+    expect(fainted.locationId).toBe(destination);
     expect(fainted.simulation.player.hp).toBe('0');
     expect(fainted.simulation.mode).toBe('rest');
   });

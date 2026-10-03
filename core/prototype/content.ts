@@ -1089,7 +1089,7 @@ export const ENEMIES: Record<string, EnemyContent> = Object.fromEntries([
 ].map((entry) => [entry.definition.id, entry]));
 
 export interface RegionDefinition {
-  // The associated safe location is the retreat/defeat destination, not an entry requirement.
+  // The associated safe location is the withdrawal destination, not an entry requirement.
   name: string; parent: string; prerequisite: string | null;
   description?: string;
   pool: string[]; groupSize: 1 | 2; groups: number; firstXp: string; repeatXp: string; challenge: boolean;

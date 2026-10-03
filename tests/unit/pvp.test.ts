@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { checkpoint, pvpFixture } from '../helpers/pvp';
+import { executeCharacterCommand } from '../../core/prototype/character';
+import { REGIONS, SAFE_LOCATIONS } from '../../core/prototype/content';
+import { executeDebugCommand } from '../../core/prototype/debug';
 import { advancePvpBattle, pvpFighter, pvpOutcome, startPvpBattle } from '../../core/prototype/pvp';
 import { readPlayerDuel } from '../../core/prototype/simulation';
 import type { SimulationEvent } from '../../core/prototype/types';
@@ -34,6 +37,15 @@ describe('PVP settlement contracts', () => {
   });
   it('settles once, only transfers worn red equipment, preserves bag assets, and rejects old asset revisions', async () => {
     const f = pvpFixture();
+    const regionId = Object.keys(REGIONS).find(id => !SAFE_LOCATIONS[REGIONS[id].parent].meditation &&
+      Object.values(SAFE_LOCATIONS).some(location => location.meditation &&
+        location.prerequisite === REGIONS[id].prerequisite))!;
+    for (const [id, checkpoint] of [[f.attackerId, f.attacker], [f.defenderId, f.defender]] as const) {
+      const opened = executeDebugCommand(checkpoint.save.character, { type: 'region', regionId, operation: 'open' });
+      checkpoint.save.character = executeCharacterCommand(opened, { type: 'arrive', regionId });
+      f.store.seed(id, checkpoint.save);
+    }
+    f.pair.locationId = regionId;
     f.store.red(f.defenderId);
     const start = f.start();
     await f.service.start(f.attackerId, start);
@@ -44,7 +56,11 @@ describe('PVP settlement contracts', () => {
     const loser = f.store.snapshots.get(f.defenderId)!.save as typeof f.defender.save;
     const winner = f.store.snapshots.get(f.attackerId)!.save as typeof f.attacker.save;
     expect(loser.character.simulation.player.hp).toBe('0');
-    expect(loser.character.locationId).toBe('qingshi-village');
+    expect(SAFE_LOCATIONS[loser.character.locationId]).toMatchObject({
+      meditation: true, prerequisite: REGIONS[regionId].prerequisite,
+    });
+    expect(loser.character.locationId).not.toBe(REGIONS[regionId].parent);
+    expect(loser.character.simulation.mode).toBe('rest');
     expect(loser.character.equipment.weapon).toBeNull();
     expect(Object.values(loser.character.instances)).toEqual([{ itemId: 'wood-hilt-sword', quality: 222 }]);
     expect(Object.values(winner.character.instances)).toEqual([{ itemId: 'wood-hilt-sword', quality: 123 }]);

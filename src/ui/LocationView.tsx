@@ -15,7 +15,8 @@ export function LocationView({ game, blocked, command, open, frame, paused, last
   const [descriptionOpen, setDescriptionOpen] = useState(false);
   const region = game.regions.find(entry => entry.id === game.locationId);
   const nearby = game.regions.filter(entry => entry.parent === game.locationId && !(entry.challenge && entry.completed));
-  const retry = nearby.find(entry => entry.id === lastBattleId);
+  const retry = game.isSafeLocation ? game.regions.find(entry => entry.id === lastBattleId &&
+    !(entry.challenge && entry.completed)) : undefined;
   const services = <>
     {game.shop.available && <button onClick={() => { open('shop'); if (game.shop.refreshDue && !blocked) void command({ type: 'visit-shop', shopId: game.shop.id }); }}>
       <Store size={22} /><span><strong>{game.shop.name}</strong><small>货物买卖</small></span><ArrowRight size={17} /></button>}

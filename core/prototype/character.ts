@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { dec, integerAdd, random, text } from '../numbers';
 import { worldCalendarAt } from './calendar';
 import {
-  addStack, awardItem, characterStats, cleared, equippedWeaponSkill, gainCharacterExperience, gainCharacterSkill, isUnlocked, readCharacter, record, synchronizeCharacter, type CharacterState,
+  addStack, awardItem, characterStats, cleared, defeatDestination, equippedWeaponSkill, gainCharacterExperience, gainCharacterSkill, isUnlocked, readCharacter, record, synchronizeCharacter, type CharacterState,
 } from './character-state';
 import { CharacterCommandError, commandEntry } from './command-error';
 import { combatPower, COMBAT_POWER_VERSION } from './combat-power';
@@ -190,9 +190,9 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         state.history.defeats = integerAdd(state.history.defeats, 1);
         delete state.training;
         delete state.gathering;
-        if (Object.hasOwn(REGIONS, state.locationId)) state.locationId = REGIONS[state.locationId].parent;
+        state.locationId = defeatDestination(state);
         markMilestone(state, 'firstVisits', state.locationId);
-        record(state, '战败，返回安全地点歇息');
+        record(state, `战败，返回${SAFE_LOCATIONS[state.locationId].name}歇息`);
       } else if (event.kind === 'pulse' && event.sleeping && simulation.mode === 'sleep') {
         changed = gainCharacterSkill(state, 'rest', meditationExperience(state));
       } else if (event.kind === 'pulse' && state.training) {
@@ -234,7 +234,7 @@ function startNextGroup(state: CharacterState, events?: CharacterEvent[]) {
   if (state.simulation.battle || !Object.hasOwn(REGIONS, state.locationId)) return;
   const region = REGIONS[state.locationId];
   if (dec(state.simulation.player.hp).lte(0)) {
-    state.locationId = region.parent;
+    state.locationId = defeatDestination(state);
     state.simulation.mode = 'rest';
     return;
   }

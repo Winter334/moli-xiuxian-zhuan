@@ -85,6 +85,29 @@ export function isUnlocked(state: CharacterState, locationId: string): boolean {
   return target.prerequisite === null || cleared(state, target.prerequisite);
 }
 
+export function defeatDestination(state: CharacterState): string {
+  const locations = { ...REGIONS, ...SAFE_LOCATIONS };
+  const connections = new Map(Object.keys(locations).map(id => [id, [] as string[]]));
+  // Use the map's prerequisite links in both directions, not the retired travel restrictions.
+  for (const [id, location] of Object.entries(locations)) {
+    const parent = location.prerequisite ?? ('parent' in location ? location.parent : null);
+    if (parent === null) continue;
+    connections.get(id)!.push(parent);
+    connections.get(parent)!.push(id);
+  }
+  const queue = [state.locationId];
+  const visited = new Set(queue);
+  for (const id of queue) {
+    if (SAFE_LOCATIONS[id]?.meditation) return id;
+    for (const next of connections.get(id) ?? []) {
+      if (visited.has(next) || !isUnlocked(state, next)) continue;
+      visited.add(next);
+      queue.push(next);
+    }
+  }
+  throw new Error('No reachable meditation location');
+}
+
 export function equippedWeaponSkill(state: CharacterState): WeaponSkill {
   const uid = state.equipment.weapon;
   return uid === null ? 'unarmed' : lookup(ITEMS, lookup(state.instances, uid).itemId).weaponSkill ?? 'sword';
@@ -112,7 +135,7 @@ export function synchronizeCharacter(state: CharacterState) {
   const derived = characterStats(state);
   state.simulation = updatePlayerStats(state.simulation, derived).state;
   if (!state.simulation.battle && state.simulation.mode !== 'idle' && Object.hasOwn(REGIONS, state.locationId)) {
-    state.locationId = REGIONS[state.locationId].parent;
+    state.locationId = defeatDestination(state);
   }
 }
 
