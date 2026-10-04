@@ -10,6 +10,8 @@ import { LOCAL_SAVE_KEY, LocalSaveStore, localFromCloud, type SaveStorage } from
 import { discordSaveKey } from '../shared/discord';
 import { executeDebugCommand } from '../core/prototype/debug';
 import { FATE_IDS } from '../core/prototype/fates';
+import { addInstance } from '../core/prototype/character-state';
+import { ITEMS } from '../core/prototype/content';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status });
@@ -38,6 +40,71 @@ async function seed(storage: SaveStorage, initial = profile(true)) {
 const saved = (storage: SaveStorage) => new LocalSaveStore(storage).load();
 
 describe('client-owned simulation and saves', () => {
+  it('settles fishing input edges between checkpoints and preserves the fish across interruption', async () => {
+    const memory = memoryStorage();
+    const initial = profile();
+    let character = executeDebugCommand(initial.save.character, { type: 'realm', level: 24 });
+    character = executeDebugCommand(character, { type: 'region', regionId: 'qixia-veinguard', operation: 'complete' });
+    character = executeDebugCommand(character, { type: 'travel', locationId: 'chengzhao-lakeshore' });
+    character = executeCharacterCommand(character, { type: 'fish', active: true });
+    character = advanceCharacter(character, character.simulation.clockMs + character.fishing!.periodMs);
+    initial.save.character = character;
+    initial.serverTime = character.simulation.clockMs;
+    await seed(memory.storage, initial);
+    let now = 0;
+    const options = { acquireLock: lock, wallNow: () => now, monotonicNow: () => now };
+    const client = new GameClient({ ...options, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    now = 400;
+    expect(await client.command({ type: 'fishing-input', held: true })).toBe(true);
+    character = executeCharacterCommand(advanceCharacter(character, character.simulation.clockMs + 400),
+      { type: 'fishing-input', held: true });
+    now = 1000;
+    await client.tick();
+    character = advanceCharacter(character, character.simulation.clockMs + 600);
+    now = 1040;
+    expect(await client.command({ type: 'fishing-input', held: false })).toBe(true);
+    character = executeCharacterCommand(advanceCharacter(character, character.simulation.clockMs + 40),
+      { type: 'fishing-input', held: false });
+    expect((await saved(memory.storage))!.save.character).toEqual(character);
+    now += 6000;
+    await client.tick();
+    const frozen = (await saved(memory.storage))!.save.character;
+    expect(frozen.fishing).toEqual(character.fishing);
+    expect(frozen.simulation.rng).toBe(character.simulation.rng);
+    now += 30000;
+    const reopened = new GameClient({ ...options, store: new LocalSaveStore(memory.storage) });
+    await reopened.initialize();
+    const resumed = (await saved(memory.storage))!.save.character;
+    expect(resumed.fishing).toEqual(frozen.fishing);
+    expect(resumed.inventory).toEqual(frozen.inventory);
+    expect(resumed.skills.fishing).toEqual(frozen.skills.fishing);
+  });
+
+  it('does not publish or transfer a batch sale when saving fails', async () => {
+    const memory = memoryStorage();
+    const initial = profile();
+    const equipmentId = Object.keys(ITEMS).find(id => ITEMS[id].slot === 'body')!;
+    const first = addInstance(initial.save.character, initial.save.character.instances, equipmentId, 100);
+    const second = addInstance(initial.save.character, initial.save.character.instances, equipmentId, 180);
+    await seed(memory.storage, initial);
+    let fail = false;
+    const storage: SaveStorage = {
+      getItem: memory.storage.getItem,
+      setItem: (key, value) => { if (fail) throw new Error('quota'); memory.storage.setItem(key, value); },
+    };
+    const client = new GameClient({ store: new LocalSaveStore(storage), acquireLock: lock,
+      wallNow: () => 0, monotonicNow: () => 0 });
+    await client.initialize();
+    const before = await saved(storage);
+    const view = client.getSnapshot().response;
+    fail = true;
+    expect(await client.command({ type: 'sell-instances', shopId: 'village-stall', instanceIds: [first, second] })).toBe(false);
+    expect(client.getSnapshot().blocked).toBe(true);
+    expect(client.getSnapshot().response).toBe(view);
+    expect(await saved(storage)).toEqual(before);
+  });
+
   it('isolates Discord accounts from each other and from the existing development save', async () => {
     const memory = memoryStorage();
     await seed(memory.storage);

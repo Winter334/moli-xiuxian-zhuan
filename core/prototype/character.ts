@@ -8,7 +8,7 @@ import { CharacterCommandError, commandEntry } from './command-error';
 import { combatPower, COMBAT_POWER_VERSION } from './combat-power';
 import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, FOOD_EFFECTS, ITEMS, MANOR_AID, MOON_BLESSINGS, RECIPES, REGIONS, SAFE_LOCATIONS, SHOPS, SHOP_IDS, SLOTS, encounterEnemy, encounterNeedsEntry, encounterPool, expandEncounter, enemyRealmName, foodEffectSource, lookup, moonBlessingSource, temporaryEffect, shopAtLocation, type LootEntry } from './content';
 import { DIVINE_ARTS, DIVINE_ART_IDS, divineArtIdSchema, divineArtSource, domainStage } from './divine-arts';
-import { absorbMarrow, assemble, assembleArmor, craft, craftingRates, foodDuration, itemUseIssue, marrowAbsorptionPreview, purchasePrice, refreshShop, trade, upgradeFurnace, useItem } from './economy';
+import { absorbMarrow, assemble, assembleArmor, craft, craftingRates, foodDuration, itemUseIssue, marrowAbsorptionPreview, purchasePrice, refreshShop, sellInstances, trade, upgradeFurnace, useItem } from './economy';
 import { activeSources, healingValue, positiveValue, scaledSource } from './effects';
 import { equipmentSource, itemValue } from './equipment';
 import { FATES, FATE_TIERS } from './fates';
@@ -48,6 +48,7 @@ export const characterCommandSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('visit-shop'), shopId }).strict(),
   z.object({ type: z.literal('buy'), shopId, target: selection, quantity: batch }).strict(),
   z.object({ type: z.literal('sell'), shopId, target: selection, quantity: batch }).strict(),
+  z.object({ type: z.literal('sell-instances'), shopId, instanceIds: z.array(id).min(1).max(1000) }).strict(),
   z.object({ type: z.literal('learn-manual'), manualId: manualIdSchema }).strict(),
   z.object({ type: z.literal('activate-manual'), manualId: manualIdSchema.nullable() }).strict(),
   z.object({ type: z.literal('activate-divine-art'), divineArtId: divineArtIdSchema.nullable() }).strict(),
@@ -723,6 +724,9 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
     case 'sell':
       trade(state, command.shopId, command.type, command.target, command.quantity, worldTimeMs);
       break;
+    case 'sell-instances':
+      sellInstances(state, command.shopId, command.instanceIds, worldTimeMs);
+      break;
   }
   return readCharacter(state);
 }
@@ -870,7 +874,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       source: moonBlessingSource(calendar.moonPhase),
     } : null,
     fishingAvailable: state.locationId === 'chengzhao-lakeshore' && simulation.mode === 'rest',
-    fishing: state.fishing ? structuredClone(state.fishing) : null,
+    fishing: state.fishing ? { ...structuredClone(state.fishing), rng: simulation.rng } : null,
     firstJourney: state.firstJourney ? {
       progress: state.firstJourney.progress, total: JOURNEY_LENGTH,
       speed: journeySpeed(getPlayerStats(simulation).agility, state.skills.footwork!.level),

@@ -15,7 +15,7 @@ export function ActivityView({ game, blocked, command, frame, paused }: ViewProp
   const region = game.regions.find(entry => entry.id === game.locationId);
   const activity = activityName(game);
   return <section className="activity-view" aria-label="当前活动">
-      {game.reactor?.active ? <ReactorPanel game={game} blocked={blocked} command={command} /> : game.fishing ? <FishingPanel game={game} blocked={blocked} command={command} /> : game.battle ? <>
+      {game.reactor?.active ? <ReactorPanel game={game} blocked={blocked} command={command} /> : game.fishing ? <FishingPanel game={game} blocked={blocked} command={command} frame={frame} paused={paused} /> : game.battle ? <>
         <div className="battle-heading"><div><span className="eyebrow">正在探索</span><h2>第 {region ? `${BigInt(region.clearedGroups) % BigInt(region.groupsPerClear) + 1n} / ${region.groupsPerClear}` : ''} 组敌人</h2></div>
           <button className="danger subtle" disabled={blocked} onClick={() => void command({ type: 'withdraw' })}><ArrowLeft size={16} />撤退</button></div>
         {game.battle.manorSealActive && <p className="positive">山院旧阵 · 敌方属性降至1%</p>}

@@ -116,29 +116,42 @@ export default function DesignPreview() {
   const [issue, setIssue] = useState<ConnectionIssue | null>(null);
   const [paused, setPaused] = useState(false);
   const [frame, setFrame] = useState(EMPTY_COMBAT_FRAME);
+  const lastFrame = useRef(performance.now());
   const publish = useCallback((next: CharacterState, events: CharacterEvent[] = [], frozen = false) => {
     current.current = next; setCharacter(next);
     setFrame(old => combatFrame(old, next.simulation.clockMs, performance.now(), events, frozen));
   }, []);
-  const run = useCallback(async (operation: (state: CharacterState, events: CharacterEvent[]) => CharacterState) => {
-    try { const events: CharacterEvent[] = []; publish(operation(current.current, events), events); return true; }
+  const run = useCallback(async (operation: (state: CharacterState, events: CharacterEvent[]) => CharacterState, settle = true) => {
+    try {
+      const events: CharacterEvent[] = [];
+      let state = current.current;
+      if (settle) {
+        const elapsed = Math.max(0, Math.floor(performance.now() - lastFrame.current));
+        lastFrame.current += elapsed;
+        state = paused || elapsed > MAX_FRAME_GAP_MS
+          ? { ...state, simulation: pauseSimulationUntil(state.simulation, state.simulation.clockMs + elapsed) }
+          : advanceCharacter(state, state.simulation.clockMs + elapsed, 1000, events);
+      }
+      publish(operation(state, events), events);
+      return true;
+    }
     catch (error) { setIssue({ source: 'action', message: error instanceof Error ? error.message : '预览操作失败', retryable: false }); return false; }
-  }, [publish]);
+  }, [paused, publish]);
   useEffect(() => {
-    let previous = performance.now();
+    lastFrame.current = performance.now();
     const timer = window.setInterval(() => {
       const now = performance.now();
-      const elapsed = Math.max(0, Math.floor(now - previous));
-      previous = now;
+      const elapsed = Math.max(0, Math.floor(now - lastFrame.current));
+      lastFrame.current += elapsed;
       const state = current.current;
       const target = state.simulation.clockMs + elapsed;
       // Visibility is not suspension; use the same frame-gap limit as the live client.
       if (paused || elapsed > MAX_FRAME_GAP_MS) {
         publish({ ...state, simulation: pauseSimulationUntil(state.simulation, target) }, [], true);
-      } else void run((state, events) => advanceCharacter(state, target, 1000, events));
-    }, character.fishing?.phase === 'tackle' || character.reactor?.active ? 30 : 1000);
+      } else void run((state, events) => advanceCharacter(state, target, 1000, events), false);
+    }, character.reactor?.active ? 30 : 1000);
     return () => window.clearInterval(timer);
-  }, [paused, publish, run, character.fishing?.phase, character.reactor?.active]);
+  }, [paused, publish, run, character.reactor?.active]);
   const offlineNotice = useCallback(async () => {
     setIssue({ source: 'cloud', message: '界面预览未连接云端服务', retryable: false });
     return false;

@@ -1146,7 +1146,7 @@ export class GameClient {
     if (!this.active || generation !== this.generation) return;
     this.tickTimer = setTimeout(() => {
       void this.tick().finally(() => this.scheduleTick(generation));
-    }, this.local?.save.character.fishing?.phase === 'tackle' || this.local?.save.character.reactor?.active ? 30 : 1000);
+    }, this.local?.save.character.reactor?.active ? 30 : 1000);
   }
   private scheduleCloud(generation: number) {
     if (!this.active || generation !== this.generation) return;

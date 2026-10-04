@@ -193,6 +193,18 @@ export function purchasePrice(state: CharacterState, shopId: ShopId, itemId: str
 }
 
 export type TradeSelection = { kind: 'stack'; itemId: string } | { kind: 'instance'; instanceId: string };
+export function sellInstances(state: CharacterState, shopId: ShopId, instanceIds: readonly string[], worldTimeMs: number) {
+  requireShop(state, shopId);
+  if (new Set(instanceIds).size !== instanceIds.length) throw new CharacterCommandError('不能重复选择同一件器物');
+  for (const instanceId of instanceIds) {
+    commandEntry(state.instances, instanceId, '所选器物已不在行囊中，请重新选择');
+    if (Object.values(state.equipment).includes(instanceId)) throw new CharacterCommandError('请先卸下所选装备');
+  }
+  for (const instanceId of instanceIds) {
+    trade(state, shopId, 'sell', { kind: 'instance', instanceId }, 1, worldTimeMs);
+  }
+}
+
 export function trade(
   state: CharacterState, shopId: ShopId, side: 'buy' | 'sell', target: TradeSelection, quantity: number, worldTimeMs: number,
 ) {

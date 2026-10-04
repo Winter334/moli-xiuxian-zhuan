@@ -74,12 +74,18 @@ function QuickSell({ item, disabled, sell }: { item: Stack; disabled: boolean; s
     })}
   </div>;
 }
-function EntryList({ items, select, prices, sell, disabled = false }: {
+function EntryList({ items, select, prices, sell, disabled = false, checked, toggle }: {
   items: Entry[]; select: (key: string) => void; prices?: 'buy' | 'sell';
   sell?: (item: Stack, quantity: number) => void; disabled?: boolean;
+  checked?: readonly string[]; toggle?: (instanceId: string) => void;
 }) {
   return <div className="entry-list">
-    {items.map(item => <div key={entryKey(item)} className={sell && !isInstance(item) ? 'shop-sale-entry' : undefined}>
+    {items.map(item => <div key={entryKey(item)} className={toggle && isInstance(item) ? 'shop-instance-entry'
+      : sell && !isInstance(item) ? 'shop-sale-entry' : undefined}>
+      {toggle && isInstance(item) && <input type="checkbox" aria-label={`选择${item.name}，品质${item.quality}，编号${item.instanceId}`}
+        checked={checked?.includes(item.instanceId) ?? false} disabled={disabled || item.equipped}
+        title={item.equipped ? '须先卸下此器物' : `选择${item.name}`}
+        onChange={() => toggle(item.instanceId)} />}
       <button className="entry" onClick={() => select(entryKey(item))}>
         <ItemGlyph kind={isInstance(item) ? item.slot ? 'equipment' : 'part' : item.kind} slot={isInstance(item) ? item.slot : undefined} itemId={item.itemId} />
         <span className="entry-name"><strong>{item.name}</strong><small>{isInstance(item) ? `${item.slot ? SLOT_NAMES[item.slot] : '精炼器料'} · 品质 ${item.quality}` : KIND_NAMES[item.kind]}</small></span>
@@ -229,21 +235,50 @@ export function InventoryView({ game, blocked, command, sort, onSortChange }: Vi
 
 export function ShopView({ game, blocked, command }: ViewProps) {
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
+  const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState('');
+  const [checked, setChecked] = useState<string[]>([]);
+  const [sale, setSale] = useState<Instance[] | null>(null);
   const [quantity, setQuantity] = useState(1);
   const tradeFlight = useRef(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState('');
   const disabled = blocked || pending;
   const owner = side === 'buy' ? game.shop : game;
-  const items: Entry[] = [...owner.inventory, ...owner.instances].filter(item => item.name.includes(search));
+  const items: Entry[] = [...owner.inventory, ...owner.instances].filter(item => item.name.includes(search.trim()) &&
+    (category === 'all' || entryKind(item) === category));
+  const selectable = items.filter((item): item is Instance => isInstance(item) && !item.equipped);
+  const allChecked = selectable.length > 0 && selectable.every(item => checked.includes(item.instanceId));
+  const checkedItems = game.instances.filter(item => !item.equipped && checked.includes(item.instanceId));
+  const saleTotal = (entries: Instance[]) => entries.reduce((sum, item) => sum + BigInt(item.sellPrice), 0n).toString();
+  const saleChanged = sale?.some(item => !game.instances.some(current =>
+    current.instanceId === item.instanceId && !current.equipped && current.sellPrice === item.sellPrice));
   const item = items.find(entry => entryKey(entry) === selectedId);
   const price = item ? side === 'buy' ? item.buyPrice : item.sellPrice : '0';
   const max = item ? Math.min(isInstance(item) ? 1 : batchLimit(item.quantity, '1', 10000),
     side === 'buy' ? batchLimit(game.money, price, 10000) : 10000) : 0;
   const amount = item && isInstance(item) ? 1 : quantity;
   useEffect(() => { if (selectedId && !item) setSelectedId(''); }, [selectedId, item]);
+  useEffect(() => {
+    setChecked(previous => {
+      const valid = previous.filter(id => game.instances.some(item => item.instanceId === id && !item.equipped));
+      return valid.length === previous.length ? previous : valid;
+    });
+  }, [game.instances]);
+  const toggle = (id: string) => setChecked(previous => previous.includes(id)
+    ? previous.filter(entry => entry !== id) : [...previous, id]);
+  const sellChecked = async () => {
+    if (disabled || tradeFlight.current || !sale?.length || saleChanged || !game.shop.available) return;
+    tradeFlight.current = true;
+    setPending(true); setNotice('');
+    try {
+      if (await command({ type: 'sell-instances', shopId: game.shop.id, instanceIds: sale.map(item => item.instanceId) })) {
+        setChecked([]); setSale(null);
+      } else setNotice('交易未完成，所选器物未售出');
+    } catch (error) { setNotice(error instanceof Error ? error.message : '交易未完成，所选器物未售出'); }
+    finally { tradeFlight.current = false; setPending(false); }
+  };
   const tradeItem = async (side: 'buy' | 'sell', entry: Entry, quantity: number) => {
     const limit = Math.min(isInstance(entry) ? 1 : batchLimit(entry.quantity, '1', 10000),
       side === 'buy' ? batchLimit(game.money, entry.buyPrice, 10000) : 10000);
@@ -263,13 +298,46 @@ export function ShopView({ game, blocked, command }: ViewProps) {
       <button disabled={disabled || !game.shop.refreshDue} onClick={() => void command({ type: 'visit-shop', shopId: game.shop.id })}>
         <RefreshCw size={15} />{game.shop.refreshDue ? '查看今日货物' : '今日货物已更新'}</button></div>
     <Tabs label="商店买卖" value={side} options={[{ id: 'buy', label: '购入' }, { id: 'sell', label: '售出' }]}
-      onChange={value => { setSide(value); setSelectedId(''); setQuantity(1); setNotice(''); }} />
+      onChange={value => { setSide(value); setSelectedId(''); setChecked([]); setCategory('all'); setSale(null); setQuantity(1); setNotice(''); }} />
     <div className="list-toolbar"><SearchField value={search} onChange={setSearch} placeholder="查找交易物品" /></div>
+    {side === 'sell' && <>
+      <div className="bag-categories" role="group" aria-label="售出物品类别">
+        {['all', 'equipment', 'part'].map(id => <button key={id} aria-pressed={category === id}
+          onClick={() => setCategory(id)}>{id === 'all' ? '全部' : KIND_NAMES[id]}</button>)}
+      </div>
+      <div className="shop-bulk-tools">
+        <label className="check-label"><input type="checkbox" checked={allChecked} disabled={disabled || !selectable.length}
+          ref={input => { if (input) input.indeterminate = !allChecked && selectable.some(item => checked.includes(item.instanceId)); }}
+          onChange={() => setChecked(previous => allChecked
+            ? previous.filter(id => !selectable.some(item => item.instanceId === id))
+            : [...new Set([...previous, ...selectable.map(item => item.instanceId)])])} />
+          {category === 'equipment' ? '全选当前器物' : category === 'part' ? '全选当前炼材' : '全选当前器物与炼材'}</label>
+        <span className="muted small">已选 {checkedItems.length} 件</span>
+        <span className="wallet" title={`${saleTotal(checkedItems)} 灵石`}><Coins size={14} />{formatAmount(saleTotal(checkedItems))}</span>
+        <IconButton label="清空出售选择" disabled={disabled || !checked.length} onClick={() => setChecked([])}><X size={15} /></IconButton>
+        <button disabled={disabled || !checkedItems.length} onClick={() => { setNotice(''); setSale(checkedItems); }}>
+          <Coins size={15} />批量售出</button>
+      </div>
+    </>}
     {game.shop.refreshDue && side === 'buy' ? <Empty icon={<ShoppingCart size={28} />}>今日货物尚未查看</Empty>
       : <EntryList items={items} prices={side} disabled={disabled}
+        checked={checked} toggle={side === 'sell' ? toggle : undefined}
         sell={side === 'sell' ? (entry, amount) => void tradeItem('sell', entry, amount) : undefined}
         select={key => { setSelectedId(key); setQuantity(1); setNotice(''); }} />}
-    {notice && !item && <p className="negative" role="alert">{notice}</p>}
+    {notice && !item && !sale && <p className="negative" role="alert">{notice}</p>}
+    {sale && <Dialog title="确认批量售出" onClose={() => { if (!pending) setSale(null); }} footer={
+      <button className="primary" disabled={disabled || saleChanged} onClick={() => void sellChecked()}>
+        <Coins size={16} />售出 {sale.length} 件 · {formatAmount(saleTotal(sale))} 灵石</button>}>
+      <div className="shop-sale-review">
+        {sale.map(item => <div key={item.instanceId} className="quality-marked" data-quality={qualityBand(item)}>
+          <ItemGlyph itemId={item.itemId} slot={item.slot} kind={item.slot ? 'equipment' : 'part'} />
+          <span><strong>{item.name}</strong><small>品质 {item.quality} · #{item.instanceId.slice(5)}</small></span>
+          <span className="entry-price" title={`${item.sellPrice} 灵石`}>{formatAmount(item.sellPrice)}<small>灵石</small></span>
+        </div>)}
+      </div>
+      {saleChanged && <p className="negative" role="alert">所选器物已有变化，请关闭后重新选择。</p>}
+      {notice && <p className="negative" role="alert">{notice}</p>}
+    </Dialog>}
     {item && <Dialog title={side === 'buy' ? '购入物品' : '售出物品'} onClose={() => setSelectedId('')}>
       <ItemDetails item={item} amountLabel={side === 'buy' ? '在售' : '持有'} />
       <div className="item-valuation"><span>单价</span><strong>{formatAmount(price)} 灵石</strong></div>
