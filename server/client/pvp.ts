@@ -1,10 +1,9 @@
 import { createHash, randomInt } from 'node:crypto';
 import { dec } from '../../core/numbers';
 import { SAFE_LOCATIONS } from '../../core/prototype/content';
-import { storedShops } from '../../core/prototype/character-state';
 import { getPlayerStats } from '../../core/prototype/simulation';
 import { applyPvpReceipt, pvpDropCandidates, pvpFighter } from '../../core/prototype/pvp';
-import { readClientSave } from '../../shared/client-save';
+import { MAX_INVENTORY_INSTANCES, readClientSave } from '../../shared/client-save';
 import {
   PVP_RULES, pvpFinishSchema, pvpJoinSchema, pvpStartSchema, type PvpOutcome,
   type PvpReceipt, type PvpState, type PvpStatus,
@@ -152,8 +151,8 @@ export class PvpService {
           [battle.attacker, battle.defender, defender], [battle.defender, battle.attacker, attacker],
         ] as const) {
           const state = own.save.character;
-          const count = [state, ...storedShops(state).map(s => s.stock)].reduce((n, owner) => n + Object.keys(owner.instances).length, 0);
-          if (meta.red && pvpDropCandidates(other.save.character).length && count >= 1000) throw reject('行囊器物已满，无法接收红名掉落。');
+          const count = Object.keys(state.instances).length;
+          if (meta.red && pvpDropCandidates(other.save.character).length && count >= MAX_INVENTORY_INSTANCES) throw reject('行囊器物已满，无法接收红名掉落。');
         }
         battle.phase = 'active';
         battle.expiresAt = this.now() + PVP_RULES.settlementMs;

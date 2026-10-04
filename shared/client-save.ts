@@ -7,6 +7,7 @@ import { checkHistoryProgress } from '../core/prototype/history';
 export const MAX_FRAME_GAP_MS = 5000;
 export const CLOUD_SAVE_INTERVAL_MS = 60_000;
 export const MAX_SAVE_BYTES = 256 * 1024;
+export const MAX_INVENTORY_INSTANCES = 1000;
 export const worldTimeSchema = z.object({
   serverTime: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
 }).strict();
@@ -23,11 +24,13 @@ export type ClientSave = z.infer<typeof clientSaveSchema>;
 export class SaveCapacityError extends Error {}
 
 export function checkSaveCapacity(state: CharacterState) {
+  if (Object.keys(state.instances).length > MAX_INVENTORY_INSTANCES) {
+    throw new SaveCapacityError(`行囊器物超过${MAX_INVENTORY_INSTANCES}件上限，请先售出或合炼`);
+  }
   const inventories = [state, ...storedShops(state).map(shop => shop.stock)];
-  if (inventories.reduce((total, owner) => total + Object.keys(owner.instances).length, 0) > 1000 ||
-      inventories.flatMap(owner => Object.values(owner.inventory))
-        .some(value => BigInt(value) > 1_000_000_000_000n)) {
-    throw new SaveCapacityError('物品数量超过当前原型的存档上限');
+  if (inventories.some(owner => Object.values(owner.inventory)
+      .some(value => BigInt(value) > 1_000_000_000_000n))) {
+    throw new SaveCapacityError('单项物品数量超过1万亿的存档上限');
   }
 }
 

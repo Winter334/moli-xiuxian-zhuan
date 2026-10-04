@@ -6,14 +6,42 @@ import { REGIONS, SAFE_LOCATIONS } from '../../core/prototype/content';
 import { executeDebugCommand } from '../../core/prototype/debug';
 import { advancePvpBattle, pvpFighter, pvpOutcome, startPvpBattle } from '../../core/prototype/pvp';
 import { readPlayerDuel } from '../../core/prototype/simulation';
+import { addInstance } from '../../core/prototype/character-state';
 import type { SimulationEvent } from '../../core/prototype/types';
 import { PVP_RULES } from '../../shared/pvp';
 import { checkCheckpoint } from '../../server/client/checkpoint';
 import { PvpService } from '../../server/client/pvp';
 import { pvpOverviewSchema, pvpStatusSchema } from '../../shared/pvp';
+import { MAX_INVENTORY_INSTANCES } from '../../shared/client-save';
 
 const win = { winner: 'attacker' as const, attackerHp: '1', defenderHp: '0', elapsedMs: 1000, timedOut: false };
 describe('PVP settlement contracts', () => {
+  it.each([MAX_INVENTORY_INSTANCES - 1, MAX_INVENTORY_INSTANCES])(
+    'reserves red drops using player capacity with %i held instances, excluding shop stock', async held => {
+      const f = pvpFixture();
+      const state = f.attacker.save.character;
+      state.shop.dayIndex = 0;
+      for (let index = 0; index < MAX_INVENTORY_INSTANCES; index++) {
+        addInstance(state, state.shop.instances, 'old-wood-hilt', 100);
+      }
+      for (let index = 0; index < held; index++) addInstance(state, state.instances, 'old-wood-hilt', 100);
+      f.store.red(f.defenderId);
+      const start = f.start();
+      await f.service.start(f.attackerId, start);
+      const joined = await f.service.join(f.defenderId, { ...f.defender, battleId: start.battleId });
+      if (held === MAX_INVENTORY_INSTANCES) {
+        expect(joined).toMatchObject({ status: 'finished', receipt: { status: 'cancelled', message: '行囊器物已满，无法接收红名掉落。' } });
+        expect(f.store.snapshots.get(f.attackerId)!.revision).toBe('0');
+      } else {
+        expect(joined.status).toBe('active');
+        expect(await f.service.finish(f.attackerId, { battleId: start.battleId, outcome: win }))
+          .toMatchObject({ status: 'finished', receipt: { status: 'settled', gained: { itemId: 'wood-hilt-sword' } } });
+        const save = f.store.snapshots.get(f.attackerId)!.save as typeof f.attacker.save;
+        expect(Object.keys(save.character.instances)).toHaveLength(MAX_INVENTORY_INSTANCES);
+        expect(save.character.shop.instances).toEqual(state.shop.instances);
+      }
+    });
+
   it('requires both modes, matching location, life and non-safe territory without accepting an unresponsive target as defeated', async () => {
     const f = pvpFixture();
     f.store.players.get(f.defenderId)!.enabled = false;

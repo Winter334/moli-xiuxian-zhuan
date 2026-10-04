@@ -3,13 +3,13 @@ import { advanceCharacter, createCharacter, executeCharacterCommand } from '../.
 import type { ClientSave, SaveUpload } from '../../shared/client-save';
 import { ClientSaveService, MIN_UPLOAD_INTERVAL_MS } from '../../server/client/service';
 import type { CloudSnapshot, CloudStore } from '../../server/client/repository';
-import { checkProgress, readClientSave } from '../../shared/client-save';
+import { checkProgress, MAX_INVENTORY_INSTANCES, readClientSave } from '../../shared/client-save';
 import { executeDebugCommand } from '../../core/prototype/debug';
 import { FOUNDATION_LEVEL, realmAt } from '../../core/prototype/growth';
 import { dec, text } from '../../core/numbers';
 import { FOUNDATION_DIVINE_ART } from '../../core/prototype/divine-arts';
 import { FATE_IDS } from '../../core/prototype/fates';
-import { synchronizeCharacter } from '../../core/prototype/character-state';
+import { addInstance, synchronizeCharacter } from '../../core/prototype/character-state';
 import { MANUAL_IDS, MANUALS } from '../../core/prototype/skills';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
@@ -40,6 +40,34 @@ const upload = (save: ClientSave, overrides: Partial<SaveUpload> = {}): SaveUplo
   ({ characterId, requestId, baseRevision: '0', save, ...overrides });
 
 describe('client cloud save contract', () => {
+  it('reads and uploads inventories without counting retained shop instances toward player capacity', async () => {
+    const previous = initial();
+    const state = previous.character;
+    state.shop.dayIndex = 0;
+    for (let index = 0; index < MAX_INVENTORY_INSTANCES; index++) {
+      addInstance(state, state.instances, 'old-wood-hilt', 100);
+      addInstance(state, state.shop.instances, 'old-wood-hilt', 100);
+    }
+    const memory = memoryStore(previous);
+    const service = new ClientSaveService(memory.store, () => 20_000);
+    expect((await service.getProfile(characterId)).save).toEqual(previous);
+    await expect(service.upload(characterId, upload(previous))).resolves.toMatchObject({ revision: '1' });
+    expect((await service.getProfile(characterId)).save).toEqual(previous);
+
+    const beforeRejection = memory.snapshot();
+    const invalid = structuredClone(previous);
+    addInstance(invalid.character, invalid.character.instances, 'old-wood-hilt', 100);
+    await expect(service.upload(characterId, upload(invalid, { baseRevision: '1', requestId: secondId })))
+      .rejects.toMatchObject({ code: 'SAVE_REJECTED' });
+    expect(memory.snapshot()).toEqual(beforeRejection);
+    for (const owner of [invalid.character, invalid.character.shop]) {
+      delete invalid.character.instances[`item-${BigInt(invalid.character.nextInstanceId) - 1n}`];
+      owner.inventory['old-timber'] = '1000000000001';
+      expect(() => readClientSave(invalid)).toThrow('单项物品数量');
+      delete owner.inventory['old-timber'];
+    }
+  });
+
   it.each(MANUAL_IDS)('reads and uploads %s snapshots after object keys are reordered', async manualId => {
     const previous = initial();
     previous.character = executeDebugCommand(previous.character, { type: 'region', regionId: MANUALS[manualId].prerequisite, operation: 'complete' });

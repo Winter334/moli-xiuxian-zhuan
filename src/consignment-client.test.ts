@@ -3,7 +3,7 @@ import { addInstance, createCharacter } from '../core/prototype/character-state'
 import { SHOPS } from '../core/prototype/content';
 import { executeDebugCommand } from '../core/prototype/debug';
 import type { ConsignmentAsset } from '../core/prototype/consignment';
-import type { CloudProfile, SaveUpload } from '../shared/client-save';
+import { MAX_INVENTORY_INSTANCES, type CloudProfile, type SaveUpload } from '../shared/client-save';
 import type { ConsignmentReceipt, ConsignmentRequest } from '../shared/consignment';
 import { GameClient } from './game-client';
 import { LocalSaveStore, localFromCloud, type SaveStorage } from './local-save';
@@ -205,12 +205,12 @@ describe('durable client consignment', () => {
     } finally { vi.unstubAllEnvs(); }
   });
 
-  it('keeps listed instance identities on rejection and reserves total instance capacity including shop stock', async () => {
+  it('keeps listed instance identities on rejection and reserves player capacity without counting shop stock', async () => {
     const initial = profile();
     const state = initial.save.character;
     const id = addInstance(state, state.instances, 'old-wood-hilt', 100);
     state.shop.dayIndex = 0;
-    for (let index = 0; index < 998; index++) addInstance(state, state.shop.instances, 'old-wood-hilt', 100);
+    for (let index = 0; index < MAX_INVENTORY_INSTANCES; index++) addInstance(state, state.shop.instances, 'old-wood-hilt', 100);
     const fetcher = vi.fn<typeof fetch>().mockRejectedValue(new TypeError('offline'));
     const { client, read } = await setup(fetcher, initial);
     expect(await client.submitTrade(shopId, { type: 'list', selection: { kind: 'instance', instanceId: id }, unitPrice: '100' })).toBe(false);
@@ -227,8 +227,13 @@ describe('durable client consignment', () => {
     const raw: ConsignmentRequest = { ...pending.request, command: claim };
     const reserved = reserveTrade(raw, '0', { kind: 'instance', itemId: 'old-wood-hilt', quality: 100 });
     expect(reserved.expected.credit?.quantity).toBe('1');
-    addInstance(raw.save.character, raw.save.character.shop.instances, 'old-wood-hilt', 100);
-    expect(() => reserveTrade(raw, '0', reserved.expected.credit!.asset)).toThrow('存档上限');
+    const character = raw.save.character;
+    while (Object.keys(character.instances).length < MAX_INVENTORY_INSTANCES - 1) {
+      addInstance(character, character.instances, 'old-wood-hilt', 100);
+    }
+    expect(() => reserveTrade(raw, '0', reserved.expected.credit!.asset)).not.toThrow();
+    addInstance(character, character.instances, 'old-wood-hilt', 100);
+    expect(() => reserveTrade(raw, '0', reserved.expected.credit!.asset)).toThrow('行囊器物');
   });
 
   it('finishes an existing upload before trading and ignores late responses after stop', async () => {

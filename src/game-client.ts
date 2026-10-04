@@ -296,7 +296,7 @@ export class GameClient {
         next = { ...character, simulation: pauseSimulationUntil(character.simulation, target) };
         events.length = 0;
         paused = true;
-        this.publish({ issue: { source: 'action', message: '行囊或灵石容量不足（含寄售预留），本次活动计时已暂停；可先腾出空间' } });
+        this.publish({ issue: { source: 'action', message: `${error.message}（含寄售接收预留），本次活动计时已暂停` } });
       }
       if (next.simulation.clockMs <= character.simulation.clockMs) throw new Error('本地计时未能推进');
       const save: ClientSave = {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { advanceCharacter, createCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
-import { checkProgress, SaveCapacityError, type CloudProfile, type SaveUpload } from '../shared/client-save';
+import { checkProgress, MAX_INVENTORY_INSTANCES, SaveCapacityError, type CloudProfile, type SaveUpload } from '../shared/client-save';
 import * as reservations from './trade-reservation';
 import type { OpeningCommand } from '../shared/opening-contracts';
 import { COMBAT_POWER_VERSION } from '../core/prototype/combat-power';
@@ -11,7 +11,7 @@ import { discordSaveKey } from '../shared/discord';
 import { executeDebugCommand } from '../core/prototype/debug';
 import { FATE_IDS } from '../core/prototype/fates';
 import { addInstance } from '../core/prototype/character-state';
-import { ITEMS } from '../core/prototype/content';
+import { ITEMS, RECIPES } from '../core/prototype/content';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status });
@@ -40,6 +40,51 @@ async function seed(storage: SaveStorage, initial = profile(true)) {
 const saved = (storage: SaveStorage) => new LocalSaveStore(storage).load();
 
 describe('client-owned simulation and saves', () => {
+  it('frees inventory capacity after selling so crafting, repurchase and reopening preserve all instances', async () => {
+    const memory = memoryStorage();
+    const initial = profile();
+    const state = initial.save.character;
+    const recipe = RECIPES['old-wood-hilt'];
+    state.shop.dayIndex = worldCalendarAt(0).dayIndex;
+    for (const [itemId, quantity] of Object.entries(recipe.materials)) {
+      state.inventory[itemId] = String(quantity * 2);
+    }
+    for (let index = 0; index < MAX_INVENTORY_INSTANCES; index++) {
+      addInstance(state, state.instances, recipe.output, 100);
+    }
+    const [first, second] = Object.keys(state.instances);
+    await seed(memory.storage, initial);
+    const options = { acquireLock: lock, wallNow: () => 0, monotonicNow: () => 0 };
+    const client = new GameClient({ ...options, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    expect(await client.command({ type: 'sell', shopId: 'village-stall',
+      target: { kind: 'instance', instanceId: first }, quantity: 1 })).toBe(true);
+    expect(await client.command({ type: 'craft', recipeId: 'old-wood-hilt', quantity: 1 })).toBe(true);
+    const crafted = (await saved(memory.storage))!;
+    expect(Object.keys(crafted.save.character.instances)).toHaveLength(MAX_INVENTORY_INSTANCES);
+    expect(crafted.save.character.shop.instances[first]).toEqual(state.instances[first]);
+
+    expect(await client.command({ type: 'craft', recipeId: 'old-wood-hilt', quantity: 1 })).toBe(false);
+    expect(await saved(memory.storage)).toEqual(crafted);
+    expect(client.getSnapshot()).toMatchObject({ blocked: false, issue: { source: 'action' } });
+    expect(await client.command({ type: 'buy', shopId: 'village-stall',
+      target: { kind: 'instance', instanceId: first }, quantity: 1 })).toBe(false);
+    expect(await saved(memory.storage)).toEqual(crafted);
+
+    expect(await client.command({ type: 'sell', shopId: 'village-stall',
+      target: { kind: 'instance', instanceId: second }, quantity: 1 })).toBe(true);
+    expect(await client.command({ type: 'buy', shopId: 'village-stall',
+      target: { kind: 'instance', instanceId: first }, quantity: 1 })).toBe(true);
+    const repurchased = (await saved(memory.storage))!;
+    expect(repurchased.save.character.instances[first]).toEqual(state.instances[first]);
+    expect(repurchased.save.character.shop.instances[first]).toBeUndefined();
+    expect(repurchased.save.character.shop.instances[second]).toEqual(state.instances[second]);
+    const reopened = new GameClient({ ...options, store: new LocalSaveStore(memory.storage) });
+    await reopened.initialize();
+    expect(reopened.getSnapshot().blocked).toBe(false);
+    expect((await saved(memory.storage))!.save).toEqual(repurchased.save);
+  });
+
   it('settles fishing input edges between checkpoints and preserves the fish across interruption', async () => {
     const memory = memoryStorage();
     const initial = profile();
