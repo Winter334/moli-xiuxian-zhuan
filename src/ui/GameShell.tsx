@@ -32,7 +32,7 @@ import { PvpModeControl } from './PvpControls';
 import { PvpCombatView } from './PvpCombatView';
 import { getPlayerStats } from '../../core/prototype/simulation';
 
-const DebugConsole = import.meta.env.DEV ? lazy(() => import('../DebugConsole')) : null;
+const DebugConsole = lazy(() => import('../DebugConsole'));
 const PAGES = [
   { id: 'world', label: '游历', icon: Compass }, { id: 'bag', label: '行囊', icon: Package },
   { id: 'practice', label: '修行', icon: BookOpen }, { id: 'craft', label: '炉鼎', icon: Flame },
@@ -68,6 +68,9 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
   useEffect(() => { setOverlay(null); setPage('world'); mapCamera.current = null; lastBattle.current = null; }, [session.response?.characterId, game?.life.number]);
   useEffect(() => { if (game?.battle) lastBattle.current = game.battle.regionId; }, [game?.battle?.regionId]);
   useEffect(() => { if (session.pvpCombat) setPage('world'); }, [session.pvpCombat?.battle.battleId]);
+  useEffect(() => { if (game) void session.refreshDebugAccess(); },
+    [session.refreshDebugAccess, session.response?.characterId, session.onlineReady, socialState.status]);
+  useEffect(() => { if (!session.debugAllowed) setOverlay(current => current === 'debug' ? null : current); }, [session.debugAllowed]);
   useEffect(() => {
     setPage(current => ['shop', 'market', 'rankings', 'nearby'].includes(current) ? 'world' : current);
     if (page === 'world' && pageRef.current) pageRef.current.scrollTop = 0;
@@ -94,7 +97,7 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
           <details className="system-menu" ref={menuRef}><summary aria-label="更多选项" title="更多选项"><MoreHorizontal size={18} /></summary><div>
             {!previewControls && <button disabled={!session.recoveryAvailable} onClick={() => { setOverlay('saves'); menuRef.current!.open = false; }}><Cloud size={16} />存档管理</button>}
             <button onClick={() => { setOverlay('policies'); menuRef.current!.open = false; }}><Shield size={16} />隐私与条款</button>
-            {DebugConsole && <button disabled={!game} onClick={() => { setOverlay('debug'); menuRef.current!.open = false; }}><Terminal size={16} />测试控制台</button>}
+            {session.debugAllowed && <button disabled={!game} onClick={() => { setOverlay('debug'); menuRef.current!.open = false; }}><Terminal size={16} />测试控制台</button>}
           </div></details>
         </div>
       </header>
@@ -171,7 +174,8 @@ export function GameShell({ session, social, previewControls, mobileActivity = f
       <p>同地道友可见境界与简要活动，并按需查看常态属性、战力、当前配装和运转能力；世界消息保留7天。不公开完整存档或私人行囊。</p>
       <PolicyLinks />
     </Dialog>}
-    {overlay === 'debug' && game && DebugConsole && <Dialog title="测试控制台" wide onClose={() => setOverlay(null)}>
-      <Suspense fallback={<p>正在读取</p>}><DebugConsole game={game} blocked={session.blocked} command={session.debugCommand} preview={Boolean(previewControls)} /></Suspense></Dialog>}
+    {overlay === 'debug' && game && session.debugAllowed && <Dialog title="测试控制台" wide onClose={() => setOverlay(null)}>
+      <Suspense fallback={<p>正在读取</p>}><DebugConsole game={game} blocked={session.blocked || session.tradePending || session.tradeBusy}
+        command={session.debugCommand} preview={Boolean(previewControls)} issue={session.issue?.message} /></Suspense></Dialog>}
   </>;
 }

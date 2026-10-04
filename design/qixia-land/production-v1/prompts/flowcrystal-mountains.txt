@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG location painting, 1792 by 784, one complete landscape.
+Primary request: Flowcrystal Mountain Belt, a colossal continuous mountain valley with living crystal seams; monumental Chinese dreamcore fantasy grounded in real rock and depth.
+Scene/backdrop: huge stone slopes flank a broad valley. Translucent pale-blue crystal strata run through exposed cliff shoulders in broad mineral bands, not a field of decorative crystal spikes. Ancient stone retaining terraces and a narrow Chinese covered path are embedded into the enormous slopes; far ridges continue into the clear sky.
+Composition/framing: low very wide-angle upward view from the valley floor. One massive crystal-veined cliff is close enough to show broad layered rock planes, while the valley and its small built path recede in the other half. A distant giant natural arch exposes the continuous mountain land behind it. Strong near-to-far scale, no symmetrical canyon tunnel.
+Style/medium: polished thickly painted Chinese fantasy environment, substantial stone brush planes, internally layered mineral light and simplified distant masses, not smooth jewel renders, photography or angular low-poly geometry.
+Lighting/mood: fresh pale daylight with cool blue mineral depth, warm ivory rock faces and dark green foothill growth; the crystal seams hold restrained light rather than radiating a neon aura. Silent, immense and strange, still part of a thriving world.
+Constraints: no enemy stone golem, humanoid statue, mining machinery, characters, central palace, text, UI, border or watermark. No full-screen colored fog, loose glowing shards or implausible spikes in place of an actual mountain belt.

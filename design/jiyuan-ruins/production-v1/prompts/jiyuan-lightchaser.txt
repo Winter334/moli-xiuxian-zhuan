@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide 1792 by 784 Chinese xianxia RPG challenge location.
+Primary request: the Lightchaser Old Road outside the ruined city, a deserted ancient hunting passage between broken stone walls and vast architectural shadows; the monster is NOT painted into the scene.
+Composition/framing: low wide-angle along an old Chinese stone road. Monumental gate remains behind and tall worn pylons ahead cast clean bands of light and deep shadow across the path. The alternating lit and shaded route creates uncanny long depth; broad far plains visible through the last opening. Strong simple silhouette and a complete readable route.
+Lighting/mood: slanting white daylight, violet-black cool shadow planes, warm pale paving and faint silvery edges along the broken structures. Quiet tension and clear high-realm Chinese dreamcore space, not a horror fog tunnel.
+Style/medium: refined atmospheric Chinese fantasy painting with organized big values, layered brushwork and restrained detail.
+Constraints: ancient surviving architecture, no fresh devastation, no painted enemy or hero, ghosts, humanoid silhouettes, bodies, giant aura, spaceship, text, UI or watermark. Do not pre-illustrate the next brokenplain region.

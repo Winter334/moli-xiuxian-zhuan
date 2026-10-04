@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const furnaceTierSchema = z.union([z.literal(0), z.literal(2), z.literal(4)]);
+export const furnaceTierSchema = z.union([z.literal(0), z.literal(2), z.literal(4), z.literal(6), z.literal(8), z.literal(10)]);
 export type FurnaceTier = z.infer<typeof furnaceTierSchema>;
 
 interface FurnaceDefinition {
@@ -23,6 +23,14 @@ export const FURNACES: Record<FurnaceTier, FurnaceDefinition> = {
   4: {
     name: '沉渊炉',
     description: '沉渊钢重铸的炉体上嵌着修整过的阵枢，细密阵纹沿炉膛分布。',
-    upgrade: null,
+    upgrade: { tier: 6, materials: { 'returning-glow-ingot': 6, 'jade-reed-silk': 6 } },
   },
+  6: {
+    name: '回辉炉',
+    description: '回辉金补铸炉体，碧苇灵绢作导灵隔层，内膛蓄息回流。',
+    upgrade: { tier: 8, materials: { 'clearjade-ingot': 6, 'ruin-rune-fragment': 6, 'chengzhao-core': 6 } },
+  },
+  8: { name: '澄碧炉', description: '澄碧金补铸炉身，墟纹片接续导灵纹，澄照灵核承接聚灵。',
+    upgrade: { tier: 10, materials: { 'redglow-steel': 8, 'condensed-gel-block': 4 } } },
+  10: { name: '赤曜炉', description: '赤曜钢补铸炉身，凝蕴胶块接续导流与缓冲用料。', upgrade: null },
 };

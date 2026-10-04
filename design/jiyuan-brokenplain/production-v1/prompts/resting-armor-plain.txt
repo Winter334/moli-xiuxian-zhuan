@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: 1792 by 784 wide Chinese xianxia RPG environment.
+Primary request: Resting Armor Plain, an immense rocky country where a few enormous discarded ancient protective armor shells and pale stone beams form terraced landforms after centuries of weathering.
+Composition/framing: broad low wide-angle. One vast inert layered bronze shell rests obliquely across the middle distance, its clearly manufactured overlapping plate edges contrasting with natural stone ledges. A small readable path passes under a surviving stone beam and across open rock. Subtle mineral seams emerge beneath the old armor, not a foreground pile of collectible gems.
+Lighting/mood: bright soft golden afternoon, pale stone and faded bronze with calm green-silver patina, deep spacious grey-violet shadows. Chinese dreamcore grandeur from scale and a few clean inner glints, not dense spectacle.
+Style/medium: refined painterly Chinese fantasy, large unified shapes and rich organized material planes.
+Constraints: armor is an ancient inert shell, NOT a giant living guardian, statue, human corpse or newly crashed modern tank. No mining machinery, jewel mountain, crowds, painted monsters, spaceship interior, text, UI or watermark.

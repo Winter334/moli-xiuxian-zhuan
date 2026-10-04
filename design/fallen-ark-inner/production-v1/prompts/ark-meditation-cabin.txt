@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Meditation Cabin inside an immense fallen immortal ark. A stable secluded cabin holds a simple intact stone meditation seat, with complete fitted spirit-gathering lines quietly converging beneath and around it. The surrounding chamber is spacious and high, framed by archaic hull ribs and deep pale wall planes. A narrow opening gives a distant glimpse of the vast inner gallery without making this safe room into the whole vessel.
+Style/medium: clean Chinese fantasy dreamcore, refined painterly stone and ancient metal construction, elegant large surfaces. Pearl stone, soft celadon supply traces, muted reddish-bronze supports and pale warm illumination; no excessive ornament.
+Composition/framing: 1792x784 landscape, quiet wide-angle off-center view; stone seat in the near middle distance, generous floor and tall structural framing, clearly defined enclosure.
+Lighting/mood: serene luminous space, soft warm white around the seat, calm cool green hull depth; ancient and transcendent rather than a domestic bedroom.
+Constraints: no seated person or player image, furnace, crafting bench, shelves, storage chest, reward altar, futuristic pod, computer screen, new training device, text, UI, watermark or border.

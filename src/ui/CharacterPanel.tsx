@@ -38,9 +38,13 @@ const skillDescriptions: Record<SkillId, string> = {
   physique: '在允许的训练地点承压或抗流锻体，锤炼筋骨，改善气血与恢复能力；各地训练共用体魄熟练。',
   mining: '实际开采中积累，影响出货概率与采矿效率。',
   logging: '在北麓柳林采木中积累，改善取材周期与单次产量。',
-  'manual-mastery': '由功法或归息盏的较高累计带动；精通高于所练法门时，每级差使该门所得熟练乘1.1，各门仍独立成长。',
+  fishing: '等待鱼讯与成功收鱼各自积累熟练，改善等待周期、操竿区间与可遇灵鱼。',
+  domain: '按实际对敌扣血积累独立熟练，常驻增长攻防敏；运转时采用当前领域阶段。',
+  pressure: '在灵舟普通战区在线交战时积累，抵抗当地威压；回复里程碑累计且离开战区仍保留。',
+  'manual-mastery': '由功法、领域、归息盏或星解盘的较高累计带动；精通高于所练法门时，每级差使该门所得熟练乘1.1，各门仍独立成长。',
   'weapon-mastery': '由剑术或重剑术的较高累计带动；精通高于所练武器技能时，每级差使其所得熟练乘1.1，不影响拳脚。',
   'returning-lamp': '装备归息盏后在实际活动中积累，其里程碑影响技能熟练收益。',
+  'star-dissolution-disk': '装备后每次命中独立积累熟练；永久里程碑提高全经验及领域专属熟练，卸下仍保留。',
 };
 type Detail = { kind: 'stat'; id: typeof ATTRIBUTES[number]['id'] } | { kind: 'skill'; id: SkillId }
   | { kind: 'fate' | 'effects' | 'marrow' };
@@ -156,6 +160,9 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
         </section>)}
         {decimal(skill.experienceMultiplier).gt(1) && <section className="source-detail">
           <h3>常驻加成</h3><p className="positive">战斗与清理修为、技能熟练获取 ×{formatAmount(skill.experienceMultiplier)}</p>
+        </section>}
+        {decimal(skill.domainExperienceMultiplier).gt(1) && <section className="source-detail">
+          <h3>领域专属加成</h3><p className="positive">领域熟练另乘 ×{formatAmount(skill.domainExperienceMultiplier)}</p>
         </section>}
         {skill.masteryBonuses.length > 0 && <section className="source-detail">
           <h3>关联技能熟练加成</h3>

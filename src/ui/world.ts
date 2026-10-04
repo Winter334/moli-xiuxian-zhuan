@@ -12,6 +12,19 @@ export const AREAS = [
   { id: 'marsh', name: '百渠泽地', subtitle: '山背大泽', locations: ['forest-edge-camp', 'oldwood-edge', 'oldwood-fringe', 'condensing-spring-cavern'] },
   { id: 'uplands', name: '苍照山原', subtitle: '灵林与石原', locations: ['green-vine-hill', 'renewal-valley', 'windstone-uplands', 'cloudbreak-pass', 'redbanner-cliff', 'zhaoye-roadhead'] },
   { id: 'zhaoye', name: '照野江路', subtitle: '灵江与长洲', locations: ['whitebank-road', 'flowpetal-shallows', 'returning-current-bay', 'rosyreef-longshoal', 'crossriver-stone-flat', 'zhaoye-waterfall', 'linzhao-crossing'] },
+  { id: 'qixia', name: '栖霞陆域', subtitle: '小界山河', locations: ['qixia-overlook', 'rosyfall-plain', 'myriad-reed-marsh',
+    'flowcrystal-mountains', 'layered-rosy-gardens', 'hanging-radiance-platform', 'qixia-veinguard', 'qixia-loop-array'] },
+  { id: 'chengzhao', name: '澄照湖域', subtitle: '小界内海', locations: ['chengzhao-lakeshore', 'mirror-tide-bay',
+    'thousand-crystal-marsh', 'silver-reed-ring', 'floating-light-innerlake', 'cold-tide-lakeheart', 'chengzhao-gathering-array'] },
+  { id: 'jiyuan-ruins', name: '霁原旧墟', subtitle: '旧城取材', locations: ['jiyuan-ruins', 'collapsed-ward-street',
+    'fallen-tower-lanes', 'split-tower-courts', 'empty-channel-ruinplain', 'hanging-bell-oldgate', 'jiyuan-lightchaser', 'ruin-meditation-room'] },
+  { id: 'brokenplain', name: '霁原断原', subtitle: '斗法遗址', locations: ['jiyuan-brokenplain', 'fallen-edge-slope',
+    'bone-array-gully', 'split-stoneplain', 'resting-armor-plain', 'remnant-flag-ringpass', 'layered-armor-gate'] },
+  { id: 'ark-outer', name: '坠星灵舟·外舱', subtitle: '坠落法舟', locations: ['fallen-ark-outer', 'broken-gunwale-hall',
+    'four-aspect-puppet-workshop', 'lost-command-corridor', 'armor-bearing-cabin', 'sealed-hub-forecourt',
+    'ark-seizing-sidechamber', 'triangular-array-gate', 'hidden-hub-chamber'] },
+  { id: 'ark-inner', name: '坠星灵舟·内舱', subtitle: '供能深舱', locations: ['fallen-ark-inner', 'furnace-guard-corridor',
+    'essence-condensing-corridor', 'energy-gathering-cabin', 'starbreaking-chamber', 'ark-meditation-cabin'] },
 ];
 export function areaFor(id: string) { return AREAS.find(area => area.locations.includes(id)) ?? AREAS[0]; }
 export function knownAreas(game: OpeningView) {
@@ -28,6 +41,12 @@ export const AREA_CENTERS: Record<string, MapPoint> = {
   inner: { x: 5900, y: -1400 }, marsh: { x: 7100, y: -750 },
   uplands: { x: 8250, y: -1500 },
   zhaoye: { x: 9400, y: -850 },
+  qixia: { x: 10600, y: -1550 },
+  chengzhao: { x: 11800, y: -850 },
+  'jiyuan-ruins': { x: 13000, y: -1550 },
+  brokenplain: { x: 14200, y: -850 },
+  'ark-outer': { x: 15400, y: -1550 },
+  'ark-inner': { x: 16600, y: -850 },
 };
 // Stable geographical positions, independent of which destinations have been revealed.
 const LOCAL_POINTS: Record<string, [number, number]> = {
@@ -60,6 +79,23 @@ const LOCAL_POINTS: Record<string, [number, number]> = {
   'returning-current-bay': [80, -40], 'rosyreef-longshoal': [260, 170],
   'crossriver-stone-flat': [-270, 250], 'zhaoye-waterfall': [-110, -420],
   'linzhao-crossing': [480, -90],
+  'qixia-overlook': [-410, 180], 'rosyfall-plain': [-360, -30], 'myriad-reed-marsh': [-140, -230],
+  'flowcrystal-mountains': [100, -280], 'layered-rosy-gardens': [240, -40],
+  'hanging-radiance-platform': [380, 170], 'qixia-veinguard': [470, -210], 'qixia-loop-array': [140, 320],
+  'chengzhao-lakeshore': [-420, 170], 'mirror-tide-bay': [-340, -70], 'thousand-crystal-marsh': [-110, -250],
+  'silver-reed-ring': [140, -190], 'floating-light-innerlake': [340, 20],
+  'cold-tide-lakeheart': [260, 230], 'chengzhao-gathering-array': [480, -200],
+  'jiyuan-ruins': [-420, 170], 'collapsed-ward-street': [-340, -70], 'fallen-tower-lanes': [-110, -250],
+  'split-tower-courts': [140, -190], 'empty-channel-ruinplain': [340, 20], 'hanging-bell-oldgate': [260, 230],
+  'jiyuan-lightchaser': [480, -200], 'ruin-meditation-room': [-120, 260],
+  'jiyuan-brokenplain': [-420, 170], 'fallen-edge-slope': [-340, -70], 'bone-array-gully': [-110, -250],
+  'split-stoneplain': [140, -190], 'resting-armor-plain': [340, 20], 'remnant-flag-ringpass': [260, 230],
+  'layered-armor-gate': [480, -200],
+  'fallen-ark-outer': [-430, 180], 'broken-gunwale-hall': [-350, -70], 'four-aspect-puppet-workshop': [-100, -250],
+  'lost-command-corridor': [140, -170], 'armor-bearing-cabin': [340, 20], 'sealed-hub-forecourt': [270, 240],
+  'ark-seizing-sidechamber': [-430, -260], 'triangular-array-gate': [420, -250], 'hidden-hub-chamber': [510, 180],
+  'fallen-ark-inner': [-420, 170], 'furnace-guard-corridor': [-300, -90], 'essence-condensing-corridor': [20, -190],
+  'energy-gathering-cabin': [370, -60], 'starbreaking-chamber': [-310, -340], 'ark-meditation-cabin': [80, 160],
 };
 export function mapPoint(id: string): MapPoint {
   const center = AREA_CENTERS[areaFor(id).id];

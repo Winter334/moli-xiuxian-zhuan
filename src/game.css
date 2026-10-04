@@ -948,10 +948,34 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .debug-controls { border: 0; padding: 0; min-width: 0; }
 .debug-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--line); }
 .debug-row label { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 110px; font-size: 12px; color: #b5c8a3; }
-.debug-row .debug-wide { flex: 2; min-width: 200px; }
 .debug-row input, .debug-row select { width: 100%; }
 .debug-row button { font-size: 12px; }
-.debug-result { margin-top: 16px; color: var(--jade); font-size: 12px; }
+.debug-console { min-width: 0; }
+.debug-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 8px 0 12px; font-size: 12px; color: var(--muted); }
+.debug-summary button { margin-left: auto; font-size: 12px; }
+.debug-tabs { display: flex; border-bottom: 1px solid var(--line); gap: 4px; }
+.debug-tabs button { flex: 1; min-width: 0; border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 9px 12px; font-size: 13px; }
+.debug-tabs button.selected { color: var(--jade); border-bottom-color: var(--jade); background: transparent; }
+.debug-result { min-height: 18px; margin: 8px 0 0; overflow-wrap: anywhere; color: var(--jade); font-size: 12px; }
+.debug-section { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.debug-section h3 { font-size: 13px; margin: 0 0 10px; }
+.debug-section .debug-row { border-bottom: 0; padding-bottom: 0; }
+.debug-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.debug-actions button { font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
+.debug-search { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--muted); }
+.debug-search input { flex: 1; min-width: 0; }
+.debug-options { max-height: 190px; overflow: auto; border-block: 1px solid var(--line); scrollbar-gutter: stable; }
+.debug-options button { display: grid; grid-template-columns: minmax(80px, 140px) minmax(0, 1fr) 14px; width: 100%; text-align: left;
+  gap: 10px; align-items: center; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 9px 10px; min-height: 38px; font-size: 12px; }
+.debug-options button span, .debug-options button small { overflow-wrap: anywhere; white-space: normal; line-height: 1.5; }
+.debug-options button small { color: var(--muted); font-size: 11px; }
+.debug-options button.selected { background: #283d30; color: var(--jade); }
+.debug-filters { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.debug-filters button, .debug-presets button { padding: 3px 8px; min-height: 26px; font-size: 11px; }
+.debug-filters button[aria-pressed="true"] { color: var(--jade); border-color: var(--jade); }
+.debug-presets { display: flex; flex-wrap: wrap; gap: 5px; }
+.debug-row .debug-amount { min-width: 180px; }
+.debug-row button { white-space: normal; }
 
 @media (min-width: 1700px) {
   .game-shell { grid-template-columns: 310px minmax(0, 1fr) 310px; }
@@ -1204,3 +1228,61 @@ progress::-moz-progress-bar { background: #8eb69c; }
 .pvp-stage .combatant h3 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pvp-stage .hit-feedback > span { font-size: 12px; }
 .pvp-stage .defeated .discord-avatar { filter: grayscale(1); opacity: .5; }
+.array-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-block: 8px 14px; }
+.array-controls label { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.array-controls input { width: 90px; min-width: 0; }
+.fishing-panel { border-block: 1px solid var(--line); padding-block: 12px; }
+.fishing-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.fishing-heading h3 { margin: 0; font-size: 15px; }
+.fishing-game { display: flex; gap: 18px; justify-content: center; align-items: center; }
+.fishing-track { position: relative; height: 318px; width: 74px; flex-shrink: 0; overflow: hidden; background: #203b40; border: 1px solid #6d9696; }
+.fishing-rod { position: absolute; inset-inline: 4px; background: #487e61; border: 1px solid #93c7a7; }
+.fishing-fish { position: absolute; left: 25px; color: #eed186; pointer-events: none; }
+.fishing-action { display: grid; gap: 16px; width: min(220px, 55%); }
+.fishing-hold { min-height: 100px; justify-content: center; flex-direction: column; touch-action: none; user-select: none; }
+.fishing-hold.held { background: #355443; border-color: #93c7a7; }
+.fishing-wait { display: flex; align-items: center; gap: 16px; }
+.fishing-wait .meter { flex: 1; }
+@media (max-height: 600px) {
+  .fishing-panel { padding-block: 6px; }
+  .fishing-heading { margin-bottom: 6px; }
+  .fishing-track { height: 170px; }
+}
+.combat-stage.multi-enemy { grid-template-columns: minmax(160px, .7fr) 24px minmax(0, 1.6fr); padding: 12px; align-items: start; }
+.multi-enemy .enemy-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none; max-height: 480px; overflow-y: auto; gap: 8px; align-content: start; padding-right: 4px; }
+.multi-enemy .enemy-side > .combat-side-label { grid-column: 1 / -1; }
+.multi-enemy .enemy-combatant { grid-template-columns: 48px minmax(0, 1fr); gap: 6px; padding: 8px; min-height: 138px; align-content: start; }
+.multi-enemy .enemy-combatant .combat-avatar { width: 48px; }
+.multi-enemy .enemy-combatant .combat-portrait { min-height: 48px; grid-row: 1; }
+.multi-enemy .enemy-combatant > .meter { grid-column: 1 / -1; }
+.multi-enemy .enemy-combatant h3 { font-size: 13px; }
+.multi-enemy .enemy-combatant .eyebrow { font-size: 9px; line-height: 1.5; overflow-wrap: anywhere; }
+.multi-enemy .enemy-combatant .combat-stats { gap: 4px 8px; font-size: 10px; }
+.multi-enemy .enemy-combatant .combat-tags { gap: 4px 6px; font-size: 10px; }
+.multi-enemy .enemy-combatant .meter > div { flex-wrap: wrap; gap: 4px; }
+.multi-enemy .player-side { position: sticky; top: 0; }
+@container (max-width: 600px) {
+  .combat-stage.multi-enemy { grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1.1fr); gap: 4px; padding: 6px; }
+  .multi-enemy .enemy-side { grid-template-columns: minmax(0, 1fr); max-height: 340px; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .multi-enemy .enemy-side { max-height: 290px; }
+}
+.reactor-panel { padding: 12px 0; }
+.reactor-panel header, .reactor-panel footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.reactor-panel h2 { font-size: 18px; margin: 0; }
+.reactor-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.reactor-readings strong { display: block; font-size: 13px; }
+.reactor-readings p { font-size: 12px; }
+.reactor-feeds { display: grid; gap: 6px; margin-bottom: 14px; }
+.reactor-feeds form { display: grid; grid-template-columns: minmax(0, 1fr) 78px 36px; align-items: center; gap: 8px; }
+.reactor-feeds small { display: block; font-size: 11px; color: var(--muted); }
+.reactor-feeds input { min-width: 0; width: 100%; }
+.reactor-feeds button { padding: 8px; }
+.reactor-panel footer { flex-wrap: wrap; }
+.reactor-panel footer span { flex: 1 1 180px; }
+@media (max-width: 1000px) {
+  .reactor-readings { grid-template-columns: 1fr; gap: 8px; margin: 10px 0; }
+  .reactor-panel header { flex-wrap: wrap; }
+  .reactor-feeds form { grid-template-columns: minmax(0, 1fr) 65px 32px; gap: 5px; }
+}

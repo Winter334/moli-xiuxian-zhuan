@@ -11,6 +11,7 @@ export function useGame(gameClient = client) {
     combatPaused: state.blocked || state.reincarnationBusy || state.recoveryBusy || state.pvpPending || state.pvpBusy,
     command: gameClient.command,
     debugCommand: gameClient.debugCommand,
+    refreshDebugAccess: gameClient.refreshDebugAccess,
     loadRanking: gameClient.loadRanking,
     loadConsignment: gameClient.loadConsignment,
     submitTrade: gameClient.submitTrade,

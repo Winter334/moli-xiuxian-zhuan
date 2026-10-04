@@ -4,6 +4,7 @@ import type { CharacterState } from './character-state';
 import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, ITEMS, RECIPES, REGIONS, SAFE_LOCATIONS } from './content';
 import { MINING_SITES } from './gathering';
 import { LEVEL_CAP } from './growth';
+import { FISH } from './lake-activities';
 import { countSchema } from './types';
 
 const catalogKey = (catalog: object) => z.string().refine(id => Object.hasOwn(catalog, id));
@@ -30,7 +31,7 @@ export const historySchema = z.object({
   }).strict()),
   bestCraftedQuality: z.record(catalogKey(ITEMS), z.number().int().min(10).max(999)),
   mining: z.record(catalogKey(MINING_SITES), z.object({
-    cycles: countSchema, successes: countSchema, produced: countSchema.optional(),
+    cycles: countSchema, successes: countSchema, produced: countSchema.optional(), secondaryProduced: countSchema.optional(),
   }).strict()),
   gathered: counts(ITEMS),
   used: counts(ITEMS),
@@ -106,11 +107,17 @@ export function validateHistory(state: CharacterState) {
       throw new Error('Invalid gathering quantity history');
     }
     incrementRecord(gathered, MINING_SITES[id as keyof typeof MINING_SITES].itemId, produced);
+    if (id === 'brokenplain-marrow-seam') {
+      if (entry.secondaryProduced === undefined || entry.successes !== entry.cycles ||
+          BigInt(entry.secondaryProduced) > BigInt(entry.cycles)) throw new Error('Invalid dual-output mining history');
+      incrementRecord(gathered, 'stellar-marrow', entry.secondaryProduced);
+    } else if (entry.secondaryProduced !== undefined) throw new Error('Unexpected secondary mining history');
   }
   for (const id of new Set([...Object.keys(gathered), ...Object.keys(history.gathered)])) {
+    if (FISH.some(fish => fish.id === id) || id === 'condensed-gel-hilt') continue;
     if (BigInt(gathered[id] ?? '0') !== BigInt(history.gathered[id] ?? '0')) throw new Error('Invalid gathered item history');
   }
-  if (Object.keys(history.used).some(id => !['food', 'insight', 'foundation-pill', 'marrow'].includes(ITEMS[id].kind)) ||
+  if (Object.keys(history.used).some(id => !['food', 'insight', 'foundation-pill', 'meditation-kit', 'marrow'].includes(ITEMS[id].kind)) ||
       Object.keys(history.absorbedMarrow).some(id => ITEMS[id].kind !== 'marrow')) throw new Error('Invalid item use history');
   for (const kind of ['firstVisits', 'firstClears', 'firstRealms', 'firstEncounters'] as const) {
     for (const [id, milestone] of Object.entries(history[kind])) {
@@ -126,7 +133,7 @@ export function validateHistory(state: CharacterState) {
   }
 }
 
-export function checkHistoryProgress(before: CharacterHistory, after: CharacterHistory) {
+export function checkHistoryProgress(before: CharacterHistory, after: CharacterHistory, allowTestMarkerClear = false) {
   function monotonic(previous: object, next: object) {
     for (const [key, value] of Object.entries(previous)) {
       const current = (next as Record<string, unknown>)[key];
@@ -139,7 +146,8 @@ export function checkHistoryProgress(before: CharacterHistory, after: CharacterH
       }
     }
   }
-  const { firstVisits, firstClears, firstRealms, firstEncounters, ...counters } = before;
+  const { firstVisits, firstClears, firstRealms, firstEncounters, testAssisted, ...counters } = before;
+  if (testAssisted && !after.testAssisted && !allowTestMarkerClear) throw new Error('履历记录发生回退');
   monotonic(counters, after);
   for (const [kind, milestones] of Object.entries({ firstVisits, firstClears, firstRealms, firstEncounters })) {
     const next = after[kind as 'firstVisits' | 'firstClears' | 'firstRealms' | 'firstEncounters'];

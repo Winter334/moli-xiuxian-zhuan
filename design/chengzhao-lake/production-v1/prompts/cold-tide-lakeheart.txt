@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784, one independent landscape.
+Primary request: Cold Tide Lakeheart, a LOCAL cold-current passage between crystal ridges and deep-water islands, not a frozen sea. Grand Chinese dreamcore through enormous mineral landforms and a visible change in water depth.
+Scene/backdrop: dark clear blue-green channels pass through broad pale crystal-veined island shoulders. Small frost rims touch only the shaded near ledges; open flowing lake and living green slopes remain beyond. A high curved ancient Chinese stone causeway follows a distant island flank, showing immense scale without becoming a palace.
+Composition/framing: wide-angle view from a low shaded island shelf, a close smooth crystal-bearing rock shoulder and a deep water channel leading between huge remote ridges. The current is shown by a few long soft reflected bands, not violent waves or a whirlpool. Crisp near depth contrasts with lucid distant lake.
+Style/medium: refined painterly Chinese fantasy landscape, layered mineral planes, broad water color depth, controlled soft edges and selective light, not glossy crystals or photographed ice.
+Lighting/mood: pale cool morning in the channel, warm rose-white sky above far jade mountains. Quiet coldness and vast uncanny space; no dark horror or whiteout.
+Constraints: do not freeze the whole lake or turn it into an arctic biome. No characters, enemies, new mythical monuments, boat subject, UI, text, border or watermark. No blizzard, neon fog or full-screen glowing shards.

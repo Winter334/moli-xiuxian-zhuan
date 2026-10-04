@@ -22,6 +22,12 @@ const PRESETS = [
   { id: 'inner', name: '涵岳探幽', location: 'manor-inner-threshold', level: 11, budget: 5000000, cleared: 'edict-corridor' },
   { id: 'uplands', name: '苍照取材', location: 'forest-edge-camp', level: 13, budget: 7000000, cleared: 'cloudbreak-pass' },
   { id: 'zhaoye', name: '照野江路', location: 'zhaoye-roadhead', level: 19, budget: 1000000000, cleared: 'rosyreef-longshoal' },
+  { id: 'qixia', name: '栖霞陆域', location: 'qixia-overlook', level: 24, budget: 1000000000, cleared: 'qixia-veinguard' },
+  { id: 'chengzhao', name: '澄照湖域', location: 'chengzhao-lakeshore', level: 24, budget: 1000000000, cleared: 'cold-tide-lakeheart' },
+  { id: 'jiyuan', name: '霁原旧墟', location: 'jiyuan-ruins', level: 24, budget: 1000000000, cleared: 'hanging-bell-oldgate' },
+  { id: 'brokenplain', name: '霁原断原', location: 'jiyuan-brokenplain', level: 24, budget: 1000000000, cleared: 'remnant-flag-ringpass' },
+  { id: 'ark-outer', name: '灵舟外舱', location: 'fallen-ark-outer', level: 24, budget: 1000000000, cleared: 'armor-bearing-cabin' },
+  { id: 'ark-inner', name: '灵舟内舱', location: 'fallen-ark-inner', level: 24, budget: 1000000000, cleared: 'essence-condensing-corridor' },
 ];
 function prepare(id: string) {
   const preset = PRESETS.find(entry => entry.id === id)!;
@@ -59,6 +65,38 @@ function prepare(id: string) {
       'wound-guard-elixir', 'returning-wind-elixir', 'sealed-spiritstone-crate', 'bulk-spiritstones', 'waterfire-pendant']) {
       state = executeDebugCommand(state, { type: 'item', itemId, quantity: 1, quality: itemId === 'waterfire-pendant' ? 130 : 100 });
     }
+  }
+  if (preset.id === 'qixia') {
+    state = executeCharacterCommand(state, { type: 'travel', locationId: 'qixia-overlook' });
+    state = executeCharacterCommand(state, { type: 'negotiate-qixia-array' });
+    for (const itemId of ['rosy-spirit-reed', 'twining-crystal-powder', 'jade-reed-silk', 'returning-glow-ingot']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 30, quality: 100 });
+    }
+    state = executeDebugCommand(state, { type: 'furnace', tier: 4 });
+  }
+  if (preset.id === 'chengzhao') {
+    for (const itemId of ['chengzhao-core', 'bluegold-ingot', 'reed-veined-crystal', 'green-veined-fish', 'cold-crystal-fish']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 60, quality: 100 });
+    }
+    state = executeDebugCommand(state, { type: 'furnace', tier: 6 });
+  }
+  if (preset.id === 'jiyuan') {
+    for (const itemId of ['clearjade-ingot', 'ruin-rune-fragment', 'chengzhao-core', 'ruin-essence', 'amber-marrow', 'azure-marrow']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 12, quality: 100 });
+    }
+    state = executeDebugCommand(state, { type: 'furnace', tier: 6 });
+  }
+  if (preset.id === 'ark-outer') {
+    for (const itemId of ['charged-gel', 'chengzhao-core', 'high-ark-core', 'thunder-spirit-symbol']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 25, quality: 100 });
+    }
+  }
+  if (preset.id === 'ark-inner') {
+    for (const itemId of ['redglow-steel', 'condensed-gel-block', 'sealed-gel-crate', 'sealed-ark-core-crate', 'rising-blood-elixir']) {
+      state = executeDebugCommand(state, { type: 'item', itemId, quantity: 12, quality: 100 });
+    }
+    state = executeDebugCommand(state, { type: 'item', itemId: 'star-dissolution-disk', quantity: 1, quality: 160 });
+    state = executeDebugCommand(state, { type: 'furnace', tier: 8 });
   }
   for (const slot of ['weapon', 'head', 'body', 'legs', 'feet']) {
     const entry = Object.entries(state.instances).find(([, item]) => ITEMS[item.itemId].slot === slot);
@@ -98,9 +136,9 @@ export default function DesignPreview() {
       if (paused || elapsed > MAX_FRAME_GAP_MS) {
         publish({ ...state, simulation: pauseSimulationUntil(state.simulation, target) }, [], true);
       } else void run((state, events) => advanceCharacter(state, target, 1000, events));
-    }, 1000);
+    }, character.fishing?.phase === 'tackle' || character.reactor?.active ? 30 : 1000);
     return () => window.clearInterval(timer);
-  }, [paused, publish, run]);
+  }, [paused, publish, run, character.fishing?.phase, character.reactor?.active]);
   const offlineNotice = useCallback(async () => {
     setIssue({ source: 'cloud', message: '界面预览未连接云端服务', retryable: false });
     return false;
@@ -113,6 +151,7 @@ export default function DesignPreview() {
     reincarnationPending: false, reincarnationBusy: false, reincarnationMessage: null,
     recoveryAvailable: false, recoveryBusy: false, recovery: null, recoveryMessage: null,
     onlineReady: false, onlineMessage: null,
+    debugAllowed: true, refreshDebugAccess: async () => {},
     pvp: { ...EMPTY_PVP }, pvpPending: false, pvpBusy: false, pvpMessage: null, pvpCombat: null,
     setPvpMode: offlineNotice, reconcilePvp: offlineNotice, withdrawPvp: offlineNotice,
     inspectSaves: offlineNotice, chooseSave: offlineNotice,

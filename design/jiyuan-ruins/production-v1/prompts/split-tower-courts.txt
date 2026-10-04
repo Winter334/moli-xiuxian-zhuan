@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide 1792 by 784 Chinese xianxia RPG scene.
+Primary request: Split Tower Courts, an immense fractured Chinese tower joined to multiple stepped courtyard platforms where ancient spiritual-work constructs once operated.
+Composition/framing: elevated oblique wide-angle across clean tiered pale-stone courts. One split pagoda-like tower dominates the far side; a deep vertical crack separates two still-standing coherent masses. Great stairways, low walls and broad empty court planes create majestic geometric depth. Leave a readable near courtyard and keep the broken tower silhouette clear.
+Scene/backdrop: sparse old construct housings and embedded conduits sit at courtyard edges; these are landscape structures, not individually depicted enemy sprites. Distant roof tiers continue the old city.
+Lighting/mood: clear afternoon light, ivory masonry, dusky violet shadow and oxidized bronze accents; a quiet pale cyan conduit glimmer at a few remaining junctions. Ancient and extraordinary rather than dirty or apocalyptic.
+Style/medium: exquisite Chinese dreamcore fantasy painting, strong large masses, restrained fine detail, rich layered brushwork.
+Constraints: no intact royal palace, fresh blast, collapsed rubble carpet, glowing writing, giant enemies, corpses, player figure, cyberpunk tech, spaceship, UI or watermark.

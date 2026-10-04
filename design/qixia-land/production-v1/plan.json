@@ -1,0 +1,92 @@
+{
+  "region": "qixia-land",
+  "version": "production-v1",
+  "authorization": "The user approved the twelve revised armor images and requested the remaining regional art, with grand Chinese dreamcore fantasy scenes and impasto-painted items and enemies.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Finish Qixia land only: eight implemented locations, ten first-use enemies and thirteen materials/weapon items. Preserve the twelve approved armor images, five shared enemies and all other mounted assets. No later-region art, player images, gameplay changes or deployment.",
+  "scopeCounts": { "scenes": 8, "enemies": 10, "items": 13, "assets": 31 },
+  "references": "Independent text-only generation; no default reference images.",
+  "enemyDirection": "Complete bodies, heads and primary movement face screen-left. Faceless spirits remain faceless. Preserve soft native alpha and generous padding.",
+  "jobs": [
+    {
+      "id": "qixia-overlook", "name": "栖霞望台", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/qixia-overlook.txt"
+    },
+    {
+      "id": "rosyfall-plain", "name": "霞落原", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/rosyfall-plain.txt"
+    },
+    {
+      "id": "myriad-reed-marsh", "name": "万苇泽", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/myriad-reed-marsh.txt"
+    },
+    {
+      "id": "flowcrystal-mountains", "name": "流晶山带", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/flowcrystal-mountains.txt"
+    },
+    {
+      "id": "layered-rosy-gardens", "name": "重霞灵圃", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/layered-rosy-gardens.txt"
+    },
+    {
+      "id": "hanging-radiance-platform", "name": "悬照台", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/hanging-radiance-platform.txt"
+    },
+    {
+      "id": "qixia-veinguard", "name": "守脉燧灵", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/qixia-veinguard.txt"
+    },
+    {
+      "id": "qixia-loop-array", "name": "回环阵庭", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-qixia-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/qixia-loop-array.txt"
+    },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-qixia-v1", "size": "2560x1024", "columns": 5, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha",
+      "references": [], "promptFile": "design/qixia-land/atlas-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "jiuzhang-plundering-cultivator", "name": "九嶂夺萃修士", "cellBounds": [0, 0, 534, 496] },
+        { "id": "reedbinding-raider", "name": "缚苇劫修", "cellBounds": [534, 0, 480, 496] },
+        { "id": "pipebone-wraith", "name": "管骨鸣魅", "cellBounds": [1014, 0, 543, 496] },
+        { "id": "petal-array-spirit", "name": "聚萼阵灵", "cellBounds": [1557, 0, 465, 496] },
+        { "id": "crystallimb-stone-spirit", "name": "晶肢石灵", "cellBounds": [2022, 0, 538, 496] },
+        { "id": "gardenplundering-swordsman", "name": "掠园剑修", "cellBounds": [0, 496, 542, 528] },
+        { "id": "sickletail-crystal-scorpion", "name": "镰尾晶螯", "cellBounds": [542, 496, 496, 528] },
+        { "id": "arrayback-shellbeast", "name": "背阵壳兽", "cellBounds": [1038, 496, 558, 528] },
+        { "id": "rockcrown-longarm-beast", "name": "岩冠长臂兽", "cellBounds": [1596, 496, 445, 528] },
+        { "id": "veinguard-flame-spirit", "name": "守脉燧灵", "cellBounds": [2041, 496, 519, 528] }
+      ]
+    },
+    {
+      "id": "items-01", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-qixia-v1", "size": "2560x1536", "columns": 5, "rows": 3,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha",
+      "references": [], "promptFile": "design/qixia-land/production-v1/prompts/items-01.txt",
+      "items": [
+        { "id": "rosy-spirit-reed", "name": "霞纹灵苇", "cellBounds": [0, 0, 532, 530] },
+        { "id": "twining-crystal-powder", "name": "缠辉晶粉", "cellBounds": [532, 0, 512, 530] },
+        { "id": "petal-array-fragment", "name": "聚萼阵片", "cellBounds": [1044, 0, 463, 530] },
+        { "id": "returning-glow-ingot", "name": "回辉金锭", "cellBounds": [1507, 0, 494, 530] },
+        { "id": "jade-reed-silk", "name": "碧苇灵绢", "cellBounds": [2001, 0, 559, 530] },
+        { "id": "returning-glow-blade", "name": "回辉精料", "cellBounds": [0, 530, 502, 532] },
+        { "id": "returning-glow-greatblade", "name": "回辉重料", "cellBounds": [502, 530, 497, 466] },
+        { "id": "returning-glow-head-shell", "name": "回辉束额砂", "cellBounds": [999, 530, 509, 448] },
+        { "id": "returning-glow-body-shell", "name": "回辉护衣砂", "cellBounds": [1508, 530, 568, 494] },
+        { "id": "returning-glow-leg-shell", "name": "回辉护腿砂", "cellBounds": [2076, 530, 484, 494] },
+        { "id": "returning-glow-foot-shell", "name": "回辉护履砂", "cellBounds": [0, 1062, 520, 474] },
+        { "id": "awakened-returning-glow-blade-weapon", "name": "苏灵回辉剑", "cellBounds": [520, 996, 487, 540] },
+        { "id": "awakened-returning-glow-greatblade-weapon", "name": "苏灵回辉重剑", "cellBounds": [1007, 978, 529, 558] }
+      ]
+    }
+  ]
+}

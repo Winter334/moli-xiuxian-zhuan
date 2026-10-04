@@ -1,0 +1,30 @@
+{
+  "region": "qixia-land",
+  "version": "armor-study-v2",
+  "authorization": "The user approved all three generated robe revisions and authorized redrawing the remaining nine pieces separately. These completed robe images must not be regenerated.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Three approved and mounted jade-reed robe revisions. Keep similar classical cloth construction and distinguish spiritual silk, resonant-metal radiance and returning-glow currents. Completed production configuration, not a regeneration request. No gameplay, item identity, recipe, stat or other mounted image changes.",
+  "references": "Text-only generation; the rejected atlas is not used as a shape or finish reference.",
+  "jobs": [
+    {
+      "id": "robes-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-qixia-armor-study-v2",
+      "size": "1536x1024",
+      "columns": 3,
+      "rows": 1,
+      "background": "transparent",
+      "backgroundRemoval": "preserve-alpha",
+      "references": [],
+      "promptFile": "design/qixia-land/armor-study-v2/prompts/robes-01.txt",
+      "items": [
+        { "id": "jade-reed-jacket", "name": "碧苇法衣", "cellBounds": [0, 0, 512, 1024] },
+        { "id": "jade-reed-jacket-lined-resonant-body-shell", "name": "鸣金碧苇法衣", "cellBounds": [512, 0, 512, 1024] },
+        { "id": "jade-reed-jacket-lined-returning-glow-body-shell", "name": "回辉碧苇法衣", "cellBounds": [1024, 0, 512, 1024] }
+      ]
+    }
+  ]
+}

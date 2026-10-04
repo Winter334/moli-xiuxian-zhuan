@@ -89,7 +89,7 @@ describe('durable character history', () => {
     let state = executeDebugCommand(initial(), { type: 'travel', locationId: site.location });
     state = executeCharacterCommand(state, { type: 'gather', siteId });
     vi.spyOn(numbers, 'random').mockReturnValue(0);
-    state = advanceCharacter(state, state.gathering!.cycleSeconds * 1000);
+    state = advanceCharacter(state, Number(state.gathering!.cycleSeconds) * 1000);
     expect(state.history.mining[siteId]).toEqual({ cycles: '1', successes: '1' });
     expect(state.history.gathered[site.itemId]).toBe('1');
     expect(state.history.crafting).toEqual({});
@@ -129,7 +129,7 @@ describe('durable character history', () => {
     const again = executeCharacterCommand(back, { type: 'arrive', regionId });
     expect(again.history.firstVisits[regionId]).toEqual(arrived.history.firstVisits[regionId]);
     const skipped = executeDebugCommand(state, { type: 'realm', level: FOUNDATION_LEVEL });
-    expect(skipped.history.testAssisted).toBe(true);
+    expect(skipped.history.testAssisted).toBe(false);
     expect(skipped.history.firstRealms).toEqual(state.history.firstRealms);
     const completed = executeDebugCommand(state, { type: 'region', regionId, operation: 'complete' });
     expect(completed.history.firstClears).toEqual({});

@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784, one independent landscape.
+Primary request: Floating Light Inner Lake, immense open water with surviving local array terraces; Chinese dreamcore grandeur through nearly empty space, impossible stillness and monumental repeated structures.
+Scene/backdrop: the lake is broad and unobstructed, with distant green mountain land and suspended islands. Several pale stone array terraces and colossal cloud-headed piers stand far apart over the open water, part of an old localized route. Thin restrained inlay light follows the real structure and continues just beneath the clear water.
+Composition/framing: water-level very wide-angle view beneath the edge of one massive weathered Chinese stone support. It frames only a small corner, while isolated far platforms diminish across a huge open lake. Reflections and long column shadows define depth. Do not fill the sky with buildings or make a centered palace the destination.
+Style/medium: polished painterly Chinese fantasy, broad lucid water planes, substantial stone brushwork, clear structural rhythm and soft distant color, not science-fiction or smooth 3D.
+Lighting/mood: quiet cool daylight with warm ivory sunlit stone, jade lake depth and a pale rose horizon. Luminous, otherworldly and spacious; functioning remnants rather than a devastated world.
+Constraints: local array infrastructure only, not the world center or owner's throne. No characters, enemies, giant floating rune circles, UI, readable text, frame or watermark. No opaque fog or debris confetti concealing the open-water scale.

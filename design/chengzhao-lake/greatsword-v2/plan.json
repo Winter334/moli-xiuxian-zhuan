@@ -1,0 +1,43 @@
+{
+  "region": "chengzhao-lake",
+  "version": "greatsword-v2",
+  "authorization": "The user requested replacing the three poorly generated Chengzhao greatswords. Preserve all other generated art; cleaner cultivator enemies and more prevalent high-realm manifestations apply from the next region.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Only awakened bluegold, crystal-infused bluegold and crystal-infused returning-glow greatswords. Preserve the three light swords, all other items, enemies, scenes, content identities, stats, recipes and saves.",
+  "scopeCounts": { "items": 3, "replacements": 3, "newContentIds": 0 },
+  "references": "Text-only reconstruction; do not copy the rejected greatsword proportions or orientation.",
+  "jobs": [
+    {
+      "id": "greatswords",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-chengzhao-greatsword-v2",
+      "size": "1536x768",
+      "columns": 3,
+      "rows": 1,
+      "background": "transparent",
+      "backgroundRemoval": "preserve-alpha",
+      "references": [],
+      "promptFile": "design/chengzhao-lake/greatsword-v2/prompts/greatswords.txt",
+      "items": [
+        {
+          "id": "awakened-hilt-bluegold-greatblade-weapon", "name": "苏灵蓝金重剑",
+          "cellBounds": [0, 0, 570, 768],
+          "excludedCellRegions": [[470, 520, 570, 768]]
+        },
+        {
+          "id": "crystal-hilt-bluegold-greatblade-weapon", "name": "晶蕴蓝金重剑",
+          "cellBounds": [470, 0, 600, 768],
+          "excludedCellRegions": [[0, 0, 100, 300], [480, 520, 600, 768]]
+        },
+        {
+          "id": "crystal-returning-glow-greatblade-weapon", "name": "晶蕴回辉重剑",
+          "cellBounds": [950, 0, 586, 768],
+          "excludedCellRegions": [[0, 0, 120, 300]]
+        }
+      ]
+    }
+  ]
+}

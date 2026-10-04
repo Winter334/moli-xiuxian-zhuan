@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG location painting, 1792 by 784, one complete landscape.
+Primary request: Myriad Reed Marsh, a huge web of navigable shallow rivers and reed islands inside Qixia; serene but disorienting Chinese dreamcore on an inland-sea scale.
+Scene/backdrop: broad jade reedbeds and silver-rose seedheads divide long still waterways. At great distance a vast old Chinese stone aqueduct crosses the wetland, its repeated pale piers diminishing over many channels. It belongs to the long-established water and spirit-vein infrastructure, not a palace or world center.
+Composition/framing: near water-level wide-angle perspective. A dark reflective channel opens close to the viewer, dividing tall reed masses into two very different banks before branching into distant lagoons. A few reed stems at the edge contrast with kilometres of river geometry and the elevated aqueduct. The middle distance stays open, legible and still; architecture is a scale signal rather than the entire subject.
+Style/medium: refined painted Chinese fantasy environment, impasto-like reed masses, broad liquid reflections, soft edges and lucid atmospheric layers. Deliberately grouped vegetation rather than millions of sharp blades.
+Lighting/mood: quiet cool day with pale mint water, deep green reed masses and soft rosy-white sky reflections, a gentle luminous distance; not muddy swamp horror.
+Constraints: no characters, enemies, skeletons, boats as hero subjects, UI, labels, readable writing, collage, frame or watermark. No neon mist, glitter confetti or gigantic lotus props. Keep coherent real wetland terrain; do not turn every reed into a glowing crystal.

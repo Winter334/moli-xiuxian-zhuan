@@ -22,7 +22,7 @@ export const statFields = {
 export const statsSchema = z.object(statFields).strict();
 export const effectTagSchema = z.enum([
   'basic-attack', 'direct', 'rest', 'meditation', 'regeneration', 'weapon', 'manual',
-  'divine-art', 'skill', 'equipment', 'supply', 'benefit', 'cost', 'mining', 'logging',
+  'divine-art', 'domain', 'skill', 'equipment', 'supply', 'benefit', 'cost', 'mining', 'logging', 'fishing',
   'refining', 'ordinary', 'component', 'assembly', 'trade', 'training', 'activity',
   'kill', 'clear', 'loot', 'fixed',
 ]);
@@ -91,7 +91,7 @@ const abilitiesSchema = z.object({
   restraint: z.boolean(),
   entryStrikes: z.union([z.literal(0), z.literal(1), z.literal(3), z.literal(4), z.literal(5)]),
   // A count means equal strikes; a tuple defines the attack coefficient of each segment.
-  strikes: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(6),
+  strikes: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(6),
     z.tuple([attackCoefficientSchema, attackCoefficientSchema])]),
   rending: z.boolean().optional(),
   weakening: z.number().min(0).max(100).optional(),
@@ -104,13 +104,22 @@ const abilitiesSchema = z.object({
   entryDamageMultiplier: attackCoefficientSchema.optional(),
   entryAttackCoefficient: attackCoefficientSchema.optional(),
   entryStatRatio: attackCoefficientSchema.optional(),
+  entrySummon: z.object({ enemyId: z.string().min(1), count: z.number().int().min(1).max(3) }).strict().optional(),
   entryHealthRatio: attackCoefficientSchema.optional(),
+  entryHealthFrom: z.object({
+    attribute: z.enum(['attack', 'defense']), ratio: attackCoefficientSchema,
+  }).strict().optional(),
+  preAttackDamage: nonnegativeSchema.optional(),
   extraStrike: z.object({
     coefficient: attackCoefficientSchema, damageMultiplier: attackCoefficientSchema,
   }).strict().optional(),
   periodicStrike: z.object({
     every: z.number().int().min(2).max(Number.MAX_SAFE_INTEGER), coefficient: attackCoefficientSchema,
   }).strict().optional(),
+  roundStrikes: z.array(z.object({
+    round: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), coefficient: attackCoefficientSchema,
+    basis: z.literal('player-attack-defense-enemy-defense').optional(),
+  }).strict()).min(1).max(3).optional(),
   attackCoefficientMultiplier: attackCoefficientSchema.optional(),
   agilityDeficit: z.object({
     threshold: nonnegativeSchema, scale: attackCoefficientSchema,
@@ -119,6 +128,8 @@ const abilitiesSchema = z.object({
   softBones: z.boolean().optional(),
   missPunishment: nonnegativeSchema.optional(),
   currentHpAttackDivisor: attackCoefficientSchema.optional(),
+  currentHealthSuppression: z.boolean().optional(),
+  marrowSuppressionUnit: attackCoefficientSchema.optional(),
   noToughnessXp: z.boolean().optional(),
   entryAgilityAttackRatio: attackCoefficientSchema.optional(),
   hitHealingRatio: nonnegativeSchema.refine(value => dec(value).gt(0) && dec(value).lte(1)).optional(),
@@ -147,6 +158,9 @@ export const enemySchema = enemySnapshotSchema.extend({
 export const encounterEntrySchema = z.object({
   attack: nonnegativeSchema, defense: nonnegativeSchema, agility: nonnegativeSchema,
   manorSeal: z.boolean(),
+  enemyMultiplier: attackCoefficientSchema.optional(),
+  arrayLayers: z.number().int().min(6).max(9999).optional(),
+  arrayFragments: z.number().int().min(0).max(5).optional(),
 }).strict();
 export type EncounterEntry = z.infer<typeof encounterEntrySchema>;
 
@@ -172,12 +186,13 @@ export const simulationSchema = z.object({
   battle: z.object({
     regionId: z.string().min(1),
     entry: encounterEntrySchema.optional(),
+    origins: z.array(z.string().min(1)).min(1).max(8).optional(),
     enemies: z.array(z.object({
       definition: enemySnapshotSchema,
       hp: nonnegativeSchema,
       nextActionAt: timeSchema,
       nextRound: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).optional(),
-    }).strict()).min(1).max(2),
+    }).strict()).min(1).max(8),
   }).strict().nullable(),
 }).strict();
 
@@ -199,11 +214,11 @@ export type SimulationEvent =
   | ({ kind: 'strike'; at: number; side: 'player' | 'enemy'; slot: number; hpLost: string } & Strike)
   | { kind: 'miss-punishment'; at: number; slot: number; damage: string; hpLost: string }
   | { kind: 'reflection'; at: number; slot: number; damage: string; hpLost: string }
-  | { kind: 'tidal-pressure' | 'health-burst'; at: number; slot: number; damage: string; hpLost: string }
+  | { kind: 'tidal-pressure' | 'health-burst' | 'pre-attack-damage'; at: number; slot: number; damage: string; hpLost: string }
   | { kind: 'enemy-healed'; at: number; slot: number; amount: string }
-  | { kind: 'player-action-completed'; at: number; regionId: string; targetIds: string[] }
+  | { kind: 'player-action-completed'; at: number; regionId: string; targetIds: string[]; entry?: EncounterEntry }
   | { kind: 'enemy-defeated'; at: number; regionId: string; enemyId: string; slot: number; groupSize: number }
-  | { kind: 'group-cleared'; at: number; regionId: string; total: string }
+  | { kind: 'group-cleared'; at: number; regionId: string; total: string; entry?: EncounterEntry }
   | { kind: 'fainted'; at: number }
   | { kind: 'effect-expired'; at: number; effectId: string };
 
@@ -221,6 +236,7 @@ export interface PlayerUpdate {
 // Trusted rule callbacks run inside the event loop, never as client commands.
 export interface SimulationHooks {
   getMoney?: () => string;
+  getMarrowInsight?: () => string;
   getSturdyCap?: () => number;
   getPlayerTargetCount?: () => number;
   settle?: (

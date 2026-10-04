@@ -89,6 +89,12 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
           <span className={`practice-status ${entry.active ? 'positive' : 'muted'}`}>{entry.active && <Play size={11} />}{statusOf(entry)}</span>
         </div>{action(entry)}</header>
         <Bonuses source={entry.bonuses} />
+        {entry.progress && <div className="manual-growth">
+          <span className="manual-level">{entry.progress.level}<small> / {entry.progress.max}级</small></span>
+          <div className="manual-proficiency"><div><span>累计熟练</span><span>{formatAmount(entry.progress.xp)}</span></div>
+            <progress aria-label="领域累计熟练" max={100}
+              value={entry.progress.nextThreshold ? progress(entry.progress.xp, entry.progress.nextThreshold) : 100} /></div>
+        </div>}
         <p className="flavor">{entry.description}</p>
         {!entry.learned && <p className="practice-requirement">{entry.requirement}</p>}
       </article>)}
@@ -121,6 +127,11 @@ export function PracticeView({ game, blocked, command }: ViewProps) {
           <p className="muted small">距下一级 {formatAmount(decimal(selected.nextThreshold).minus(selected.xp).toFixed())} 熟练</p>
         </> : <p className="positive small">已达{selected.maxLevel}级，功法圆满</p> : <p className="muted small">尚未领悟</p>}
         <p className="muted small">运转后随实际战斗积累自身熟练，领悟不自动运转。</p>
+      </section> : selected.progress ? <section className="practice-progress">
+        <h3>领域熟练 · {selected.progress.level} / {selected.progress.max}级</h3>
+        {selected.progress.nextThreshold ? <Meter label="累计熟练" value={selected.progress.xp} max={selected.progress.nextThreshold} />
+          : <p>累计熟练 {formatAmount(selected.progress.xp)}</p>}
+        <h3>常驻成长</h3><Bonuses source={selected.progress.passive} />
       </section> : <p className="muted small">{selected.requirement}，与功法分别运转；不消耗功法运转位。</p>}
     </Dialog>}
   </div>;

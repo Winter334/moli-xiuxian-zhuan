@@ -17,4 +17,5 @@ export const SLOT_NAMES = {
 export const KIND_NAMES: Record<string, string> = {
   material: '材料', food: '补给', marrow: '灵髓', insight: '灵露',
   'foundation-pill': '筑基丹', part: '炼材', equipment: '器物',
+  'meditation-kit': '静修套件',
 };

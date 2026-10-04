@@ -6,6 +6,7 @@ import { LOG_DISPLAY_LIMITS } from './log-settings';
 // 对应原作地区曲目（src/locations.js）；下一地域入口可先独立切曲。
 const AREA_TRACKS = {
   village: 1, ridge: 1, river: 2, city: 3, courts: 4, inner: 5, marsh: 6, uplands: 6, zhaoye: 7,
+  qixia: 8, chengzhao: 9, 'jiyuan-ruins': 10, brokenplain: 11, 'ark-outer': 12, 'ark-inner': 13,
 } as const;
 export type AreaTrackId = keyof typeof AREA_TRACKS;
 const DEFAULT_AREA: AreaTrackId = 'village';

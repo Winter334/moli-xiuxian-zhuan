@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG location painting.
+Primary request: the outer-cabin foothold of Fallen Star Ark, an immense ancient cross-realm cultivation vessel lying across a scarred plain. A panoramic low wide-angle view beside its broken hull reveals metal ribs as large as mountain ridges and ranks of covered galleries extending into the vessel. Make this unmistakably a Chinese immortal craft, not a modern spacecraft: sweeping archaic beam profiles, fitted dark metal plating, broad inlaid spirit conduits and quiet jade-like light.
+At one stable hull recess, a few tiny anonymous material-seekers rest with modest bundles. A fixed spirit reaction furnace can be suggested far inside the sheltered recess, never the central world core. The colossal ship dominates; everyday activity provides scale without becoming portraits.
+Style/medium: polished painterly fantasy, majestic Chinese dreamcore, coherent large forms, controlled layered brushwork, clearly readable material planes and deep spatial order.
+Lighting/mood: clear pale morning with cool silvery hull planes and restrained warm interior illumination; luminous distant air, not opaque fog.
+Constraints: independent composition, ultra-wide 1792x784 landscape, no UI, labels, letters, watermark or borders. No player portrait, spacesuits, neon cyberpunk, modern guns, screens, fresh battle, exploding ship, final central reactor or floating decoration without structural purpose.

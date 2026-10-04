@@ -1,5 +1,6 @@
 import { BASE_STATS } from './stats';
 import { dec, text } from '../numbers';
+import { REACTOR_SCORCH_SOURCE } from './ark-reactor';
 import type { EncounterEntry, EnemyDefinition, StatSource } from './types';
 import type { FoundationRoot } from './foundation';
 import { realmName } from './growth';
@@ -16,6 +17,20 @@ export const FOUNDATION = { insightItemId: 'foundation-insight' } as const;
 export const FOOD_EFFECTS: Record<string, {
   name: string; durationMs: number; maxRealm: number; polarity: 'benefit' | 'cost'; source: StatSource; description?: string;
 }> = {
+  'rising-blood': { name: '腾血', durationMs: 90000, maxRealm: 24, polarity: 'benefit',
+    source: { id: 'rising-blood', flat: { maxHp: '480000000', hpRegen: '4800000' } } },
+  'stable-essence': { name: '定元', durationMs: 60000, maxRealm: 21, polarity: 'benefit',
+    source: { id: 'stable-essence', flat: { hpRegen: '1200000', attack: '32000', defense: '32000', agility: '32000' } } },
+  'ruin-restoration': { name: '复元', durationMs: 60000, maxRealm: 21, polarity: 'benefit',
+    source: { id: 'ruin-restoration', flat: { hpRegen: '600000' } } },
+  'ruin-surge': { name: '炽元', durationMs: 30000, maxRealm: 21, polarity: 'benefit',
+    source: { id: 'ruin-surge', flat: { attack: '256000', defense: '256000', agility: '256000', hpRegenPercent: '0.01' } } },
+  'ruin-exhaustion': { name: '炽元虚弱', durationMs: 90000, maxRealm: 21, polarity: 'cost',
+    source: { id: 'ruin-exhaustion', flat: { hpRegenPercent: '-0.01' } } },
+  'fish-nourishment': {
+    name: '灵鱼滋养', durationMs: 90_000, maxRealm: 18, polarity: 'benefit',
+    source: { id: 'fish-nourishment', flat: { hpRegen: '180000', attack: '12000', defense: '12000', agility: '12000' } },
+  },
   nourished: {
     name: '饱腹', durationMs: 60_000, maxRealm: 5, polarity: 'benefit',
     source: { id: 'food', flat: { hpRegen: '40' } },
@@ -87,11 +102,37 @@ export function foodEffectSource(id: string): StatSource {
   return { ...structuredClone(effect.source), tags: ['supply', effect.polarity] };
 }
 
+export const MOON_BLESSINGS = [
+  { name: '新月', flat: { hpRegenPercent: '0.01' } },
+  { name: '蛾眉月', multiplier: { maxHp: '1.5' } },
+  { name: '上弦月', multiplier: { critMultiplier: '1.6' } },
+  { name: '盈凸月', multiplier: { attackMultiplier: '1.4' } },
+  { name: '满月', multiplier: { attack: '1.1' } },
+  { name: '亏凸月', multiplier: { defense: '1.2' } },
+  { name: '下弦月', multiplier: { agility: '1.2' } },
+  { name: '残月', multiplier: { attackSpeed: '1.1' } },
+] as const;
+
+export function moonBlessingSource(phase: number): StatSource {
+  const { name: _name, ...stats } = MOON_BLESSINGS[phase];
+  return { id: `moon-blessing:${phase}`, tags: ['benefit'], ...structuredClone(stats) };
+}
+
+export function temporaryEffect(id: string) {
+  if (id === 'reactor-scorch') return { name: '灵机灼扰',
+    description: '气血上限减半，每秒比例回复降低8个百分点', source: structuredClone(REACTOR_SCORCH_SOURCE) };
+  if (Object.hasOwn(FOOD_EFFECTS, id)) return { name: FOOD_EFFECTS[id].name,
+    description: FOOD_EFFECTS[id].description ?? null, source: foodEffectSource(id) };
+  const phase = /^moon-blessing:([0-7])$/.exec(id);
+  return phase ? { name: `${MOON_BLESSINGS[Number(phase[1])].name}赐福`, description: null,
+    source: moonBlessingSource(Number(phase[1])) } : null;
+}
+
 export interface ItemDefinition {
   name: string;
   description?: string;
   effectDescription?: string;
-  kind: 'material' | 'food' | 'marrow' | 'insight' | 'foundation-pill' | 'part' | 'equipment';
+  kind: 'material' | 'food' | 'marrow' | 'insight' | 'foundation-pill' | 'meditation-kit' | 'part' | 'equipment';
   value: string;
   tier?: number;
   slot?: EquipmentSlot;
@@ -107,6 +148,7 @@ export interface ItemDefinition {
   foundationRoot?: FoundationRoot;
   marrowValue?: number;
   foodEffects?: string[];
+  foodOverride?: { durationMs: number; maxRealm: number };
   interior?: string;
   exterior?: string;
   bonusFlat?: StatSource['flat'];
@@ -122,6 +164,93 @@ const armor = (name: string, value: number, slot: EquipmentSlot, defense: number
   ({ name, kind: 'equipment', value: String(value), tier, slot, defense: String(defense) });
 
 export const ITEMS: Record<string, ItemDefinition> = {
+  'rising-blood-elixir': { name: '腾血灵液', kind: 'food', value: '3000000000', foodEffects: ['rising-blood'] },
+  'sealed-gel-crate': { ...material('凝胶封匣', 16000000000),
+    description: '守炉廊及内舱生灵所藏的凝胶封装。沿普通炼制析出蓄灵凝胶，失败消耗整匣。' },
+  'sealed-ark-core-crate': { ...material('舟核封匣', 264000000000),
+    description: '内舱旧造物收存的高阶舟核封装。沿普通炼制析出舟核，失败消耗整匣。' },
+  'purple-cast-coin': { ...material('紫铸旧币', 1000000000000),
+    description: '割荆行傀偶有收存的贵重旧币，可作为实物出售回收灵石。' },
+  'star-dissolution-disk': { name: '星解盘', kind: 'equipment', slot: 'artifact', value: '9090909090909',
+    fixedStats: { flat: { hpRegen: '2000000' } },
+    description: '镂空环架托起刻星纹盘面，凝光内核承接灵舟所留的星流分解观想法。',
+    effectDescription: '装备后命中增长独立熟练；1至4级永久累计全经验约×2/×3/×4/×5，领域另乘×2/×4/×8/×16。卸下保留已得里程碑。' },
+  'forge-array-mark': material('锻兵阵印', 720000000),
+  'thunder-spirit-symbol': material('雷蕴灵符', 600000000),
+  'foreign-contract-coin': material('外域古契钱', 1600000000),
+  'high-ark-core': material('高阶舟核', 2640000000),
+  'old-armor-fragment': material('旧甲残片', 540000000),
+  'redglow-steel': material('赤曜钢', 1800000000),
+  'condensed-gel-block': material('凝蕴胶块', 600000000),
+  'condensed-gel-hilt': { ...part('凝蕴淬液', 1200000000, 9),
+    bonusFlat: { attackMultiplier: '.3', critMultiplier: '.4', agility: '120000' },
+    description: '固胶淬炼或灵能辐照所得的独立品质辅料，贯通兵刃灵息。' },
+  'redglow-blade': { ...part('赤曜精料', 3200000000, 9), attack: '388800', critChance: '.15', attackSpeed: '1.15' },
+  'redglow-greatblade': { ...part('赤曜重料', 9600000000, 9), attack: '540000', critChance: '.1',
+    attackSpeed: '.5', attackMultiplier: '3.4', weaponSkill: 'greatsword' },
+  'breakfront-array-pendant': { name: '破锋阵佩', kind: 'equipment', slot: 'accessory', value: '300000000000',
+    fixedStats: { flat: { attack: '300000', defense: '-5000' } },
+    description: '古式佩身内嵌蓄劲线路与裂晶，聚劲时也削弱护持。' },
+  'ancient-contract-disk': { name: '古契护盘', kind: 'equipment', slot: 'accessory', value: '999000000000',
+    fixedStats: { flat: { defense: '3333333' }, multiplier: { agility: '0.7', attackSpeed: '0.7' } },
+    description: '旧钱叠铸成厚重护盘，护持强而运转迟缓。' },
+  'ark-ward-contract': { name: '护舟阵契', kind: 'equipment', slot: 'special', value: '77777777000000',
+    fixedStats: { multiplier: { attack: '1.1', defense: '1.1', agility: '1.1', maxHp: '1.1' } },
+    description: '承甲舱旧阵务刻录所留的护持阵契，不授予整舟控制权。' },
+  'beast-marrow-fat': material('荒兽髓脂', 480000000),
+  'charged-gel': material('蓄灵凝胶', 160000000),
+  'charged-silk': material('蕴劲灵绢', 240000000),
+  'stable-essence-pill': { name: '定元丹', kind: 'food', value: '540000000', foodEffects: ['stable-essence'] },
+  'radiant-marrow': { name: '曜灵髓', kind: 'marrow', value: '50000', marrowValue: 50000 },
+  'stellar-marrow': { name: '璇灵髓', kind: 'marrow', value: '100000', marrowValue: 100000 },
+  'charged-headwrap': { ...armor('蕴劲巾', 360000000, 'head', 24000, 8), bonusFlat: { attack: '30000' } },
+  'charged-jacket': { ...armor('蕴劲法衣', 480000000, 'body', 32000, 8), bonusFlat: { attack: '40000' } },
+  'charged-leggings': { ...armor('蕴劲长裤', 480000000, 'legs', 32000, 8), bonusFlat: { attack: '40000' } },
+  'charged-boots': { ...armor('蕴劲履', 240000000, 'feet', 16000, 8), bonusFlat: { attack: '20000' } },
+  'ruin-essence': material('墟灵精粹', 144000000),
+  'ruin-rune-fragment': material('墟纹残片', 120000000),
+  'green-cast-coin': material('碧铸旧币', 1000000000),
+  'clearjade-ingot': material('澄碧金锭', 800000000),
+  'clearjade-blade': { ...part('澄碧精料', 1200000000, 8), attack: '129600', critChance: '.15', attackSpeed: '1.14' },
+  'clearjade-greatblade': { ...part('澄碧重料', 3600000000, 8), attack: '180000', critChance: '.1',
+    attackSpeed: '.5', attackMultiplier: '3.3', weaponSkill: 'greatsword' },
+  'clearjade-head-shell': { ...part('澄碧束额砂', 2000000000, 8), defense: '36000', bonusFlat: { attackMultiplier: '.02' } },
+  'clearjade-body-shell': { ...part('澄碧护衣砂', 2700000000, 8), defense: '48000', bonusFlat: { attackMultiplier: '.02' } },
+  'clearjade-leg-shell': { ...part('澄碧护腿砂', 2700000000, 8), defense: '48000', bonusFlat: { attackMultiplier: '.02' } },
+  'clearjade-foot-shell': { ...part('澄碧护履砂', 1350000000, 8), defense: '24000', bonusFlat: { attackMultiplier: '.02' } },
+  'ruin-restoration-elixir': { name: '复元灵液', kind: 'food', value: '180000000', foodEffects: ['ruin-restoration'] },
+  'ruin-surge-elixir': { name: '炽元灵液', kind: 'food', value: '360000000', foodEffects: ['ruin-surge', 'ruin-exhaustion'] },
+  'amber-marrow': { name: '珀灵髓', kind: 'marrow', value: '10000', marrowValue: 10000 },
+  'azure-marrow': { name: '湛灵髓', kind: 'marrow', value: '20000', marrowValue: 20000 },
+  'threephase-pendant': { name: '三相合息佩', kind: 'equipment', slot: 'accessory', value: '9900000000',
+    fixedStats: { flat: { maxHp: '5000000', hpRegen: '288888' } },
+    description: '古式三瓣凝质与器核合成佩身，三相灵息相接。' },
+  'ruin-meditation-kit': { name: '墟纹静修套件', kind: 'meditation-kit', value: '500000000000',
+    description: '一次开放墟纹静室与40档养息。购买或自制择一，不附炉阶或仓库。' },
+  'chengzhao-core': { ...material('澄照灵核', 64000000), description: '晶质生灵凝聚的高凝灵核，供蓝金复炼及后续装置用料。' },
+  'bluegold-fragment': { ...material('蓝金碎片', 72000000), description: '湖域凝成或由旧器析出的蓝金片，配凝质与灵核复炼。' },
+  'lakebeast-condensate': { ...material('湖兽凝质', 96000000), description: '湖兽及胶灵体内适于熔炼的凝灵质，不能直接食用。' },
+  'clear-crystal': { ...material('澄透晶', 80000000), description: '透明晶体内有连续导灵纹理，用于晶质辅料。' },
+  'reed-veined-crystal': { ...material('苇纹晶', 111000000), description: '灵苇细丝缠晶后炼制固结，苇丝与透明晶面仍可分辨。' },
+  'bluegold-ingot': { ...material('蓝金锭', 333333000), description: '以湖兽凝质和灵核调和复炼的蓝金，凝纹细密。' },
+  'crystal-hilt': {
+    ...part('晶蕴淬液', 475000000, 6),
+    bonusFlat: { attackMultiplier: '.2', critMultiplier: '.3', hpRegen: '4000' },
+    description: '由苇纹晶提炼的晶质淬液，透明细纹连通灵息。' },
+  'bluegold-blade': { ...part('蓝金精料', 480000000, 7), attack: '43200', critChance: '.14', attackSpeed: '1.13' },
+  'bluegold-greatblade': {
+    ...part('蓝金重料', 1440000000, 7), attack: '60000', critChance: '.1', attackSpeed: '.5',
+    attackMultiplier: '3.2', weaponSkill: 'greatsword' },
+  'blue-scaled-carp': { ...material('蓝鳞湖鲤', 28000000), description: '阔身蓝鳞，不能直接食用；一条择一处理为凝质或蓝金碎片。' },
+  'green-veined-fish': { name: '青纹灵鱼', kind: 'food', value: '84000000', foodEffects: ['fish-nourishment'],
+    description: '窄身鱼体沿脊生出细长青纹，含灵滋养。' },
+  'cold-crystal-fish': { name: '寒晶鱼', kind: 'food', value: '216000000', foodEffects: ['fish-nourishment'],
+    foodOverride: { durationMs: 540000, maxRealm: 20 },
+    description: '小而有力，背鳍与脊侧有透亮寒晶，也用于澄照心佩。' },
+  'chengzhao-heart-pendant': {
+    name: '澄照心佩', kind: 'equipment', slot: 'special', value: '2400000000',
+    fixedStats: { multiplier: { attack: '1.01', defense: '1.01', agility: '1.01', maxHp: '1.01' } },
+    description: '古式晶质佩身镶蓝金细缘，内含苇丝纹理。' },
   'copper-coin': material('灵石', 1),
   'small-coin-string': material('小袋灵石', 5),
   'hundred-coin-string': material('大袋灵石', 100),
@@ -536,9 +665,48 @@ export const ITEMS: Record<string, ItemDefinition> = {
   'bulk-spiritstones': {
     ...material('整批灵石', 10000000), description: '捆扎成批的封装灵石，仅供售出后计入灵石余额，不是另一种货币或炼材。',
   },
+  'rosy-spirit-reed': {
+    ...material('霞纹灵苇', 24000000), description: '界内苇泽的柔韧灵苇，长纤维间有浅淡霞纹，可织炼碧苇灵绢。',
+  },
+  'twining-crystal-powder': {
+    ...material('缠辉晶粉', 32000000), description: '晶山凝灵物中析出的浅蓝细晶，晶光沿粉粒相接，用于回辉金的蓄灵内纹。',
+  },
+  'petal-array-fragment': {
+    ...material('聚萼阵片', 99000000), description: '聚灵旁路的阵纹片材，持有时削弱守脉燧灵的局部加持，最多五片生效，不消耗。',
+  },
+  'returning-glow-ingot': {
+    ...material('回辉金锭', 77777000), description: '鸣金复熔后以细晶形成蓄存、回导灵息的内纹，可加工兵甲，也可补铸回辉炉。',
+  },
+  'jade-reed-silk': {
+    ...material('碧苇灵绢', 30000000), description: '灵苇纤维以澄潮精粹浸炼后织成的细绢，仍可辨出细长苇丝。',
+  },
+  'returning-glow-blade': {
+    ...part('回辉精料', 60000000, 6), attack: '17280', critChance: '0.12', attackSpeed: '1.12',
+    weaponSkill: 'sword', description: '两份回辉金锭加工所得的轻兵主材，细密蓄灵纹理固入金属。',
+  },
+  'returning-glow-greatblade': {
+    ...part('回辉重料', 180000000, 6), attack: '24000', critChance: '0.10',
+    attackSpeed: '0.50', attackMultiplier: '3.10', weaponSkill: 'greatsword',
+    description: '六份回辉金锭加工所得的重兵主材，沉厚金质承接集中发力。',
+  },
+  ...Object.fromEntries([
+    ['head', 'headwrap', '巾', 'head-shell', '束额砂', 3, 2400, 3000, 3600],
+    ['body', 'jacket', '法衣', 'body-shell', '护衣砂', 4, 3200, 4000, 4800],
+    ['legs', 'leggings', '长裤', 'leg-shell', '护腿砂', 4, 3200, 4000, 4800],
+    ['feet', 'boots', '履', 'foot-shell', '护履砂', 2, 1600, 2000, 2400],
+  ].flatMap(([slot, suffix, name, shell, shellName, count, defense, regen, shellDefense]) => [
+    [`jade-reed-${suffix}`, {
+      ...armor(`碧苇${name}`, Number(count) * 35000000, slot as EquipmentSlot, Number(defense), 6),
+      bonusFlat: { hpRegen: String(regen) }, description: '碧苇灵绢裁炼成的护身衣物，纤细苇丝沿接缝续合，温养护身气血。',
+    }],
+    [`returning-glow-${shell}`, {
+      ...part(`回辉${shellName}`, Number(count) * 80000000, 6), defense: String(shellDefense),
+      bonusFlat: { attackMultiplier: '0.01' }, description: '回辉金研炼成的细砂，按对应部位的防具纹式分装。',
+    }],
+  ])),
 };
 
-export interface LootEntry { itemId: string; chance: string; ignoreLuck?: boolean }
+export interface LootEntry { itemId: string; chance: string; ignoreLuck?: boolean; quality?: number }
 export interface EnemyContent {
   name: string;
   description?: string;
@@ -1086,23 +1254,347 @@ export const ENEMIES: Record<string, EnemyContent> = Object.fromEntries([
   { ...foe('jiuzhang-crossing-warden', '九嶂封渡使', 14, 17711, [3900000, 125000, 15000, 60000, 1.2],
     [drop('scarlet-marrow', 3)], { strikes: 3, reflectionRatio: '0.2' }), visibleRealm: '元婴初期',
     description: '叠嶂纹护袖下悬着收料牌，九嶂盟一支地方成员巡段的骨干封住临江旧道。他把公共通路圈入本队经营范围，以三记连击驱逐独行散修，护身气息会回震近身者。' },
+  { ...foe('jiuzhang-plundering-cultivator', '九嶂夺萃修士', 14, 17711, [390000, 125000, 15000, 60000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('beast-core-shard', .4), drop('rosy-spirit-reed', .05)],
+    { strikes: 3, reflectionRatio: '0.2' }), visibleRealm: '元婴初期',
+    description: '九嶂地方巡段中的夺材者，以薄甲快击驱逐独行修士。不是封渡使本尊，也不代表普通雇工。' },
+  { ...foe('reedbinding-raider', '缚苇劫修', 14, 17711, [370000, 124000, 54000, 64000, 1.2],
+    [drop('purple-marrow', .05), drop('scarlet-marrow', .02), drop('rosy-spirit-reed', .07)]), visibleRealm: '元婴初期',
+    description: '藏于苇汀抢夺凝灵材料的劫修，出手与护身较为均衡，不将所有游历散修视作敌人。' },
+  { ...foe('pipebone-wraith', '管骨鸣魅', 14, 28657, [225000, 155000, 60000, 72000, 1.2],
+    [drop('purple-marrow', .03), drop('scarlet-marrow', .05), drop('carapace-fragment', .8), drop('twining-crystal-powder', .04)]),
+    visibleRealm: '元婴初期', description: '薄管状骨节围成中空躯体，残念逐响聚合，袭击靠近骨堆者。' },
+  { ...foe('petal-array-spirit', '聚萼阵灵', 14, 28657, [1, 1, 100000, 1, .1],
+    [drop('purple-marrow', .03), drop('scarlet-marrow', .05), drop('twining-crystal-powder', .09)]), visibleRealm: '结丹圆满',
+    description: '旧聚灵阵的薄小灵萼随节点移动，气血极薄而阵纹坚密，守护当地聚灵旁路。' },
+  { ...foe('crystallimb-stone-spirit', '晶肢石灵', 14, 28657, [75000, 150000, 88000, 80000, 1.3],
+    [drop('purple-marrow', .03), drop('scarlet-marrow', .05), drop('clear-tide-essence', .3), drop('rosy-spirit-reed', .05)],
+    { reversal: true }), visibleRealm: '元婴初期', description: '含晶石肢撑起小躯体，护持凝晶地带，交手时反转对手攻防的运用。' },
+  { ...foe('gardenplundering-swordsman', '掠园剑修', 14, 28657, [150000, 141000, 66000, 88000, 1.2],
+    [drop('purple-marrow', .03), drop('scarlet-marrow', .05), drop('rosy-spirit-reed', .05), drop('twining-crystal-powder', .05)],
+    { strikes: 2 }), visibleRealm: '元婴初期', description: '窃占旧灵园的夺材剑修，普通出手后紧接第二击，袭击靠近灵圃的寻材者。' },
+  { ...foe('sickletail-crystal-scorpion', '镰尾晶螯', 14, 28657, [64000, 480000, 80000, 96000, 1.5],
+    [drop('purple-marrow', .03), drop('scarlet-marrow', .05), drop('carapace-fragment', .5),
+      drop('beast-core-shard', .5), drop('twining-crystal-powder', .05)]), visibleRealm: '元婴中期',
+    description: '狭长甲躯前伸成对晶螯，分节镰尾收于背后。以迅猛重击捕食汀岸灵物，躯体却很薄弱。' },
+  { ...foe('arrayback-shellbeast', '背阵壳兽', 14, 28657, [1090000, 160000, 50000, 91600, 1.2],
+    [drop('scarlet-marrow', .05), drop('clear-tide-essence', .2), drop('twining-crystal-powder', .09)],
+    { entryStatRatio: '0.1', currentHealthSuppression: true }), visibleRealm: '元婴初期',
+    description: '旧饲养生灵的野化支系，背壳聚起残存阵纹。入场同调对手攻防敏，散华依双方当前气血抑制来攻。' },
+  { ...foe('rockcrown-longarm-beast', '岩冠长臂兽', 14, 28657, [327000, 185000, 77000, 108000, .8],
+    [drop('scarlet-marrow', .05), drop('rosy-spirit-reed', .15)],
+    { entrySequence: [{ count: 4, coefficient: '1', damageMultiplier: '5' }] }), visibleRealm: '元婴中期',
+    description: '立行异种，双臂长而前重，岩冠由食入矿质形成。入场四次重击后动作缓慢，不在每轮重复先袭。' },
+  { ...foe('veinguard-flame-spirit', '守脉燧灵', 15, 46368, [3200000, 280000, 120000, 150000, 1.2],
+    [drop('cyan-marrow', 4)], { softBones: true, mirrorOpening: true }), visibleRealm: '元婴中期',
+    description: '聚火石核与游离焰带构成当地支脉的阵务灵，驱逐擅入悬照台者。胜后可协商局部阵务，不是全界中枢。' },
+  { ...foe('crystalplundering-bladesman', '夺晶刀修', 15, 46368, [750000, 370000, 30000, 150000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('bluegold-fragment', .05), drop('rosy-spirit-reed', .05)]),
+    visibleRealm: '元婴中期', description: '佩宽刃与磨损护具的夺材修士，强占晶岸并袭击同行。' },
+  { ...foe('lake-ring-armored-guard', '湖环甲卫', 15, 46368, [390000, 260000, 130000, 160000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('chengzhao-core', .08)]),
+    visibleRealm: '元婴中期', description: '器核驱动的旧巡岸造物，窄身甲片与水线纹式相接，沿局部阵令驱逐闯入者。' },
+  { ...foe('floating-ripple-spirit', '浮澜灵', 15, 46368, [280000, 140000, 140000, 168000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('chengzhao-core', .08)], { ignoreDefense: true }),
+    visibleRealm: '元婴中期', description: '湖面灵机凝成薄膜环躯，围绕内核游动，护持自己的凝灵水域。' },
+  { ...foe('crystalspine-beast', '晶棘灵兽', 15, 46368, [600000, 200000, 90000, 152000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('twining-crystal-powder', .07), drop('clear-crystal', .03)],
+    { extraStrike: { coefficient: '1.5', damageMultiplier: '2' } }),
+    visibleRealm: '元婴中期', description: '低伏宽躯，背部晶棘逐层生长，捕食晶岸小灵物。' },
+  { ...foe('reedbank-flame-spirit', '苇汀燧灵', 15, 46368, [320000, 280000, 120000, 144000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('rosy-spirit-reed', .1), drop('clear-crystal', .03)],
+    { softBones: true, mirrorOpening: true }),
+    visibleRealm: '元婴中期', description: '火石核与游离焰带维护苇汀支阵，袭击擅入者。' },
+  { ...foe('frost-rune-guard', '霜符阵卫', 15, 46368, [990000, 350000, 75000, 180000, 1.6],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('bluegold-fragment', .05), drop('chengzhao-core', .03)],
+    { roundStrikes: [{ round: 9, coefficient: '20' }] }),
+    visibleRealm: '元婴中期', description: '霜白符片裹住阵务造物，守护晶泽局部节点，交手间逐渐蓄势。' },
+  { ...foe('horn-armored-lakebeast', '角甲湖兽', 15, 46368, [520000, 280000, 150000, 180000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('bluegold-fragment', .07)],
+    { roundStrikes: [{ round: 9, coefficient: '20' }] }),
+    visibleRealm: '元婴中期', description: '四足甲躯、分叉前角与宽足，争食晶泽中的凝灵物。' },
+  { ...foe('crystalshell-stone-spirit', '晶壳石灵', 15, 46368, [30, 250000, 180000, 160000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('clear-crystal', .06)], { sturdy: true }),
+    visibleRealm: '元婴中期', description: '自然灵物借晶石围成细肢外壳，守护结晶点。' },
+  { ...foe('returning-edge-raider', '回锋劫修', 15, 46368, [270000, 1350000, 0, 200000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('bluegold-fragment', .07)], { strikes: ['0.8', '1.2'] }),
+    visibleRealm: '元婴后期', description: '轻衣少甲的夺材者操纵回转刃，截击洲带独行者。' },
+  { ...foe('sacwing-lakebird', '囊翼湖禽', 15, 46368, [720000, 360000, 180000, 210000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('lakebeast-condensate', .05)], { restraint: true }),
+    visibleRealm: '元婴中期', description: '肋侧储气囊撑起宽躯，翼根厚短，护巢时贴近压迫来者。' },
+  { ...foe('upright-goldfur-beast', '立行金茸兽', 15, 46368, [700000, 220000, 120000, 220000, 1.2],
+    [drop('scarlet-marrow', .05), drop('cyan-marrow', .02), drop('chengzhao-core', .08)], { attackCoefficientMultiplier: '2' }),
+    visibleRealm: '元婴中期', description: '金色细茸裹住团躯，短足立行，护食时袭击靠近者。' },
+  { ...foe('tidebinding-gel-spirit', '缚潮胶灵', 15, 75025, [2400000, 1, 1, 240000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('chengzhao-core', .08), drop('lakebeast-condensate', .04)],
+    { agilityDeficit: { threshold: '360000', scale: '5' } }),
+    visibleRealm: '元婴后期', description: '半透明胶躯内有环形潮纹，攀附低洲截留经过的生灵。' },
+  { ...foe('layered-ripple-wraith', '叠纹水魅', 15, 75025, [300000, 300000, 200000, 240000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('chengzhao-core', .08), drop('bluegold-fragment', .06)], { rampingDamage: true }),
+    visibleRealm: '元婴中期', description: '散乱灵痕纠成层叠薄纹，盘踞旧水道，攻势随交手叠起。' },
+  { ...foe('bluecrown-array-spirit', '蓝冠行阵灵', 15, 75025, [15000000, 400000, 40000, 250000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('chengzhao-core', .13)], { strikes: 2, restraint: true }),
+    visibleRealm: '元婴后期', description: '蓝晶冠核带动细长灵躯，反复巡行旧阵路。' },
+  { ...foe('flowcloud-spell-spirit', '流云术灵', 15, 75025, [256000, 80000, 240000, 260000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('clear-crystal', .12)], { ignoreDefense: true, strikes: 3 }),
+    visibleRealm: '元婴中期', description: '云丝灵躯包覆旧施术节点，游动袍影由灵流凝成。' },
+  { ...foe('crystal-armored-spirit', '披晶甲灵', 15, 75025, [2200000, 560000, 90000, 270000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('bluegold-fragment', .05), drop('bluegold-ingot', .015)]),
+    visibleRealm: '元婴后期', description: '灵体借旧蓝金甲片聚形，晶质连接护持内湖阵台。' },
+  { ...foe('frostreturn-wingbeast', '返霜翼兽', 15, 75025, [650000, 420000, 260000, 280000, 1.5],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('lakebeast-condensate', .02), drop('chengzhao-core', .1)], { hitHealingRatio: '0.3' }),
+    visibleRealm: '元婴后期', description: '薄膜双翼与颈侧霜髓囊掠过冷流晶岸，捕猎近水生灵。' },
+  { ...foe('ringeye-eightarm-beast', '环瞳八腕兽', 15, 75025, [950000, 480000, 300000, 300000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('lakebeast-condensate', .06), drop('chengzhao-core', .04)],
+    { strikes: ['0.8', '1.2'] }),
+    visibleRealm: '元婴后期', description: '晶质环瞳与粗细不一的八腕伏在深水洲边，守食袭人。' },
+  { ...foe('gathering-spell-spirit', '汇灵术灵', 15, 75025, [2560000, 80000, 240000, 260000, 1.2],
+    [], { ignoreDefense: true, strikes: 3 }), visibleRealm: '元婴后期' },
+  { ...foe('gathering-armored-spirit', '汇灵甲灵', 15, 75025, [22000000, 560000, 90000, 270000, 1.2], []),
+    visibleRealm: '元婴后期' },
+  { ...foe('gathering-array-spirit', '汇灵行阵灵', 15, 75025, [150000000, 400000, 40000, 250000, 1.2],
+    [], { strikes: 2, restraint: true }), visibleRealm: '元婴圆满' },
+  { ...foe('ruin-patrolling-raider', '巡墟劫修', 15, 75025, [1750000, 490000, 290000, 330000, 1.4],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('ruin-essence', .07)], { strikes: 2 }),
+    visibleRealm: '元婴后期', description: '结队巡查采料路径的抢夺者，袭击携料同行。' },
+  { ...foe('chestbearing-shroom', '抱匣蕈灵', 15, 75025, [900000, 600000, 333333, 360000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('ruin-essence', .07)],
+    { weakening: 10, walletSuppressionUnit: '2000000000' }), visibleRealm: '元婴后期',
+    description: '菌躯包住旧匣与碎器，争食凝灵物并袭人。' },
+  { ...foe('brokenward-bladesman', '破坊刀修', 15, 75025, [3000000, 700000, 140000, 360000, 1.2],
+    [drop('scarlet-marrow', .03), drop('cyan-marrow', .05), drop('green-cast-coin', .01)]),
+    visibleRealm: '元婴后期', description: '以长刀占住破坊出口，截取采料所得的修士。' },
+  { ...foe('withered-breath-raider', '枯息劫修', 16, 121393, [1280000, 570000, 34000, 390600, 1.6],
+    [drop('green-cast-coin', .01), drop('ruin-rune-fragment', .04)],
+    { entryStatRatio: '0.1', rampingDamage: true, rampingDamageStep: 2 }),
+    visibleRealm: '元婴后期', description: '体魄亏空仍强行催气夺材的流散劫修，入场同调，逐轮催势。' },
+  { ...foe('bluebone-wraith', '蓝骨游魅', 16, 121393, [6000000, 610000, 265000, 400000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('clear-crystal', .1), drop('chengzhao-core', .1)]),
+    visibleRealm: '元婴后期', description: '蓝玉化骨节受旧灵纹牵引聚成残念，袭击走近骨堆者。' },
+  { ...foe('rustbrood-puppet', '锈胎群傀', 16, 121393, [9000000, 540000, 0, 480000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('ruin-essence', .07), drop('chengzhao-core', .06)],
+    { strikes: 4, entrySummon: { enemyId: 'rustbrood-child', count: 3 } }),
+    visibleRealm: '元婴圆满', description: '旧城群式作业造物的主胎，入场带出三具同形子胎，阵令失准而驱逐活物。' },
+  { ...foe('rustbrood-child', '锈胎子傀', 16, 121393, [9000000, 540000, 0, 480000, 1.2], [], { strikes: 4 }),
+    visibleRealm: '元婴后期', description: '紧随主胎展开的同形子傀，各自行动，不再召唤，不掉物品。' },
+  { ...foe('twinprism-spirit', '双棱晶灵', 16, 121393, [750000, 2500000, 480000, 520000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('green-cast-coin', .016)]),
+    visibleRealm: '元婴后期', description: '两片粗短晶棱围住小灵核，护持自己的凝晶点。' },
+  { ...foe('thornshadow-ruinwraith', '棘影墟魅', 16, 121393, [2000000, 750000, 500000, 560000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('ruin-rune-fragment', .06), drop('ruin-essence', .07)],
+    { attackAfterDamageThreshold: '1000000' }), visibleRealm: '元婴后期',
+    description: '旧坊灵痕围成带细棘的影躯，玩家攻击后沿敏捷缺口追加直伤。' },
+  { ...foe('marrowchasing-raider', '逐髓劫修', 16, 121393, [3500000, 690000, 410000, 520000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('ruin-restoration-elixir', .01)],
+    { marrowSuppressionUnit: '1500' }), visibleRealm: '元婴后期',
+    description: '专门抢夺灵髓的采晶队成员，窥见化悟深厚者时攻势收敛。' },
+  { ...foe('bluemane-furbeast', '蓝鬃茸兽', 16, 121393, [16000000, 720000, 240000, 600000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('ruin-essence', .04), drop('chengzhao-core', .1)],
+    { currentHealthSuppression: true }), visibleRealm: '元婴后期',
+    description: '蓝色细鬃裹住短肢团躯，护食时挤压来者的护身灵息。' },
+  { ...foe('ancient-rune-puppet', '古纹残傀', 16, 121393, [2340000, 900000, 600000, 680000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('chengzhao-core', .17)]),
+    visibleRealm: '元婴后期', description: '供灵不足的战前造物，旧甲纹仍完整，不凭过去用途增添战力。' },
+  { ...foe('wandering-ruin-shadowbeast', '游墟影兽', 16, 121393, [1690000, 1270000, 390000, 720000, 1.2],
+    [drop('cyan-marrow', .05), drop('amber-marrow', .02), drop('green-cast-coin', .02)]),
+    visibleRealm: '元婴后期', description: '能隐于建筑阴影的自然异兽，捕猎沿渠生灵，尚未掌握逐光。' },
+  { ...foe('ringingedge-ruinbird', '鸣锋墟禽', 16, 196418, [6000000, 1000000, 500000, 760000, 1.2],
+    [drop('cyan-marrow', .03), drop('amber-marrow', .05), drop('ruin-essence', .2)],
+    { entrySequence: [{ count: 4, coefficient: '1', damageMultiplier: '5' }] }),
+    visibleRealm: '元婴圆满', description: '长翼边缘生有鸣锋羽骨，栖于高阙，扑袭猎物时入场四段重击。' },
+  { ...foe('marrowchasing-leader', '逐髓队首', 16, 196418, [6500000, 990000, 710000, 800000, 1.2],
+    [drop('cyan-marrow', .03), drop('amber-marrow', .05), drop('ruin-surge-elixir', .025), drop('green-cast-coin', .02)],
+    { marrowSuppressionUnit: '5000' }), visibleRealm: '元婴圆满',
+    description: '逐髓夺材队的带队者，强占旧门采料线，化悟可收敛其伤害。' },
+  { ...foe('hiddenblade-earthbeast', '伏刃地魈', 16, 196418, [4800000, 1200000, 300000, 840000, 1.2],
+    [drop('cyan-marrow', .03), drop('amber-marrow', .05), drop('ruin-rune-fragment', .08), drop('green-cast-coin', .02)],
+    { rending: true }), visibleRealm: '元婴圆满', description: '宽腹低伏、前肢有硬刃的地栖异种，伏在墟土中猎食。' },
+  { ...foe('lightchasing-nightmare', '逐光影魇', 17, 317811, [102000000, 1600000, 520000, 800000, 1],
+    [drop('azure-marrow', 4)], { defensiveFlash: true, entrySequence: [{ count: 3, coefficient: '1', damageMultiplier: '50' }] }),
+    visibleRealm: '元婴圆满', description: '游墟影兽中掌握逐光的强个体，守住城外猎食通道，入场三击逐次判命中后乘伤害。' },
+  { ...foe('gravel-armored-insect', '砾甲虫卫', 16, 196418, [2500000, 1080000, 690000, 800000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('beast-marrow-fat', .07)]),
+    visibleRealm: '元婴圆满', description: '前肢抓持碎器、背甲积砾的智慧甲虫异种，争占旧甲旁的食源。' },
+  { ...foe('layered-edge-wraith', '叠锋游魂', 16, 196418, [1100000, 2100000, 0, 880000, 1.8],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('charged-gel', .17)],
+    { entrySequence: [{ count: 5, coefficient: '0.9', damageMultiplier: '1' }] }),
+    visibleRealm: '元婴圆满', description: '旧斗法刃痕与残念聚成薄影，入场五击袭向走近者。' },
+  { ...foe('galechasing-shadowbeast', '追岚影兽', 16, 196418, [10200000, 1600000, 520000, 960000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('ruin-rune-fragment', .1), drop('ruin-essence', .1)],
+    { entrySequence: [{ count: 4, coefficient: '1', damageMultiplier: '5' }] }),
+    visibleRealm: '元婴圆满', description: '逐风个体利用荒沟长风捕猎，入场四段重击。' },
+  { ...foe('ancient-coldiron-spirit', '寒铁凝灵', 16, 196418, [10, 1500000, 1000000, 1040000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('crude-iron-ingot', 20), drop('dark-steel-ingot', 10)],
+    { sturdy: true }), visibleRealm: '元婴圆满', description: '古铁凝出的小灵核借铁片活动，护持积聚的金属。' },
+  { ...foe('darkfur-battlebeast', '墨茸兽', 16, 196418, [600000, 1440000, 960000, 1040000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('charged-gel', .1), drop('ruin-essence', .08)]),
+    visibleRealm: '元婴圆满', description: '外表温顺的暗色细茸小兽，护食时露出凶性。' },
+  { ...foe('hidden-gel-spirit', '匿影胶灵', 16, 196418, [4480000, 1370000, 760000, 1040000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('charged-gel', .1), drop('ruin-essence', .2)]),
+    visibleRealm: '元婴圆满', description: '半透明胶躯沿裂隙收拢，伏袭靠近凝灵点的活物。' },
+  { ...foe('contractbearing-raider', '负契劫修', 16, 196418, [3300000, 1360000, 1040000, 1100000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('green-cast-coin', .03)],
+    { walletSuppressionUnit: '8000000000' }), visibleRealm: '元婴圆满', description: '披重护具、悬旧契物的掠材者，袭击同行牟利。' },
+  { ...foe('silkseizing-raider', '夺绢悍修', 16, 196418, [1450000, 1530000, 1080000, 1200000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('charged-silk', .14)]),
+    visibleRealm: '元婴圆满', description: '将夺来的织料裹进护具，强占供料路线。' },
+  { ...foe('wormbone-wraith', '寄虫骨魅', 16, 196418, [1240000, 1700000, 800000, 1200000, 1.2],
+    [drop('amber-marrow', .05), drop('azure-marrow', .02), drop('petal-array-fragment', .15), drop('chengzhao-core', .2)]),
+    visibleRealm: '元婴圆满', description: '含灵蠕虫撑起并驱动旧头骨，捕食近地灵物。' },
+  { ...foe('arrayseizing-leader', '掠阵队首', 17, 317811, [11250000, 1690000, 800000, 1200000, 1.2],
+    [drop('amber-marrow', .03), drop('azure-marrow', .05), drop('clearjade-ingot', .06)],
+    { roundStrikes: [5, 10, 20].map((round, index) => ({
+      round, coefficient: ['3', '9', '27'][index], basis: 'player-attack-defense-enemy-defense',
+    })) }), visibleRealm: '元婴圆满', description: '夺材队的阵修带队者，按自身轮次追加阵击。' },
+  { ...foe('mountaincrushing-beast', '崩岳獠兽', 17, 317811, [6250000, 1850000, 750000, 1200000, 1.2],
+    [drop('amber-marrow', .03), drop('azure-marrow', .05), drop('beast-marrow-fat', .1)], { strikes: 2 }),
+    visibleRealm: '元婴圆满', description: '前躯厚重、獠齿外弯的荒兽，横过旧甲间捕猎。' },
+  { ...foe('rampart-earthbeast', '执垒地魈', 17, 317811, [3300000, 1750000, 1150000, 1280000, 1.2],
+    [drop('amber-marrow', .03), drop('azure-marrow', .05), drop('beast-marrow-fat', .07), drop('ruin-essence', .1)]),
+    visibleRealm: '元婴圆满', description: '较直立的地栖异种，前肢持旧石垒片守食。' },
+  { ...foe('flowing-silver-shadow', '流银影灵', 17, 317811, [4000000, 1900000, 1320000, 1360000, 1.2],
+    [drop('amber-marrow', .03), drop('azure-marrow', .05), drop('charged-gel', .2), drop('ruin-essence', .2)],
+    { entrySequence: [{ count: 4, coefficient: '1', damageMultiplier: '5' }], healthBurst: { round: 20, multiplier: '4' } }),
+    visibleRealm: '元婴圆满', description: '含银凝胶伏于旧金属构件间，入场爆发，战至第二十轮自爆后仍留一血。' },
+  { ...foe('roadwaiting-old-raider', '伏路老修', 17, 317811, [5600000, 1400000, 880000, 1200000, 1.2],
+    [drop('amber-marrow', .03), drop('azure-marrow', .05), drop('ruin-essence', .3), drop('chengzhao-core', .16)]),
+    visibleRealm: '元婴圆满', description: '蹲守采料者归途的劫掠修士。' },
+  { ...foe('layered-armor-guardian', '叠甲禁卫', 17, 514229, [144000000, 3200000, 1250000, 1600000, 1.4],
+    [drop('radiant-marrow', 4)], { currentHealthSuppression: true }),
+    visibleRealm: '元婴圆满', description: '灵舟外缘失准的厚甲旧守卫，按双方当前气血之比抑制来者攻击。' },
+  { ...foe('layered-ark-guard', '层甲舟卫', 17, 317811, [14400000, 3200000, 1250000, 1600000, 1.2],
+    [drop('azure-marrow', .05), drop('radiant-marrow', .005), drop('old-armor-fragment', .09)], { currentHealthSuppression: true }),
+    visibleRealm: '元婴圆满', description: '层叠旧甲包覆短身舟傀，按失准驱逐令守廊。' },
+  { ...foe('clamp-domain-puppet', '钳域阵傀', 17, 317811, [1840000, 2900000, 2000000, 1800000, 1.2],
+    [drop('azure-marrow', .05), drop('radiant-marrow', .005), drop('thunder-spirit-symbol', .07)], { attackAfterDamageThreshold: '5000000' }),
+    visibleRealm: '元婴圆满', description: '悬核与外伸钳架围成局部阵域，反击扰动阵域者。' },
+  { ...foe('thunderback-shellbeast', '雷脊壳兽', 17, 317811, [3750000, 1000000, 1000000, 2000000, 1.2],
+    [drop('azure-marrow', .05), drop('radiant-marrow', .005), drop('thunder-spirit-symbol', .08)], { ignoreDefense: true }),
+    visibleRealm: '元婴圆满', description: '雷纹背壳的野化灵兽，捕猎闯入外舱的生灵。' },
+  { ...foe('darkedge-heavy-puppet', '玄锋重傀', 17, 317811, [5750000, 2250000, 1500000, 2200000, 1.2],
+    [drop('azure-marrow', .05), drop('radiant-marrow', .005), drop('forge-array-mark', .06)], { ignoreDefense: true, defensiveFlash: true }),
+    visibleRealm: '元婴圆满', description: '楔形甲躯配粗重传力臂，薄身仍有强劲护罡。' },
+  { ...foe('twinclamp-walking-puppet', '双钳行傀', 17, 514229, [2250000, 2800000, 1600000, 2300000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('thunder-spirit-symbol', .13)]),
+    visibleRealm: '元婴圆满', description: '双侧钳臂撑起低身行架，按旧令阻挡过客。' },
+  { ...foe('crossarm-armor-puppet', '交臂甲傀', 17, 514229, [4100000, 1500000, 1500000, 2400000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('old-armor-fragment', .18)], { attackCoefficientMultiplier: '2' }),
+    visibleRealm: '元婴圆满', description: '交叠护臂与十字支架护持灵核，合臂聚力出击。' },
+  { ...foe('turnbalance-heavy-puppet', '转衡重傀', 17, 514229, [28000000, 5400000, 1080000, 2500000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('forge-array-mark', .14)], { reversal: true, restraint: true }),
+    visibleRealm: '化神初期', description: '多节转架以偏转轴支撑重躯，逆转交手时的攻防关系。' },
+  { ...foe('wandering-rune-spirit', '游纹符灵', 17, 514229, [3600000, 3500000, 1100000, 2600000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('foreign-contract-coin', .07)], { reversal: true }),
+    visibleRealm: '元婴圆满', description: '旧阵纹依附碎片游动，袭击扰动导流线路者。' },
+  { ...foe('blockedge-furnace-puppet', '阻锋炉傀', 17, 514229, [8800000, 4900000, 1440000, 2700000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('old-armor-fragment', .15)], { missPunishment: '4000000' }),
+    visibleRealm: '元婴圆满', description: '炉腹接阻击臂的旧维护傀，截击落空后的破绽。' },
+  { ...foe('heavyhub-ark-guard', '重枢舟卫', 18, 1346269, [52800000, 4700000, 2750000, 3600000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('high-ark-core', .15), drop('old-armor-fragment', .25)],
+    { currentHealthSuppression: true }), visibleRealm: '化神初期', description: '厚甲旧卫护持供能节点。' },
+  { ...foe('silveredge-blade-puppet', '银锋刃傀', 17, 514229, [700000, 7500000, 2000000, 3000000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('foreign-contract-coin', .07)]),
+    visibleRealm: '元婴圆满', description: '狭长银刃架围住轻薄灵躯，出手凶猛。' },
+  { ...foe('blackiron-war-puppet', '玄铁战傀', 18, 1346269, [41600000, 4160000, 4160000, 4160000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('high-ark-core', .15),
+      drop('foreign-contract-coin', .05), drop('thunder-spirit-symbol', .4)]),
+    visibleRealm: '化神初期', description: '紧密玄铁甲躯护住灵核，攻防均衡的旧战傀。' },
+  { ...foe('rampart-shield-puppet', '持垒盾傀', 17, 514229, [10, 5000000, 3000000, 3200000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('old-armor-fragment', .18)], { sturdy: true }),
+    visibleRealm: '元婴圆满', description: '极小灵核借厚盾架行动，薄血而坚固。' },
+  { ...foe('batrobe-raider', '蝠衣劫修', 18, 1346269, [52800000, 3200000, 1600000, 3200000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('foreign-contract-coin', .3)], { strikes: ['0.8', '1.2'] }),
+    visibleRealm: '化神初期', description: '披蝠翼状法衣的劫修，争占舱中供能节点并袭击过客。' },
+  { ...foe('sunchasing-heavy-puppet', '追曜重傀', 17, 514229, [4500000, 5000000, 3000000, 3200000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('forge-array-mark', .2), drop('thunder-spirit-symbol', .4)],
+    { weakening: 10, entrySequence: [{ count: 3, coefficient: '1', damageMultiplier: '50' }] }),
+    visibleRealm: '化神初期', description: '刃状前架配集光构件，入场接连追袭。' },
+  { ...foe('edge-drinking-puppet', '饮锋狂傀', 18, 1346269, [2600000, 4100000, 1900000, 3200000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('high-ark-core', .2)],
+    { rending: true, entryHealthFrom: { attribute: 'attack', ratio: '0.5' } }),
+    visibleRealm: '化神初期', description: '失令狂傀的裸露传力架承接来者锋劲，以此凝厚灵躯。' },
+  { ...foe('piercing-light-turret', '贯光炮台', 17, 514229, [960000, 3600000, 2800000, 3400000, 1.2],
+    [drop('azure-marrow', .04), drop('thunder-spirit-symbol', .2)], { preAttackDamage: '2500000' }),
+    visibleRealm: '元婴圆满', description: '导灵线路汇入长条聚光口，普攻前先发贯光。' },
+  { ...foe('cabin-patrol-puppet', '巡舱甲傀', 17, 514229, [19900000, 3300000, 2330000, 3200000, 1.2],
+    [drop('azure-marrow', .04), drop('radiant-marrow', .02), drop('old-armor-fragment', .2)]),
+    visibleRealm: '元婴圆满', description: '长身旧甲与巡行支足组成舱内旧卫。' },
+  { ...foe('redhub-heavy-puppet', '赤枢重傀', 18, 1346269, [1, 4800000, 3000000, 3800000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('forge-array-mark', .8)],
+    { rampingDamage: true, entryHealthFrom: { attribute: 'defense', ratio: '0.5' } }),
+    visibleRealm: '化神初期', description: '赤色供能枢核借入场护势凝躯，攻势随轮次积蓄。' },
+  { ...foe('redbanner-ark-chief', '赤旌寨主·夺舟', 17, 514229, [77700000, 4560000, 700000, 2000000, 1.2],
+    [{ ...drop('breakfront-array-pendant', 1), quality: 160 }], { reflectionRatio: '0.2', bullying: true }),
+    visibleRealm: '化神初期', description: '赤旌寨主争占夺舟偏室，反震来袭并压制护势不足者。' },
+  { ...foe('triangular-hub-guard', '三棱枢卫', 18, 2178309, [105000000, 6500000, 3500000, 4000000, .9],
+    [drop('stellar-marrow', 2)], { strikes: 3 }), visibleRealm: '化神中期', description: '三棱悬架围住阵门灵核，缓慢而连续出击。' },
+  { ...foe('hiddenhub-spirit-puppet', '藏枢灵傀', 18, 2178309, [361000000, 9990000, 3340000, 4800000, 1.2],
+    [drop('stellar-marrow', 2), drop('foreign-contract-coin', 33)], { healthBurst: { round: 20, multiplier: '4' } }),
+    visibleRealm: '化神中期', description: '藏枢室旧守傀，久战后以剩余灵躯爆发。' },
+  { ...foe('doorhub-command-armor', '门枢统甲', 18, 1346269, [19000000, 8800000, 2000000, 4000000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('redglow-steel', .2), drop('sealed-gel-crate', .01)],
+    { entrySummon: { enemyId: 'thorncutting-walking-puppet', count: 3 } }),
+    visibleRealm: '化神中期', description: '门形甲架与统御纹盘组成旧驱逐傀，驱动割荆行傀守住支路。' },
+  { ...foe('essence-drawing-array-spirit', '引元阵灵', 18, 1346269, [15210000, 7400000, 2800000, 4200000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('rising-blood-elixir', .1), drop('sealed-ark-core-crate', .001)]),
+    visibleRealm: '化神初期', description: '灯壶状引元构件内凝成的灵体，护持自己的供能点。' },
+  { ...foe('radiant-beam-war-puppet', '照芒战傀', 18, 1346269, [6400000, 6000000, 4200000, 4000000, 1.2],
+    [drop('azure-marrow', .02), drop('radiant-marrow', .05), drop('forge-array-mark', .2), drop('sealed-ark-core-crate', .001)],
+    { missPunishment: '10000000' }),
+    visibleRealm: '化神中期', description: '聚光线路通入长臂前端，截击落空后的破绽。' },
+  { ...foe('triangular-patrol-puppet', '三棱巡傀', 18, 2178309, [10500000, 6500000, 3500000, 4400000, 1.2],
+    [drop('radiant-marrow', .05), drop('stellar-marrow', .02), drop('foreign-contract-coin', .5), drop('sealed-gel-crate', .006)]),
+    visibleRealm: '化神初期', description: '三棱悬架围住巡行灵核，驱逐走近者。' },
+  { ...foe('thorncutting-walking-puppet', '割荆行傀', 18, 2178309, [5290000, 8300000, 3500000, 4600000, 1.2],
+    [drop('radiant-marrow', .05), drop('stellar-marrow', .02), drop('purple-cast-coin', .0009)],
+    { weakening: 10, walletSuppressionUnit: '10000000000' }),
+    visibleRealm: '化神初期', description: '低身多足、侧置割刃的维护傀，受统甲旧令驱动转而袭人。' },
+  { ...foe('inversebalance-ark-spirit', '倒衡舟灵', 18, 2178309, [8500000, 7700000, 3800000, 4800000, 1.2],
+    [drop('radiant-marrow', .05), drop('stellar-marrow', .02), drop('rising-blood-elixir', .13), drop('sealed-gel-crate', .03)],
+    { reversal: true }),
+    visibleRealm: '化神初期', description: '破损导流环凝成双侧不对称的灵体，盘踞回廊捕猎。' },
+  { ...foe('energy-gathering-core-spirit', '聚能核灵', 19, 3524578, [55555000, 11110000, 0, 5000000, 1.2],
+    [drop('radiant-marrow', .02), drop('stellar-marrow', .05), drop('thunder-spirit-symbol', 1), drop('sealed-ark-core-crate', .004)]),
+    visibleRealm: '化神中期', description: '大量灵流围住裸露供能核，受侵扰时以厚重灵躯撞击。' },
+  { ...foe('breath-eroding-gel-wraith', '蚀息胶魅', 18, 2178309, [4500000, 9400000, 5000000, 5400000, 1.2],
+    [drop('radiant-marrow', .05), drop('stellar-marrow', .02), drop('sealed-ark-core-crate', .003)], { weakening: 10 }),
+    visibleRealm: '化神初期', description: '含驳杂灵质的多褶胶躯，沿导灵管路猎食。' },
+  { ...foe('golden-fur-beast', '金茸兽', 19, 3524578, [8000000, 9000000, 2400000, 5600000, 1.2],
+    [drop('radiant-marrow', .02), drop('stellar-marrow', .05), drop('sealed-gel-crate', .05)]),
+    visibleRealm: '化神初期', description: '金色细茸覆住团状躯体，借供能余流维持食源，护食袭人。' },
+  { ...foe('silver-eye-core-spirit', '银瞳核灵', 18, 2178309, [28, 11000000, 6000000, 6000000, 1.2],
+    [drop('radiant-marrow', .05), drop('stellar-marrow', .02), drop('redglow-steel', .33), drop('sealed-ark-core-crate', .001)],
+    { sturdy: true }),
+    visibleRealm: '化神中期', description: '银壳围住极小环瞳灵核，坚固外架守住凝灵点。' },
+  { ...foe('threehead-wandering-serpent', '三首游蛇', 19, 3524578, [44000000, 9800000, 4200000, 6600000, 1.2],
+    [drop('radiant-marrow', .02), drop('stellar-marrow', .05), drop('stable-essence-pill', 1), drop('sealed-gel-crate', .05)]),
+    visibleRealm: '化神中期', description: '分颈三首的长身妖蛇，穿行于供能构架之间捕食。' },
+  { ...foe('starbreaking-heavy-puppet', '碎星重傀', 18, 2178309, [144000000, 9600000, 5000000, 6800000, 1.6],
+    [], { rending: true }),
+    visibleRealm: '化神中期', description: '碎星室内成对巡守的重型傀架，撞击可撕开护势。' },
 ].map((entry) => [entry.definition.id, entry]));
 
 export interface RegionDefinition {
   // The associated safe location is the withdrawal destination, not an entry requirement.
   name: string; parent: string; prerequisite: string | null;
   description?: string;
-  pool: string[]; groupSize: 1 | 2; groups: number; firstXp: string; repeatXp: string; challenge: boolean;
+  pool: string[]; groupSize: number; groups: number; firstXp: string; repeatXp: string; challenge: boolean;
   randomGroupSize?: boolean;
+  enemyCountRange?: readonly [number, number];
+  fixedEnemies?: string[];
+  allowSummons?: boolean;
+  searchMoney?: string;
   // One-based group positions within each clear override the ordinary random pool.
   encounterPools?: Record<number, string[]>;
   firstItems?: Record<string, number>;
   repeatLoot?: { maxLevel: number; entries: LootEntry[] };
   enemyMultiplier?: string;
+  pressure?: { stage: 1 | 2; xp: string };
+  firstItemQualities?: Record<string, number>;
 }
 const region = (
   name: string, parent: string, prerequisite: string | null, pool: string[],
-  firstXp: number, repeatXp: number, groupSize: 1 | 2 = 1,
+  firstXp: number, repeatXp: number, groupSize = 1,
 ): RegionDefinition => ({
   name, parent, prerequisite, pool, groupSize,
   groups: 20, firstXp: String(firstXp), repeatXp: String(repeatXp), challenge: false,
@@ -1393,6 +1885,154 @@ export const REGIONS: Record<string, RegionDefinition> = {
     groups: 1, challenge: true,
     description: '旧道与临江石栈在此收窄，九嶂巡段把公共道路圈入收料通路。封渡使武力驱逐独行散修；越过他便能保留继续深入下一地域的资格。',
   },
+  'rosyfall-plain': {
+    ...region('霞落原', 'qixia-overlook', 'linzhao-crossing',
+      ['coldboil-sacbeast', 'boatplundering-raider', 'rosycloud-spirit', 'mistcrown-shroom-spirit', 'jiuzhang-plundering-cultivator'], 30000, 10000),
+    enemyMultiplier: '1.08',
+    description: '界门外高原铺展至天际，远山与悬陆宫阙相望。凝灵生物沿河岸栖居，后来入界的夺材者截住独行者。',
+  },
+  'myriad-reed-marsh': {
+    ...region('万苇泽', 'qixia-overlook', 'rosyfall-plain',
+      ['rosycloud-spirit', 'cutstream-chief', 'jiuzhang-plundering-cultivator', 'pipebone-wraith', 'reedbinding-raider'], 60000, 20000),
+    enemyCountRange: [1, 3], enemyMultiplier: '1.16',
+    description: '苇汀沿广阔河网层层伸展，凝灵残骨和夺苇者混居，苇丝间时有霞纹浮起。',
+  },
+  'flowcrystal-mountains': {
+    ...region('流晶山带', 'qixia-overlook', 'myriad-reed-marsh',
+      ['jiuzhang-plundering-cultivator', 'pipebone-wraith', 'reedbinding-raider', 'petal-array-spirit', 'crystallimb-stone-spirit'], 90000, 30000, 2),
+    enemyMultiplier: '1.24', description: '山体凝晶沿宽谷显露，石灵护持结晶点，薄小灵萼沿旧节点移动，晶粉与灵苇各有来源。',
+  },
+  'layered-rosy-gardens': {
+    ...region('重霞灵圃', 'qixia-overlook', 'flowcrystal-mountains',
+      ['reedbinding-raider', 'petal-array-spirit', 'crystallimb-stone-spirit', 'gardenplundering-swordsman', 'sickletail-crystal-scorpion'], 120000, 40000, 2),
+    enemyCountRange: [2, 4], enemyMultiplier: '1.32',
+    description: '连山灵圃仍有生机，层叠台地间散着旧引水构件。剑修强占寻材路径，晶螯在汀岸捕食。',
+  },
+  'hanging-radiance-platform': {
+    ...region('悬照台', 'qixia-overlook', 'layered-rosy-gardens',
+      ['petal-array-spirit', 'crystallimb-stone-spirit', 'gardenplundering-swordsman', 'sickletail-crystal-scorpion', 'arrayback-shellbeast', 'rockcrown-longarm-beast'], 150000, 50000, 3),
+    enemyMultiplier: '1.4', description: '一支地脉的高处节点俯瞰山河，阵纹沿崖延伸，不是整界中枢。壳兽与长臂兽护食争料，聚灵旁路可破取阵片。',
+  },
+  'qixia-veinguard': {
+    ...region('守脉燧灵', 'qixia-overlook', 'hanging-radiance-platform', ['veinguard-flame-spirit'], 0, 0),
+    groups: 1, challenge: true, enemyMultiplier: '1.4',
+    description: '聚火石核浮在支脉阵台，游离焰带阻拦擅入者。持有聚萼阵片可逐片压低局部加持，胜后可交涉支阵。',
+  },
+  'qixia-loop-array': {
+    ...region('回环阵庭', 'qixia-overlook', 'qixia-veinguard',
+      ['petal-array-spirit', 'crystallimb-stone-spirit', 'gardenplundering-swordsman', 'sickletail-crystal-scorpion', 'arrayback-shellbeast', 'rockcrown-longarm-beast'], 0, 0, 6),
+    description: '守脉燧灵协商开放的局部回环阵庭。每组六敌，层数改变阵务加持，完成二十组后可选上限继续提高。',
+  },
+  'mirror-tide-bay': {
+    ...region('镜潮外湾', 'chengzhao-lakeshore', 'qixia-veinguard',
+      ['petal-array-spirit', 'crystalplundering-bladesman', 'lake-ring-armored-guard', 'floating-ripple-spirit', 'crystalspine-beast', 'reedbank-flame-spirit'], 300000, 100000, 2),
+    enemyMultiplier: '1.08', description: '远岸隐于天际，晶岸层层展开，夺晶者与旁路守卫混居。' },
+  'thousand-crystal-marsh': {
+    ...region('千晶水泽', 'chengzhao-lakeshore', 'mirror-tide-bay',
+      ['petal-array-spirit', 'crystalspine-beast', 'reedbank-flame-spirit', 'frost-rune-guard', 'horn-armored-lakebeast', 'crystalshell-stone-spirit'], 450000, 150000, 2),
+    enemyCountRange: [2.25, 3.25], enemyMultiplier: '1.08', description: '浅泽与晶簇浮洲相间，苇根穿过晶隙，蓄势生灵守护凝材点。' },
+  'silver-reed-ring': {
+    ...region('银苇湖环', 'chengzhao-lakeshore', 'thousand-crystal-marsh',
+      ['petal-array-spirit', 'crystalshell-stone-spirit', 'returning-edge-raider', 'sacwing-lakebird', 'upright-goldfur-beast', 'tidebinding-gel-spirit'], 600000, 200000, 2),
+    enemyCountRange: [2.5, 3.5], enemyMultiplier: '1.08', description: '银白苇汀围着湖洲，兽群、劫修与缚潮灵物争占旧水路。' },
+  'floating-light-innerlake': {
+    ...region('浮光内湖', 'chengzhao-lakeshore', 'silver-reed-ring',
+      ['petal-array-spirit', 'tidebinding-gel-spirit', 'layered-ripple-wraith', 'bluecrown-array-spirit', 'flowcloud-spell-spirit', 'crystal-armored-spirit'], 750000, 250000, 2),
+    enemyCountRange: [2.75, 3.75], enemyMultiplier: '1.08', description: '开水与旧阵台相望，近水阵纹延向远处山陆。' },
+  'cold-tide-lakeheart': {
+    ...region('寒汐湖心', 'chengzhao-lakeshore', 'floating-light-innerlake',
+      ['petal-array-spirit', 'tidebinding-gel-spirit', 'flowcloud-spell-spirit', 'crystal-armored-spirit', 'frostreturn-wingbeast', 'ringeye-eightarm-beast'], 900000, 300000, 3),
+    enemyMultiplier: '1.08', description: '冷流穿过晶脊与深水洲，后段灵兽与阵务灵物守住局部湖心。' },
+  'chengzhao-gathering-array': {
+    ...region('澄照汇灵阵', 'chengzhao-lakeshore', 'cold-tide-lakeheart',
+      ['gathering-spell-spirit', 'gathering-armored-spirit', 'gathering-array-spirit'], 0, 0, 7),
+    fixedEnemies: ['gathering-spell-spirit', 'gathering-spell-spirit', 'gathering-armored-spirit', 'gathering-armored-spirit',
+      'gathering-array-spirit', 'gathering-array-spirit', 'gathering-array-spirit'],
+    groups: 1, challenge: true, enemyMultiplier: '1.32',
+    description: '七灵同时维护湖心旁路阵，阵片可削弱局部加持。胜后可沿旧路离界远行。' },
+  'collapsed-ward-street': {
+    ...region('塌坊长街', 'jiyuan-ruins', 'chengzhao-gathering-array',
+      ['crystal-armored-spirit', 'ringeye-eightarm-beast', 'returning-edge-raider', 'ruin-patrolling-raider', 'chestbearing-shroom'], 1200000, 400000, 2),
+    searchMoney: '200000', description: '断开的高架街廊与层叠旧坊间，今日采料路径穿过残屋。夺材者和护食灵物占住危险旧坊。' },
+  'fallen-tower-lanes': {
+    ...region('崩阙里巷', 'jiyuan-ruins', 'collapsed-ward-street',
+      ['ruin-patrolling-raider', 'chestbearing-shroom', 'brokenward-bladesman', 'withered-breath-raider', 'bluebone-wraith'], 1500000, 500000, 2),
+    searchMoney: '400000', description: '高阙倾塌后留下纵深巷道，栖民活动与争材的危险旧坊分开。' },
+  'split-tower-courts': {
+    ...region('裂塔残庭', 'jiyuan-ruins', 'fallen-tower-lanes',
+      ['withered-breath-raider', 'bluebone-wraith', 'rustbrood-puppet', 'twinprism-spirit', 'thornshadow-ruinwraith'], 1800000, 600000, 2),
+    searchMoney: '600000', allowSummons: true,
+    description: '残塔与多层庭坪相接，旧群式造物、晶灵和邪祟各占一隅；群傀入场展开子胎。' },
+  'empty-channel-ruinplain': {
+    ...region('空渠墟坪', 'jiyuan-ruins', 'split-tower-courts',
+      ['twinprism-spirit', 'thornshadow-ruinwraith', 'bluemane-furbeast', 'marrowchasing-raider', 'ancient-rune-puppet', 'wandering-ruin-shadowbeast'], 1800000, 600000, 3),
+    searchMoney: '800000', description: '宽阔空渠贯穿旧城，遗留导灵构件仍部分运行，三敌交错争守沿渠取材点。' },
+  'hanging-bell-oldgate': {
+    ...region('悬钟旧门', 'jiyuan-ruins', 'empty-channel-ruinplain',
+      ['ancient-rune-puppet', 'wandering-ruin-shadowbeast', 'ringingedge-ruinbird', 'marrowchasing-leader', 'hiddenblade-earthbeast'], 2100000, 700000, 3),
+    searchMoney: '1000000', description: '巨大旧门与悬钟隔着破碎城垣相望，通向城外断原，猎食生灵与夺材队占住旧路。' },
+  'jiyuan-lightchaser': {
+    ...region('逐光旧路', 'jiyuan-ruins', 'hanging-bell-oldgate', ['lightchasing-nightmare'], 0, 0),
+    groups: 1, challenge: true, searchMoney: '1000000000',
+    description: '旧城外的猎食通道被逐光影魇占住，露面时便须面对三段逐光爆发。' },
+  'fallen-edge-slope': { ...region('落锋坡', 'jiyuan-brokenplain', 'jiyuan-lightchaser',
+    ['ringingedge-ruinbird', 'marrowchasing-leader', 'hiddenblade-earthbeast', 'gravel-armored-insect', 'layered-edge-wraith'], 2400000, 800000, 2),
+    description: '旧兵痕与崩落器架散在宽坡，今日采料路径被夺材者和猎食灵物争占。' },
+  'bone-array-gully': { ...region('骸阵荒沟', 'jiyuan-brokenplain', 'fallen-edge-slope',
+    ['gravel-armored-insect', 'layered-edge-wraith', 'galechasing-shadowbeast', 'ancient-coldiron-spirit', 'darkfur-battlebeast'], 2700000, 900000, 2),
+    enemyCountRange: [2.25, 3.25], description: '崩断阵线穿过长沟，影兽、凝灵与薄血强攻者混居；远处今日夺材者的斗法光芒越过石梁。' },
+  'split-stoneplain': { ...region('裂坪', 'jiyuan-brokenplain', 'bone-array-gully',
+    ['ancient-coldiron-spirit', 'darkfur-battlebeast', 'hidden-gel-spirit', 'hidden-gel-spirit', 'contractbearing-raider', 'silkseizing-raider'], 3000000, 1000000, 2),
+    enemyCountRange: [2.5, 3.5], description: '辽阔石坪被旧术法切开，凝胶灵物与争材修士沿裂隙截击，旧供奉设施立在远坡。' },
+  'resting-armor-plain': { ...region('卧甲石原', 'jiyuan-brokenplain', 'split-stoneplain',
+    ['contractbearing-raider', 'silkseizing-raider', 'arrayseizing-leader', 'mountaincrushing-beast', 'rampart-earthbeast'], 3600000, 1200000, 2),
+    enemyCountRange: [2.75, 3.75], description: '巨大废甲与石梁叠起，夺材队和荒兽争食争料，断原髓脉从废甲下延出。' },
+  'remnant-flag-ringpass': { ...region('残旗环隘', 'jiyuan-brokenplain', 'resting-armor-plain',
+    ['wormbone-wraith', 'arrayseizing-leader', 'rampart-earthbeast', 'flowing-silver-shadow', 'roadwaiting-old-raider'], 4500000, 1500000, 3),
+    enemyMultiplier: '1.2', description: '失准旧阵仍为石原边缘的局部环隘提供加持，前方已能望见坠落灵舟。' },
+  'layered-armor-gate': { ...region('叠甲禁卫', 'jiyuan-brokenplain', 'remnant-flag-ringpass', ['layered-armor-guardian'], 0, 0),
+    groups: 1, challenge: true, description: '灵舟外缘的厚甲旧守卫拦住通道。气血、领域、合息佩与望月赐福可作为准备。' },
+  'broken-gunwale-hall': { ...region('断舷廊', 'fallen-ark-outer', 'layered-armor-gate',
+    ['flowing-silver-shadow', 'arrayseizing-leader', 'layered-ark-guard', 'clamp-domain-puppet', 'thunderback-shellbeast'], 6000000, 2000000, 2),
+    pressure: { stage: 1, xp: '1' }, description: '破开的船舷接入宽阔运载廊，旧卫与夺材者混居。' },
+  'four-aspect-puppet-workshop': { ...region('四象傀坊', 'fallen-ark-outer', 'broken-gunwale-hall',
+    ['thunderback-shellbeast', 'darkedge-heavy-puppet', 'twinclamp-walking-puppet', 'crossarm-armor-puppet', 'turnbalance-heavy-puppet'], 9000000, 3000000, 2),
+    enemyCountRange: [2.25, 3.25], pressure: { stage: 1, xp: '1' }, description: '大型傀架与传力梁横过四系旧造物维护间。' },
+  'lost-command-corridor': { ...region('失令回廊', 'fallen-ark-outer', 'four-aspect-puppet-workshop',
+    ['turnbalance-heavy-puppet', 'wandering-rune-spirit', 'blockedge-furnace-puppet', 'batrobe-raider', 'silveredge-blade-puppet'], 12000000, 4000000, 2),
+    enemyCountRange: [2.5, 3.5], enemyMultiplier: '.9', pressure: { stage: 1, xp: '1' },
+    description: '破损导流支路穿过长廊，局部旧阵反而削弱其中敌群。' },
+  'armor-bearing-cabin': { ...region('承甲舱', 'fallen-ark-outer', 'lost-command-corridor',
+    ['silveredge-blade-puppet', 'rampart-shield-puppet', 'redhub-heavy-puppet', 'edge-drinking-puppet', 'piercing-light-turret'], 15000000, 5000000, 2),
+    enemyCountRange: [2.75, 3.75], pressure: { stage: 1, xp: '1' }, description: '成排旧甲与重型构件间仍有驱逐傀巡行。舱中保留旧阵务刻录。' },
+  'sealed-hub-forecourt': { ...region('封枢前庭', 'fallen-ark-outer', 'armor-bearing-cabin',
+    ['sunchasing-heavy-puppet', 'batrobe-raider', 'cabin-patrol-puppet', 'heavyhub-ark-guard', 'blackiron-war-puppet'], 18000000, 6000000, 3),
+    pressure: { stage: 1, xp: '1' }, description: '宽大封枢区连接内舱，旧卫与劫修争占供能节点。' },
+  'ark-seizing-sidechamber': { ...region('夺舟偏室', 'fallen-ark-outer', 'broken-gunwale-hall', ['redbanner-ark-chief'], 0, 0),
+    groups: 1, challenge: true, description: '侧舱由赤旌寨主争占，不挡内舱主路。' },
+  'triangular-array-gate': { ...region('三棱阵门', 'fallen-ark-outer', 'lost-command-corridor', ['triangular-hub-guard'], 0, 0),
+    groups: 1, challenge: true, description: '守卫封住舟内交换场，胜后可与舱中采料者交易。' },
+  'hidden-hub-chamber': { ...region('藏枢室', 'fallen-ark-outer', 'sealed-hub-forecourt', ['hiddenhub-spirit-puppet'], 0, 0),
+    groups: 1, challenge: true, description: '穿过藏枢旧卫才能深入内舱。' },
+  'furnace-guard-corridor': { ...region('守炉廊', 'fallen-ark-inner', 'hidden-hub-chamber',
+    ['doorhub-command-armor', 'essence-drawing-array-spirit', 'essence-drawing-array-spirit', 'radiant-beam-war-puppet',
+      'triangular-patrol-puppet'], 12000000, 48000000, 2),
+    allowSummons: true, pressure: { stage: 2, xp: '2' },
+    description: '大型炉室之外的宽阔环廊，门枢统甲驱动维护傀守住支路，封装材料与新补给散在旧供能点间。' },
+  'essence-condensing-corridor': { ...region('凝元回廊', 'fallen-ark-inner', 'furnace-guard-corridor',
+    ['radiant-beam-war-puppet', 'triangular-patrol-puppet', 'inversebalance-ark-spirit', 'energy-gathering-core-spirit',
+      'breath-eroding-gel-wraith'], 24000000, 8000000, 2),
+    enemyCountRange: [2.5, 3.5], pressure: { stage: 2, xp: '4' },
+    description: '粗大的导灵管路与层叠凝元构件穿过舱壁，失令造物与胶魅交错。回廊末端通往聚能舱及安定静修舱。' },
+  'energy-gathering-cabin': { ...region('聚能舱', 'fallen-ark-inner', 'essence-condensing-corridor',
+    ['energy-gathering-core-spirit', 'breath-eroding-gel-wraith', 'golden-fur-beast', 'silver-eye-core-spirit',
+      'threehead-wandering-serpent'], 36000000, 12000000, 3),
+    pressure: { stage: 2, xp: '8' },
+    description: '大型聚能构架形成纵深空间，供能凝灵与侵入兽类混居。这是当前可深入的最后一段舱区。' },
+  'starbreaking-chamber': { ...region('碎星室', 'fallen-ark-inner', 'furnace-guard-corridor', ['starbreaking-heavy-puppet'], 0, 0, 2),
+    fixedEnemies: ['starbreaking-heavy-puppet', 'starbreaking-heavy-puppet'], groups: 1, challenge: true,
+    firstItems: { 'star-dissolution-disk': 1 }, firstItemQualities: { 'star-dissolution-disk': 160 },
+    description: '成对重傀巡守观想法宝存放处，支路不挡凝元回廊。' },
 };
 
 export function encounterPool(regionId: string, clearedGroups: string): readonly string[] {
@@ -1402,9 +2042,18 @@ export function encounterPool(regionId: string, clearedGroups: string): readonly
 }
 
 export function encounterNeedsEntry(regionId: string, enemyIds: string[]): boolean {
-  return regionId === MANOR_AID.finalRegionId || enemyIds.some(id => {
+  return regionId === 'qixia-veinguard' || regionId === 'qixia-loop-array' || regionId === 'chengzhao-gathering-array' ||
+    Boolean(REGIONS[regionId].allowSummons) ||
+    regionId === MANOR_AID.finalRegionId || enemyIds.some(id => {
     const abilities = lookup(ENEMIES, id).definition.abilities;
-    return Boolean(abilities?.entryStatRatio || abilities?.entryHealthRatio || abilities?.entryAgilityAttackRatio);
+    return Boolean(abilities?.entryStatRatio || abilities?.entryHealthRatio || abilities?.entryAgilityAttackRatio || abilities?.entryHealthFrom);
+  });
+}
+
+export function expandEncounter(regionId: string, origins: string[]): string[] {
+  return origins.flatMap(id => {
+    const summon = REGIONS[regionId].allowSummons ? ENEMIES[id].definition.abilities?.entrySummon : undefined;
+    return [id, ...Array.from({ length: summon?.count ?? 0 }, () => summon!.enemyId)];
   });
 }
 
@@ -1412,7 +2061,8 @@ export function encounterNeedsEntry(regionId: string, enemyIds: string[]): boole
 export function encounterEnemy(regionId: string, enemyId: string, entry?: EncounterEntry): EnemyContent & { lootMultiplier: string } {
   const region = lookup(REGIONS, regionId);
   const enemy = lookup(ENEMIES, enemyId);
-  const multiplier = region.enemyMultiplier ?? '1';
+  const multiplier = (regionId === 'qixia-veinguard' || regionId === 'qixia-loop-array' || regionId === 'chengzhao-gathering-array')
+    ? entry?.enemyMultiplier ?? region.enemyMultiplier ?? '1' : region.enemyMultiplier ?? '1';
   const stats = { ...enemy.definition.stats };
   for (const key of ['maxHp', 'attack', 'defense', 'agility'] as const) {
     stats[key] = text(dec(stats[key]).mul(multiplier));
@@ -1426,6 +2076,9 @@ export function encounterEnemy(regionId: string, enemyId: string, entry?: Encoun
     }
     if (abilities?.entryHealthRatio) {
       stats.maxHp = text(dec(stats.maxHp).plus(dec(entry.attack).plus(entry.defense).mul(abilities.entryHealthRatio)));
+    }
+    if (abilities?.entryHealthFrom) {
+      stats.maxHp = text(dec(stats.maxHp).plus(dec(entry[abilities.entryHealthFrom.attribute]).mul(abilities.entryHealthFrom.ratio)));
     }
     if (abilities?.entryAgilityAttackRatio) {
       stats.attack = text(dec(stats.attack).plus(dec(entry.agility).mul(abilities.entryAgilityAttackRatio)));
@@ -1502,6 +2155,25 @@ export const SAFE_LOCATIONS: Record<string, {
     name: '照野道口', prerequisite: 'cloudbreak-pass', meditation: true,
     description: '隘后石台豁然开阔，山原细流在前方汇成宽江，行旅沿旧道往霁原城方向远去。道旁旧亭留着干燥石席，可歇脚调息；临江缓台的分流口适合抗流锻体，亭后货棚待江湾通路打通才开放商会。上游飞瀑仍在另一条支路，回望断云隘，侧崖据点藏在山壁间。',
   },
+  'qixia-overlook': {
+    name: '栖霞望台', prerequisite: 'linzhao-crossing', meditation: true,
+    description: '界门落点位于高起的山陆边缘。辽阔山系、河网与内海般的大湖延伸至远方，悬陆宫阙散布云间。这是高阶大能长期经营的小世界，当前道路只经过其中局部；望台邻近安定聚灵支脉，可调息与练步。',
+  },
+  'chengzhao-lakeshore': {
+    name: '澄照湖岸', prerequisite: 'qixia-veinguard',
+    description: '大湖近似内海，远方山陆与浮洲铺向天际。旧修行台保存手札与有限留念，晶岸下灵鱼游动。这里可普通歇息，不能调息。' },
+  'jiyuan-ruins': { name: '霁原旧墟', prerequisite: 'chengzhao-gathering-array',
+    description: '大战已过去数百年，断开的旧城仍有栖民、采料者与小规模货栈。驻墟采料者熟悉今日路线，危险旧坊中的争材者与普通居民分开。' },
+  'ruin-meditation-room': { name: '墟纹静室', prerequisite: 'chengzhao-gathering-array', meditation: true,
+    description: '以墟纹静修套件修整的独立静室，旧纹片接续聚灵线路。可调息，不附工作台或仓库。' },
+  'jiyuan-brokenplain': { name: '霁原断原', prerequisite: 'jiyuan-lightchaser',
+    description: '古斗法遗址延展至天际，断城之外仍有今日争材者往来。远处高阶修士交手，坠落法舟的巨大轮廓横过荒原。此处可普通歇息。' },
+  'fallen-ark-outer': { name: '坠星灵舟·外舱', prerequisite: 'layered-armor-gate',
+    description: '跨域法舟的巨大船身横卧断原，断舷接通成排宽廊。旧阵令仍驱动舟傀，取材者在安定舱壁旁歇脚；固定灵能反应炉可加工普通凝蕴辅料。' },
+  'fallen-ark-inner': { name: '坠星灵舟·内舱', prerequisite: 'hidden-hub-chamber',
+    description: '越过藏枢旧卫，巨大的供能构架在舱内逐层展开。局部安定壁廊可普通歇息，主路仍有更强威压与失令造物。' },
+  'ark-meditation-cabin': { name: '静修舱', prerequisite: 'essence-condensing-corridor', meditation: true,
+    description: '凝元回廊后的安定舱室，聚灵线路完整，石座可供调息。养息档位取得后各处允许调息点通用，不附工作台或仓库。' },
 };
 
 export interface RecipeDefinition {
@@ -1510,6 +2182,55 @@ export interface RecipeDefinition {
   outputQuality?: number;
 }
 export const RECIPES: Record<string, RecipeDefinition> = {
+  'extract-sealed-gel': { name: '析炼凝胶封匣', path: 'ordinary', output: 'charged-gel', outputCount: 100,
+    difficulty: 36, materials: { 'sealed-gel-crate': 1 } },
+  'extract-sealed-ark-cores': { name: '析炼舟核封匣', path: 'ordinary', output: 'high-ark-core', outputCount: 100,
+    difficulty: 40, materials: { 'sealed-ark-core-crate': 1 } },
+  'smelt-redglow-steel': { name: '熔炼赤曜钢', path: 'ordinary', output: 'redglow-steel', outputCount: 4,
+    difficulty: 42, materials: { 'old-armor-fragment': 8, 'forge-array-mark': 3, 'high-ark-core': 1 } },
+  'solidify-condensed-gel': { name: '凝炼凝蕴胶块', path: 'ordinary', output: 'condensed-gel-block',
+    difficulty: 42, materials: { 'charged-gel': 1, 'thunder-spirit-symbol': 1 } },
+  'craft-breakfront-pendant': { name: '炼制破锋阵佩', path: 'ordinary', output: 'breakfront-array-pendant', outputQuality: 160,
+    difficulty: 42, materials: { 'azure-iron-ingot': 999, 'high-ark-core': 99, 'forge-array-mark': 99, 'thunder-spirit-symbol': 99 } },
+  'craft-ancient-contract-disk': { name: '炼制古契护盘', path: 'ordinary', output: 'ancient-contract-disk', outputQuality: 160,
+    difficulty: 42, materials: { 'high-ark-core': 99, 'foreign-contract-coin': 999 } },
+  'weave-charged-silk': { name: '织炼蕴劲灵绢', path: 'ordinary', output: 'charged-silk', difficulty: 38,
+    materials: { 'charged-gel': 1, 'ruin-essence': 1, 'chengzhao-core': 1 } },
+  'craft-stable-essence': { name: '炼制定元丹', path: 'ordinary', output: 'stable-essence-pill', difficulty: 33,
+    materials: { 'beast-marrow-fat': 1, 'chengzhao-core': 1 } },
+  'craft-ruin-restoration': { name: '炼制复元灵液', path: 'ordinary', output: 'ruin-restoration-elixir', difficulty: 31,
+    outputCount: 2, materials: { 'charged-gel': 1, 'ruin-essence': 1 } },
+  'craft-ruin-surge': { name: '炼制炽元灵液', path: 'ordinary', output: 'ruin-surge-elixir', difficulty: 34,
+    outputCount: 2, materials: { 'charged-gel': 2, 'ruin-essence': 2 } },
+  ...Object.fromEntries([['headwrap', 3], ['jacket', 4], ['leggings', 4], ['boots', 2]].map(([suffix, quantity]) =>
+    [`craft-charged-${suffix}`, { name: `裁炼${ITEMS[`charged-${suffix}`].name}`, path: 'component' as const,
+      output: `charged-${suffix}`, difficulty: 0, materials: { 'charged-silk': Number(quantity) } }])),
+  'smelt-clearjade': { name: '熔炼澄碧金锭', path: 'ordinary', output: 'clearjade-ingot', outputCount: 2, difficulty: 35,
+    materials: { 'green-cast-coin': 1, 'chengzhao-core': 4, 'ruin-essence': 2 } },
+  'refine-ruin-crystal': { name: '墟粹精炼苇纹晶', path: 'ordinary', output: 'reed-veined-crystal', outputCount: 5, difficulty: 34,
+    materials: { 'ruin-essence': 1, 'clear-crystal': 1 } },
+  'craft-threephase-pendant': { name: '炼制三相合息佩', path: 'ordinary', output: 'threephase-pendant', outputQuality: 130, difficulty: 30,
+    materials: { 'clear-tide-essence': 99, 'feral-blood-essence': 99, 'ruin-essence': 99, 'chengzhao-core': 99 } },
+  'craft-ruin-meditation-kit': { name: '制作墟纹静修套件', path: 'ordinary', output: 'ruin-meditation-kit', difficulty: 45,
+    materials: { 'clearjade-ingot': 300, 'ruin-rune-fragment': 300, 'chengzhao-core': 300 } },
+  'smelt-bluegold': { name: '熔炼蓝金锭', path: 'ordinary', output: 'bluegold-ingot', difficulty: 31,
+    materials: { 'lakebeast-condensate': 1, 'chengzhao-core': 1, 'bluegold-fragment': 2 } },
+  'refine-reed-crystal': { name: '炼制苇纹晶', path: 'ordinary', output: 'reed-veined-crystal', difficulty: 31,
+    materials: { 'clear-crystal': 1, 'rosy-spirit-reed': 2 } },
+  'process-carp-condensate': { name: '提取湖鲤凝质', path: 'ordinary', output: 'lakebeast-condensate', difficulty: 23,
+    outputCount: 2, materials: { 'blue-scaled-carp': 1 } },
+  'process-carp-metal': { name: '提取湖鲤蓝金', path: 'ordinary', output: 'bluegold-fragment', difficulty: 25,
+    outputCount: 2, materials: { 'blue-scaled-carp': 1 } },
+  'craft-chengzhao-heart': { name: '炼制澄照心佩', path: 'ordinary', output: 'chengzhao-heart-pendant', difficulty: 1,
+    outputQuality: 160, materials: { 'reed-veined-crystal': 59, 'bluegold-ingot': 39, 'cold-crystal-fish': 3 } },
+  'smelt-returning-glow': {
+    name: '熔炼回辉金锭', path: 'ordinary', output: 'returning-glow-ingot', difficulty: 27,
+    materials: { 'resonant-ingot': 1, 'beast-core-shard': 2, 'twining-crystal-powder': 2 },
+  },
+  'weave-jade-reed': {
+    name: '织炼碧苇灵绢', path: 'ordinary', output: 'jade-reed-silk', difficulty: 29,
+    materials: { 'clear-tide-essence': 1, 'rosy-spirit-reed': 1 },
+  },
   'refine-resonant-ingot': {
     name: '精炼鸣金锭', path: 'ordinary', output: 'resonant-ingot', outputCount: 4, difficulty: 23,
     materials: { 'clear-tide-essence': 1, 'carapace-fragment': 4, 'beast-core-shard': 1 },
@@ -1624,6 +2345,8 @@ export const RECIPES: Record<string, RecipeDefinition> = {
     },
   },
   ...Object.fromEntries([
+    ['bluegold-blade', 'bluegold-ingot', 2], ['bluegold-greatblade', 'bluegold-ingot', 6],
+    ['crystal-hilt', 'reed-veined-crystal', 2],
     ['iron-blade', 'crude-iron-ingot', 2], ['old-wood-hilt', 'old-timber', 2], ['iron-birch-hilt', 'iron-birch-wood', 2],
     ['hide-headwrap', 'stitched-hide', 3], ['hide-jacket', 'stitched-hide', 4],
     ['hide-leggings', 'stitched-hide', 4], ['hide-boots', 'stitched-hide', 2],
@@ -1643,6 +2366,16 @@ export const RECIPES: Record<string, RecipeDefinition> = {
     ['awakened-hilt', 'awakened-wood', 2],
     ['resonant-head-shell', 'resonant-ingot', 3], ['resonant-body-shell', 'resonant-ingot', 4],
     ['resonant-leg-shell', 'resonant-ingot', 4], ['resonant-foot-shell', 'resonant-ingot', 2],
+    ['returning-glow-blade', 'returning-glow-ingot', 2], ['returning-glow-greatblade', 'returning-glow-ingot', 6],
+    ['jade-reed-headwrap', 'jade-reed-silk', 3], ['jade-reed-jacket', 'jade-reed-silk', 4],
+    ['jade-reed-leggings', 'jade-reed-silk', 4], ['jade-reed-boots', 'jade-reed-silk', 2],
+    ['returning-glow-head-shell', 'returning-glow-ingot', 3], ['returning-glow-body-shell', 'returning-glow-ingot', 4],
+    ['returning-glow-leg-shell', 'returning-glow-ingot', 4], ['returning-glow-foot-shell', 'returning-glow-ingot', 2],
+    ['clearjade-blade', 'clearjade-ingot', 2], ['clearjade-greatblade', 'clearjade-ingot', 6],
+    ['clearjade-head-shell', 'clearjade-ingot', 3], ['clearjade-body-shell', 'clearjade-ingot', 4],
+    ['clearjade-leg-shell', 'clearjade-ingot', 4], ['clearjade-foot-shell', 'clearjade-ingot', 2],
+    ['redglow-blade', 'redglow-steel', 2], ['redglow-greatblade', 'redglow-steel', 6],
+    ['condensed-gel-hilt', 'condensed-gel-block', 2],
   ].map(([output, input, count]) => [String(output), {
     name: ITEMS[output].name, path: 'component', output: String(output),
     materials: { [input]: Number(count) }, difficulty: 0,
@@ -1650,6 +2383,20 @@ export const RECIPES: Record<string, RecipeDefinition> = {
 };
 
 const woodlandAssemblies = [
+  ...['redglow-blade', 'redglow-greatblade', 'clearjade-blade', 'clearjade-greatblade'].map(blade => ({
+    blade, hilt: 'condensed-gel-hilt', output: `condensed-${blade}-weapon`,
+  })),
+  ...['clearjade-blade', 'clearjade-greatblade'].map(blade => ({
+    blade, hilt: 'crystal-hilt', output: `crystal-${blade}-weapon`,
+  })),
+  ...['bluegold-blade', 'bluegold-greatblade'].flatMap(blade =>
+    ['awakened-hilt', 'crystal-hilt'].map(hilt => ({ blade, hilt, output: `${hilt}-${blade}-weapon` }))),
+  ...['returning-glow-blade', 'returning-glow-greatblade'].map(blade => ({
+    blade, hilt: 'crystal-hilt', output: `crystal-${blade}-weapon`,
+  })),
+  ...['returning-glow-blade', 'returning-glow-greatblade'].map(blade => ({
+    blade, hilt: 'awakened-hilt', output: `awakened-${blade}-weapon`,
+  })),
   ...['iron-blade', 'dark-steel-blade', 'azure-iron-blade', 'baleful-blade', 'deepsteel-blade']
     .map(blade => ({ blade, hilt: 'awakened-hilt', output: `awakened-${blade}-sword` })),
   ...['resonant-blade', 'resonant-greatblade'].flatMap(blade =>
@@ -1660,9 +2407,15 @@ const woodlandAssemblies = [
 const weaponNames: Record<string, string> = {
   'iron-blade': '铁剑', 'dark-steel-blade': '乌钢剑', 'azure-iron-blade': '青纹剑',
   'baleful-blade': '玄煞剑', 'deepsteel-blade': '沉渊剑', 'resonant-blade': '鸣金剑', 'resonant-greatblade': '鸣金重剑',
+  'returning-glow-blade': '回辉剑', 'returning-glow-greatblade': '回辉重剑',
+  'bluegold-blade': '蓝金剑', 'bluegold-greatblade': '蓝金重剑',
+  'clearjade-blade': '澄碧剑', 'clearjade-greatblade': '澄碧重剑',
+  'redglow-blade': '赤曜剑', 'redglow-greatblade': '赤曜重剑',
 };
 const weaponPrefixes: Record<string, string> = {
   'old-wood-hilt': '粗炼', 'iron-birch-hilt': '', 'spiritwood-hilt': '养灵', 'awakened-hilt': '苏灵',
+  'crystal-hilt': '晶蕴',
+  'condensed-gel-hilt': '凝蕴',
 };
 for (const { blade, hilt, output } of woodlandAssemblies) {
   const bladeItem = ITEMS[blade];
@@ -1696,6 +2449,8 @@ const weaponFinishes: Record<string, string> = {
   'iron-birch-hilt': '桦脂淬炼后色泽均匀，刃口打磨平整。',
   'spiritwood-hilt': '以养灵淬液处理，器表留有一层浅青细纹。',
   'awakened-hilt': '以苏灵淬液处理，细密的灵纹沿器身延伸。',
+  'crystal-hilt': '以晶蕴淬液处理，澄明细纹连贯器身，缓缓回导灵息。',
+  'condensed-gel-hilt': '凝蕴淬液融入器身，细亮胶纹接续灵息，运劲轻捷。',
 };
 const weaponForms: Record<string, string> = {
   'wood-hilt-sword': '百炼铁料铸成的短直剑，剑格短小，握柄以粗绳束缠。',
@@ -1746,14 +2501,40 @@ export const ARMOR_ASSEMBLIES = [
   });
 });
 
+for (const [suffix, shellSuffix] of [
+  ['headwrap', 'head-shell'], ['jacket', 'body-shell'], ['leggings', 'leg-shell'], ['boots', 'foot-shell'],
+]) {
+  for (const [material, prefix] of [['resonant', '鸣金'], ['returning-glow', '回辉'], ['clearjade', '澄碧']]) {
+    const interior = `jade-reed-${suffix}`;
+    const exterior = `${material}-${shellSuffix}`;
+    const output = `${interior}-lined-${exterior}`;
+    ITEMS[output] = {
+      name: `${prefix}${ITEMS[interior].name}`, kind: 'equipment', slot: ITEMS[interior].slot,
+      value: text(dec(ITEMS[interior].value).plus(ITEMS[exterior].value)), interior, exterior,
+      description: `${ITEMS[interior].description}${prefix}细纹沿原有织料相接。`,
+    };
+    ARMOR_ASSEMBLIES.push({ interior, exterior, output });
+  }
+  const interior = `charged-${suffix}`;
+  const exterior = `clearjade-${shellSuffix}`;
+  const output = `${interior}-lined-${exterior}`;
+  ITEMS[output] = {
+    name: `澄碧${ITEMS[interior].name}`, kind: 'equipment', slot: ITEMS[interior].slot,
+    value: text(dec(ITEMS[interior].value).plus(ITEMS[exterior].value)), interior, exterior,
+    description: '澄碧细砂沿蕴劲绢纹升炼，护具保留两份独立品质。',
+  };
+  ARMOR_ASSEMBLIES.push({ interior, exterior, output });
+}
+
 interface ShopStock {
   itemId: string; chance: number; min: number; max: number; quality?: [number, number];
 }
 interface ShopDefinition {
   name: string; locationId: string; prerequisite: string | null; margin: string;
-  stateKey: 'shop' | 'marketShop' | 'stoneforgeShop' | 'manorShop' | 'forestShop' | 'zhaoyeShop'; stock: ShopStock[];
+  stateKey: 'shop' | 'marketShop' | 'stoneforgeShop' | 'manorShop' | 'forestShop' | 'zhaoyeShop' | 'jiyuanShop' | 'arkShop'; stock: ShopStock[];
+  priceOverrides?: Record<string, string>;
 }
-export const SHOP_IDS = ['village-stall', 'market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies', 'zhaoye-supplies'] as const;
+export const SHOP_IDS = ['village-stall', 'market-supplies', 'stoneforge-supplies', 'manor-metalwork', 'forest-supplies', 'zhaoye-supplies', 'jiyuan-supplies', 'ark-exchange'] as const;
 export type ShopId = typeof SHOP_IDS[number];
 
 const villageStock: ShopStock[] = [
@@ -1770,6 +2551,38 @@ const villageStock: ShopStock[] = [
 ];
 
 export const SHOPS: Record<ShopId, ShopDefinition> = {
+  'ark-exchange': { name: '舟内交换场', locationId: 'fallen-ark-outer', prerequisite: 'triangular-array-gate',
+    margin: '5.4', stateKey: 'arkShop', stock: [
+      { itemId: 'chengzhao-core', chance: 1, min: 150, max: 250 },
+      { itemId: 'clearjade-ingot', chance: 1, min: 100, max: 250 },
+      { itemId: 'charged-gel', chance: 1, min: 500, max: 999 },
+      { itemId: 'charged-silk', chance: 1, min: 50, max: 125 },
+      ...['charged-headwrap', 'charged-jacket', 'charged-leggings', 'charged-boots'].map((itemId): ShopStock =>
+        ({ itemId, chance: .8, min: 1, max: 1, quality: [111, 140] })),
+      { itemId: 'condensed-redglow-blade-weapon', chance: .8, min: 1, max: 1, quality: [110, 139] },
+      { itemId: 'condensed-redglow-greatblade-weapon', chance: .5, min: 1, max: 1, quality: [100, 129] },
+      ...['thunder-spirit-symbol', 'foreign-contract-coin', 'forge-array-mark'].map((itemId): ShopStock =>
+        ({ itemId, chance: 1, min: 5, max: 25 })),
+      { itemId: 'high-ark-core', chance: 1, min: 5, max: 10 },
+    ] },
+  'jiyuan-supplies': {
+    name: '霁原墟商', locationId: 'jiyuan-ruins', prerequisite: 'chengzhao-gathering-array', margin: '4.8', stateKey: 'jiyuanShop',
+    priceOverrides: { 'ruin-meditation-kit': '2000000000000' },
+    stock: [
+      ...['clear-crystal', 'bluegold-ingot', 'jade-reed-silk'].map((itemId): ShopStock => ({ itemId, chance: 1, min: 100, max: 250 })),
+      { itemId: 'chengzhao-core', chance: 1, min: 50, max: 150 },
+      ...['clear-tide-essence', 'feral-blood-essence'].map((itemId): ShopStock => ({ itemId, chance: 1, min: 99, max: 99 })),
+      { itemId: 'ruin-essence', chance: 1, min: 16, max: 32 },
+      ...['ruin-restoration-elixir', 'ruin-surge-elixir'].map((itemId): ShopStock => ({ itemId, chance: 1, min: 10, max: 20 })),
+      { itemId: 'ruin-meditation-kit', chance: 1, min: 1, max: 1 },
+      { itemId: 'green-veined-fish', chance: .8, min: 20, max: 50 },
+      { itemId: 'cold-crystal-fish', chance: .3, min: 1, max: 1 },
+      { itemId: 'crystal-clearjade-blade-weapon', chance: .8, min: 1, max: 1, quality: [101, 140] },
+      { itemId: 'crystal-clearjade-greatblade-weapon', chance: .5, min: 1, max: 1, quality: [91, 130] },
+      ...['head', 'body', 'leg', 'foot'].map((slot): ShopStock =>
+        ({ itemId: `clearjade-${slot}-shell`, chance: .8, min: 1, max: 1, quality: [101, 130] })),
+    ],
+  },
   'zhaoye-supplies': {
     name: '四海商盟·照野商会', locationId: 'zhaoye-roadhead', prerequisite: 'returning-current-bay', margin: '4.2', stateKey: 'zhaoyeShop',
     stock: [

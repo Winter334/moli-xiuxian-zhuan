@@ -1,0 +1,124 @@
+{
+  "region": "chengzhao-lake",
+  "version": "production-v1",
+  "authorization": "After positively reviewing Qixia, the user explicitly requested the next region. Continue the approved grand Chinese dreamcore scenes and refined impasto items/enemies.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Chengzhao lake only: seven implemented scenes, eighteen first-use ordinary enemies and nineteen new items. Three gathering-array challenge IDs reuse the ordinary spirit images. Preserve Qixia, all shared art and gameplay. No new armor, fishing tools, player art, domain art, later-region assets or deployment.",
+  "scopeCounts": { "scenes": 7, "enemies": 18, "items": 19, "assets": 44, "reusedEnemyAliases": 3 },
+  "references": "Independent text-only generation; no default reference images.",
+  "enemyDirection": "All complete bodies, heads and primary movement face screen-left. Faceless spirits remain faceless. Preserve native alpha, soft spiritual edges and complete margins.",
+  "enemyAliases": {
+    "gathering-spell-spirit": "flowcloud-spell-spirit",
+    "gathering-armored-spirit": "crystal-armored-spirit",
+    "gathering-array-spirit": "bluecrown-array-spirit"
+  },
+  "jobs": [
+    {
+      "id": "chengzhao-lakeshore", "name": "澄照湖岸", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/chengzhao-lakeshore.txt"
+    },
+    {
+      "id": "mirror-tide-bay", "name": "镜潮外湾", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/mirror-tide-bay.txt"
+    },
+    {
+      "id": "thousand-crystal-marsh", "name": "千晶水泽", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/thousand-crystal-marsh.txt"
+    },
+    {
+      "id": "silver-reed-ring", "name": "银苇湖环", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/silver-reed-ring.txt"
+    },
+    {
+      "id": "floating-light-innerlake", "name": "浮光内湖", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/floating-light-innerlake.txt"
+    },
+    {
+      "id": "cold-tide-lakeheart", "name": "寒汐湖心", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/cold-tide-lakeheart.txt"
+    },
+    {
+      "id": "chengzhao-gathering-array", "name": "澄照汇灵阵", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-chengzhao-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/chengzhao-lake/production-v1/prompts/chengzhao-gathering-array.txt"
+    },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-chengzhao-v1", "size": "1536x1536", "columns": 3, "rows": 3,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/chengzhao-lake/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "crystalplundering-bladesman", "name": "夺晶刀修", "cellBounds": [0, 0, 562, 565] },
+        { "id": "lake-ring-armored-guard", "name": "湖环甲卫", "cellBounds": [562, 0, 412, 578] },
+        { "id": "floating-ripple-spirit", "name": "浮澜灵", "cellBounds": [974, 0, 562, 514] },
+        { "id": "crystalspine-beast", "name": "晶棘灵兽", "cellBounds": [0, 565, 620, 503],
+          "excludedCellRegions": [[580, 105, 620, 230]] },
+        { "id": "reedbank-flame-spirit", "name": "苇汀燧灵", "cellBounds": [580, 578, 434, 480],
+          "excludedCellRegions": [[0, 270, 45, 350]] },
+        { "id": "frost-rune-guard", "name": "霜符阵卫", "cellBounds": [1014, 514, 522, 554] },
+        { "id": "horn-armored-lakebeast", "name": "角甲湖兽", "cellBounds": [0, 1068, 606, 468] },
+        { "id": "crystalshell-stone-spirit", "name": "晶壳石灵", "cellBounds": [606, 1058, 378, 478] },
+        { "id": "returning-edge-raider", "name": "回锋劫修", "cellBounds": [984, 1068, 552, 468] }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-chengzhao-v1", "size": "1536x1536", "columns": 3, "rows": 3,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/chengzhao-lake/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "sacwing-lakebird", "name": "囊翼湖禽", "cellBounds": [0, 0, 547, 520] },
+        { "id": "upright-goldfur-beast", "name": "立行金茸兽", "cellBounds": [547, 0, 430, 520] },
+        { "id": "tidebinding-gel-spirit", "name": "缚潮胶灵", "cellBounds": [977, 0, 559, 520] },
+        { "id": "layered-ripple-wraith", "name": "叠纹水魅", "cellBounds": [0, 520, 530, 508] },
+        { "id": "bluecrown-array-spirit", "name": "蓝冠行阵灵", "cellBounds": [530, 520, 474, 488] },
+        { "id": "flowcloud-spell-spirit", "name": "流云术灵", "cellBounds": [1004, 520, 532, 527] },
+        { "id": "crystal-armored-spirit", "name": "披晶甲灵", "cellBounds": [0, 1028, 511, 508] },
+        { "id": "frostreturn-wingbeast", "name": "返霜翼兽", "cellBounds": [511, 1008, 495, 528] },
+        { "id": "ringeye-eightarm-beast", "name": "环瞳八腕兽", "cellBounds": [1006, 1047, 530, 489] }
+      ]
+    },
+    {
+      "id": "materials-01", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-chengzhao-v1", "size": "2560x1024", "columns": 5, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/chengzhao-lake/production-v1/prompts/materials-01.txt",
+      "items": [
+        { "id": "chengzhao-core", "name": "澄照灵核", "cellBounds": [0, 0, 529, 505] },
+        { "id": "bluegold-fragment", "name": "蓝金碎片", "cellBounds": [529, 0, 522, 505] },
+        { "id": "lakebeast-condensate", "name": "湖兽凝质", "cellBounds": [1051, 0, 527, 505] },
+        { "id": "clear-crystal", "name": "澄透晶", "cellBounds": [1578, 0, 429, 505] },
+        { "id": "reed-veined-crystal", "name": "苇纹晶", "cellBounds": [2007, 0, 553, 505] },
+        { "id": "bluegold-ingot", "name": "蓝金锭", "cellBounds": [0, 505, 565, 519] },
+        { "id": "crystal-hilt", "name": "晶蕴淬液", "cellBounds": [565, 505, 435, 519] },
+        { "id": "bluegold-blade", "name": "蓝金精料", "cellBounds": [1000, 505, 512, 519] },
+        { "id": "bluegold-greatblade", "name": "蓝金重料", "cellBounds": [1512, 505, 552, 519] },
+        { "id": "chengzhao-heart-pendant", "name": "澄照心佩", "cellBounds": [2064, 505, 496, 519] }
+      ]
+    },
+    {
+      "id": "fish-and-weapons", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-chengzhao-v1", "size": "1536x1536", "columns": 3, "rows": 3,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/chengzhao-lake/production-v1/prompts/fish-and-weapons.txt",
+      "items": [
+        { "id": "blue-scaled-carp", "name": "蓝鳞湖鲤", "cellBounds": [0, 0, 517, 460] },
+        { "id": "green-veined-fish", "name": "青纹灵鱼", "cellBounds": [517, 0, 514, 460] },
+        { "id": "cold-crystal-fish", "name": "寒晶鱼", "cellBounds": [1031, 0, 505, 460] },
+        { "id": "awakened-hilt-bluegold-blade-weapon", "name": "苏灵蓝金剑", "cellBounds": [0, 460, 516, 516] },
+        { "id": "crystal-hilt-bluegold-blade-weapon", "name": "晶蕴蓝金剑", "cellBounds": [516, 460, 509, 516] },
+        { "id": "crystal-returning-glow-blade-weapon", "name": "晶蕴回辉剑", "cellBounds": [1025, 460, 511, 516] },
+        { "id": "awakened-hilt-bluegold-greatblade-weapon", "name": "苏灵蓝金重剑", "cellBounds": [0, 976, 512, 560] },
+        { "id": "crystal-hilt-bluegold-greatblade-weapon", "name": "晶蕴蓝金重剑", "cellBounds": [512, 976, 508, 560] },
+        { "id": "crystal-returning-glow-greatblade-weapon", "name": "晶蕴回辉重剑", "cellBounds": [1020, 976, 516, 560] }
+      ]
+    }
+  ]
+}

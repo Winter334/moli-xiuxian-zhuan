@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Energy Gathering Cabin, an immense enclosed supply hall in a fallen Chinese immortal ark. Great nested gathering frames rise through the chamber, linking high wall galleries and deep lower supply channels. Repeated broad archaic braces hold dense, quietly luminous spirit currents between them. A traversable side gallery reveals the overwhelming height and distance; this is one local gathering facility in a much larger vessel.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly architecture with crisp large planes, archaic metal and pale stone, muted jade-green current, warm white suspended illumination and restrained cinnabar structural accents.
+Composition/framing: 1792x784 landscape, very wide oblique view looking upward from a side gallery. Several enormous frames recede into deep space instead of one centered round reactor. Visibly enclosed hull, strong foreground supports and distant cross-galleries.
+Lighting/mood: majestic, lucid, unreal spatial depth; current remains contained and calm, dark gaps remain readable.
+Constraints: no exploding energy orb, stellar destruction, final command throne, entire ship ownership, fourth section, crystal extraction room or new reward. No modern spacecraft, control screens, guns, close-up enemies, player portrait, text, UI, watermark or border.

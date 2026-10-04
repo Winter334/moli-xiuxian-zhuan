@@ -11,7 +11,7 @@ const isInstance = (item: Entry): item is Instance => 'instanceId' in item;
 const entryKey = (item: Entry) => isInstance(item) ? item.instanceId : item.itemId;
 const entryKind = (item: Entry) => isInstance(item) ? item.slot ? 'equipment' : 'part' : item.kind;
 const qualityBand = (item: Entry) => isInstance(item) ? rarityMultiplier(item.quality) : undefined;
-const CATEGORY_ORDER = ['equipment', 'food', 'foundation-pill', 'insight', 'marrow', 'part', 'material'];
+const CATEGORY_ORDER = ['equipment', 'food', 'foundation-pill', 'insight', 'meditation-kit', 'marrow', 'part', 'material'];
 const COMPACT_INVENTORY = '(max-height: 550px) and (orientation: landscape)';
 const nameOrder = new Intl.Collator('zh-CN', { numeric: true });
 function ItemDetails({ item, amountLabel = '持有', showBonuses = true }: { item: Entry; amountLabel?: string; showBonuses?: boolean }) {

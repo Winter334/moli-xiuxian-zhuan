@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Triangular Array Gate, an outer-cabin side passage of an ancient fallen Chinese immortal vessel. Three enormous slanted metal spars interlock into a clear triangular gateway above a wide approach platform. Nested triangular structural openings recede through the gate, their broad spirit-inlay seams quietly lit. The geometry is an engineered array gate guarding access to a local exchange passage, not a portal to a newly invented world. A glimpse of sheltered passage beyond suggests further activity without making a market the main subject.
+Style/medium: majestic Chinese dreamcore fantasy, exceptionally clear large structural forms, refined painterly metal and jade-light planes, low wide-angle depth; archaic ornament is restrained and integrated.
+Lighting/mood: icy mint-white light inside bronze-gray triangular beams, soft pale apricot distant illumination, spacious and strange without opaque fog.
+Constraints: 1792x784, no player or boss close-up, modern sci-fi triangle screen, magic text, HUD, labels, borders, gun mounts, exploding reactor, final core or endless tiny glowing glyphs.

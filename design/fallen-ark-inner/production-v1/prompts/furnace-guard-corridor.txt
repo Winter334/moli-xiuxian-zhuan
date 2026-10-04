@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Furnace Guard Corridor, an enormous broad ring corridor OUTSIDE an old furnace chamber in a fallen immortal ark. A monumental rounded chamber wall rises at the right, its closed ribs and layered archaic plating dwarf the walkway. The corridor bends around it through repeated tall beam gates, with maintenance routes branching into the ship's deep structure. Furnace warmth only escapes at a few contained seams.
+Style/medium: grand Chinese fantasy dreamcore, refined painterly artificer construction, bold coherent shapes rather than microdetail. Pale fitted stone, dark bronze and red lacquer frame quiet warm-white inner light, with sparse jade supply lines.
+Composition/framing: 1792x784 wide landscape, low wide-angle viewpoint along the sweeping ring corridor; massive curved wall on one side, alternating open shadow bays and structural gates on the other. Show scale through perspective and repeating forms.
+Lighting/mood: luminous ivory corridor, distant soft red-gold furnace reflection and cool gray-green vaulted shadows. Clean, ancient, functional and threatening without grime.
+Constraints: this is the corridor around a furnace, not a player-owned crafting room, open furnace interior or ultimate reactor core. No close-up puppets, summoned armies, player portrait, modern industrial pipes, spaceship bridge, holograms, screens, explosions, text, UI or watermark.

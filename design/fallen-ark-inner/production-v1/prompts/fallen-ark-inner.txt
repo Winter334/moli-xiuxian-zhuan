@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: the inner threshold of an immense fallen immortal ark. From a locally stable wall-side resting gallery, see a colossal enclosed supply structure unfold into many distant tiers. Broad pale stone-and-metal passages curve along the hull; ancient suspended crossbeams and jade spirit conduits reveal that this ship has the volume of a mountain. One quiet foreground gallery anchors the immense depth.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly architecture, confident large planes and lucid material light. Ancient Chinese immortal craftsmanship in fitted bronze, ivory stone, muted vermilion lacquer and pale green spirit flow, not modern aerospace machinery.
+Composition/framing: 1792x784 landscape, sweeping wide-angle oblique view along the inner hull. Asymmetric foreground, middle distance and distant structural tiers; strong readable massing and restrained details.
+Lighting/mood: clear pearl light through high hull slits, warm lacquer reflections against cool jade conduits; strangely spacious and solemn, not black horror fog.
+Constraints: only a local entry and resting gallery, not the final command center or entire vessel under player control. No workbench, storage rewards, close-up enemies, player portrait, modern spaceship, screens, cables, guns, legible writing, UI, watermark or border.

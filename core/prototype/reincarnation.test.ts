@@ -18,6 +18,7 @@ describe('life transition contracts', () => {
     ending.money = '10000';
     ending.inventory.charcoal = '100';
     ending.history.withdrawals = '4';
+    ending.history.testAssisted = true;
     const original = structuredClone(ending);
     const next = reincarnateCharacter(ending, 1000, 29);
     const opening = createCharacter(1000, 29);

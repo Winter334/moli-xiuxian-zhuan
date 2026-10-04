@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784, one independent landscape.
+Primary request: Thousand Crystal Marsh, broad shallow water and crystal-bearing green island shoals inside a lake of inland-sea scale. Chinese dreamcore with mineral islands repeating far beyond the explored route.
+Scene/backdrop: clear shallow waterways divide a large mosaic of low crystalline rock islands, living reed roots threading through their fissures. A few broad crystal outcrops emerge through stone, their translucent layers supporting green life. Distant huge pale Chinese water-bridges join higher islands; open lake remains visible between the land masses.
+Composition/framing: moderately elevated oblique wide-angle view across the shoal mosaic. An irregular reed-rooted island is close, several open channels curve through the middle and hundreds of quieter island silhouettes shrink toward the luminous distance. Maintain large connected shapes and a clear route for the eye, not a cluttered crystal field.
+Style/medium: polished painterly fantasy landscape, soft impasto-like stone and reed masses, broad reflected light and organized mineral folds. Delicate transparent crystal depth without smooth jewel rendering.
+Lighting/mood: gentle luminous overcast, muted sea-green shallows, pale cyan mineral seams, dark green reeds and a warm ivory sky. Living and ancient, expansive and quietly uncanny.
+Constraints: no characters, enemies, ruins covering everything, giant central shrine, text, UI, collage, frame or watermark. Do not replace every island with a jewel spike or obscure the spatial layout with fog and particles.

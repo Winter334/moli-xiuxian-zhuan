@@ -8,6 +8,8 @@ import { worldCalendarAt, WORLD_EPOCH_MS } from '../core/prototype/calendar';
 import { GameClient } from './game-client';
 import { LOCAL_SAVE_KEY, LocalSaveStore, localFromCloud, type SaveStorage } from './local-save';
 import { discordSaveKey } from '../shared/discord';
+import { executeDebugCommand } from '../core/prototype/debug';
+import { FATE_IDS } from '../core/prototype/fates';
 
 const characterId = '00000000-0000-4000-8000-000000000001';
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status });
@@ -430,7 +432,7 @@ describe('client-owned simulation and saves', () => {
       expect(BigInt(after.localRevision)).toBe(BigInt(before.localRevision) + 2n);
       expect(client.getSnapshot().response!.game).toEqual(getCharacterView(after.save.character, 0));
       expect(() => checkProgress(before.save, after.save, 0, 0)).not.toThrow();
-      for (const amount of [-1, 1_000_000_000_000]) {
+      for (const amount of [-1, 1_000_000_000_001]) {
         expect(await client.debugCommand({ type: 'money', amount })).toBe(false);
         expect(await saved(memory.storage)).toEqual(after);
         expect(client.getSnapshot()).toMatchObject({ blocked: false, issue: { source: 'action' } });
@@ -458,6 +460,52 @@ describe('client-owned simulation and saves', () => {
       expect(await saved(memory.storage)).toEqual(before);
       expect(client.getSnapshot()).toBe(snapshot);
       expect(fetcher).not.toHaveBeenCalled();
+    } finally { vi.unstubAllEnvs(); }
+  });
+
+  it('requires server permission in production and preserves the save when an administrator request is refused', async () => {
+    vi.stubEnv('DEV', false);
+    try {
+      const memory = memoryStorage();
+      const initial = profile();
+      initial.save.character.history.testAssisted = true;
+      await seed(memory.storage, initial);
+      let allowed = false;
+      let revoked = false;
+      const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url, init) => {
+        if (!init?.body) return json({ characterId, allowed });
+        const input = JSON.parse(String(init.body));
+        if (String(url) === '/api/client/save') {
+          const pending = (await saved(memory.storage))!.pending;
+          expect(pending?.request.save.character.fateId).toBe(input.save.character.fateId);
+          return json({ characterId, requestId: input.requestId, revision: String(BigInt(input.baseRevision) + 1n), savedAt: 0 });
+        }
+        if (revoked) return json({ message: '没有测试控制台权限' }, 403);
+        return json({ characterId, character: executeDebugCommand(input.character, input.command) });
+      });
+      const client = new GameClient({ fetcher, expectedCharacterId: characterId,
+        store: new LocalSaveStore(memory.storage), acquireLock: lock, wallNow: () => 0, monotonicNow: () => 0 });
+      await client.initialize();
+      const before = (await saved(memory.storage))!;
+      await client.refreshDebugAccess();
+      expect(client.getSnapshot().debugAllowed).toBe(false);
+      expect(await client.debugCommand({ type: 'money', amount: 10 })).toBe(false);
+      expect(await saved(memory.storage)).toEqual(before);
+      allowed = true;
+      await client.refreshDebugAccess();
+      expect(await client.debugCommand({ type: 'clear-test-marker' })).toBe(true);
+      expect((await saved(memory.storage))!.save.character.history.testAssisted).toBe(false);
+      const fateId = FATE_IDS.find(id => id !== before.save.character.fateId)!;
+      expect(await client.debugCommand({ type: 'fate', fateId })).toBe(true);
+      const after = (await saved(memory.storage))!;
+      expect(after.save.character).toMatchObject({ fateId, history: { testAssisted: false } });
+      expect(after).toMatchObject({ pending: null, cloudRevision: '2' });
+      expect(fetcher).toHaveBeenCalledWith('/api/client/save', expect.anything());
+      expect(new GameClient({ expectedCharacterId: characterId }).getSnapshot().debugAllowed).toBe(false);
+      revoked = true;
+      expect(await client.debugCommand({ type: 'money', amount: 10 })).toBe(false);
+      expect(await saved(memory.storage)).toEqual(after);
+      expect(client.getSnapshot()).toMatchObject({ debugAllowed: false, blocked: false, issue: { source: 'action' } });
     } finally { vi.unstubAllEnvs(); }
   });
 

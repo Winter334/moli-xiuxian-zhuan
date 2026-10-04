@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG location painting, 1792 by 784, one complete landscape.
+Primary request: Hanging Radiance Platform, a high local spirit-vein node built into the edge of an immense mountain; majestic, uncanny Chinese dreamcore through cantilevered stone architecture and limitless landscape.
+Scene/backdrop: a substantial pale stone array terrace projects from a high cliff. Broad inlaid channels continue across the terrace and down the rock; small cloud-headed parapets and simple traditional roof fragments tie it to Chinese cultivator construction. Beyond it, forests, rivers and separate remote landforms fill an immense world.
+Composition/framing: oblique very wide-angle side approach showing the underside of one enormous cantilever and the continuous cliff that carries it. A smaller access stair and railing make the huge structural span legible. Foreground structure has weight; the far valley has vast open air and nested ridges. A few quiet thin lines of light follow actual stone channels rather than drawing a giant magic circle in the sky.
+Style/medium: polished painterly Chinese fantasy art, large architectural planes, broad thick-painted cliff masses and luminous layered depth, not glossy 3D or photoreal stone.
+Lighting/mood: clear warm-white side light on stone, cool jade depths below and a very faint rose edge in high clouds; reverent, spacious and strangely peaceful.
+Constraints: this is one LOCAL branch node, NOT the world center, owner's throne palace or entire world-control mechanism. No central imperial hall, giant deity statue, characters, enemies, UI, text, border or watermark; no full-screen glyphs, confetti debris or opaque mist concealing the structure.

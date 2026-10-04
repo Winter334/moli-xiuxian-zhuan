@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Armor Bearing Cabin, a colossal armor-storage and heavy-fitting bay in an ancient Chinese immortal vessel. Low wide-angle view between orderly ranks of oversized curved armor shells and load-bearing metal columns; elevated walkways and deep shelves reveal enormous volume. An old array-office recording surface sits quietly in a side recess, secondary to the storage hall. Ancient puppet patrol traces remain, no foreground battle.
+Style/medium: majestic Chinese dreamcore, refined painterly fantasy with disciplined dark iron, warm bronze and jade-white planes; dramatic scale through tall fittings and repeated depth, no cluttered heaps.
+Lighting/mood: broad cream-white overhead light, cool metal undersides and restrained reddish conduit glints. Ancient, cleanly legible and solemn.
+Constraints: 1792x784, no player portrait, newly invented armor rewards, companions, busy modern warehouse, sci-fi soldiers, screens, gun racks, readable writing, UI, watermark, fresh warfare or final command throne. The old recording is not a magical new control interface.

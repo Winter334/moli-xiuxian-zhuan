@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG environment painting, 1792 by 784, one independent landscape.
+Primary request: Silver Reed Lake Ring, immense sweeping reed-island bands around expanses of still open water; grand Chinese dreamcore through near-infinite curved wetland geometry.
+Scene/backdrop: long silver-white reed plumes grow from deep green reed islands. Their broad curved banks form an incomplete natural ring around a huge lagoon, continuing into a lake horizon. Remote mountain islands carry a few old Chinese rooflines, tiny against the terrain; the water and vegetation are the principal subjects.
+Composition/framing: wide-angle view from a low island edge, silver reed masses close on one side, a sweeping bank curve in the middle and a large uninterrupted reflective lagoon on the other. Near reeds show a few broad stems while remote bands become soft repeated contours. Do not center a bridge or temple.
+Style/medium: refined painted Chinese fantasy landscape, carefully grouped soft reed masses, large quiet reflections, broad atmospheric planes and selective edges, not photographic individual hairs or microtexture.
+Lighting/mood: late afternoon pale gold-white light on the silver plumes, jade and cool violet reflections in water, soft rose clouds far above. Dreamlike calm with extraordinary breadth; not muddy swamp horror or a blizzard.
+Constraints: no characters, enemies, fishermen, hero boats, giant flowers, UI, text, borders or watermark. Reed bands are living plants, not glass blades; no neon glow, dense colored fog or glitter particles.

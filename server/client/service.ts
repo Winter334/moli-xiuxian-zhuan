@@ -23,7 +23,7 @@ export class ClientSaveService {
     return { characterId, revision: snapshot.revision, save: readClientSave(snapshot.save), serverTime: this.now() };
   }
 
-  async upload(characterId: string, raw: unknown): Promise<UploadAck> {
+  async upload(characterId: string, raw: unknown, authorizeAdministratorChanges?: () => Promise<boolean>): Promise<UploadAck> {
     const input = uploadSchema.parse(raw);
     if (input.characterId !== characterId) throw new ApiError(409, 'IDENTITY_CONFLICT', '云端身份与本地角色不一致，未覆盖任何存档。');
     try { input.save = readClientSave(input.save); }
@@ -43,7 +43,11 @@ export class ClientSaveService {
         throw new ApiError(429, 'SAVE_RATE_LIMIT', '上传过于频繁，本地进度已保留，稍后再试。');
       }
       try {
-        checkProgress(readClientSave(current.save), input.save, current.receivedAt, now);
+        const previous = readClientSave(current.save);
+        const requiresAdministrator = previous.character.fateId !== input.save.character.fateId ||
+          previous.character.history.testAssisted && !input.save.character.history.testAssisted;
+        const allowAdministratorChanges = requiresAdministrator && Boolean(await authorizeAdministratorChanges?.());
+        checkProgress(previous, input.save, current.receivedAt, now, allowAdministratorChanges);
       } catch (error) {
         throw new ApiError(422, 'SAVE_REJECTED', error instanceof Error ? error.message : '存档校验失败');
       }

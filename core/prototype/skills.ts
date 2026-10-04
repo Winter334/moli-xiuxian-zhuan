@@ -3,6 +3,7 @@ import { dec, exactAdd, text } from '../numbers';
 import { realmAt, skillThreshold } from './growth';
 import { LOGGING, MINING } from './gathering';
 import { positiveValue } from './effects';
+import { domainStage } from './divine-arts';
 import { nonnegativeSchema, type StatSource } from './types';
 
 const BASIC_SKILLS = {
@@ -65,6 +66,12 @@ export type TrainingId = keyof typeof TRAININGS;
 export const TRAINING_IDS = Object.keys(TRAININGS) as TrainingId[];
 export const trainingIdSchema = z.enum(['footwork', 'physique']);
 export function trainingAt(id: TrainingId, location: string) {
+  if (id === 'footwork' && location === 'chengzhao-lakeshore') {
+    return { actionName: '离界远行', prerequisite: 'chengzhao-gathering-array', xp: '64' };
+  }
+  if (id === 'footwork' && location === 'qixia-overlook') {
+    return { actionName: '望台练步', prerequisite: 'linzhao-crossing', xp: '32' };
+  }
   if (location === TRAININGS[id].location) {
     return { actionName: TRAININGS[id].actionName, prerequisite: TRAININGS[id].prerequisite, xp: '1' };
   }
@@ -73,6 +80,7 @@ export function trainingAt(id: TrainingId, location: string) {
 }
 export const ARTIFACT_SKILLS = {
   'returning-lamp': { name: '归息盏', cost: '600000', scaling: '20', max: 3 },
+  'star-dissolution-disk': { name: '星解盘', cost: '4000000000000', scaling: '20', max: 4 },
 } as const;
 export type ArtifactSkillId = keyof typeof ARTIFACT_SKILLS;
 export const MASTERIES = {
@@ -81,12 +89,18 @@ export const MASTERIES = {
 } as const;
 export type MasteryId = keyof typeof MASTERIES;
 const MASTERY_CHILDREN: Record<MasteryId, readonly SkillId[]> = {
-  'manual-mastery': [...MANUAL_IDS, 'returning-lamp'],
+  'manual-mastery': [...MANUAL_IDS, 'returning-lamp', 'star-dissolution-disk', 'domain'],
   'weapon-mastery': ['sword', 'greatsword'],
 };
 export const SKILLS = {
   ...BASIC_SKILLS, ...MANUALS, ...TRAININGS, mining: MINING, logging: LOGGING, ...ARTIFACT_SKILLS, ...MASTERIES,
   greatsword: { name: '重剑术', cost: '40', scaling: '1.8', max: 60, tags: ['weapon'] as const },
+  domain: { name: '领域', cost: '5000000', scaling: '3', max: 59, tags: ['domain'] as const,
+    prerequisite: 'bone-array-gully' },
+  pressure: { name: '承压锻体', cost: '3000', scaling: '1.6', max: 20,
+    prerequisite: 'layered-armor-gate' },
+  fishing: { name: '钓鱼', cost: '80', scaling: '1.6', max: 50, tags: ['fishing'] as const,
+    prerequisite: 'qixia-veinguard' },
 };
 export type WeaponSkill = 'unarmed' | 'sword' | 'greatsword';
 export type SkillId = keyof typeof SKILLS;
@@ -104,7 +118,11 @@ export const skillsSchema = z.object({
   logging: progress(60).optional(),
   'manual-mastery': progress(300).optional(), 'weapon-mastery': progress(300).optional(),
   'returning-lamp': progress(3).optional(),
+  'star-dissolution-disk': progress(4).optional(),
   greatsword: progress(60).optional(),
+  fishing: progress(50).optional(),
+  domain: progress(59).optional(),
+  pressure: progress(20).optional(),
 }).strict();
 export type SkillProgress = z.infer<typeof skillsSchema>;
 export const SKILL_IDS = Object.keys(SKILLS) as SkillId[];
@@ -200,8 +218,15 @@ export function allExperienceMultiplier(skills: SkillProgress): string {
   for (const [at, value] of [[1, '2'], [2, '1.5'], [3, '1.3333']] as const) {
     if ((skills['returning-lamp']?.level ?? 0) >= at) factor = factor.mul(value);
   }
+  for (const [at, value] of [[1, '2'], [2, '1.5'], [3, '1.3333'], [4, '1.25']] as const) {
+    if ((skills['star-dissolution-disk']?.level ?? 0) >= at) factor = factor.mul(value);
+  }
   if ((skills.greatsword?.level ?? 0) >= 60) factor = factor.mul('1.1');
   return text(factor);
+}
+
+export function domainExperienceMultiplier(skills: SkillProgress): string {
+  return text(dec(2).pow(skills['star-dissolution-disk']?.level ?? 0));
 }
 
 export function insightExperienceMultiplier(points = '0'): string {
@@ -233,7 +258,8 @@ export function gainSkill(
   const parentMultiplier = parent ? dec(masteryMultiplier(parent.level, skill.level)) : dec(1);
   const definition = SKILLS[id];
   const base = text(dec(amount).mul(allExperienceMultiplier(skills)).mul(realmAt(realm).skillXpMultiplier)
-    .mul(insightExperienceMultiplier(insight)).mul(parentMultiplier));
+    .mul(insightExperienceMultiplier(insight)).mul(parentMultiplier)
+    .mul(id === 'domain' ? domainExperienceMultiplier(skills) : '1'));
   const earned = dec(positiveValue(base, 'experience.skill', sources, {
     tags: ['skill', ...('tags' in definition ? definition.tags : [])],
   })).toDecimalPlaces(2);
@@ -280,5 +306,21 @@ export function skillSources(skills: SkillProgress, weapon: WeaponSkill): StatSo
       critMultiplier: text(heavyCritical.reduce((value, [at, gain]) => greatsword >= at ? value.plus(gain) : value, dec(0))),
     } }] : []),
     ...TRAINING_IDS.flatMap(id => skills[id] ? [trainingSource(id, skills[id].level)] : []),
+    ...(skills.domain ? [{ id: 'skill:domain', flat: {
+      attack: domainStage(skills.domain.level).passive, defense: domainStage(skills.domain.level).passive,
+      agility: domainStage(skills.domain.level).passive,
+    } }] : []),
+    ...(skills.pressure ? [{ id: 'skill:pressure', flat: { hpRegen: String(
+      [[5, 249900], [10, 500000], [15, 750000], [20, 1500000]]
+        .reduce((sum, [at, value]) => skills.pressure!.level >= at ? sum + value : sum, 0),
+    ) } }] : []),
   ];
+}
+
+export function pressureSource(stage: 1 | 2, level = 0): StatSource {
+  const exponent = dec(1).minus(dec(level).div(20));
+  return { id: 'environment:ark-pressure', multiplier: {
+    attackMultiplier: text(dec(stage === 1 ? '.8' : '.25').pow(exponent)),
+    attackSpeed: text(dec(stage === 1 ? '.9' : '.5').pow(exponent)),
+  } };
 }

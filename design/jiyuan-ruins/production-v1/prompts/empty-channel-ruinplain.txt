@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide 1792 by 784 Chinese xianxia RPG scene.
+Primary request: Empty Channel Ruinplain, an extraordinarily broad drained city channel bordered by monumental terraces and surviving ancient spirit-conducting structures.
+Composition/framing: ultra-wide ground view from the shallow near channel floor. Its empty pale-stone bed stretches far into the old city; large repeated bridge piers and stepped embankments form a powerful clean horizontal rhythm. A few long intact conduit bars are mounted along one bank; the distant city remains recognizably Chinese with layered eaves and gate forms.
+Lighting/mood: open bright daylight and long gentle shadows, pale stone, deep jade-grey wall planes, small warm bronze fixtures. Thin coherent pale-green light follows portions of old conduit grooves, showing partial function without a neon grid or a sea of particles. Immense quiet dreamcore space.
+Style/medium: refined painterly Chinese fantasy, broad unified shapes and carefully organized layered paint, not photorealistic debris or smooth CG.
+Constraints: the channel is drained, not a new river or flooded lake. No giant pipes from a modern factory, fresh destruction, spaceship, full-screen mist, readable runes, enemies, hero figure, text, UI or watermark.

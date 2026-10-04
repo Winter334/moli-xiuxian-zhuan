@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Sealed Hub Forecourt before the inner cabins of a fallen cross-realm immortal ark. An immensely broad terraced forecourt terminates at a remote sealed bulkhead, with huge structural pylons and spirit-supply junctions standing along the flanks. Low polished metal platforms cross an abyss-like recess; emphasize the path's continuity and the scale of hull ribs above. This is only a local outer-cabin threshold, never the whole vessel's final center.
+Style/medium: grand Chinese fantasy dreamcore, elegant archaic engineered forms, refined painterly surfaces, wide sweeping perspective and layered distances with quiet monumental order.
+Lighting/mood: pale golden light across cool smoky silver metal, soft amber supply channels and a dark door beyond, thin clear atmospheric depth.
+Constraints: 1792x784 standalone scene, centuries-old wear with present material-seeking traces, no central player, grand boss portrait, spaceship bridge, modern guns, screens, technological UI, readable text, excessive floating rune circles, explosions or new warfare.

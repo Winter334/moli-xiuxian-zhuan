@@ -125,6 +125,34 @@ describe('client cloud save contract', () => {
     expect(memory.snapshot()).toEqual(beforeRejection);
   });
 
+  it('permits unmarked administrator changes only through server authorization while preserving all other save guards', async () => {
+    const original = initial();
+    const next = { ...original, character: executeDebugCommand(original.character, {
+      type: 'fate', fateId: FATE_IDS.find(id => id !== original.character.fateId)!,
+    }) };
+    const memory = memoryStore(original);
+    const service = new ClientSaveService(memory.store, () => 20_000);
+    const denied = vi.fn(async () => false);
+    await expect(service.upload(characterId, upload(next), denied)).rejects.toMatchObject({ code: 'SAVE_REJECTED' });
+    expect(memory.snapshot().revision).toBe('0');
+    expect(denied).toHaveBeenCalledTimes(1);
+    const accelerated = { ...next, playedMs: 50_000 };
+    await expect(service.upload(characterId, upload(accelerated), async () => true)).rejects.toMatchObject({ code: 'SAVE_REJECTED' });
+    expect(memory.snapshot().revision).toBe('0');
+    await expect(service.upload(characterId, upload(next), async () => true)).resolves.toMatchObject({ revision: '1' });
+    expect((await service.getProfile(characterId)).save).toEqual(next);
+    expect(next.character.history.testAssisted).toBe(false);
+    const marked = structuredClone(original);
+    marked.character.history.testAssisted = true;
+    const legacy = memoryStore(marked);
+    const legacyService = new ClientSaveService(legacy.store, () => 20_000);
+    const cleared = { ...marked, character: executeDebugCommand(marked.character, { type: 'clear-test-marker' }) };
+    await expect(legacyService.upload(characterId, upload(cleared))).rejects.toMatchObject({ code: 'SAVE_REJECTED' });
+    expect(legacy.snapshot().revision).toBe('0');
+    await expect(legacyService.upload(characterId, upload(cleared), async () => true)).resolves.toMatchObject({ revision: '1' });
+    expect((await legacyService.getProfile(characterId)).save).toEqual(cleared);
+  });
+
   it('rejects cultivation above the breakthrough cap without rewriting the snapshot', () => {
     const capped = initial();
     capped.character = executeDebugCommand(capped.character, { type: 'realm', level: FOUNDATION_LEVEL - 1 });

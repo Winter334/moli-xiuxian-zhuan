@@ -1,25 +1,27 @@
 import { z } from 'zod';
-import { dec, integerAdd, random, text } from '../numbers';
+import { dec, exactAdd, integerAdd, random, text } from '../numbers';
 import { worldCalendarAt } from './calendar';
 import {
   addStack, awardItem, characterStats, cleared, defeatDestination, equippedWeaponSkill, gainCharacterExperience, gainCharacterSkill, isUnlocked, readCharacter, record, synchronizeCharacter, type CharacterState,
 } from './character-state';
 import { CharacterCommandError, commandEntry } from './command-error';
 import { combatPower, COMBAT_POWER_VERSION } from './combat-power';
-import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, FOOD_EFFECTS, ITEMS, MANOR_AID, RECIPES, REGIONS, SAFE_LOCATIONS, SHOPS, SHOP_IDS, SLOTS, encounterEnemy, encounterNeedsEntry, encounterPool, enemyRealmName, foodEffectSource, lookup, shopAtLocation, type LootEntry } from './content';
-import { DIVINE_ARTS, DIVINE_ART_IDS, divineArtIdSchema } from './divine-arts';
+import { ARMOR_ASSEMBLIES, ASSEMBLIES, ENEMIES, FOOD_EFFECTS, ITEMS, MANOR_AID, MOON_BLESSINGS, RECIPES, REGIONS, SAFE_LOCATIONS, SHOPS, SHOP_IDS, SLOTS, encounterEnemy, encounterNeedsEntry, encounterPool, expandEncounter, enemyRealmName, foodEffectSource, lookup, moonBlessingSource, temporaryEffect, shopAtLocation, type LootEntry } from './content';
+import { DIVINE_ARTS, DIVINE_ART_IDS, divineArtIdSchema, divineArtSource, domainStage } from './divine-arts';
 import { absorbMarrow, assemble, assembleArmor, craft, craftingRates, foodDuration, itemUseIssue, marrowAbsorptionPreview, purchasePrice, refreshShop, trade, upgradeFurnace, useItem } from './economy';
 import { activeSources, healingValue, positiveValue, scaledSource } from './effects';
 import { equipmentSource, itemValue } from './equipment';
 import { FATES, FATE_TIERS } from './fates';
 import { FURNACES, furnaceTierSchema } from './furnace';
 import { FOUNDATION_ROOTS } from './foundation';
-import { advanceWork, gatheringSkill, MINING_SITE_IDS, MINING_SITES, miningEfficiency, miningSiteIdSchema, miningSpeed } from './gathering';
+import { advanceWork, exactMiningPeriod, gatheringSkill, marrowSeamChance, MINING_SITE_IDS, MINING_SITES, miningEfficiency, miningSiteIdSchema, miningSpeed } from './gathering';
 import { FOUNDATION_LEVEL, killExperience, killExperienceRealmFactor, LEVEL_CAP, realmAt, realmName } from './growth';
 import { incrementRecord, markMilestone } from './history';
+import { advanceFishing, JOURNEY_LENGTH, journeySpeed, waitingFishing } from './lake-activities';
+import { initialReactor, REACTOR_MATERIALS, REACTOR_SCORCH_SOURCE, reactorMaterialSchema, reactorQuality, reactorStep } from './ark-reactor';
 import { describeLogGain, describeRealmFactor } from './log';
-import { allExperienceMultiplier, ARTIFACT_SKILLS, initialSkills, MANUAL_IDS, MANUALS, manualIdSchema, manualSource, manualTargetCount, masteryBonuses, masteryProgress, MEDITATION_STAGES, SKILL_IDS, SKILLS, skillSources, threshold, TRAINING_IDS, TRAININGS, trainingAt, trainingIdSchema, type ArtifactSkillId, type SkillId } from './skills';
-import { advanceSimulation, getPlayerStats, setRecoveryMode, startEncounter, withdraw } from './simulation';
+import { allExperienceMultiplier, ARTIFACT_SKILLS, domainExperienceMultiplier, initialSkills, MANUAL_IDS, MANUALS, manualIdSchema, manualSource, manualTargetCount, masteryBonuses, masteryProgress, MEDITATION_STAGES, SKILL_IDS, SKILLS, skillSources, threshold, TRAINING_IDS, TRAININGS, trainingAt, trainingIdSchema, type ArtifactSkillId, type SkillId } from './skills';
+import { advanceSimulation, applyTimedEffect, getPlayerStats, replaceTimedEffects, setRecoveryMode, startEncounter, withdraw } from './simulation';
 import type { SimulationEvent, SimulationHooks, StatSource } from './types';
 
 const batch = z.number().int().min(1).max(10000);
@@ -52,6 +54,19 @@ export const characterCommandSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('train'), skillId: trainingIdSchema.nullable() }).strict(),
   z.object({ type: z.literal('gather'), siteId: miningSiteIdSchema.nullable() }).strict(),
   z.object({ type: z.literal('claim-manor-aid') }).strict(),
+  z.object({ type: z.literal('negotiate-qixia-array') }).strict(),
+  z.object({ type: z.literal('set-qixia-array'), layers: z.number().int().min(6).max(9999) }).strict(),
+  z.object({ type: z.literal('claim-lake-insight') }).strict(),
+  z.object({ type: z.literal('hear-jiyuan-guide') }).strict(),
+  z.object({ type: z.literal('steady-brokenplain') }).strict(),
+  z.object({ type: z.literal('observe-domain') }).strict(),
+  z.object({ type: z.literal('moon-offering') }).strict(),
+  z.object({ type: z.literal('fish'), active: z.boolean() }).strict(),
+  z.object({ type: z.literal('fishing-input'), held: z.boolean() }).strict(),
+  z.object({ type: z.literal('reactor'), active: z.boolean() }).strict(),
+  z.object({ type: z.literal('reactor-feed'), itemId: reactorMaterialSchema, quantity: batch }).strict(),
+  z.object({ type: z.literal('reactor-extract') }).strict(),
+  z.object({ type: z.literal('read-ark-contract') }).strict(),
   z.object({ type: z.literal('absorb-marrow') }).strict(),
 ]);
 export type CharacterCommand = z.infer<typeof characterCommandSchema>;
@@ -67,6 +82,7 @@ export interface CharacterEvent {
 export { CharacterCommandError } from './command-error';
 
 function meditationExperience(state: CharacterState): string {
+  if (state.meditationTier !== undefined) return String(state.meditationTier);
   return MEDITATION_STAGES.reduce<string>((xp, stage) =>
     stage.prerequisite === null || cleared(state, stage.prerequisite) ? stage.xp : xp, '1');
 }
@@ -93,6 +109,7 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
   return {
     stopOnEncounterEnd: true,
     getMoney: () => state.money,
+    getMarrowInsight: () => state.marrowInsight ?? '0',
     getSturdyCap: () => state.equipment.special
       ? ITEMS[state.instances[state.equipment.special].itemId].sturdyCap ?? 1 : 1,
     getPlayerTargetCount: () => manualTargetCount(state.activeManual, state.activeManual ? state.skills[state.activeManual]!.level : 0),
@@ -109,8 +126,11 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
       if (event.kind === 'strike') {
         if (event.side === 'player') {
           const battle = simulation.battle!;
-          const enemy = encounterEnemy(battle.regionId, battle.enemies[event.slot].definition.id);
+          const enemy = encounterEnemy(battle.regionId, battle.enemies[event.slot].definition.id, battle.entry);
           changed = gainCharacterSkill(state, 'combat', enemy.xp);
+          if (state.skills.domain && dec(event.hpLost).gt(0)) {
+            changed = gainCharacterSkill(state, 'domain', text(dec(event.hpLost).div(100))) || changed;
+          }
           if (event.hit) {
             changed = gainCharacterSkill(state, equippedWeaponSkill(state), enemy.xp) || changed;
             const artifact = state.equipment.artifact ? state.instances[state.equipment.artifact].itemId : null;
@@ -125,21 +145,21 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         record(state, `${ENEMIES[simulation.battle!.enemies[event.slot].definition.id].name}回春，气血+${event.amount}`);
       } else if (event.kind === 'reflection') {
         record(state, `反震，损失${event.hpLost}气血`);
-      } else if (event.kind === 'tidal-pressure' || event.kind === 'health-burst') {
-        if (dec(event.hpLost).gt(0)) record(state, `${event.kind === 'tidal-pressure' ? '潮压' : '囊爆'}，损失${event.hpLost}气血`);
+      } else if (event.kind === 'tidal-pressure' || event.kind === 'health-burst' || event.kind === 'pre-attack-damage') {
+        if (dec(event.hpLost).gt(0)) record(state, `${event.kind === 'tidal-pressure' ? '潮压' : event.kind === 'health-burst' ? '囊爆' : '贯光'}，损失${event.hpLost}气血`);
       } else if (event.kind === 'player-action-completed' && state.activeManual) {
         const xp = text(event.targetIds.reduce((sum, id) =>
-          sum.plus(encounterEnemy(event.regionId, id).xp), dec(0)).div(event.targetIds.length));
+          sum.plus(encounterEnemy(event.regionId, id, event.entry).xp), dec(0)).div(event.targetIds.length));
         changed = gainCharacterSkill(state, state.activeManual, xp);
       } else if (event.kind === 'enemy-defeated') {
         incrementRecord(state.history.kills, event.enemyId);
-        const enemy = encounterEnemy(event.regionId, event.enemyId);
+        const enemy = encounterEnemy(event.regionId, event.enemyId, simulation.battle?.entry);
         const realmFactor = killExperienceRealmFactor(enemy.realm, state.level);
         const xp = killExperience(enemy.xp, enemy.realm, state.level, event.groupSize, allExperienceMultiplier(state.skills));
         const reward = gainCharacterExperience(state, xp, undefined, true, ['activity', 'kill']);
         ({ changed, fullHeal } = reward);
         const loot = rollLoot(simulation, enemy.loot, enemy.lootMultiplier, '1', sources);
-        for (const [id, count] of Object.entries(loot)) awardItem(state, id, count);
+        for (const [id, count] of Object.entries(loot)) awardItem(state, id, count, enemy.loot.find(entry => entry.itemId === id)?.quality);
         const drops = Object.entries(loot).map(([id, count]) => `${ITEMS[id].name}×${count}`).join('、');
         const capped = dec(reward.earned).gt(reward.credited) ? '，封顶溢出未计入' : '';
         record(state, `击败${enemy.name}，${describeLogGain('修为', reward.credited)}（${describeRealmFactor(realmFactor)}${capped}）${drops ? `，${drops}` : ''}`);
@@ -147,11 +167,26 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         const region = lookup(REGIONS, event.regionId);
         if (BigInt(event.total) % BigInt(region.groups) === 0n) {
           const first = BigInt(event.total) === BigInt(region.groups);
+          if (event.regionId === 'qixia-loop-array') {
+            state.qixiaArray!.unlockedMax = Math.min(9999,
+              Math.max(state.qixiaArray!.unlockedMax, Math.floor(event.entry!.arrayLayers! * 1.25)));
+          }
           if (first) markMilestone(state, 'firstClears', event.regionId);
           const xp = text(dec(first ? region.firstXp : region.repeatXp).mul(allExperienceMultiplier(state.skills)));
           const reward = gainCharacterExperience(state, xp, undefined, true, ['activity', 'clear']);
           ({ changed, fullHeal } = reward);
-          record(state, `${region.name}${first ? '首次清理完成' : '再次清理完成'}，${describeLogGain('修为', reward.credited)}${dec(reward.earned).gt(reward.credited) ? '（封顶溢出未计入）' : ''}`);
+          record(state, `${region.name}${first ? '首次清理完成' : '再次清理完成'}${dec(xp).gt(0)
+            ? `，${describeLogGain('修为', reward.credited)}${dec(reward.earned).gt(reward.credited) ? '（封顶溢出未计入）' : ''}` : ''}`);
+          if (region.searchMoney) {
+            const found = text(dec(Math.max(random(simulation), .000001)).pow('-1.5').mul(region.searchMoney).floor());
+            state.money = integerAdd(state.money, found);
+            record(state, `旧墟搜财：灵石+${found}`);
+            if (dec(region.searchMoney).lt('1000000000') &&
+                random(simulation) >= dec(region.searchMoney).mul('.0000002').toNumber() && !state.jiyuanMerchantFound) {
+              state.jiyuanMerchantFound = true;
+              record(state, '沿取材线发现霁原墟商');
+            }
+          }
           if (first || region.challenge) simulation.mode = 'idle';
           if (!first && region.repeatLoot && state.level <= region.repeatLoot.maxLevel) {
             const loot = rollLoot(simulation, region.repeatLoot.entries, '1', '1', sources);
@@ -161,6 +196,10 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
             }
           }
           if (first) {
+            if (event.regionId === 'essence-condensing-corridor') {
+              state.meditationTier = 120;
+              record(state, '静修舱已开放，养息基础熟练提升为120/秒');
+            }
             if (event.regionId === MANOR_AID.finalRegionId) {
               const seals = Object.entries(state.instances).filter(([, item]) => item.itemId === MANOR_AID.itemId);
               for (const [uid] of seals) {
@@ -173,7 +212,7 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
               }
             }
             const items = Object.entries(region.firstItems ?? {});
-            for (const [id, count] of items) awardItem(state, id, count);
+            for (const [id, count] of items) awardItem(state, id, count, region.firstItemQualities?.[id]);
             if (items.length) record(state, `清理奖励：${items.map(([id, count]) => `${ITEMS[id].name}×${count}`).join('、')}`);
             const locations = Object.values(SAFE_LOCATIONS).filter((location) => location.prerequisite === event.regionId);
             const regions = Object.values(REGIONS).filter((entry) => entry.prerequisite === event.regionId);
@@ -190,25 +229,41 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         state.history.defeats = integerAdd(state.history.defeats, 1);
         delete state.training;
         delete state.gathering;
+        delete state.fishing;
+        if (state.reactor) state.reactor.active = false;
         state.locationId = defeatDestination(state);
+        changed = true;
+        if (state.locationId === 'qixia-overlook') state.meditationTier ??= 10;
         markMilestone(state, 'firstVisits', state.locationId);
         record(state, `战败，返回${SAFE_LOCATIONS[state.locationId].name}歇息`);
+      } else if (event.kind === 'pulse' && simulation.battle && REGIONS[state.locationId].pressure) {
+        changed = gainCharacterSkill(state, 'pressure', REGIONS[state.locationId].pressure!.xp);
       } else if (event.kind === 'pulse' && event.sleeping && simulation.mode === 'sleep') {
         changed = gainCharacterSkill(state, 'rest', meditationExperience(state));
       } else if (event.kind === 'pulse' && state.training) {
         const activity = trainingAt(state.training, state.locationId)!;
         changed = gainCharacterSkill(state, state.training,
           positiveValue(activity.xp, 'activity.speed', sources, { tags: ['training', 'activity'] }));
+        if (state.locationId === 'chengzhao-lakeshore' && state.training === 'footwork' && state.firstJourney &&
+            dec(state.firstJourney.progress).lt(JOURNEY_LENGTH)) {
+          state.firstJourney.progress = text(dec(state.firstJourney.progress)
+            .plus(journeySpeed(getPlayerStats(simulation).agility, state.skills.footwork!.level)).clamp(0, JOURNEY_LENGTH));
+          if (state.firstJourney.progress === JOURNEY_LENGTH) record(state, '首次离界远行完成，已抵达霁原旧土');
+        }
       } else if (event.kind === 'pulse' && state.gathering) {
         const activity = state.gathering;
         const skillId = gatheringSkill(activity.siteId);
         activity.elapsed = advanceWork(activity.elapsed, '1', miningSpeed(sources, skillId));
-        while (dec(activity.elapsed).gte(activity.cycleSeconds)) {
-          activity.elapsed = text(dec(activity.elapsed).minus(activity.cycleSeconds));
+        while (BigInt(activity.elapsed.split('.')[0]) >= BigInt(activity.cycleSeconds)) {
+          activity.elapsed = exactAdd(activity.elapsed, `-${activity.cycleSeconds}`);
           const site = MINING_SITES[activity.siteId];
           if (activity.siteId === 'jade-seam') state.jadeSeamCompletions!++;
+          if (activity.siteId === 'qixia-array-fragments') state.qixiaFragmentCompletions!++;
+          if (activity.siteId === 'brokenplain-marrow-seam') state.brokenplainSeamCompletions!++;
           const efficiency = miningEfficiency(activity.siteId, state.skills[skillId]!.level,
-            activity.siteId === 'jade-seam' ? state.jadeSeamCompletions : 0);
+            activity.siteId === 'jade-seam' ? state.jadeSeamCompletions
+              : activity.siteId === 'qixia-array-fragments' ? state.qixiaFragmentCompletions
+                : activity.siteId === 'brokenplain-marrow-seam' ? state.brokenplainSeamCompletions : 0);
           const success = dec(random(simulation)).lt(efficiency.chance);
           const mining = state.history.mining[activity.siteId] ??= { cycles: '0', successes: '0' };
           mining.cycles = integerAdd(mining.cycles, 1);
@@ -219,10 +274,20 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
             if (skillId === 'logging') mining.produced = integerAdd(mining.produced ?? '0', quantity);
             incrementRecord(state.history.gathered, site.itemId, quantity);
           }
+          let secondary = false;
+          if (activity.siteId === 'brokenplain-marrow-seam') {
+            mining.secondaryProduced ??= '0';
+            secondary = dec(random(simulation)).lt(marrowSeamChance(state.skills.mining!.level));
+            if (secondary) {
+              addStack(state.inventory, 'stellar-marrow', 1);
+              incrementRecord(state.history.gathered, 'stellar-marrow');
+              mining.secondaryProduced = integerAdd(mining.secondaryProduced, 1);
+            }
+          }
           // The next period is refreshed before this cycle's proficiency reward.
           activity.cycleSeconds = efficiency.cycleSeconds;
           changed = gainCharacterSkill(state, skillId, site.xp) || changed;
-          record(state, `${site.name}：${success ? `${ITEMS[site.itemId].name}×${quantity}` : '未采得矿物'}，${SKILLS[skillId].name}熟练增长`);
+          record(state, `${site.name}：${success ? `${ITEMS[site.itemId].name}×${quantity}` : '未采得矿物'}${secondary ? '、璇灵髓×1' : ''}，${SKILLS[skillId].name}熟练增长`);
         }
       }
       return changed ? { ...characterStats(state), fullHeal } : undefined;
@@ -233,26 +298,44 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
 function startNextGroup(state: CharacterState, events?: CharacterEvent[]) {
   if (state.simulation.battle || !Object.hasOwn(REGIONS, state.locationId)) return;
   const region = REGIONS[state.locationId];
+  if (region.pressure && !state.skills.pressure) {
+    state.skills.pressure = { level: 0, xp: '0' };
+    synchronizeCharacter(state);
+  }
   if (dec(state.simulation.player.hp).lte(0)) {
     state.locationId = defeatDestination(state);
     state.simulation.mode = 'rest';
     return;
   }
   const pool = encounterPool(state.locationId, state.simulation.clearedGroups[state.locationId] ?? '0');
-  const groupSize = region.randomGroupSize ? 1 + Math.floor(random(state.simulation) * 2) : region.groupSize;
-  const enemyIds = Array.from({ length: groupSize }, () =>
+  const groupSize = region.enemyCountRange
+    ? Math.floor(region.enemyCountRange[0] + random(state.simulation) * (region.enemyCountRange[1] - region.enemyCountRange[0]))
+    : region.randomGroupSize ? 1 + Math.floor(random(state.simulation) * 2) : region.groupSize;
+  const initialIds = region.fixedEnemies ?? Array.from({ length: groupSize }, () =>
     pool[Math.floor(random(state.simulation) * pool.length)]);
+  const enemyIds = expandEncounter(state.locationId, initialIds);
   const stats = getPlayerStats(state.simulation);
   const entry = encounterNeedsEntry(state.locationId, enemyIds) ? {
     attack: stats.attack, defense: stats.defense, agility: stats.agility,
     manorSeal: Boolean(state.equipment.special && state.instances[state.equipment.special].itemId === MANOR_AID.itemId),
   } : undefined;
+  if (state.locationId === 'qixia-veinguard' || state.locationId === 'chengzhao-gathering-array') {
+    const maximum = state.locationId === 'qixia-veinguard' ? 5n : 4n;
+    const fragments = Number(BigInt(state.inventory['petal-array-fragment'] ?? '0') < maximum
+      ? BigInt(state.inventory['petal-array-fragment'] ?? '0') : maximum);
+    Object.assign(entry!, { arrayFragments: fragments, enemyMultiplier: text(dec(region.enemyMultiplier!)
+      .minus(dec('.08').mul(fragments))) });
+  } else if (state.locationId === 'qixia-loop-array') {
+    Object.assign(entry!, { arrayLayers: state.qixiaArray!.layers,
+      enemyMultiplier: text(dec('.08').mul(state.qixiaArray!.layers).plus(1)) });
+  }
   const enemies = enemyIds.map(id => encounterEnemy(state.locationId, id, entry).definition);
   for (const id of enemyIds) markMilestone(state, 'firstEncounters', id);
   if (state.locationId === MANOR_AID.finalRegionId && entry?.manorSeal) {
     record(state, '巡枢残印引动旧阵，涵岳枢灵的攻防敏血压至百分之一');
   }
-  state.simulation = startEncounter(state.simulation, { regionId: state.locationId, enemies, entry }, characterHooks(state, events)).state;
+  const origins = region.allowSummons || ['qixia-veinguard', 'qixia-loop-array', 'chengzhao-gathering-array'].includes(state.locationId) ? initialIds : undefined;
+  state.simulation = startEncounter(state.simulation, { regionId: state.locationId, enemies, entry, origins }, characterHooks(state, events)).state;
 }
 
 export function advanceCharacter(input: CharacterState, targetMs: number, maxSteps = 1000, events?: CharacterEvent[]): CharacterState {
@@ -269,9 +352,37 @@ export function advanceCharacter(input: CharacterState, targetMs: number, maxSte
     if (result.fullHeal && dec(state.simulation.player.hp).gt(0)) state.simulation.player.hp = getPlayerStats(state.simulation).maxHp;
   }
   while (state.simulation.clockMs < targetMs && remaining > 0) {
-    const result = advanceSimulation(state.simulation, targetMs, remaining, characterHooks(state, events));
+    const beforeClock = state.simulation.clockMs;
+    const next = state.reactor?.active ? Math.min(targetMs, beforeClock + 30 - state.reactor.remainderMs) : targetMs;
+    const result = advanceSimulation(state.simulation, next, remaining, characterHooks(state, events));
     state.simulation = result.state;
     remaining -= result.processedSteps;
+    if (state.reactor?.active) {
+      state.reactor.remainderMs += state.simulation.clockMs - beforeClock;
+      if (state.reactor.remainderMs === 30) {
+        state.reactor.remainderMs = 0;
+        const durationMs = reactorStep(state.reactor);
+        if (durationMs !== null) {
+          state.simulation = applyTimedEffect(state.simulation, {
+            id: 'reactor-scorch', durationMs, source: REACTOR_SCORCH_SOURCE,
+          }).state;
+          record(state, '灵能反应炉过热熔毁，炉内投料与辐照重置，受到灵机灼扰');
+        }
+      }
+    }
+    if (state.fishing) {
+      let changed = false;
+      advanceFishing(state.fishing, state.simulation.clockMs - beforeClock, state.simulation, {
+        level: () => state.skills.fishing!.level,
+        experience: amount => { changed = gainCharacterSkill(state, 'fishing', String(amount)) || changed; },
+        caught: itemId => {
+          awardItem(state, itemId, 1);
+          incrementRecord(state.history.gathered, itemId);
+          record(state, `${ITEMS[itemId].name}上钩了`);
+        },
+      });
+      if (changed) synchronizeCharacter(state);
+    }
     // A cleared group continues at the same checkpoint; idle is an explicit stop.
     if (state.simulation.mode !== 'idle') startNextGroup(state, events);
   }
@@ -287,7 +398,10 @@ function arriveAtRegion(state: CharacterState, regionId: string) {
   markMilestone(state, 'firstVisits', regionId);
   delete state.training;
   delete state.gathering;
+  delete state.fishing;
+  if (state.reactor) state.reactor.active = false;
   state.simulation.mode = 'idle';
+  synchronizeCharacter(state);
 }
 
 function beginExploration(state: CharacterState, events?: CharacterEvent[]) {
@@ -317,12 +431,16 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       if (!Object.hasOwn(SAFE_LOCATIONS, command.locationId) || !isUnlocked(state, command.locationId)) {
         throw new CharacterCommandError('此地点尚不可达');
       }
+      if (command.locationId === 'qixia-overlook') state.meditationTier ??= 10;
       if (state.locationId === command.locationId) break;
       state.locationId = command.locationId;
       markMilestone(state, 'firstVisits', command.locationId);
       delete state.training;
       delete state.gathering;
+      delete state.fishing;
+      if (state.reactor) state.reactor.active = false;
       state.simulation = setRecoveryMode(state.simulation, 'rest');
+      synchronizeCharacter(state);
       break;
     }
     case 'arrive':
@@ -339,7 +457,9 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
     case 'withdraw':
       if (!state.simulation.battle) throw new CharacterCommandError('当前没有战斗');
       state.locationId = lookup(REGIONS, state.locationId).parent;
+      if (state.locationId === 'qixia-overlook') state.meditationTier ??= 10;
       state.simulation = withdraw(state.simulation);
+      synchronizeCharacter(state);
       state.history.withdrawals = integerAdd(state.history.withdrawals, 1);
       markMilestone(state, 'firstVisits', state.locationId);
       break;
@@ -353,6 +473,8 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       }
       delete state.training;
       delete state.gathering;
+      delete state.fishing;
+      if (state.reactor) state.reactor.active = false;
       state.simulation = setRecoveryMode(state.simulation, command.mode);
       break;
     case 'train': {
@@ -366,7 +488,11 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       }
       if (!state.skills[command.skillId]) state.skills[command.skillId] = { level: 0, xp: '0' };
       delete state.gathering;
+      delete state.fishing;
       state.training = command.skillId;
+      if (command.skillId === 'footwork' && state.locationId === 'chengzhao-lakeshore') {
+        state.firstJourney ??= { progress: '0' };
+      }
       synchronizeCharacter(state);
       record(state, `开始${training.actionName}`);
       break;
@@ -384,15 +510,134 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       const skillId = gatheringSkill(command.siteId);
       if (!state.skills[skillId]) state.skills[skillId] = { level: 0, xp: '0' };
       if (command.siteId === 'jade-seam' && state.jadeSeamCompletions === undefined) state.jadeSeamCompletions = 0;
+      if (command.siteId === 'qixia-array-fragments' && state.qixiaFragmentCompletions === undefined) state.qixiaFragmentCompletions = 0;
+      if (command.siteId === 'brokenplain-marrow-seam' && state.brokenplainSeamCompletions === undefined) state.brokenplainSeamCompletions = 0;
       delete state.training;
+      delete state.fishing;
       state.gathering = {
         siteId: command.siteId, elapsed: '0',
         cycleSeconds: miningEfficiency(command.siteId, state.skills[skillId]!.level,
-          command.siteId === 'jade-seam' ? state.jadeSeamCompletions : 0).cycleSeconds,
+          command.siteId === 'jade-seam' ? state.jadeSeamCompletions
+            : command.siteId === 'qixia-array-fragments' ? state.qixiaFragmentCompletions
+              : command.siteId === 'brokenplain-marrow-seam' ? state.brokenplainSeamCompletions : 0).cycleSeconds,
       };
       record(state, `开始${SKILLS[skillId].name}：${site.name}`);
       break;
     }
+    case 'reactor':
+      if (state.locationId !== 'fallen-ark-outer' || state.simulation.mode !== 'rest') {
+        throw new CharacterCommandError('请先到外舱据点结束其它活动');
+      }
+      state.reactor ??= initialReactor();
+      delete state.training;
+      delete state.gathering;
+      delete state.fishing;
+      state.reactor.active = command.active;
+      break;
+    case 'reactor-feed': {
+      if (!state.reactor?.active || state.locationId !== 'fallen-ark-outer') throw new CharacterCommandError('请先操作灵能反应炉');
+      if (BigInt(state.inventory[command.itemId] ?? '0') < BigInt(command.quantity)) throw new CharacterCommandError('投料不足');
+      addStack(state.inventory, command.itemId, -command.quantity);
+      const key = REACTOR_MATERIALS[command.itemId];
+      state.reactor[key] += command.quantity;
+      if (key === 'gel') state.reactor.temperature -= (state.reactor.temperature - 20) * command.quantity / state.reactor.gel;
+      record(state, `反应炉投料：${ITEMS[command.itemId].name}×${command.quantity}`);
+      break;
+    }
+    case 'reactor-extract': {
+      if (!state.reactor?.active || state.locationId !== 'fallen-ark-outer') throw new CharacterCommandError('请先操作灵能反应炉');
+      if (state.reactor.gel < 10) throw new CharacterCommandError('炉内凝胶不足10份');
+      const quality = reactorQuality(state.reactor);
+      awardItem(state, 'condensed-gel-hilt', 1, quality);
+      incrementRecord(state.history.gathered, 'condensed-gel-hilt');
+      state.reactor.gel *= .8;
+      state.reactor.radiation = 0;
+      record(state, `反应炉提取凝蕴淬液，品质${quality}`);
+      break;
+    }
+    case 'read-ark-contract':
+      if (state.locationId !== 'fallen-ark-outer' || !cleared(state, 'armor-bearing-cabin') || state.arkContractClaimed) {
+        throw new CharacterCommandError('须完成承甲舱后解读一次阵务刻录');
+      }
+      state.arkContractClaimed = true;
+      awardItem(state, 'ark-ward-contract', 1, 130);
+      record(state, '解读旧阵务刻录，取得护舟阵契');
+      break;
+    case 'negotiate-qixia-array':
+      if (state.simulation.battle || state.locationId !== 'qixia-overlook' ||
+          !cleared(state, 'qixia-veinguard') || state.qixiaArray) {
+        throw new CharacterCommandError('需胜过守脉燧灵后，在栖霞望台交涉一次');
+      }
+      state.qixiaArray = { layers: 6, unlockedMax: 8 };
+      record(state, '守脉燧灵开放回环阵庭，可协商局部加持层数');
+      break;
+    case 'claim-lake-insight':
+      if (state.locationId !== 'chengzhao-lakeshore' || state.simulation.battle || state.lakeInsightClaimed) {
+        throw new CharacterCommandError('须在澄照湖岸阅读一次手札');
+      }
+      state.lakeInsightClaimed = true;
+      state.skills['manual-mastery'] ??= masteryProgress(state.skills, 'manual-mastery');
+      gainCharacterSkill(state, 'manual-mastery', '999900000000');
+      synchronizeCharacter(state);
+      record(state, '读过湖岸手札，功法造诣增长，镜潮外湾已开放');
+      break;
+    case 'hear-jiyuan-guide':
+      if (state.locationId !== 'jiyuan-ruins' || state.jiyuanIntroduced) throw new CharacterCommandError('须在旧墟听取一次路线介绍');
+      state.jiyuanIntroduced = true;
+      record(state, '驻墟采料者指明今日取材路径，塌坊长街已开放；守约居民不参与争材战斗');
+      break;
+    case 'steady-brokenplain':
+      if (state.locationId !== 'jiyuan-brokenplain' || state.brokenplainIntroduced) throw new CharacterCommandError('须在断原稳定一次心神');
+      state.brokenplainIntroduced = true;
+      record(state, '稳住心神，辨明古战痕与今日争材路径，落锋坡已开放');
+      break;
+    case 'observe-domain':
+      if (state.locationId !== 'jiyuan-brokenplain' || !cleared(state, 'bone-array-gully') || state.skills.domain ||
+          !state.learnedDivineArts.includes('circulating-qi')) throw new CharacterCommandError('须完成骸阵荒沟后观战领悟');
+      state.skills.domain = { level: 0, xp: '0' };
+      state.learnedDivineArts.push('domain');
+      if (state.activeDivineArt === 'circulating-qi') state.activeDivineArt = 'domain';
+      synchronizeCharacter(state);
+      record(state, '在安全距离观摩高阶斗法，领域初悟承接周天罡气，领域成长已开放');
+      break;
+    case 'moon-offering': {
+      if (state.locationId !== 'jiyuan-brokenplain' || !cleared(state, 'split-stoneplain')) {
+        throw new CharacterCommandError('须开放望月古龛后在断原供奉');
+      }
+      const cost = text(dec(getPlayerStats(state.simulation).maxHp).pow('1.35').round());
+      if (BigInt(state.money) < BigInt(cost)) throw new CharacterCommandError('供奉灵石不足，未清除现有状态');
+      const phase = worldCalendarAt(worldTimeMs).moonPhase;
+      state.money = integerAdd(state.money, `-${cost}`);
+      state.simulation = replaceTimedEffects(state.simulation, {
+        id: `moon-blessing:${phase}`, durationMs: 1800000, source: moonBlessingSource(phase),
+      });
+      record(state, `望月供奉${cost}灵石，临时状态已净除，取得${MOON_BLESSINGS[phase].name}赐福`);
+      break;
+    }
+    case 'fish':
+      if (!command.active) { delete state.fishing; break; }
+      if (state.locationId !== 'chengzhao-lakeshore' || state.simulation.mode !== 'rest') {
+        throw new CharacterCommandError('须在澄照湖岸普通歇息时垂钓');
+      }
+      if (state.fishing) break;
+      state.skills.fishing ??= { level: 0, xp: '0' };
+      delete state.training;
+      delete state.gathering;
+      state.fishing = waitingFishing(state.skills.fishing.level);
+      record(state, '开始湖岸垂钓');
+      break;
+    case 'fishing-input':
+      if (!state.fishing) throw new CharacterCommandError('当前没有垂钓活动');
+      state.fishing.held = command.held;
+      break;
+    case 'set-qixia-array':
+      if (state.simulation.battle || !state.qixiaArray ||
+          !['qixia-overlook', 'qixia-loop-array'].includes(state.locationId) ||
+          command.layers > state.qixiaArray.unlockedMax) {
+        throw new CharacterCommandError('需在回环阵庭或望台的非战斗状态选择已开放层数');
+      }
+      state.qixiaArray.layers = command.layers;
+      break;
     case 'claim-manor-aid':
       if (state.locationId !== MANOR_AID.locationId || !cleared(state, MANOR_AID.prerequisite) ||
           state.manorAidClaimed || cleared(state, MANOR_AID.finalRegionId)) {
@@ -465,6 +710,7 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       if (command.divineArtId !== null && !state.learnedDivineArts.includes(command.divineArtId)) {
         throw new CharacterCommandError('尚未掌握此神通');
       }
+      if (command.divineArtId === 'circulating-qi' && state.skills.domain) throw new CharacterCommandError('周天罡气已由领域承接');
       if (state.activeDivineArt === command.divineArtId) break;
       state.activeDivineArt = command.divineArtId;
       record(state, command.divineArtId === null ? '停止运转神通' : `运转${DIVINE_ARTS[command.divineArtId].name}`);
@@ -502,6 +748,9 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       label: '运转时', active: state.activeManual === manualId,
       source: manualSource(manualId, state.skills[manualId]!.level),
     });
+    if (id === 'domain') groups.push({
+      label: '运转时', active: state.activeDivineArt === 'domain', source: divineArtSource('domain', state.skills.domain!.level),
+    });
     return groups.flatMap(group => {
       const source = scaledSource(group.source, sources);
       const flat = Object.fromEntries(Object.entries(source.flat ?? {}).filter(([, value]) => !dec(value).eq(0)));
@@ -513,7 +762,8 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
   const currentShopId = shopAtLocation(REGIONS[state.locationId]?.parent ?? state.locationId) ?? 'village-stall';
   const shopDefinition = SHOPS[currentShopId];
   const shop = state[shopDefinition.stateKey];
-  const shopUnlocked = shopDefinition.prerequisite === null || cleared(state, shopDefinition.prerequisite);
+  const shopUnlocked = (shopDefinition.prerequisite === null || cleared(state, shopDefinition.prerequisite)) &&
+    (currentShopId !== 'jiyuan-supplies' || Boolean(state.jiyuanMerchantFound));
   const workshop = FURNACES[state.furnaceTier];
   const resting = simulation.mode === 'rest' || simulation.mode === 'sleep';
   const workshopAvailable = resting || simulation.mode === 'idle';
@@ -522,9 +772,10 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
   }));
   const itemUse = (itemId: string) => {
     const item = ITEMS[itemId];
-    if (item.kind !== 'food' && item.kind !== 'marrow' && item.kind !== 'insight' && item.kind !== 'foundation-pill') return null;
+    if (item.kind !== 'food' && item.kind !== 'marrow' && item.kind !== 'insight' && item.kind !== 'foundation-pill' &&
+        item.kind !== 'meditation-kit') return null;
     const food = item.kind === 'food' ? item.foodEffects!.map(id => ({
-      ...lookup(FOOD_EFFECTS, id), durationMs: foodDuration(state, id),
+      ...lookup(FOOD_EFFECTS, id), ...item.foodOverride, durationMs: foodDuration(state, id, itemId),
       source: scaledSource(foodEffectSource(id), sources),
     })) : null;
     const effectText = food?.map(effect => {
@@ -532,6 +783,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       const healing = (amount: string) => healingValue(amount, sources, ['regeneration', 'supply', effect.polarity]);
       const bonuses = [
         ...(effect.description ? [effect.description] : []),
+        ...(flat.maxHp ? [`气血上限${dec(flat.maxHp).gte(0) ? '+' : ''}${flat.maxHp}`] : []),
         ...(flat.hpRegen ? [`气血回复${dec(flat.hpRegen).gte(0) ? '+' : ''}${healing(flat.hpRegen)}/秒`] : []),
         ...(flat.attack ? [`攻击/防御/敏捷各+${flat.attack}`] : []),
         ...(flat.hpRegenPercent ? [`气血${dec(flat.hpRegenPercent).gte(0) ? '+' : ''}${text(dec(healing(flat.hpRegenPercent)).mul(100))}%/秒`] : []),
@@ -546,14 +798,15 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     }
     return {
       issue: itemUseIssue(state, itemId),
-      maxBatch: item.kind === 'foundation-pill' ? 1 : 10000,
-      description: item.kind === 'foundation-pill'
+      maxBatch: item.kind === 'foundation-pill' || item.kind === 'meditation-kit' ? 1 : 10000,
+      description: item.kind === 'meditation-kit' ? item.description!
+        : item.kind === 'foundation-pill'
         ? `${FOUNDATION_ROOTS[item.foundationRoot!].name}；仅炼气十二层修满可用，消耗1颗与6000万修为，必成；境界基础四维加成${text(dec(FOUNDATION_ROOTS[item.foundationRoot!].bonusRate).mul(100))}%，不加成装备、灵髓或熟练`
         : food
         ? `${effectText}；同效续时；${foodRealmName}及以下`
         : item.experience
           ? `修为+${item.experience.amount}，不乘经验加成，不提供突破许可；炼气十二层最高6000万，超出不保存`
-          : `随机永久增长：攻/防/敏 +${item.marrowValue} 或气血 +${item.marrowValue! * 50}，随累计增长递减`,
+          : `随机永久增长：攻/防/敏 +${item.marrowValue} 或气血 +${item.marrowValue! * (item.marrowValue! > 7500 ? 100 : 50)}，随累计增长递减`,
     };
   };
   const inventory = (items: Record<string, string>) => Object.entries(items).map(([itemId, quantity]) => {
@@ -596,6 +849,33 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     manorAid: state.locationId === MANOR_AID.locationId ? {
       claimed: Boolean(state.manorAidClaimed), finished: cleared(state, MANOR_AID.finalRegionId), name: ITEMS[MANOR_AID.itemId].name,
     } : null,
+    qixiaArray: ['qixia-overlook', 'qixia-loop-array'].includes(state.locationId) ? {
+      negotiated: Boolean(state.qixiaArray), available: !simulation.battle && cleared(state, 'qixia-veinguard'),
+      layers: state.qixiaArray?.layers ?? 6, unlockedMax: state.qixiaArray?.unlockedMax ?? 8,
+    } : null,
+    lakeInsightAvailable: state.locationId === 'chengzhao-lakeshore' && !state.lakeInsightClaimed,
+    jiyuanGuideAvailable: state.locationId === 'jiyuan-ruins' && !state.jiyuanIntroduced,
+    brokenplainIntroAvailable: state.locationId === 'jiyuan-brokenplain' && !state.brokenplainIntroduced,
+    domainObservationAvailable: state.locationId === 'jiyuan-brokenplain' && cleared(state, 'bone-array-gully') && !state.skills.domain,
+    arkContractAvailable: state.locationId === 'fallen-ark-outer' && cleared(state, 'armor-bearing-cabin') && !state.arkContractClaimed,
+    reactorAvailable: state.locationId === 'fallen-ark-outer',
+    reactor: state.reactor ? { ...state.reactor, quality: reactorQuality(state.reactor),
+      materials: Object.entries(REACTOR_MATERIALS).map(([itemId, field]) => ({
+        itemId: itemId as keyof typeof REACTOR_MATERIALS, field, name: ITEMS[itemId].name,
+        owned: state.inventory[itemId] ?? '0',
+      })) } : null,
+    moonOffering: state.locationId === 'jiyuan-brokenplain' && cleared(state, 'split-stoneplain') ? {
+      name: MOON_BLESSINGS[calendar.moonPhase].name,
+      price: text(dec(getPlayerStats(simulation).maxHp).pow('1.35').round()),
+      source: moonBlessingSource(calendar.moonPhase),
+    } : null,
+    fishingAvailable: state.locationId === 'chengzhao-lakeshore' && simulation.mode === 'rest',
+    fishing: state.fishing ? structuredClone(state.fishing) : null,
+    firstJourney: state.firstJourney ? {
+      progress: state.firstJourney.progress, total: JOURNEY_LENGTH,
+      speed: journeySpeed(getPlayerStats(simulation).agility, state.skills.footwork!.level),
+      active: state.training === 'footwork' && state.locationId === 'chengzhao-lakeshore',
+    } : null,
     calendar, money: state.money, currencyUnit: '灵石',
     skills: SKILL_IDS.flatMap((id) => {
       const progress = id === 'manual-mastery' || id === 'weapon-mastery' ? masteryProgress(state.skills, id) : state.skills[id];
@@ -604,16 +884,20 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
         nextThreshold: progress.level < SKILLS[id].max ? threshold(id, progress.level + 1) : null,
         bonusGroups: skillBonusGroups(id),
         experienceMultiplier: allExperienceMultiplier({ ...initialSkills(), [id]: progress }),
+        domainExperienceMultiplier: id === 'star-dissolution-disk' ? domainExperienceMultiplier(state.skills) : '1',
         masteryBonuses: id === 'manual-mastery' || id === 'weapon-mastery' ? masteryBonuses(state.skills, id) : [],
       }] : [];
     }),
     activeManual: state.activeManual ?? null,
     activeDivineArt: state.activeDivineArt,
-    divineArts: DIVINE_ART_IDS.map(id => ({
-      id, name: DIVINE_ARTS[id].name, description: DIVINE_ARTS[id].description,
+    divineArts: DIVINE_ART_IDS.filter(id => !state.skills.domain ? id === 'circulating-qi' : id === 'domain').map(id => ({
+      id, name: id === 'domain' ? domainStage(state.skills.domain!.level).name : DIVINE_ARTS[id].name, description: DIVINE_ARTS[id].description,
       learned: state.learnedDivineArts.includes(id), active: state.activeDivineArt === id,
-      requirement: `${realmName(DIVINE_ARTS[id].minLevel)}时掌握`,
-      bonuses: scaledSource(DIVINE_ARTS[id].source, sources),
+      requirement: id === 'domain' ? '完成骸阵荒沟后在霁原断原观战领悟' : `${realmName(DIVINE_ARTS[id].minLevel)}时掌握`,
+      bonuses: scaledSource(divineArtSource(id, state.skills.domain?.level), sources),
+      progress: id === 'domain' ? { ...state.skills.domain!, max: 59,
+        nextThreshold: state.skills.domain!.level < 59 ? threshold('domain', state.skills.domain!.level + 1) : null,
+        passive: passiveSkillSources.find(source => source.id === 'skill:domain')! } : null,
     })),
     canMeditate: Boolean(SAFE_LOCATIONS[state.locationId]?.meditation),
     meditationBaseXp: meditationExperience(state),
@@ -623,15 +907,21 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       speed: miningSpeed(sources, gatheringSkill(state.gathering.siteId)),
       chance: miningEfficiency(state.gathering.siteId, state.skills[gatheringSkill(state.gathering.siteId)]!.level).chance,
     } : null,
-    miningSites: MINING_SITE_IDS.filter(id => MINING_SITES[id].location === state.locationId).map(id => ({
-      id, name: MINING_SITES[id].name, itemName: ITEMS[MINING_SITES[id].itemId].name,
-      skillId: gatheringSkill(id),
-      ...miningEfficiency(id, state.skills[gatheringSkill(id)]?.level ?? 0, id === 'jade-seam' ? state.jadeSeamCompletions ?? 0 : 0),
-      cycleSeconds: dec(miningEfficiency(id, state.skills[gatheringSkill(id)]?.level ?? 0,
-        id === 'jade-seam' ? state.jadeSeamCompletions ?? 0 : 0).cycleSeconds).div(miningSpeed(sources, gatheringSkill(id))).toNumber(),
-      completed: id === 'jade-seam' ? state.jadeSeamCompletions ?? 0 : null,
-      available: resting && cleared(state, MINING_SITES[id].prerequisite), active: state.gathering?.siteId === id,
-    })),
+    miningSites: MINING_SITE_IDS.filter(id => MINING_SITES[id].location === state.locationId).map(id => {
+      const completed = id === 'jade-seam' ? state.jadeSeamCompletions ?? 0
+        : id === 'qixia-array-fragments' ? state.qixiaFragmentCompletions ?? 0
+          : id === 'brokenplain-marrow-seam' ? state.brokenplainSeamCompletions ?? 0 : 0;
+      const efficiency = miningEfficiency(id, state.skills[gatheringSkill(id)]?.level ?? 0, completed);
+      const seconds = dec(efficiency.cycleSeconds).div(miningSpeed(sources, gatheringSkill(id)));
+      return {
+        id, name: MINING_SITES[id].name, itemName: ITEMS[MINING_SITES[id].itemId].name,
+        skillId: gatheringSkill(id), ...efficiency,
+        cycleSeconds: exactMiningPeriod(id) ? seconds.toFixed() : seconds.toNumber(),
+        completed: id === 'jade-seam' || exactMiningPeriod(id) ? completed : null,
+        secondaryChance: id === 'brokenplain-marrow-seam' ? marrowSeamChance(state.skills.mining?.level ?? 0) : null,
+        available: resting && cleared(state, MINING_SITES[id].prerequisite), active: state.gathering?.siteId === id,
+      };
+    }),
     training: state.training ? { id: state.training, name: trainingAt(state.training, state.locationId)!.actionName } : null,
     trainings: TRAINING_IDS.flatMap(id => {
       const action = trainingAt(id, state.locationId);
@@ -660,7 +950,13 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     regions: Object.entries(REGIONS).filter(([id]) => isUnlocked(state, id)).map(([id, region]) => ({
       id, name: region.name, description: region.description ?? null, parent: region.parent,
       challenge: region.challenge, completed: cleared(state, id),
-      enemyMultiplier: region.enemyMultiplier ?? '1',
+      enemyMultiplier: simulation.battle?.regionId === id && simulation.battle.entry?.enemyMultiplier
+        ? simulation.battle.entry.enemyMultiplier
+        : id === 'qixia-loop-array' ? text(dec('.08').mul(state.qixiaArray!.layers).plus(1))
+          : id === 'qixia-veinguard' || id === 'chengzhao-gathering-array'
+            ? text(dec(region.enemyMultiplier!).minus(dec('.08')
+              .mul(Math.min(id === 'qixia-veinguard' ? 5 : 4, Number(state.inventory['petal-array-fragment'] ?? '0')))))
+            : region.enemyMultiplier ?? '1',
       arrivable: state.locationId !== id && !simulation.battle,
       explorable: state.locationId === id && simulation.mode === 'idle' &&
         !(region.challenge && cleared(state, id)) && dec(simulation.player.hp).gt(0),
@@ -720,7 +1016,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       inventory: inventory(shop?.inventory ?? {}), instances: instances(shop?.instances ?? {}),
     },
     effects: simulation.effects.map((effect) => ({
-      id: effect.id, name: FOOD_EFFECTS[effect.id].name, description: FOOD_EFFECTS[effect.id].description ?? null,
+      id: effect.id, name: temporaryEffect(effect.id)!.name, description: temporaryEffect(effect.id)!.description,
       expiresAt: effect.expiresAt, source: scaledSource(effect.source, sources),
     })),
     log: state.log.map((entry) => ({ ...entry })),

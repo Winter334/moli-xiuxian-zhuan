@@ -25,7 +25,7 @@ export class SaveCapacityError extends Error {}
 export function checkSaveCapacity(state: CharacterState) {
   const inventories = [state, ...storedShops(state).map(shop => shop.stock)];
   if (inventories.reduce((total, owner) => total + Object.keys(owner.instances).length, 0) > 1000 ||
-      [state.money, ...inventories.flatMap(owner => Object.values(owner.inventory))]
+      inventories.flatMap(owner => Object.values(owner.inventory))
         .some(value => BigInt(value) > 1_000_000_000_000n)) {
     throw new SaveCapacityError('物品数量超过当前原型的存档上限');
   }
@@ -61,7 +61,8 @@ export const uploadAckSchema = z.object({
 export type UploadAck = z.infer<typeof uploadAckSchema>;
 
 // These are coarse consistency checks, not a replay or proof of legitimate play.
-export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt: number, now: number) {
+export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt: number, now: number,
+  allowAdministratorChanges = false) {
   if (next.tradeRevision !== previous.tradeRevision) {
     throw new Error('交易版本不一致，请先核对交易回执，本地进度未覆盖云端');
   }
@@ -70,10 +71,10 @@ export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt
   if (after.life.number !== before.life.number || after.life.startedAt !== before.life.startedAt) {
     throw new Error('世次不一致，跨世进度只能通过轮回提交');
   }
-  if (after.fateId !== before.fateId) {
+  if (after.fateId !== before.fateId && !allowAdministratorChanges) {
     throw new Error('本世气运不一致，本地进度未覆盖云端');
   }
-  checkHistoryProgress(before.history, after.history);
+  checkHistoryProgress(before.history, after.history, allowAdministratorChanges);
   for (const kind of ['firstVisits', 'firstClears', 'firstRealms', 'firstEncounters'] as const) {
     for (const [id, milestone] of Object.entries(after.history[kind])) {
       if (!before.history[kind][id] && milestone.life !== after.life.number) {
@@ -94,6 +95,23 @@ export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt
       (before.manorAidClaimed && !after.manorAidClaimed) ||
       (before.jadeSeamCompletions !== undefined &&
         (after.jadeSeamCompletions === undefined || after.jadeSeamCompletions < before.jadeSeamCompletions)) ||
+      (before.qixiaFragmentCompletions !== undefined &&
+        (after.qixiaFragmentCompletions === undefined || after.qixiaFragmentCompletions < before.qixiaFragmentCompletions)) ||
+      (before.brokenplainSeamCompletions !== undefined &&
+        (after.brokenplainSeamCompletions === undefined || after.brokenplainSeamCompletions < before.brokenplainSeamCompletions)) ||
+      (before.qixiaArray !== undefined &&
+        (after.qixiaArray === undefined || after.qixiaArray.unlockedMax < before.qixiaArray.unlockedMax)) ||
+      (before.lakeInsightClaimed && !after.lakeInsightClaimed) ||
+      (before.jiyuanIntroduced && !after.jiyuanIntroduced) ||
+      (before.jiyuanMerchantFound && !after.jiyuanMerchantFound) ||
+      (before.ruinMeditationOpened && !after.ruinMeditationOpened) ||
+      (before.brokenplainIntroduced && !after.brokenplainIntroduced) ||
+      (before.arkContractClaimed && !after.arkContractClaimed) ||
+      (before.reactor && !after.reactor) ||
+      (before.firstJourney !== undefined &&
+        (after.firstJourney === undefined || dec(after.firstJourney.progress).lt(before.firstJourney.progress))) ||
+      (before.meditationTier !== undefined &&
+        (after.meditationTier === undefined || after.meditationTier < before.meditationTier)) ||
       (before.marrowInsight !== undefined &&
         (after.marrowInsight === undefined || dec(after.marrowInsight).lt(before.marrowInsight))) ||
       (after.level === before.level && dec(after.cultivation).lt(before.cultivation)) ||

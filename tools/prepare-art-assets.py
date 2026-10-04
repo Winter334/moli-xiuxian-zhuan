@@ -39,7 +39,7 @@ def grid_edges(background, axis, count):
     length = len(scores)
     step = length / count
     edges = [0]
-    # Generated grids can shift; cut along the nearby white gutters, not through a subject.
+    # Generated grids can shift; cut along nearby empty gutters, not through a subject.
     for index in range(1, count):
         expected = round(step * index)
         start, stop = round(expected - step * 0.2), round(expected + step * 0.2)
@@ -55,14 +55,19 @@ def grid_edges(background, axis, count):
 
 def publish_atlas(job, source, session, report):
     removal = job.get("backgroundRemoval", "rembg")
-    if removal not in {"rembg", "white-background", "white-background-open"}:
+    methods = {"rembg", "white-background", "white-background-open", "preserve-alpha"}
+    if removal not in methods:
         raise ValueError("Unknown background removal method")
     with Image.open(source) as atlas:
-        atlas = atlas.convert("RGB")
+        preserve_alpha = removal == "preserve-alpha"
+        atlas = atlas.convert("RGBA" if preserve_alpha else "RGB")
+        if preserve_alpha and atlas.getchannel("A").getextrema()[0] == 255:
+            raise ValueError("Expected native transparency; refusing to remove an opaque background")
         columns, rows = job["columns"], job["rows"]
         if atlas.width % columns or atlas.height % rows:
             raise ValueError(f"Atlas {job['id']} does not divide into its grid")
-        background = np.all(np.array(atlas) > 240, axis=2)
+        background = (np.array(atlas.getchannel("A")) == 0 if preserve_alpha
+                      else np.all(np.array(atlas) > 240, axis=2))
         if all("cellBounds" in item for item in job["items"]):
             x_edges = [index * atlas.width // columns for index in range(columns + 1)]
             y_edges = [index * atlas.height // rows for index in range(rows + 1)]
@@ -91,16 +96,19 @@ def publish_atlas(job, source, session, report):
                 left, top, end_x, end_y = region
                 if not 0 <= left < end_x <= width or not 0 <= top < end_y <= height:
                     raise ValueError(f"Excluded cell region outside crop for {item['id']}")
-                cell.paste((255, 255, 255), (left, top, end_x, end_y))
+                cell.paste((0, 0, 0, 0) if preserve_alpha else (255, 255, 255),
+                           (left, top, end_x, end_y))
             item_removal = item.get("backgroundRemoval", removal)
-            if item_removal not in {"rembg", "white-background", "white-background-open"}:
+            if item_removal not in methods or (item_removal == "preserve-alpha") != preserve_alpha:
                 raise ValueError(f"Unknown background removal method for {item['id']}")
             component_rank = item.get("foregroundComponent")
             if component_rank is not None and (
-                item_removal == "rembg" or type(component_rank) is not int or component_rank < 1
+                item_removal in {"rembg", "preserve-alpha"} or type(component_rank) is not int or component_rank < 1
             ):
                 raise ValueError(f"Invalid foreground component for {item['id']}")
-            if item_removal in {"white-background", "white-background-open"}:
+            if preserve_alpha:
+                cutout = cell.copy()
+            elif item_removal in {"white-background", "white-background-open"}:
                 # Pure-white studies can contain cloth that a semantic cutout model drops.
                 foreground_mask = np.any(np.array(cell) < 245, axis=2)
                 if component_rank is not None:
@@ -121,7 +129,7 @@ def publish_atlas(job, source, session, report):
             foreground = alpha > 32
             if foreground.mean() < 0.015 or foreground.mean() > 0.9:
                 raise ValueError(f"Unexpected cutout coverage for {item['id']}")
-            ys, xs = np.nonzero(foreground)
+            ys, xs = np.nonzero(alpha > 0 if preserve_alpha else foreground)
             bounds = (int(xs.min()), int(ys.min()), int(xs.max() + 1), int(ys.max() + 1))
             cutout = cutout.crop(bounds)
             size = 512 if job["target"] == "enemies" else 256
@@ -146,7 +154,9 @@ def publish_atlas(job, source, session, report):
                 "backgroundRemoval": ("local white-background mask, preserving enclosed highlights"
                                       if item_removal == "white-background"
                                       else "local white-background mask, preserving open gaps"
-                                      if item_removal == "white-background-open" else "local rembg / u2netp"),
+                                      if item_removal == "white-background-open"
+                                      else "native alpha preserved"
+                                      if preserve_alpha else "local rembg / u2netp"),
                 "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
             })
             print(f"Prepared {item['id']}", flush=True)
@@ -187,8 +197,8 @@ def main():
             publish_atlas(job, source, session, report)
     source_dir.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps({
-        "backgroundRemoval": "Local per-asset removal, recorded in assets; no API charge",
-        "slicing": "Grid boundaries aligned to nearby pure-white gutters",
+        "backgroundRemoval": "Native alpha preservation or local per-asset removal, recorded in assets",
+        "slicing": "Grid boundaries aligned to nearby empty gutters",
         "review": "Technical file checks only; image and UI review delegated to the user",
         "assets": report,
     }, ensure_ascii=False, indent=2), encoding="utf-8")

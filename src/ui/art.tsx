@@ -49,6 +49,31 @@ export const SCENE_ART: Record<string, string> = {
     'whitebank-road', 'flowpetal-shallows', 'returning-current-bay', 'rosyreef-longshoal',
     'crossriver-stone-flat', 'zhaoye-waterfall', 'linzhao-crossing',
   ].map(id => [id, `/assets/art/scenes/${id}-sunburst-zhaoye-v1.webp`])),
+  ...Object.fromEntries([
+    'qixia-overlook', 'rosyfall-plain', 'myriad-reed-marsh', 'flowcrystal-mountains',
+    'layered-rosy-gardens', 'hanging-radiance-platform', 'qixia-veinguard', 'qixia-loop-array',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-qixia-v1.webp`])),
+  ...Object.fromEntries([
+    'chengzhao-lakeshore', 'mirror-tide-bay', 'thousand-crystal-marsh', 'silver-reed-ring',
+    'floating-light-innerlake', 'cold-tide-lakeheart', 'chengzhao-gathering-array',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-chengzhao-v1.webp`])),
+  ...Object.fromEntries([
+    'jiyuan-ruins', 'collapsed-ward-street', 'fallen-tower-lanes', 'split-tower-courts',
+    'empty-channel-ruinplain', 'hanging-bell-oldgate', 'jiyuan-lightchaser', 'ruin-meditation-room',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-jiyuan-v1.webp`])),
+  ...Object.fromEntries([
+    'jiyuan-brokenplain', 'fallen-edge-slope', 'bone-array-gully', 'split-stoneplain',
+    'resting-armor-plain', 'remnant-flag-ringpass', 'layered-armor-gate',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-brokenplain-v1.webp`])),
+  ...Object.fromEntries([
+    'fallen-ark-outer', 'broken-gunwale-hall', 'four-aspect-puppet-workshop',
+    'lost-command-corridor', 'armor-bearing-cabin', 'sealed-hub-forecourt',
+    'ark-seizing-sidechamber', 'triangular-array-gate', 'hidden-hub-chamber',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-ark-outer-v1.webp`])),
+  ...Object.fromEntries([
+    'fallen-ark-inner', 'furnace-guard-corridor', 'essence-condensing-corridor',
+    'energy-gathering-cabin', 'starbreaking-chamber', 'ark-meditation-cabin',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-ark-inner-v1.webp`])),
 };
 export const ENEMY_AVATARS: Record<string, string> = {
   ...Object.fromEntries([
@@ -120,6 +145,51 @@ export const ENEMY_AVATARS: Record<string, string> = {
     'tideholding-reef-spirit', 'rosycloud-spirit', 'cutstream-chief', 'crossriver-bladesman',
     'poolguard-reef-spirit', 'jiuzhang-crossing-warden',
   ].map(id => [id, `/assets/art/enemies/${id}-flare-zhaoye-v1.png`])),
+  ...Object.fromEntries([
+    'jiuzhang-plundering-cultivator', 'reedbinding-raider', 'pipebone-wraith',
+    'petal-array-spirit', 'crystallimb-stone-spirit', 'gardenplundering-swordsman',
+    'sickletail-crystal-scorpion', 'arrayback-shellbeast', 'rockcrown-longarm-beast',
+    'veinguard-flame-spirit',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-qixia-v1.png`])),
+  ...Object.fromEntries([
+    'crystalplundering-bladesman', 'lake-ring-armored-guard', 'floating-ripple-spirit',
+    'crystalspine-beast', 'reedbank-flame-spirit', 'frost-rune-guard',
+    'horn-armored-lakebeast', 'crystalshell-stone-spirit', 'returning-edge-raider',
+    'sacwing-lakebird', 'upright-goldfur-beast', 'tidebinding-gel-spirit',
+    'layered-ripple-wraith', 'bluecrown-array-spirit', 'flowcloud-spell-spirit',
+    'crystal-armored-spirit', 'frostreturn-wingbeast', 'ringeye-eightarm-beast',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-chengzhao-v1.png`])),
+  'gathering-spell-spirit': '/assets/art/enemies/flowcloud-spell-spirit-flare-chengzhao-v1.png',
+  'gathering-armored-spirit': '/assets/art/enemies/crystal-armored-spirit-flare-chengzhao-v1.png',
+  'gathering-array-spirit': '/assets/art/enemies/bluecrown-array-spirit-flare-chengzhao-v1.png',
+  ...Object.fromEntries([
+    'ruin-patrolling-raider', 'chestbearing-shroom', 'brokenward-bladesman', 'withered-breath-raider',
+    'bluebone-wraith', 'rustbrood-puppet', 'twinprism-spirit', 'thornshadow-ruinwraith',
+    'marrowchasing-raider', 'bluemane-furbeast', 'ancient-rune-puppet', 'wandering-ruin-shadowbeast',
+    'ringingedge-ruinbird', 'marrowchasing-leader', 'hiddenblade-earthbeast', 'lightchasing-nightmare',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-jiyuan-v1.png`])),
+  'rustbrood-child': '/assets/art/enemies/rustbrood-puppet-flare-jiyuan-v1.png',
+  ...Object.fromEntries([
+    'gravel-armored-insect', 'layered-edge-wraith', 'galechasing-shadowbeast', 'ancient-coldiron-spirit',
+    'darkfur-battlebeast', 'hidden-gel-spirit', 'contractbearing-raider', 'silkseizing-raider',
+    'wormbone-wraith', 'arrayseizing-leader', 'mountaincrushing-beast', 'rampart-earthbeast',
+    'flowing-silver-shadow', 'roadwaiting-old-raider', 'layered-armor-guardian',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-brokenplain-v1.png`])),
+  ...Object.fromEntries([
+    'layered-ark-guard', 'clamp-domain-puppet', 'thunderback-shellbeast', 'darkedge-heavy-puppet',
+    'twinclamp-walking-puppet', 'crossarm-armor-puppet', 'turnbalance-heavy-puppet', 'wandering-rune-spirit',
+    'blockedge-furnace-puppet', 'heavyhub-ark-guard', 'silveredge-blade-puppet', 'blackiron-war-puppet',
+    'rampart-shield-puppet', 'batrobe-raider', 'sunchasing-heavy-puppet', 'edge-drinking-puppet',
+    'piercing-light-turret', 'cabin-patrol-puppet', 'redhub-heavy-puppet',
+    'triangular-hub-guard', 'hiddenhub-spirit-puppet',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-ark-outer-v1.png`])),
+  'redbanner-ark-chief': '/assets/art/enemies/redbanner-chief-flare-cangzhao-v1.png',
+  ...Object.fromEntries([
+    'doorhub-command-armor', 'essence-drawing-array-spirit', 'radiant-beam-war-puppet',
+    'triangular-patrol-puppet', 'thorncutting-walking-puppet', 'inversebalance-ark-spirit',
+    'energy-gathering-core-spirit', 'breath-eroding-gel-wraith', 'golden-fur-beast',
+    'silver-eye-core-spirit', 'threehead-wandering-serpent', 'starbreaking-heavy-puppet',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-ark-inner-v1.png`])),
 };
 export const PLAYER_ART: { avatar?: string } = {};
 export const ITEM_ICONS: Record<string, string> = {
@@ -229,6 +299,63 @@ export const ITEM_ICONS: Record<string, string> = {
   ...Object.fromEntries([
     'purple-marrow', 'scarlet-marrow', 'cyan-marrow',
   ].map(id => [id, `/assets/art/icons/${id}-flare-marrow-study-v1.png`])),
+  ...Object.fromEntries([
+    'jade-reed-headwrap', 'jade-reed-leggings', 'jade-reed-boots',
+    'jade-reed-headwrap-lined-resonant-head-shell',
+    'jade-reed-leggings-lined-resonant-leg-shell', 'jade-reed-boots-lined-resonant-foot-shell',
+    'jade-reed-headwrap-lined-returning-glow-head-shell',
+    'jade-reed-leggings-lined-returning-glow-leg-shell', 'jade-reed-boots-lined-returning-glow-foot-shell',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-qixia-armor-v2.png`])),
+  ...Object.fromEntries([
+    'jade-reed-jacket', 'jade-reed-jacket-lined-resonant-body-shell',
+    'jade-reed-jacket-lined-returning-glow-body-shell',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-qixia-armor-study-v2.png`])),
+  ...Object.fromEntries([
+    'rosy-spirit-reed', 'twining-crystal-powder', 'petal-array-fragment',
+    'returning-glow-ingot', 'jade-reed-silk', 'returning-glow-blade', 'returning-glow-greatblade',
+    'returning-glow-head-shell', 'returning-glow-body-shell',
+    'returning-glow-leg-shell', 'returning-glow-foot-shell',
+    'awakened-returning-glow-blade-weapon', 'awakened-returning-glow-greatblade-weapon',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-qixia-v1.png`])),
+  ...Object.fromEntries([
+    'chengzhao-core', 'bluegold-fragment', 'lakebeast-condensate', 'clear-crystal',
+    'reed-veined-crystal', 'bluegold-ingot', 'crystal-hilt', 'bluegold-blade', 'bluegold-greatblade',
+    'chengzhao-heart-pendant', 'blue-scaled-carp', 'green-veined-fish', 'cold-crystal-fish',
+    'awakened-hilt-bluegold-blade-weapon', 'crystal-hilt-bluegold-blade-weapon',
+    'crystal-returning-glow-blade-weapon',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-chengzhao-v1.png`])),
+  ...Object.fromEntries([
+    'awakened-hilt-bluegold-greatblade-weapon', 'crystal-hilt-bluegold-greatblade-weapon',
+    'crystal-returning-glow-greatblade-weapon',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-chengzhao-greatsword-v2.png`])),
+  ...Object.fromEntries([
+    'ruin-essence', 'ruin-rune-fragment', 'green-cast-coin',
+    'clearjade-blade', 'clearjade-greatblade', 'amber-marrow', 'azure-marrow', 'threephase-pendant',
+    'clearjade-head-shell', 'clearjade-body-shell', 'clearjade-leg-shell', 'clearjade-foot-shell',
+    'ruin-restoration-elixir', 'ruin-surge-elixir', 'ruin-meditation-kit',
+    'crystal-clearjade-blade-weapon', 'crystal-clearjade-greatblade-weapon',
+    'jade-reed-headwrap-lined-clearjade-head-shell', 'jade-reed-jacket-lined-clearjade-body-shell',
+    'jade-reed-leggings-lined-clearjade-leg-shell', 'jade-reed-boots-lined-clearjade-foot-shell',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-jiyuan-v1.png`])),
+  ...Object.fromEntries([
+    'beast-marrow-fat', 'charged-gel', 'charged-silk', 'stable-essence-pill',
+    'radiant-marrow', 'stellar-marrow', 'clearjade-ingot',
+    'charged-headwrap', 'charged-jacket', 'charged-leggings', 'charged-boots',
+    'charged-headwrap-lined-clearjade-head-shell', 'charged-jacket-lined-clearjade-body-shell',
+    'charged-leggings-lined-clearjade-leg-shell', 'charged-boots-lined-clearjade-foot-shell',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-brokenplain-v1.png`])),
+  ...Object.fromEntries([
+    'forge-array-mark', 'thunder-spirit-symbol', 'foreign-contract-coin', 'high-ark-core',
+    'old-armor-fragment', 'redglow-steel', 'condensed-gel-block', 'condensed-gel-hilt',
+    'redglow-blade', 'redglow-greatblade',
+    'condensed-redglow-blade-weapon', 'condensed-redglow-greatblade-weapon',
+    'condensed-clearjade-blade-weapon', 'condensed-clearjade-greatblade-weapon',
+    'breakfront-array-pendant', 'ancient-contract-disk', 'ark-ward-contract',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-ark-outer-v1.png`])),
+  ...Object.fromEntries([
+    'rising-blood-elixir', 'sealed-gel-crate', 'sealed-ark-core-crate',
+    'purple-cast-coin', 'star-dissolution-disk',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-ark-inner-v1.png`])),
 };
 export const TECHNIQUE_ART: Record<string, string> = {
   ...Object.fromEntries([
@@ -238,6 +365,7 @@ export const TECHNIQUE_ART: Record<string, string> = {
   ...Object.fromEntries([
     'surging-tide-art', 'flowchasing-art', 'scattered-rain-art',
   ].map(id => [id, `/assets/art/techniques/${id}-flare-zhaoye-v1.png`])),
+  domain: '/assets/art/techniques/domain-flare-brokenplain-v1.png',
 };
 
 export function SceneArt({ locationId, name }: { locationId: string; name: string }) {

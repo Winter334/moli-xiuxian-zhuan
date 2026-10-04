@@ -1,6 +1,6 @@
 import { advanceCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
 import { CharacterCommandError, type CharacterEvent } from '../core/prototype/character';
-import type { CharacterState } from '../core/prototype/character-state';
+import { readCharacter, type CharacterState } from '../core/prototype/character-state';
 import type { DebugCommand } from '../core/prototype/debug';
 import { applyConsignmentDelta, requireMerchant, type ConsignmentAsset } from '../core/prototype/consignment';
 import {
@@ -27,6 +27,7 @@ import { advancePvpBattle, applyPvpReceipt, pvpOutcome, startPvpBattle } from '.
 import { readPlayerDuel, withdraw, type PlayerDuelState } from '../core/prototype/simulation';
 import { EMPTY_PVP, pvpOverviewSchema, pvpStateSchema, pvpStatusSchema,
   type PendingPvp, type PvpBattleInfo, type PvpOutcome, type PvpReceipt, type PvpState, type PvpStatus } from '../shared/pvp';
+import { debugAccessSchema, debugResultSchema } from '../shared/debug-console';
 
 export interface ConnectionIssue {
   message: string;
@@ -34,6 +35,7 @@ export interface ConnectionIssue {
   retryable?: boolean;
 }
 export interface ClientState {
+  debugAllowed: boolean;
   combatFrame: CombatFrame;
   response: { characterId: string; game: OpeningView } | null;
   busy: boolean;
@@ -78,6 +80,7 @@ class RequestError extends Error {
 
 export class GameClient {
   private state: ClientState = {
+    debugAllowed: false,
     combatFrame: EMPTY_COMBAT_FRAME,
     response: null, busy: false, refreshing: false, blocked: true, issue: null,
     lastUpdated: null, lastCloudSave: null,
@@ -125,6 +128,7 @@ export class GameClient {
     this.monotonicNow = options.monotonicNow ?? (() => performance.now());
     this.worldClock = new WorldClock(this.wallNow, this.monotonicNow);
     this.expectedCharacterId = options.expectedCharacterId;
+    this.state.debugAllowed = import.meta.env.DEV && !this.expectedCharacterId;
     this.checkPvpSessions = options.checkPvpSessions ?? false;
     this.openedAt = options.openedAt ?? this.wallNow();
     this.acquireLock = options.acquireLock ?? acquireLocalSaveLock;
@@ -281,7 +285,7 @@ export class GameClient {
       const available = availableCharacter(character, this.local.pendingTrade);
       const events: CharacterEvent[] = [];
       let paused = !connected;
-      let next = (available.simulation.battle || available.training || available.gathering) && !connected
+      let next = (available.simulation.battle || available.training || available.gathering || available.fishing || available.reactor?.active) && !connected
         ? { ...available, simulation: pauseSimulationUntil(available.simulation, target) }
         : advanceCharacter(available, target, connected && this.local.pendingTrade ? 1 : 128, events);
       next = restoreReservation(next, this.local.pendingTrade);
@@ -350,28 +354,38 @@ export class GameClient {
     return outcome !== null;
   }
 
-  private runAction = (execute: (state: CharacterState, events: CharacterEvent[]) => CharacterState | Promise<CharacterState>): Promise<boolean> => this.serial(async () => {
+  private runAction = (execute: (state: CharacterState, events: CharacterEvent[]) => CharacterState | Promise<CharacterState>,
+    checkpoint = false): Promise<boolean> => this.serial(async () => {
     if (!this.initialized || !this.local || this.state.blocked || this.state.reincarnationBusy || this.state.recoveryBusy ||
         this.local.pendingPvp || this.state.pvpBusy) return false;
     this.publish({ busy: true });
+    const generation = this.generation;
     try {
       await this.advanceFrame();
       const events: CharacterEvent[] = [];
-      const character = restoreReservation(await execute(availableCharacter(this.local.save.character, this.local.pendingTrade), events), this.local.pendingTrade);
+      const result = await execute(availableCharacter(this.local.save.character, this.local.pendingTrade), events);
+      if (generation !== this.generation || !this.local || !this.releaseLock) return false;
+      const character = restoreReservation(result, this.local.pendingTrade);
       checkReservedCapacity(character, this.local.pendingTrade);
+      const save = { ...this.local.save, character };
+      const localRevision = String(BigInt(this.local.localRevision) + 1n);
       await this.persist({
-        ...this.local, save: { ...this.local.save, character },
-        localRevision: String(BigInt(this.local.localRevision) + 1n),
+        ...this.local, save, localRevision,
+        // Back up administrator identity changes before ordinary online checkpoints can use them.
+        ...(checkpoint ? { pending: { localRevision, request: {
+          characterId: this.local.characterId, requestId: crypto.randomUUID(), baseRevision: this.local.cloudRevision, save,
+        } } } : {}),
       }, true, events);
       if (this.state.issue?.source === 'action') this.publish({ issue: null });
       return true;
     } catch (error) {
-      if (error instanceof CharacterCommandError || error instanceof SaveCapacityError) {
+      if (generation !== this.generation) return false;
+      if (error instanceof CharacterCommandError || error instanceof SaveCapacityError || error instanceof RequestError) {
         this.publish({ issue: { source: 'action', message: error.message } });
       }
       else this.failLocal(error);
       return false;
-    } finally { this.publish({ busy: false }); }
+    } finally { if (generation === this.generation) this.publish({ busy: false }); }
   });
 
   command = (command: OpeningCommand): Promise<boolean> =>
@@ -859,11 +873,58 @@ export class GameClient {
     });
   }
 
+  refreshDebugAccess = async (): Promise<void> => {
+    if (!this.expectedCharacterId || !this.local || !this.initialized) return;
+    const generation = this.generation;
+    try {
+      const result = debugAccessSchema.parse(await this.request(
+        `/api/client/debug?characterId=${encodeURIComponent(this.local.characterId)}`,
+      ));
+      if (generation === this.generation) this.publish({
+        debugAllowed: result.characterId === this.local?.characterId && result.allowed,
+      });
+    } catch {
+      if (generation === this.generation) this.publish({ debugAllowed: false });
+    }
+  };
+
   debugCommand = (command: DebugCommand): Promise<boolean> => {
-    if (!import.meta.env.DEV) return Promise.resolve(false);
+    if (!this.state.debugAllowed) return Promise.resolve(false);
+    const generation = this.generation;
+    const checkpoint = Boolean(this.expectedCharacterId) &&
+      (command.type === 'fate' || Boolean(this.local?.save.character.history.testAssisted));
     return this.runAction(async state => {
+      if (!this.state.debugAllowed) throw new CharacterCommandError('没有测试控制台权限');
+      if ((command.type === 'fate' || state.history.testAssisted) &&
+          (this.local!.pending || this.local!.pendingTrade || this.cloudFlight || this.tradeFlight)) {
+        throw new CharacterCommandError('请先完成云上传或核对寄售，再更换气运或清除旧标记');
+      }
+      if (this.expectedCharacterId) {
+        if (!this.state.onlineReady || this.local!.pendingTrade || this.state.tradeBusy) {
+          throw new CharacterCommandError('请先核对存档或寄售，再使用管理员控制台');
+        }
+        try {
+          const result = debugResultSchema.parse(await this.request('/api/client/debug', {
+            characterId: this.local!.characterId, character: state, command,
+          }));
+          if (result.characterId !== this.local?.characterId) throw new CharacterCommandError('控制台响应身份不一致，原进度保留');
+          return readCharacter(result.character);
+        } catch (error) {
+          if (generation === this.generation && error instanceof RequestError && [401, 403].includes(error.status)) {
+            this.publish({ debugAllowed: false });
+          }
+          if (error instanceof RequestError || error instanceof CharacterCommandError) throw error;
+          throw new CharacterCommandError('控制台响应无效，原进度保留');
+        }
+      }
+      if (!import.meta.env.DEV) throw new CharacterCommandError('没有测试控制台权限');
       const { executeDebugCommand } = await import('../core/prototype/debug');
       return executeDebugCommand(state, command);
+    }, checkpoint).then(async success => {
+      if (success && checkpoint && generation === this.generation) {
+        await this.sync();
+      }
+      return success;
     });
   };
 
@@ -981,7 +1042,7 @@ export class GameClient {
           this.lastFrame = this.monotonicNow();
         }
         if (this.recoveryProfile) this.publish({
-          recovery: compareSaves(this.local, this.recoveryProfile, this.recoveryCloudBlocked),
+          recovery: compareSaves(this.local, this.recoveryProfile, this.recoveryCloudBlocked, this.state.debugAllowed),
         });
       });
       if (this.recoveryFlight === flight) {
@@ -1058,7 +1119,7 @@ export class GameClient {
       if (profile.revision !== chosen.revision) throw new Error('云端进度又有变化，请重新查看两份存档后确认。');
       return this.serial(async () => {
         if (generation !== this.generation || !this.releaseLock) return false;
-        const comparison = compareSaves(this.local, profile, cloudBlocked);
+        const comparison = compareSaves(this.local, profile, cloudBlocked, this.state.debugAllowed);
         const reason = source === 'local' ? comparison.localBlocked : comparison.cloudBlocked;
         if (reason) throw new Error(reason);
         const local = source === 'cloud' ? localFromCloud(profile, this.wallNow()) : {
@@ -1085,7 +1146,7 @@ export class GameClient {
     if (!this.active || generation !== this.generation) return;
     this.tickTimer = setTimeout(() => {
       void this.tick().finally(() => this.scheduleTick(generation));
-    }, 1000);
+    }, this.local?.save.character.fishing?.phase === 'tackle' || this.local?.save.character.reactor?.active ? 30 : 1000);
   }
   private scheduleCloud(generation: number) {
     if (!this.active || generation !== this.generation) return;
@@ -1125,7 +1186,7 @@ export class GameClient {
     this.recoveryProfile = null;
     this.publish({ refreshing: false, tradeBusy: false, reincarnationBusy: false, pvpBusy: false, pvpCombat: null,
       recoveryBusy: false, recoveryAvailable: false, recovery: null, recoveryMessage: null,
-      onlineReady: false, onlineMessage: null });
+      onlineReady: false, onlineMessage: null, debugAllowed: import.meta.env.DEV && !this.expectedCharacterId });
     void this.serial(async () => {
       this.releaseLock?.();
       this.releaseLock = null;

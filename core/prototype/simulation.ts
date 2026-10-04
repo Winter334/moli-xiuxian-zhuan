@@ -9,7 +9,8 @@ import {
 } from './types';
 
 const needsRoundCounter = (abilities: ResolvedEnemy['abilities']) =>
-  Boolean(abilities.rampingDamage || abilities.mirrorOpening || abilities.arrayStrikes || abilities.periodicStrike || abilities.healthBurst);
+  Boolean(abilities.rampingDamage || abilities.mirrorOpening || abilities.arrayStrikes || abilities.periodicStrike ||
+    abilities.roundStrikes || abilities.healthBurst);
 
 export function getPlayerStats(state: SimulationState): Stats {
   return resolveStats(state.player.base, activeSources(state));
@@ -202,6 +203,15 @@ export function applyTimedEffect(
   return { state: readSimulation(state), events };
 }
 
+export function replaceTimedEffects(input: SimulationState, effect: { id: string; durationMs: number; source: StatSource }): SimulationState {
+  const state = readSimulation(input);
+  const before = getPlayerStats(state);
+  if (!Number.isSafeInteger(effect.durationMs) || effect.durationMs <= 0) throw new Error('Invalid effect duration');
+  state.effects = [{ id: effect.id, expiresAt: state.clockMs + effect.durationMs, source: sourceSchema.parse(effect.source) }];
+  reconcileStats(state, before, []);
+  return readSimulation(state);
+}
+
 function cappedIncomingDamage(state: SimulationState, amount: string): string {
   const cap = combatRules(activeSources(state)).damageTakenCap;
   const maxHp = getPlayerStats(state).maxHp;
@@ -233,6 +243,7 @@ function performEnemyAction(
       damageMultiplier,
       hp: state.player.hp,
       money: enemy.definition.abilities.walletSuppressionUnit !== undefined ? hooks?.getMoney?.() : undefined,
+      marrowInsight: enemy.definition.abilities.marrowSuppressionUnit !== undefined ? hooks?.getMarrowInsight?.() : undefined,
     });
     const { damage, hpLost } = directDamage(state, strike.damage);
     strike.damage = damage;
@@ -247,18 +258,19 @@ function performEnemyAction(
 }
 
 export function startEncounter(input: SimulationState, encounter: {
-  regionId: string; enemies: EnemyDefinition[]; entry?: EncounterEntry;
+  regionId: string; enemies: EnemyDefinition[]; entry?: EncounterEntry; origins?: string[];
 }, hooks?: SimulationHooks): SimulationResult {
   const state = readSimulation(input);
   if (state.battle || dec(state.player.hp).lte(0)) throw new Error('Cannot enter this encounter now');
-  if (!encounter.regionId || encounter.enemies.length < 1 || encounter.enemies.length > 2) {
-    throw new Error('The first segment supports one or two enemies');
+  if (!encounter.regionId || encounter.enemies.length < 1 || encounter.enemies.length > 8) {
+    throw new Error('An encounter supports one to eight enemies');
   }
   const events: SimulationEvent[] = [];
   state.mode = 'combat';
   state.battle = {
     regionId: encounter.regionId,
     ...(encounter.entry ? { entry: { ...encounter.entry } } : {}),
+    ...(encounter.origins ? { origins: [...encounter.origins] } : {}),
     enemies: encounter.enemies.map((raw) => {
       const definition = enemySchema.parse(raw);
       definition.stats = resolveStats(definition.stats);
@@ -303,7 +315,8 @@ function performPlayerAction(state: SimulationState, events: SimulationEvent[], 
       const stats = getPlayerStats(state);
       const sources = activeSources(state);
       const alive = battle.enemies.filter((entry) => dec(entry.hp).gt(0)).length;
-      const strike = playerStrike(state, stats, enemy.definition, alive, hooks?.getSturdyCap?.(), coefficient, combatRules(sources));
+      const strike = playerStrike(state, stats, enemy.definition, alive, hooks?.getSturdyCap?.(), coefficient, combatRules(sources),
+        { player: state.player.hp, enemy: enemy.hp });
       state.actionCounts.basicAttack = integerAdd(state.actionCounts.basicAttack, 1);
       strike.damage = damageValue(strike.damage, 'damage.dealt', sources, {
         tags: ['direct', 'basic-attack'], hp: state.player.hp, maxHp: stats.maxHp,
@@ -339,7 +352,8 @@ function performPlayerAction(state: SimulationState, events: SimulationEvent[], 
             const total = integerAdd(state.clearedGroups[battle.regionId] ?? '0', 1);
             state.clearedGroups[battle.regionId] = total;
             leaveBattle(state);
-            emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total }, hooks);
+            emit(state, events, { kind: 'group-cleared', at: state.clockMs, regionId: battle.regionId, total,
+              ...(battle.entry ? { entry: battle.entry } : {}) }, hooks);
           }
         }
       }
@@ -354,6 +368,7 @@ function performPlayerAction(state: SimulationState, events: SimulationEvent[], 
   emit(state, events, {
     kind: 'player-action-completed', at: state.clockMs, regionId: battle.regionId,
     targetIds: slots.map(slot => battle.enemies[slot].definition.id),
+    ...(battle.entry ? { entry: battle.entry } : {}),
   }, hooks);
   // Both deaths belong to the same strike; a mutual kill still earns its reward once.
   if (reflectedDeath) faint(state, events, hooks);
@@ -487,6 +502,12 @@ function advanceCombat(
         if (enemy.nextRound !== undefined) enemy.nextRound++;
         const strikes = abilities.periodicStrike && round % abilities.periodicStrike.every === 0
           ? [abilities.periodicStrike.coefficient] : abilities.strikes;
+        if (abilities.preAttackDamage !== undefined) {
+          const damage = directDamage(state, abilities.preAttackDamage);
+          emit(state, events, { kind: 'pre-attack-damage', at: state.clockMs, slot, ...damage }, hooks);
+          if (dec(state.player.hp).lte(0)) faint(state, events, hooks);
+        }
+        if (state.battle !== battle) break;
         performEnemyAction(state, slot, strikes, events, hooks, damageMultiplier);
         if (state.battle === battle && abilities.extraStrike) {
           performEnemyAction(state, slot, [abilities.extraStrike.coefficient], events, hooks,
@@ -498,6 +519,15 @@ function advanceCombat(
         }
         if (state.battle === battle && abilities.arrayStrikes && [2, 4, 6].includes(round)) {
           performEnemyAction(state, slot, [String(round / 2 + 1)], events, hooks);
+        }
+        for (const strike of abilities.roundStrikes ?? []) {
+          if (state.battle === battle && round === strike.round) {
+            const player = getPlayerStats(state);
+            const coefficient = strike.basis
+              ? text(dec(player.attack).plus(player.defense).plus(dec(enemy.definition.stats.defense).mul(2))
+                .div(enemy.definition.stats.attack).mul(strike.coefficient)) : strike.coefficient;
+            performEnemyAction(state, slot, [coefficient], events, hooks);
+          }
         }
         if (state.battle === battle && abilities.healthBurst && round === abilities.healthBurst.round) {
           const damage = directDamage(state, text(dec(enemy.hp).mul(abilities.healthBurst.multiplier)));

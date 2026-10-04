@@ -120,7 +120,7 @@ export function killExperience(
   nonnegativeSchema.parse(base);
   nonnegativeSchema.parse(multiplier);
   if (!Number.isInteger(enemyRealm) || enemyRealm < 0 ||
-      !Number.isInteger(initialGroupSize) || initialGroupSize < 1 || initialGroupSize > 2) {
+      !Number.isInteger(initialGroupSize) || initialGroupSize < 1 || initialGroupSize > 8) {
     throw new Error('Invalid encounter experience inputs');
   }
   const factor = killExperienceRealmFactor(enemyRealm, playerLevel);

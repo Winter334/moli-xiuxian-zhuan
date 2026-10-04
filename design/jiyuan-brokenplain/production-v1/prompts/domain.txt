@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: ONE Chinese xianxia divine-art illustration for the shared DOMAIN icon, 1024 by 1024, genuinely transparent RGBA.
+Primary request: a compact embodied pocket of cultivator-controlled spiritual space, with a low pale stone ridge, warm ivory-gold flame-like currents below and cool pearl cloud folds above, held together by an open softly luminous enclosing boundary.
+Composition/framing: one centered coherent near-round but softly asymmetrical volume occupying about 65 percent of the canvas, at least 17 percent transparent margin. The low stone ridge gives tangible depth; warm flowing lower layers and spacious cool upper layers suggest an unfolding field rather than a consumable object. Keep the boundary open and painterly, not a rigid geometrical magic diagram.
+Style/medium: exquisite thick IMPASTO Chinese fantasy painting, visible layered brush planes make light, cloud and stone feel substantial, controlled warm/cool contrast and clear large shape. No photographic texture, smooth CG or flat glyph.
+Lighting/mood: deep warm-gold and pearl-cyan spatial light, softly luminous flowing layers, a quiet high-realm manifestation. Clear inner structure, not a white overexposed glowing blob.
+Constraints: ONE independent motif, no human face, identifiable player, meditating person, book, scroll, jewelry, pill, planet, literal new world map, stage labels, readable runes, full moon badge, background, grid, frames, UI or watermark. This one shared icon does not assert any particular stage has been learned or add a new ability.

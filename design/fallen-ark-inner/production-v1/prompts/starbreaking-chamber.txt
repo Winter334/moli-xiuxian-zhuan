@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: Starbreaking Chamber, an optional old guarded side room of a fallen immortal ark. A vast angular enclosed chamber with a broad fitted stone combat floor, deep side recesses and immense ancient load-bearing metal braces. Two separate unoccupied guardian positions are suggested by the symmetrical floor organization, while a small recessed observation niche holds an abstract quiet point of gathered light. It is an old testing and guarding space, not a cosmic battlefield.
+Style/medium: grand Chinese fantasy dreamcore, precise archaic artificer architecture painted in broad layered planes. Silver-gray braces, ivory floor, muted plum wall recesses and a few warm gold reflected seams; dignified clean material.
+Composition/framing: 1792x784 landscape, wide high three-quarter view of the floor and enormous wall height. Offset camera and carefully repeated structural rhythm, empty center with deep readable scale.
+Lighting/mood: calm austere pearl light, focused soft illumination near the observation niche, long composed shadows.
+Constraints: do not draw enemies here; guardian sprites are separate assets. No shattered planets, meteor impacts, floating reward labels, crystal knowledge room, final ship core, player portrait, modern machinery, screens, readable writing, UI or watermark.

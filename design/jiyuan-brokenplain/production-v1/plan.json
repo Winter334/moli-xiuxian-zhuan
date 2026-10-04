@@ -1,0 +1,118 @@
+{
+  "region": "jiyuan-brokenplain",
+  "version": "production-v1",
+  "authorization": "The user accepted Jiyuan ruins except the clearjade ingot shape and requested its correction together with the next regional batch, not as a separate paid image.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Jiyuan brokenplain only: seven implemented scenes, fourteen new ordinary enemies and one guardian challenge, fourteen new items and one domain divine-art illustration. Correct clearjade-ingot within the materials atlas. Reuse all other mounted assets. No ark interior, player, moon functional icon, furnace or new gameplay.",
+  "scopeCounts": { "scenes": 7, "enemies": 15, "items": 14, "techniques": 1, "newAssets": 37, "replacementAssets": 1, "assets": 38 },
+  "replacementIds": ["clearjade-ingot"],
+  "references": "Text-only independent generation. Existing pictures are not attached or regenerated except the explicitly authorized ingot.",
+  "enemyDirection": "Complete bodies, heads and main movement or attack point screen-left. Clean high-realm xianxia presentation preserves the established nonhuman identities.",
+  "jobs": [
+    {
+      "id": "jiyuan-brokenplain", "name": "霁原断原", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/jiyuan-brokenplain.txt"
+    },
+    {
+      "id": "fallen-edge-slope", "name": "落锋坡", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/fallen-edge-slope.txt"
+    },
+    {
+      "id": "bone-array-gully", "name": "骸阵荒沟", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/bone-array-gully.txt"
+    },
+    {
+      "id": "split-stoneplain", "name": "裂坪", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/split-stoneplain.txt"
+    },
+    {
+      "id": "resting-armor-plain", "name": "卧甲石原", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/resting-armor-plain.txt"
+    },
+    {
+      "id": "remnant-flag-ringpass", "name": "残旗环隘", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/remnant-flag-ringpass.txt"
+    },
+    {
+      "id": "layered-armor-gate", "name": "叠甲禁卫通道", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-brokenplain-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/layered-armor-gate.txt"
+    },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-brokenplain-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "gravel-armored-insect", "name": "砾甲虫卫", "cellBounds": [0, 0, 526, 525] },
+        { "id": "layered-edge-wraith", "name": "叠锋游魂", "cellBounds": [526, 0, 424, 580] },
+        { "id": "galechasing-shadowbeast", "name": "追岚影兽", "cellBounds": [950, 0, 640, 506] },
+        { "id": "ancient-coldiron-spirit", "name": "寒铁凝灵", "cellBounds": [1590, 0, 458, 506] },
+        { "id": "darkfur-battlebeast", "name": "墨茸兽", "cellBounds": [0, 600, 531, 424] },
+        { "id": "hidden-gel-spirit", "name": "匿影胶灵", "cellBounds": [532, 580, 445, 444] },
+        { "id": "contractbearing-raider", "name": "负契劫修", "cellBounds": [977, 506, 553, 518] },
+        { "id": "silkseizing-raider", "name": "夺绢悍修", "cellBounds": [1530, 506, 518, 518] }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-brokenplain-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "wormbone-wraith", "name": "寄虫骨魅", "cellBounds": [0, 0, 512, 513] },
+        { "id": "arrayseizing-leader", "name": "掠阵队首", "cellBounds": [512, 0, 474, 513] },
+        { "id": "mountaincrushing-beast", "name": "崩岳獠兽", "cellBounds": [986, 0, 586, 513] },
+        { "id": "rampart-earthbeast", "name": "执垒地魈", "cellBounds": [1572, 0, 476, 513] },
+        { "id": "flowing-silver-shadow", "name": "流银影灵", "cellBounds": [0, 513, 558, 511] },
+        { "id": "roadwaiting-old-raider", "name": "伏路老修", "cellBounds": [558, 513, 529, 511] },
+        { "id": "layered-armor-guardian", "name": "叠甲禁卫", "cellBounds": [1087, 513, 485, 511] }
+      ]
+    },
+    {
+      "id": "materials-and-ingot", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-brokenplain-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/materials-and-ingot.txt",
+      "items": [
+        { "id": "beast-marrow-fat", "name": "荒兽髓脂", "cellBounds": [0, 0, 528, 500] },
+        { "id": "charged-gel", "name": "蓄灵凝胶", "cellBounds": [528, 0, 460, 500] },
+        { "id": "charged-silk", "name": "蕴劲灵绢", "cellBounds": [988, 0, 562, 500] },
+        { "id": "stable-essence-pill", "name": "定元丹", "cellBounds": [1550, 0, 498, 500] },
+        { "id": "radiant-marrow", "name": "曜灵髓", "cellBounds": [0, 500, 528, 524] },
+        { "id": "stellar-marrow", "name": "璇灵髓", "cellBounds": [528, 500, 460, 524] },
+        { "id": "clearjade-ingot", "name": "澄碧金锭", "cellBounds": [988, 500, 562, 524] }
+      ]
+    },
+    {
+      "id": "equipment", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-brokenplain-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/equipment.txt",
+      "items": [
+        { "id": "charged-headwrap", "name": "蕴劲巾", "cellBounds": [0, 0, 506, 507] },
+        { "id": "charged-jacket", "name": "蕴劲法衣", "cellBounds": [506, 0, 564, 507] },
+        { "id": "charged-leggings", "name": "蕴劲长裤", "cellBounds": [1070, 0, 410, 507] },
+        { "id": "charged-boots", "name": "蕴劲履", "cellBounds": [1480, 0, 568, 507] },
+        { "id": "charged-headwrap-lined-clearjade-head-shell", "name": "澄碧蕴劲巾", "cellBounds": [0, 507, 506, 517] },
+        { "id": "charged-jacket-lined-clearjade-body-shell", "name": "澄碧蕴劲法衣", "cellBounds": [506, 507, 564, 517] },
+        { "id": "charged-leggings-lined-clearjade-leg-shell", "name": "澄碧蕴劲长裤", "cellBounds": [1070, 507, 410, 517] },
+        { "id": "charged-boots-lined-clearjade-foot-shell", "name": "澄碧蕴劲履", "cellBounds": [1480, 507, 568, 517] }
+      ]
+    },
+    {
+      "id": "domain", "kind": "atlas", "target": "techniques", "variant": "flare",
+      "assetSuffix": "flare-brokenplain-v1", "size": "1024x1024", "columns": 1, "rows": 1,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-brokenplain/production-v1/prompts/domain.txt",
+      "items": [{ "id": "domain", "name": "领域" }]
+    }
+  ]
+}

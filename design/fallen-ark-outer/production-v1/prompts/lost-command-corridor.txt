@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Lost Command Corridor deep within an ancient fallen immortal ark. A monumental long passage bends around overlapping hull walls; broken spirit-flow branches hang across an open shaft and interrupted inlaid channels run along broad floor slabs. Build dreamlike depth with repeated wide doorframes that shift in elevation, visible distant continuation and a few clearly broken connections. The surviving command system feels misaligned but not wholly ruined.
+Style/medium: magnificent Chinese fantasy dreamcore, polished painterly metal architecture, continuous shadow/light shapes, carefully grouped detail; unusual space carried by structural repetition, not floating symbols.
+Lighting/mood: muted violet reflections, pale green-white flow light fading at broken junctions, a remote warm opening; readable planes, clean air.
+Constraints: 1792x784 landscape, no close-up enemies or player, no visual status debuff overlays, screens, neon sci-fi, modern cables, fresh war, explosions, inscriptions as readable text, UI, labels or borders. Preserve the outer-cabin corridor identity, not the final core.

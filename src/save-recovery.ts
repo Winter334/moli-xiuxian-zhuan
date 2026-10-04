@@ -29,7 +29,8 @@ export function sameClientSave(local: ClientSave, cloud: ClientSave): boolean {
   return JSON.stringify(ordered(local)) === JSON.stringify(ordered(cloud));
 }
 
-export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloudBlocked: string | null): SaveComparison {
+export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloudBlocked: string | null,
+  allowAdministratorChanges = false): SaveComparison {
   const summarize = (save: CloudProfile['save'], savedAt: number, revision: string): SaveSummary => {
     const view = getCharacterView(save.character, cloud.serverTime);
     return { savedAt, revision, life: view.life.number, realm: view.realmName,
@@ -42,7 +43,7 @@ export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloud
     localBlocked = '请先核对寄售、轮回或战斗，再决定是否保留本地进度。';
   } else if (!localBlocked) {
     try {
-      checkProgress(cloud.save, local.save, cloud.save.character.simulation.clockMs, cloud.serverTime);
+      checkProgress(cloud.save, local.save, cloud.save.character.simulation.clockMs, cloud.serverTime, allowAdministratorChanges);
       const request = { characterId: local.characterId, baseRevision: cloud.revision,
         requestId: crypto.randomUUID(), save: local.save };
       if (new TextEncoder().encode(JSON.stringify(request)).byteLength > MAX_SAVE_BYTES) {

@@ -1,0 +1,36 @@
+{
+  "region": "qixia-land",
+  "version": "armor-production-v2",
+  "authorization": "The user approved the three revised jade-reed robes and explicitly requested redrawing the remaining nine armor icons in the same material and manifestation direction.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Nine completed and mounted headwrap, trousers and shoe revisions, awaiting user image/UI review. Basic jade-reed, resonant-metal jade-reed and returning-glow jade-reed variants. Completed production configuration, not a regeneration request. The three approved robe images and all other mounted artwork are unchanged. No gameplay, item identity, recipe or stat changes.",
+  "references": "Text-only generation using the approved robe study's material and manifestation specification; no image references or robe regeneration.",
+  "jobs": [
+    {
+      "id": "armor-remaining-01",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-qixia-armor-v2",
+      "size": "1536x1536",
+      "columns": 3,
+      "rows": 3,
+      "background": "transparent",
+      "backgroundRemoval": "preserve-alpha",
+      "references": [],
+      "promptFile": "design/qixia-land/armor-production-v2/prompts/armor-remaining-01.txt",
+      "items": [
+        { "id": "jade-reed-headwrap", "name": "碧苇巾", "cellBounds": [0, 0, 528, 532] },
+        { "id": "jade-reed-leggings", "name": "碧苇长裤", "cellBounds": [528, 0, 464, 526] },
+        { "id": "jade-reed-boots", "name": "碧苇履", "cellBounds": [992, 0, 544, 516] },
+        { "id": "jade-reed-headwrap-lined-resonant-head-shell", "name": "鸣金碧苇巾", "cellBounds": [0, 532, 542, 492] },
+        { "id": "jade-reed-leggings-lined-resonant-leg-shell", "name": "鸣金碧苇长裤", "cellBounds": [542, 526, 456, 482] },
+        { "id": "jade-reed-boots-lined-resonant-foot-shell", "name": "鸣金碧苇履", "cellBounds": [998, 516, 538, 478] },
+        { "id": "jade-reed-headwrap-lined-returning-glow-head-shell", "name": "回辉碧苇巾", "cellBounds": [0, 1024, 544, 512] },
+        { "id": "jade-reed-leggings-lined-returning-glow-leg-shell", "name": "回辉碧苇长裤", "cellBounds": [544, 1008, 446, 528] },
+        { "id": "jade-reed-boots-lined-returning-glow-foot-shell", "name": "回辉碧苇履", "cellBounds": [990, 994, 546, 542] }
+      ]
+    }
+  ]
+}

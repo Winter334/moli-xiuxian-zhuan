@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide Chinese xianxia RPG location painting, 1792 by 784, one complete landscape.
+Primary request: Rosyfall Plain, an immense living plateau below the Qixia world-entry overlook; Chinese dreamcore grandeur through long terrain, strange quiet light and remote suspended land.
+Scene/backdrop: open green and rose-tinted meadow plains unfold toward uninterrupted distant mountains. A broad winding river crosses the plateau, with reedbanks and sparse groves. In the far sky a huge level-sided suspended landmass supports distant Chinese tiled roofs; it feels like another piece of the world rather than a tiny ornament.
+Composition/framing: low wide-angle view across a stone path that leaves the foreground and disappears into the immense plain. Low foreground grasses and river stones establish tangible scale; most of the picture belongs to broad meadow and far open sky. The suspended land lies off the main axis, partly beyond distant mountain shoulders. Horizontal openness rather than a deep cliff overlook.
+Style/medium: refined painterly fantasy landscape, broad coherent grass and rock planes, long soft color transitions and selectively articulated edges, not photographic vegetation or glossy CG.
+Lighting/mood: clear pearly afternoon, broad faint rosy sky reflection crosses the river and meadow; green life, cool pale sky and warm rose light coexist without colored fog covering the terrain. Beautiful, unnervingly spacious and welcoming.
+Constraints: no settlements in the foreground, no grand central temple, no character or enemy subjects, no modern elements, UI, text, border or watermark. Retain the actual open plateau and riverbank identity, not another overlook composition or an empty cloudscape.

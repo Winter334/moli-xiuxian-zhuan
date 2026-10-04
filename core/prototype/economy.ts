@@ -24,6 +24,7 @@ function requireShop(state: CharacterState, shopId: ShopId) {
   const shop = commandEntry(SHOPS, shopId, '没有这家商铺');
   if (state.locationId !== shop.locationId) throw new CharacterCommandError(`请先前往${shop.name}所在地点`);
   if (shop.prerequisite && !cleared(state, shop.prerequisite)) throw new CharacterCommandError('商铺尚未开放');
+  if (shopId === 'jiyuan-supplies' && !state.jiyuanMerchantFound) throw new CharacterCommandError('尚未发现霁原墟商');
   return shop;
 }
 
@@ -40,9 +41,10 @@ export function craftingRates(state: CharacterState, recipe: RecipeDefinition) {
   } : { successChance: '1', extraBatchChance: '0' };
 }
 
-export function foodDuration(state: CharacterState, effectId: string): number {
+export function foodDuration(state: CharacterState, effectId: string, itemId?: string): number {
   const effect = lookup(FOOD_EFFECTS, effectId);
-  return effectDuration(effect.durationMs, activeSources(state.simulation), ['supply', effect.polarity]);
+  return effectDuration((itemId ? ITEMS[itemId].foodOverride?.durationMs : undefined) ?? effect.durationMs,
+    activeSources(state.simulation), ['supply', effect.polarity]);
 }
 
 export function upgradeFurnace(state: CharacterState, targetTier: FurnaceTier) {
@@ -58,12 +60,19 @@ export function upgradeFurnace(state: CharacterState, targetTier: FurnaceTier) {
 
 export function itemUseIssue(state: CharacterState, itemId: string): string | null {
   const item = commandEntry(ITEMS, itemId, '没有这个物品');
-  if (item.kind !== 'food' && item.kind !== 'marrow' && item.kind !== 'insight' && item.kind !== 'foundation-pill') return '此物品不能直接使用';
+  if (item.kind !== 'food' && item.kind !== 'marrow' && item.kind !== 'insight' && item.kind !== 'foundation-pill' &&
+      item.kind !== 'meditation-kit') return '此物品不能直接使用';
+  if (item.kind === 'meditation-kit') {
+    if (state.ruinMeditationOpened) return '墟纹静室已开放';
+    if (!state.jiyuanIntroduced) return '须先到旧墟听取路线介绍';
+    if (state.simulation.battle) return '请先退出战斗';
+  }
   if (item.kind === 'foundation-pill') {
     if (state.level !== FOUNDATION_LEVEL - 1) return '筑基丹仅限炼气十二层使用';
     if (!dec(state.cultivation).eq(realmAt(FOUNDATION_LEVEL).entryCost)) return '须修满6000万修为才能服丹筑基';
   }
-  if (item.kind === 'food' && item.foodEffects!.some(id => dec(effectiveRealm(state.level)).gt(lookup(FOOD_EFFECTS, id).maxRealm))) {
+  if (item.kind === 'food' && item.foodEffects!.some(id =>
+    dec(effectiveRealm(state.level)).gt(item.foodOverride?.maxRealm ?? lookup(FOOD_EFFECTS, id).maxRealm))) {
     return `当前境界已超出${item.name}适用上限`;
   }
   return null;
@@ -72,6 +81,10 @@ export function itemUseIssue(state: CharacterState, itemId: string): string | nu
 export function craft(state: CharacterState, recipeId: string, quantity: number) {
   const workshop = requireWorkshop(state);
   const recipe = commandEntry(RECIPES, recipeId, '没有这个配方');
+  if (recipe.output === 'ruin-meditation-kit' &&
+      (quantity !== 1 || state.ruinMeditationOpened || BigInt(state.inventory[recipe.output] ?? '0') > 0n)) {
+    throw new CharacterCommandError('静修套件仅需取得一次，购买与自制择一');
+  }
   for (const [id, count] of Object.entries(recipe.materials)) {
     if (BigInt(state.inventory[id] ?? '0') < BigInt(count) * BigInt(quantity)) throw new CharacterCommandError('整批炼制材料不足');
   }
@@ -174,7 +187,9 @@ export function refreshShop(state: CharacterState, shopId: ShopId, worldTimeMs: 
 
 export function purchasePrice(state: CharacterState, shopId: ShopId, itemId: string, quality?: number): string {
   const margin = dec(SHOPS[shopId].margin).mul(dec('.98').pow(state.skills.trade.level));
-  return roundPrice(text(dec(itemValue(itemId, quality)).mul(margin.lt('1.1') ? '1.1' : margin)));
+  const override = SHOPS[shopId].priceOverrides?.[itemId];
+  const base = override ? dec(override).div(SHOPS[shopId].margin) : dec(itemValue(itemId, quality));
+  return roundPrice(text(base.mul(margin.lt('1.1') ? '1.1' : margin)));
 }
 
 export type TradeSelection = { kind: 'stack'; itemId: string } | { kind: 'instance'; instanceId: string };
@@ -198,6 +213,10 @@ export function trade(
     if (BigInt(from.inventory[itemId] ?? '0') < BigInt(quantity)) throw new CharacterCommandError('库存不足');
   }
   const unitPrice = side === 'buy' ? purchasePrice(state, shopId, itemId, instance?.quality) : itemValue(itemId, instance?.quality);
+  if (side === 'buy' && itemId === 'ruin-meditation-kit' &&
+      (quantity !== 1 || state.ruinMeditationOpened || BigInt(state.inventory[itemId] ?? '0') > 0n)) {
+    throw new CharacterCommandError('静修套件仅需取得一次，购买与自制择一');
+  }
   const cost = text(dec(unitPrice).mul(quantity));
   if (side === 'buy' && dec(state.money).lt(cost)) throw new CharacterCommandError('灵石不足');
   if (target.kind === 'instance') {
@@ -218,7 +237,9 @@ export function useItem(state: CharacterState, itemId: string, quantity: number)
   const issue = itemUseIssue(state, itemId);
   if (issue) throw new CharacterCommandError(issue);
   const item = ITEMS[itemId];
-  if (item.kind === 'foundation-pill' && quantity !== 1) throw new CharacterCommandError('筑基丹每次只能服用一颗');
+  if ((item.kind === 'foundation-pill' || item.kind === 'meditation-kit') && quantity !== 1) {
+    throw new CharacterCommandError('此物品每次只能使用一份');
+  }
   if (BigInt(state.inventory[itemId] ?? '0') < BigInt(quantity)) throw new CharacterCommandError('物品不足');
   const marrowBefore = { ...state.marrow };
   let cultivationGained = dec(0);
@@ -228,9 +249,13 @@ export function useItem(state: CharacterState, itemId: string, quantity: number)
     if (item.kind === 'food') {
       for (const id of item.foodEffects!) {
         state.simulation = applyTimedEffect(state.simulation, {
-          id, durationMs: lookup(FOOD_EFFECTS, id).durationMs, source: foodEffectSource(id),
+          id, durationMs: item.foodOverride?.durationMs ?? lookup(FOOD_EFFECTS, id).durationMs, source: foodEffectSource(id),
         }).state;
       }
+    } else if (item.kind === 'meditation-kit') {
+      state.ruinMeditationOpened = true;
+      state.meditationTier = state.meditationTier === 120 ? 120 : 40;
+      record(state, `墟纹静室已开放，养息基础熟练为${state.meditationTier}/秒`);
     } else if (item.kind === 'insight') {
       const result = gainCharacterExperience(state, item.experience!.amount);
       cultivationGained = cultivationGained.plus(result.credited);
@@ -244,7 +269,8 @@ export function useItem(state: CharacterState, itemId: string, quantity: number)
     } else {
       const keys = ['attack', 'defense', 'agility', 'maxHp'] as const;
       const q = item.marrowValue!;
-      const ratios = keys.map((key) => dec(state.marrow[key]).div(q * (key === 'maxHp' ? 50 : 1) * 30));
+      const healthFactor = q > 7500 ? 100 : 50;
+      const ratios = keys.map((key) => dec(state.marrow[key]).div(q * (key === 'maxHp' ? healthFactor : 1) * 30));
       const weights = ratios.map((ratio) => ratio.mul(30).plus(1).pow('-1.5').mul(ratio.gte(1) ? '.5' : 1));
       let roll = dec(random(state.simulation)).mul(weights.reduce((sum, weight) => sum.plus(weight), dec(0)));
       let selected = 3;
@@ -254,7 +280,7 @@ export function useItem(state: CharacterState, itemId: string, quantity: number)
       }
       const key = keys[selected];
       const ratio = ratios[selected];
-      const gain = dec(q * (key === 'maxHp' ? 50 : 1)).mul(ratio.lt(1)
+      const gain = dec(q * (key === 'maxHp' ? healthFactor : 1)).mul(ratio.lt(1)
         ? 1 : ratio.plus(1).minus(ratio.sqrt().mul(2)).mul(-5).exp());
       state.marrow[key] = text(dec(state.marrow[key]).plus(gain));
       synchronizeCharacter(state);

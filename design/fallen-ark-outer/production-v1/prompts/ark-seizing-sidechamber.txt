@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Ark Seizing Sidechamber, a large peripheral chamber occupied by a material-plundering cultivator chief inside a fallen immortal ark. View across a broad sunlit side platform where organized salvaged fittings and a few understated crimson cloth markers indicate current occupation. Curving hull ribs rise high above; a broken lateral aperture opens onto distant scarred mountains. The side room is impressive in scale but is clearly not the main route or final ship-control room.
+Style/medium: polished Chinese fantasy dreamcore, vast spatial depth and archaic metal craftsmanship, painterly large color masses; calm atmosphere with restrained signs of a hostile claim.
+Lighting/mood: clear warm angled sunlight, cool gray hull and a few crimson accents, minimal mist.
+Constraints: 1792x784 independent landscape, no chief portrait or player, no throne room, revenge imagery, fresh battle, modern guns, computers, dense debris, readable flags, text, UI, watermark or decorative floating shapes.

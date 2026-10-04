@@ -1,0 +1,137 @@
+{
+  "region": "jiyuan-ruins",
+  "version": "production-v1",
+  "authorization": "The user approved the revised Chengzhao greatswords and explicitly requested the next region. Apply cleaner, more distinctly Chinese cultivator enemy imagery and more prevalent high-realm manifestations from Jiyuan ruins onward.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Jiyuan ruins only: eight implemented scenes, fifteen new ordinary enemies plus the lightchaser challenge, and twenty-two first-use items. The rustbrood child reuses its same-form parent image. Preserve all existing images and content. No brokenplain, domain, player, furnace or functional UI art.",
+  "scopeCounts": { "scenes": 8, "enemies": 16, "items": 22, "assets": 46, "reusedEnemyAliases": 1 },
+  "references": "Independent text-only generation. Existing images are not attached or regenerated.",
+  "enemyDirection": "Complete bodies, heads and main attack or movement face screen-left. Preserve each established species or construct identity; cleaner xianxia presentation does not turn nonhumans into human cultivators.",
+  "enemyAliases": { "rustbrood-child": "rustbrood-puppet" },
+  "jobs": [
+    {
+      "id": "jiyuan-ruins", "name": "霁原旧墟", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/jiyuan-ruins.txt"
+    },
+    {
+      "id": "collapsed-ward-street", "name": "塌坊长街", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/collapsed-ward-street.txt"
+    },
+    {
+      "id": "fallen-tower-lanes", "name": "崩阙里巷", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/fallen-tower-lanes.txt"
+    },
+    {
+      "id": "split-tower-courts", "name": "裂塔残庭", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/split-tower-courts.txt"
+    },
+    {
+      "id": "empty-channel-ruinplain", "name": "空渠墟坪", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/empty-channel-ruinplain.txt"
+    },
+    {
+      "id": "hanging-bell-oldgate", "name": "悬钟旧门", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/hanging-bell-oldgate.txt"
+    },
+    {
+      "id": "jiyuan-lightchaser", "name": "逐光旧路", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/jiyuan-lightchaser.txt"
+    },
+    {
+      "id": "ruin-meditation-room", "name": "墟纹静室", "kind": "scene", "variant": "sunburst",
+      "assetSuffix": "sunburst-jiyuan-v1", "size": "1792x784", "background": "opaque",
+      "references": [], "promptFile": "design/jiyuan-ruins/production-v1/prompts/ruin-meditation-room.txt"
+    },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-jiyuan-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-ruins/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "ruin-patrolling-raider", "name": "巡墟劫修", "cellBounds": [0, 0, 521, 508] },
+        { "id": "chestbearing-shroom", "name": "抱匣蕈灵", "cellBounds": [525, 0, 492, 508],
+          "excludedCellRegions": [[442, 328, 492, 388]] },
+        { "id": "brokenward-bladesman", "name": "破坊刀修", "cellBounds": [968, 0, 579, 508],
+          "excludedCellRegions": [[0, 160, 22, 242], [0, 396, 15, 466]] },
+        { "id": "withered-breath-raider", "name": "枯息劫修", "cellBounds": [1547, 0, 501, 508] },
+        { "id": "bluebone-wraith", "name": "蓝骨游魅", "cellBounds": [0, 509, 521, 515] },
+        { "id": "rustbrood-puppet", "name": "锈胎群傀", "cellBounds": [522, 509, 509, 515] },
+        { "id": "twinprism-spirit", "name": "双棱晶灵", "cellBounds": [1031, 509, 516, 515] },
+        { "id": "thornshadow-ruinwraith", "name": "棘影墟魅", "cellBounds": [1547, 509, 501, 515] }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-jiyuan-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-ruins/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "marrowchasing-raider", "name": "逐髓劫修", "cellBounds": [0, 0, 515, 507] },
+        { "id": "bluemane-furbeast", "name": "蓝鬃茸兽", "cellBounds": [515, 0, 535, 514] },
+        { "id": "ancient-rune-puppet", "name": "古纹残傀", "cellBounds": [1050, 0, 422, 566] },
+        { "id": "wandering-ruin-shadowbeast", "name": "游墟影兽", "cellBounds": [1468, 0, 580, 511] },
+        { "id": "ringingedge-ruinbird", "name": "鸣锋墟禽", "cellBounds": [0, 506, 514, 518] },
+        { "id": "marrowchasing-leader", "name": "逐髓队首", "cellBounds": [512, 515, 512, 509],
+          "excludedCellRegions": [[500, 389, 512, 415]] },
+        { "id": "hiddenblade-earthbeast", "name": "伏刃地魈", "cellBounds": [1016, 650, 506, 374],
+          "excludedCellRegions": [[496, 125, 506, 165]] },
+        { "id": "lightchasing-nightmare", "name": "逐光影魇", "cellBounds": [1508, 550, 540, 474],
+          "excludedCellRegions": [[0, 335, 6, 385]] }
+      ]
+    },
+    {
+      "id": "materials-and-marrow", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-jiyuan-v1", "size": "1536x1536", "columns": 3, "rows": 3,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-ruins/production-v1/prompts/materials-and-marrow.txt",
+      "items": [
+        { "id": "ruin-essence", "name": "墟灵精粹", "cellBounds": [0, 0, 495, 516] },
+        { "id": "ruin-rune-fragment", "name": "墟纹残片", "cellBounds": [495, 0, 505, 516] },
+        { "id": "green-cast-coin", "name": "碧铸旧币", "cellBounds": [1000, 0, 536, 516] },
+        { "id": "clearjade-ingot", "name": "澄碧金锭", "cellBounds": [0, 516, 495, 465] },
+        { "id": "clearjade-blade", "name": "澄碧精料", "cellBounds": [495, 516, 505, 465] },
+        { "id": "clearjade-greatblade", "name": "澄碧重料", "cellBounds": [1000, 516, 536, 465] },
+        { "id": "amber-marrow", "name": "珀灵髓", "cellBounds": [0, 981, 495, 555] },
+        { "id": "azure-marrow", "name": "湛灵髓", "cellBounds": [495, 981, 505, 555] },
+        { "id": "threephase-pendant", "name": "三相合息佩", "cellBounds": [1000, 981, 536, 555] }
+      ]
+    },
+    {
+      "id": "supplies", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-jiyuan-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-ruins/production-v1/prompts/supplies.txt",
+      "items": [
+        { "id": "clearjade-head-shell", "name": "澄碧束额砂", "cellBounds": [0, 0, 487, 521] },
+        { "id": "clearjade-body-shell", "name": "澄碧护衣砂", "cellBounds": [487, 0, 546, 521] },
+        { "id": "clearjade-leg-shell", "name": "澄碧护腿砂", "cellBounds": [1033, 0, 487, 521] },
+        { "id": "clearjade-foot-shell", "name": "澄碧护履砂", "cellBounds": [1520, 0, 528, 521] },
+        { "id": "ruin-restoration-elixir", "name": "复元灵液", "cellBounds": [0, 521, 487, 503] },
+        { "id": "ruin-surge-elixir", "name": "炽元灵液", "cellBounds": [487, 521, 546, 503] },
+        { "id": "ruin-meditation-kit", "name": "墟纹静修套件", "cellBounds": [1033, 521, 487, 503] }
+      ]
+    },
+    {
+      "id": "equipment", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-jiyuan-v1", "size": "1536x1024", "columns": 3, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/jiyuan-ruins/production-v1/prompts/equipment.txt",
+      "items": [
+        { "id": "crystal-clearjade-blade-weapon", "name": "晶蕴澄碧剑", "cellBounds": [0, 0, 516, 471] },
+        { "id": "crystal-clearjade-greatblade-weapon", "name": "晶蕴澄碧重剑", "cellBounds": [516, 0, 497, 471] },
+        { "id": "jade-reed-headwrap-lined-clearjade-head-shell", "name": "澄碧碧苇巾", "cellBounds": [1013, 0, 523, 485] },
+        { "id": "jade-reed-jacket-lined-clearjade-body-shell", "name": "澄碧碧苇法衣", "cellBounds": [0, 471, 516, 553] },
+        { "id": "jade-reed-leggings-lined-clearjade-leg-shell", "name": "澄碧碧苇长裤", "cellBounds": [516, 471, 497, 553] },
+        { "id": "jade-reed-boots-lined-clearjade-foot-shell", "name": "澄碧碧苇履", "cellBounds": [1013, 485, 523, 539] }
+      ]
+    }
+  ]
+}

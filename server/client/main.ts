@@ -23,6 +23,7 @@ import { registerSocial } from './social';
 import { SocialRepository } from './social-store';
 import { PvpRepository } from './pvp-store';
 import { PvpService } from './pvp';
+import { readModeratorIds, registerDebugConsole } from './debug-console';
 
 export const SESSION_COOKIE = 'moli_client_session';
 
@@ -54,6 +55,7 @@ export async function createClientApp(
     throw new Error('Use the dedicated Activity deployment entry point in production.');
   }
   const discordConfig = authMode === 'discord' ? readDiscordConfig() : null;
+  const moderators = readModeratorIds(process.env.SOCIAL_MODERATOR_IDS);
   const databaseUrl = discordConfig ? process.env.ACTIVITY_DATABASE_URL ?? DEFAULT_ACTIVITY_DATABASE_URL : config.databaseUrl;
   if (discordConfig && !deployment && new URL(databaseUrl).pathname !== '/moli_activity') {
     throw new Error('Discord Activity development requires the isolated moli_activity database.');
@@ -98,6 +100,12 @@ export async function createClientApp(
     if (!id) throw new ApiError(401, 'UNAUTHENTICATED', '云存档身份未连接，本地进度保留。');
     return id;
   }
+  async function consoleIdentity(request: FastifyRequest) {
+    if (!discordConfig) return null;
+    const token = /^Bearer ([A-Za-z0-9_-]{43})$/.exec(request.headers.authorization ?? '')?.[1];
+    return token ? repository.socialIdentity(token, discordConfig.clientId, Date.now()) : null;
+  }
+  registerDebugConsole(app, { identity: consoleIdentity, moderators });
 
   const healthMode = discord ? deployment ? 'discord-activity-deployed' : 'discord-activity-development' : 'client-opening';
   app.get('/api/health', async (_request, reply) => {
@@ -133,7 +141,11 @@ export async function createClientApp(
   });
   app.post('/api/client/save', async request => {
     const id = await authenticate(request);
-    return service.upload(id, request.body);
+    return service.upload(id, request.body, async () => {
+      if (!discordConfig) return config.devAuth;
+      const verified = await consoleIdentity(request);
+      return verified?.characterId === id && moderators.has(verified.userId);
+    });
   });
   app.post('/api/client/consignment/view', async request =>
     consignment.view(await authenticate(request), request.body));
@@ -162,14 +174,12 @@ export async function createClientApp(
   try {
     await initializeStorage(pool);
     if (discordConfig) {
-      const moderatorIds = (process.env.SOCIAL_MODERATOR_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
-      if (moderatorIds.some(id => !/^\d{17,20}$/.test(id))) throw new Error('SOCIAL_MODERATOR_IDS must contain Discord user IDs.');
       const pvpStore = new PvpRepository(pool);
       const hub = await registerSocial(app, {
         applicationId: discordConfig.clientId,
         identity: token => repository.socialIdentity(token, discordConfig.clientId, Date.now()),
         cloudRevision: async characterId => (await repository.load(characterId)).revision,
-        store: new SocialRepository(pool, discordConfig.clientId), moderators: new Set(moderatorIds),
+        store: new SocialRepository(pool, discordConfig.clientId), moderators,
         pvpPlayer: id => pvpStore.player(id),
       });
       const pvp = new PvpService(pvpStore, hub);

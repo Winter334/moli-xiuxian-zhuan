@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: wide 1792 by 784 Chinese xianxia RPG scene.
+Primary request: Collapsed Ward Street, a long ancient raised street crossing terraced cultivator workshops and wards; damaged spans interrupted but a present-day narrow salvage path continues through the lower buildings.
+Composition/framing: low wide-angle along a great pale-stone elevated street, massive broken supports and layered Chinese eaves create deep repeating rhythms. The surviving street curves above a readable near footpath. Give the ruptured span a clear silhouette against open daylight; architectural scale and clean connected masses matter more than scattered rubble.
+Scene/backdrop: worn old courtyards, repair ramps and a few distant cargo cloths. Several tiny anonymous gatherers far away establish scale, separated from dangerous abandoned wards; no crowds or depicted battle.
+Lighting/mood: bright soft overhead light, pale silver stone, muted vermilion wood and blue-jade roof remnants. Large tranquil shadows and a very faint old conduit glow, dreamlike monumental Chinese city depth.
+Style/medium: finished painterly Chinese fantasy, broad deliberate color planes and refined material edges, not photographs, noisy texture or smooth CGI.
+Constraints: ancient devastation, not a recent explosion. No giant enemy, fresh corpses, smoke, spaceship, extra game items, text, labels, UI, grid or watermark.

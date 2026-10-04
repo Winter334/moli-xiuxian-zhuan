@@ -1,0 +1,61 @@
+{
+  "region": "fallen-ark-inner",
+  "version": "production-v1",
+  "authorization": "The user positively accepted the outer-cabin artwork and authorized the next batch: the implemented first three inner-cabin sections, ending at the Energy Gathering Cabin.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Six implemented scenes, ten new ordinary enemy identities, one separately drawn summoned maintenance puppet, one challenge guardian and five new items. Existing weapons, armor, marrow, domain and other mounted assets are unchanged. No fourth or fifth section, crystallization room, knowledge, extraction, final command core, player portrait, facility icons, breakthrough content or gameplay changes.",
+  "scopeCounts": { "scenes": 6, "enemies": 12, "items": 5, "newAssets": 23, "reuseAliases": 0, "newMountedIds": 23 },
+  "reuse": [],
+  "references": "Text-only independent generation. Existing mounted assets are neither attached nor regenerated. The two Starbreaking Heavy Puppets share their one enemy identity and image.",
+  "enemyDirection": "Complete bodies, faces where present and main movement or attack directions face screen-left. Clean immortal-artificer painting preserves each construct, spirit and beast identity.",
+  "jobs": [
+    { "id": "fallen-ark-inner", "name": "坠星灵舟·内舱", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/fallen-ark-inner.txt" },
+    { "id": "furnace-guard-corridor", "name": "守炉廊", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/furnace-guard-corridor.txt" },
+    { "id": "essence-condensing-corridor", "name": "凝元回廊", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/essence-condensing-corridor.txt" },
+    { "id": "energy-gathering-cabin", "name": "聚能舱", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/energy-gathering-cabin.txt" },
+    { "id": "starbreaking-chamber", "name": "碎星室", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/starbreaking-chamber.txt" },
+    { "id": "ark-meditation-cabin", "name": "静修舱", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-inner-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-inner/production-v1/prompts/ark-meditation-cabin.txt" },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-ark-inner-v1", "size": "1536x1024", "columns": 3, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-inner/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "doorhub-command-armor", "name": "门枢统甲", "cellBounds": [0, 0, 485, 549] },
+        { "id": "essence-drawing-array-spirit", "name": "引元阵灵", "cellBounds": [485, 0, 503, 549] },
+        { "id": "radiant-beam-war-puppet", "name": "照芒战傀", "cellBounds": [988, 0, 548, 549] },
+        { "id": "triangular-patrol-puppet", "name": "三棱巡傀", "cellBounds": [0, 549, 488, 475] },
+        { "id": "thorncutting-walking-puppet", "name": "割荆行傀", "cellBounds": [488, 549, 568, 475] },
+        { "id": "inversebalance-ark-spirit", "name": "倒衡舟灵", "cellBounds": [1056, 549, 480, 475] }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-ark-inner-v1", "size": "1536x1024", "columns": 3, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-inner/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "energy-gathering-core-spirit", "name": "聚能核灵", "cellBounds": [0, 0, 520, 492] },
+        { "id": "breath-eroding-gel-wraith", "name": "蚀息胶魅", "cellBounds": [520, 0, 526, 492] },
+        { "id": "golden-fur-beast", "name": "金茸兽", "cellBounds": [1046, 0, 490, 492] },
+        { "id": "silver-eye-core-spirit", "name": "银瞳核灵", "cellBounds": [0, 492, 499, 532] },
+        { "id": "threehead-wandering-serpent", "name": "三首游蛇", "cellBounds": [499, 492, 446, 532] },
+        { "id": "starbreaking-heavy-puppet", "name": "碎星重傀", "cellBounds": [945, 492, 591, 532] }
+      ]
+    },
+    {
+      "id": "items", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-ark-inner-v1", "size": "1536x1024", "columns": 3, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-inner/production-v1/prompts/items.txt",
+      "items": [
+        { "id": "rising-blood-elixir", "name": "腾血灵液", "cellBounds": [0, 0, 477, 510] },
+        { "id": "sealed-gel-crate", "name": "凝胶封匣", "cellBounds": [477, 0, 571, 510] },
+        { "id": "sealed-ark-core-crate", "name": "舟核封匣", "cellBounds": [1048, 0, 488, 510] },
+        { "id": "purple-cast-coin", "name": "紫铸旧币", "cellBounds": [0, 510, 534, 514] },
+        { "id": "star-dissolution-disk", "name": "星解盘", "cellBounds": [534, 510, 524, 514] }
+      ]
+    }
+  ]
+}

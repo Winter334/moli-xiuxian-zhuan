@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Hidden Hub Chamber, the last local guarded room before the inner cabins of a fallen Chinese immortal ark. A spacious enclosed chamber holds a suspended old hub housing within heavy nested metal braces; broad walkways lead past it to a distant inner bulkhead. Reveal the immense volume from an off-center elevated view, with tall layered hull panels and generous dark negative space. The housing belongs to this guard chamber, not the vessel's ultimate central core.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly artificer architecture, coherent large massing, archaic bronze-gray metal, jade-like spirit supply and occasional warm vermilion reflected light.
+Lighting/mood: concentrated ivory light at the old housing, quieter blue-green wall planes and a thin deep warm passage. Readable, solemn, not a horror room.
+Constraints: one 1792x784 landscape; do not portray a self-destruct event, new reward chamber, final command center, player portrait, close-up guardian, modern spaceship equipment, screens, guns, text, UI, labels, borders or generic temple altar.

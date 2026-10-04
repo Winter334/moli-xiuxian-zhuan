@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide environment painting for a Chinese cultivation RPG.
+Primary request: Essence Condensing Corridor inside the fallen immortal ark. Colossal fitted spirit conduits enter thick hull walls and interleave with layered condensation structures. A broad traversable gallery passes below suspended archaic conduit loops and stepped collection housings, then recedes across a deep gap into another wall tier. The architecture feels impossibly spacious while clearly remaining an enclosed ship passage.
+Style/medium: monumental Chinese fantasy dreamcore, painterly constructed space, clear large masses and calm optical strangeness. Green-white jade channels, copper-red collars, pale porcelain-like hull surfaces and restrained smoky violet recesses; traditional immortal artificer joinery, not contemporary plumbing.
+Composition/framing: 1792x784 landscape, elevated diagonal wide-angle view. One huge conduit crosses the middle distance, gallery in the lower foreground, layered upper housings and distant corridor form readable spatial hierarchy.
+Lighting/mood: gentle luminous current within the jade, warm reflected edges, clear atmospheric depth without concealing the geometry in fog.
+Constraints: a supply and condensation corridor, not a crystallization room, extraction laboratory or final core. No crystal rewards, machinery consoles, modern spaceship, close-up spirits, player portrait, screens, text, UI, watermark or border.

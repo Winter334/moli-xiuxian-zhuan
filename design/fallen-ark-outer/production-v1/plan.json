@@ -1,0 +1,101 @@
+{
+  "region": "fallen-ark-outer",
+  "version": "production-v1",
+  "authorization": "The user accepted the brokenplain batch and clearjade ingot correction, then authorized the next region: the fallen ark outer cabins.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Outer cabins only: nine implemented scenes, nineteen new ordinary enemies, two new guardian challenges and seventeen new items. Redbanner ark chief reuses its existing Cangzhao image. All other mounted assets remain unchanged. No inner cabins, player portrait, training icon, reactor functional icon, breakthrough materials or gameplay changes.",
+  "scopeCounts": { "scenes": 9, "enemies": 21, "items": 17, "newAssets": 47, "reuseAliases": 1, "newMountedIds": 48 },
+  "reuse": [{ "id": "redbanner-ark-chief", "sourceId": "redbanner-chief", "target": "enemies" }],
+  "references": "Text-only independent generation. Existing assets are not attached, replaced or regenerated.",
+  "enemyDirection": "Complete bodies and main movement or attack directions face screen-left. Clean xianxia craftsmanship preserves artificial construct, spirit, beast and cultivator identities.",
+  "jobs": [
+    { "id": "fallen-ark-outer", "name": "坠星灵舟·外舱", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/fallen-ark-outer.txt" },
+    { "id": "broken-gunwale-hall", "name": "断舷廊", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/broken-gunwale-hall.txt" },
+    { "id": "four-aspect-puppet-workshop", "name": "四象傀坊", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/four-aspect-puppet-workshop.txt" },
+    { "id": "lost-command-corridor", "name": "失令回廊", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/lost-command-corridor.txt" },
+    { "id": "armor-bearing-cabin", "name": "承甲舱", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/armor-bearing-cabin.txt" },
+    { "id": "sealed-hub-forecourt", "name": "封枢前庭", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/sealed-hub-forecourt.txt" },
+    { "id": "ark-seizing-sidechamber", "name": "夺舟偏室", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/ark-seizing-sidechamber.txt" },
+    { "id": "triangular-array-gate", "name": "三棱阵门", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/triangular-array-gate.txt" },
+    { "id": "hidden-hub-chamber", "name": "藏枢室", "kind": "scene", "variant": "sunburst", "assetSuffix": "sunburst-ark-outer-v1", "size": "1792x784", "background": "opaque", "references": [], "promptFile": "design/fallen-ark-outer/production-v1/prompts/hidden-hub-chamber.txt" },
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-ark-outer-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-outer/production-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "layered-ark-guard", "name": "层甲舟卫", "cellBounds": [0, 0, 504, 500] },
+        { "id": "clamp-domain-puppet", "name": "钳域阵傀", "cellBounds": [504, 0, 502, 500] },
+        { "id": "thunderback-shellbeast", "name": "雷脊壳兽", "cellBounds": [1006, 0, 524, 500] },
+        { "id": "darkedge-heavy-puppet", "name": "玄锋重傀", "cellBounds": [1530, 0, 518, 500] },
+        { "id": "twinclamp-walking-puppet", "name": "双钳行傀", "cellBounds": [0, 500, 582, 524] },
+        { "id": "crossarm-armor-puppet", "name": "交臂甲傀", "cellBounds": [582, 500, 418, 524] },
+        { "id": "turnbalance-heavy-puppet", "name": "转衡重傀", "cellBounds": [1000, 500, 542, 524] },
+        { "id": "wandering-rune-spirit", "name": "游纹符灵", "cellBounds": [1542, 500, 506, 524] }
+      ]
+    },
+    {
+      "id": "enemies-02", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-ark-outer-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-outer/production-v1/prompts/enemies-02.txt",
+      "items": [
+        { "id": "blockedge-furnace-puppet", "name": "阻锋炉傀", "cellBounds": [0, 0, 514, 512] },
+        { "id": "heavyhub-ark-guard", "name": "重枢舟卫", "cellBounds": [514, 0, 496, 512] },
+        { "id": "silveredge-blade-puppet", "name": "银锋刃傀", "cellBounds": [1010, 0, 537, 512] },
+        { "id": "blackiron-war-puppet", "name": "玄铁战傀", "cellBounds": [1547, 0, 501, 512] },
+        { "id": "rampart-shield-puppet", "name": "持垒盾傀", "cellBounds": [0, 512, 436, 512] },
+        { "id": "batrobe-raider", "name": "蝠衣劫修", "cellBounds": [436, 512, 580, 512] },
+        { "id": "sunchasing-heavy-puppet", "name": "追曜重傀", "cellBounds": [1016, 512, 501, 512] },
+        { "id": "edge-drinking-puppet", "name": "饮锋狂傀", "cellBounds": [1517, 512, 531, 512] }
+      ]
+    },
+    {
+      "id": "enemies-03", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-ark-outer-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-outer/production-v1/prompts/enemies-03.txt",
+      "items": [
+        { "id": "piercing-light-turret", "name": "贯光炮台", "cellBounds": [0, 0, 468, 520] },
+        { "id": "cabin-patrol-puppet", "name": "巡舱甲傀", "cellBounds": [468, 0, 554, 520] },
+        { "id": "redhub-heavy-puppet", "name": "赤枢重傀", "cellBounds": [1022, 0, 523, 520] },
+        { "id": "triangular-hub-guard", "name": "三棱枢卫", "cellBounds": [1545, 0, 503, 520] },
+        { "id": "hiddenhub-spirit-puppet", "name": "藏枢灵傀", "cellBounds": [0, 520, 532, 504] }
+      ]
+    },
+    {
+      "id": "materials", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-ark-outer-v1", "size": "2560x1024", "columns": 5, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-outer/production-v1/prompts/materials.txt",
+      "items": [
+        { "id": "forge-array-mark", "name": "锻兵阵印", "cellBounds": [0, 0, 548, 524] },
+        { "id": "thunder-spirit-symbol", "name": "雷蕴灵符", "cellBounds": [548, 0, 425, 524] },
+        { "id": "foreign-contract-coin", "name": "外域古契钱", "cellBounds": [973, 0, 628, 524] },
+        { "id": "high-ark-core", "name": "高阶舟核", "cellBounds": [1601, 0, 456, 524] },
+        { "id": "old-armor-fragment", "name": "旧甲残片", "cellBounds": [2057, 0, 503, 524] },
+        { "id": "redglow-steel", "name": "赤曜钢", "cellBounds": [0, 524, 548, 500] },
+        { "id": "condensed-gel-block", "name": "凝蕴胶块", "cellBounds": [548, 524, 511, 500] },
+        { "id": "condensed-gel-hilt", "name": "凝蕴淬液", "cellBounds": [1059, 524, 390, 500] },
+        { "id": "redglow-blade", "name": "赤曜精料", "cellBounds": [1449, 524, 597, 500] },
+        { "id": "redglow-greatblade", "name": "赤曜重料", "cellBounds": [2046, 524, 514, 500] }
+      ]
+    },
+    {
+      "id": "equipment", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-ark-outer-v1", "size": "2048x1024", "columns": 4, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha", "references": [],
+      "promptFile": "design/fallen-ark-outer/production-v1/prompts/equipment.txt",
+      "items": [
+        { "id": "condensed-redglow-blade-weapon", "name": "凝蕴赤曜剑", "cellBounds": [0, 0, 512, 523] },
+        { "id": "condensed-redglow-greatblade-weapon", "name": "凝蕴赤曜重剑", "cellBounds": [512, 0, 526, 523] },
+        { "id": "condensed-clearjade-blade-weapon", "name": "凝蕴澄碧剑", "cellBounds": [1038, 0, 496, 523] },
+        { "id": "condensed-clearjade-greatblade-weapon", "name": "凝蕴澄碧重剑", "cellBounds": [1534, 0, 514, 523] },
+        { "id": "breakfront-array-pendant", "name": "破锋阵佩", "cellBounds": [0, 523, 504, 501] },
+        { "id": "ancient-contract-disk", "name": "古契护盘", "cellBounds": [504, 523, 510, 501] },
+        { "id": "ark-ward-contract", "name": "护舟阵契", "cellBounds": [1014, 523, 557, 501] }
+      ]
+    }
+  ]
+}

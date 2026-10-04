@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: wide 1792 by 784 Chinese xianxia RPG scene.
+Primary request: Fallen Tower Lanes, deep old-city lanes beneath the remains of collapsed monumental Chinese gate-towers. Huge masonry and swept tiled eaves define a narrow but beautifully legible route through centuries-old ruins.
+Composition/framing: near ground-level wide-angle, a tall leaning gate-tower mass on one side and stacked walls on the other form a majestic vertical canyon. Lead the eye down successive sunlit lane openings, with high clear sky visible above. An inhabited side court with a few repaired awnings is visibly separate from the empty deeper salvage ward.
+Lighting/mood: clean cool daylight reflecting between limestone walls; a few warm lacquer surfaces and pale turquoise roof edges. Calm dreamcore depth through repeated arches and extraordinarily long perspectival rhythm, no fog blanket.
+Style/medium: elegant painterly Chinese fantasy architecture, coherent big shapes and selective detail, layered paint rather than noisy photorealistic textures.
+Constraints: ancient city still used today, not a slum or fresh disaster. No modern wires, European medieval forms, spaceships, massed monsters, active fighting, text, UI or watermark. Anonymous tiny side-court residents may appear only for scale.

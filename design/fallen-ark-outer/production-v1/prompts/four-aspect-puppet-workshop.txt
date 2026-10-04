@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Four Aspect Puppet Workshop, a vast maintenance bay in an ancient Chinese immortal ark. Look from a high side gantry across gigantic suspended puppet-support cradles, broad transmission beams, counterweighted joints and four differing families of old construct frames. Organized rows and interlocking beam spans disappear into distant terraces. These are archaic metal artifices powered by spirit conduits, not industrial robots or modern machinery. Keep individual constructs small relative to the architecture.
+Style/medium: sophisticated painterly Chinese fantasy dreamcore, immense spatial repetition and clear foreground/midground/distance; refined broad brush planes, calm large shapes, detailed focal fittings without visual clutter.
+Lighting/mood: cool celadon light and soft copper reflections, high openings illuminating silver-gray structures, ancient quiet rather than a busy factory.
+Constraints: 1792x784 independent landscape; old maintenance identity with usable paths and some abandoned frames. No player portrait, literal suit-of-cards symbols, modern cranes, wires, screens, robotic assembly line, gun factory, text, UI, decorative rune wallpaper or explosions.

@@ -107,7 +107,7 @@ export function CombatStage({ game, frame, paused, duel }: {
   const events = frame.events.flatMap(({ life, regionId, group, event }) =>
     life === game.life.number && regionId === battle.regionId && group === (region?.clearedGroups ?? '0') &&
     (event.kind === 'strike' || event.kind === 'miss-punishment' || event.kind === 'reflection' ||
-      event.kind === 'tidal-pressure' || event.kind === 'health-burst') ? [event] : []);
+      event.kind === 'tidal-pressure' || event.kind === 'health-burst' || event.kind === 'pre-attack-damage') ? [event] : []);
   const strikes = fresh ? events : [];
   const lastAction = (slot: number | 'player') => events.reduce<number | null>((latest, event) =>
     event.kind === 'strike' && (slot === 'player' ? event.side === 'player' : event.side === 'enemy' && event.slot === slot)
@@ -119,7 +119,8 @@ export function CombatStage({ game, frame, paused, duel }: {
       {incoming.slice(-3).map((event, i) => <span key={i} className={event.kind === 'strike' && event.critical ? 'critical' : ''}>
         {event.kind === 'strike' && !event.hit ? '闪避' : `${event.kind === 'miss-punishment' ? '截隙 '
           : event.kind === 'reflection' ? '反震 ' : event.kind === 'tidal-pressure' ? '潮压 '
-            : event.kind === 'health-burst' ? '囊爆 ' : event.kind === 'strike' && event.critical ? '暴击 ' : ''}-${formatAmount(event.hpLost)}`}
+            : event.kind === 'health-burst' ? '囊爆 ' : event.kind === 'pre-attack-damage' ? '贯光 '
+              : event.kind === 'strike' && event.critical ? '暴击 ' : ''}-${formatAmount(event.hpLost)}`}
       </span>)}
     </div>;
   };
@@ -130,7 +131,7 @@ export function CombatStage({ game, frame, paused, duel }: {
     <span title="防御"><Shield size={13} />{formatAmount(stats.defense)}</span>
     <span title="敏捷"><Zap size={13} />{formatAmount(stats.agility)}</span>
   </div>;
-  return <div className={`combat-stage${duel ? ' pvp-stage' : ''}`} style={SCENE_ART[game.locationId] ? { backgroundImage: `url("${SCENE_ART[game.locationId]}")` } : undefined}>
+  return <div className={`combat-stage${duel ? ' pvp-stage' : ''}${battle.enemies.length > 2 ? ' multi-enemy' : ''}`} style={SCENE_ART[game.locationId] ? { backgroundImage: `url("${SCENE_ART[game.locationId]}")` } : undefined}>
     <div className="combat-side player-side"><span className="combat-side-label">我方</span>
       <article className={`combatant player-combatant${duel && Number(playerHp) <= 0 ? ' defeated' : ''}`} aria-label="我方战斗状态">
         <CardCharge key={groupKey} deadline={battle.nextPlayerActionAt} actionAt={lastAction('player')}
@@ -156,7 +157,7 @@ export function CombatStage({ game, frame, paused, duel }: {
           key={`${groupKey}:${entry.id}:${index}`} aria-label={`${entry.name}战斗状态`}>
           <CardCharge deadline={entry.nextActionAt} actionAt={lastAction(index)} speed={entry.stats.attackSpeed}
             frame={frame} frozen={frozen} defeated={Number(entry.hp) <= 0} name={entry.name} />
-          <header><span className="eyebrow">{duel ? duel.battle.defender.realmName : enemyRealmName(ENEMIES[entry.id])} · {Number(entry.hp) <= 0 ? '已击败' : duel ? '防卫' : `第${entry.nextRound ?? 1}轮`}</span><h3 title={entry.name}>{entry.name}</h3></header>
+          <header><span className="eyebrow">{battle.enemies.length > 2 ? `${index + 1} · ` : ''}{duel ? duel.battle.defender.realmName : enemyRealmName(ENEMIES[entry.id])} · {Number(entry.hp) <= 0 ? '已击败' : duel ? '防卫' : `第${entry.nextRound ?? 1}轮`}</span><h3 title={entry.name}>{entry.name}</h3></header>
           <div className="combat-portrait">
             <div key={attacks(index) ? frame.sequence : 'idle'} className={attacks(index) ? 'attack-motion' : ''}>
               {duel ? <PlayerAvatar url={duel.battle.defender.avatarUrl} size={96} /> : <CombatAvatar enemyId={entry.id} name={entry.name} />}</div>

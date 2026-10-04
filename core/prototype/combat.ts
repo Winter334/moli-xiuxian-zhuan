@@ -16,13 +16,18 @@ const ceilTenth = (value: string) => text(dec(value).mul(10).ceil().div(10));
 export function playerStrike(
   rng: { rng: number }, player: Stats, enemy: ResolvedEnemy, aliveCount: number, sturdyCap = 1,
   coefficient = '1', rules: NonNullable<StatSource['combat']> = {},
+  health?: { player: string; enemy: string },
 ): Strike {
   const agility = dec(player.agility).mul(dec(aliveCount).cbrt());
   if (random(rng) >= hitChance(text(agility), enemy.stats.agility)) return miss();
   const variation = dec('1.2').minus(dec(random(rng)).mul('0.4'));
   const critical = random(rng) < dec(player.critChance).toNumber();
+  if (enemy.abilities.currentHealthSuppression && !health) throw new Error('Current health is required for suppression');
+  const suppressionRatio = enemy.abilities.currentHealthSuppression
+    ? maximum(dec(1).minus(dec(health!.enemy).div(health!.player)), 0) : '1';
   const attack = dec(enemy.abilities.reversal ? player.defense : player.attack)
     .mul(coefficient)
+    .mul(suppressionRatio)
     .mul(dec(1).minus(dec(enemy.abilities.weakening ?? 0).div(100)))
     .mul(enemy.abilities.softBones ? '0.9' : 1);
   let damage = ceilTenth(maximum(attack.minus(enemy.stats.defense), 0));
@@ -46,7 +51,7 @@ export function playerStrike(
 
 export function enemyStrike(
   rng: { rng: number }, enemy: ResolvedEnemy, player: Stats, aliveCount: number, attackCoefficient = '1',
-  context: { money?: string; damageMultiplier?: string; hp?: string } = {},
+  context: { money?: string; marrowInsight?: string; damageMultiplier?: string; hp?: string } = {},
 ): Strike {
   let coefficient = dec(attackCoefficient);
   if (enemy.abilities.currentHpAttackDivisor !== undefined) {
@@ -68,6 +73,12 @@ export function enemyStrike(
     if (context.money === undefined) throw new Error('Wallet balance is required for this enemy');
     special = special.mul(maximum(
       dec(1).minus(dec(context.money).div(dec(enemy.abilities.walletSuppressionUnit).mul(100))), 0,
+    ));
+  }
+  if (enemy.abilities.marrowSuppressionUnit !== undefined) {
+    if (context.marrowInsight === undefined) throw new Error('Marrow insight is required for this enemy');
+    special = special.mul(maximum(
+      dec(1).minus(dec(context.marrowInsight).div(dec(enemy.abilities.marrowSuppressionUnit).mul(100))), 0,
     ));
   }
   const agility = dec(player.agility).div(dec(aliveCount).cbrt());

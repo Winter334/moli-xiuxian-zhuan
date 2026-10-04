@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: Broken Gunwale Hall inside an ancient fallen cross-realm immortal vessel. From a torn opening in the curved ship side, daylight crosses an extraordinarily broad transport gallery. A broken hull rib frames the foreground; immense metal beam arches and loading platforms recede in long orderly intervals. Look obliquely down the gallery so the open exterior and inner depths both remain legible. A few remote old sentry silhouettes and material-seeking traces establish occupation without a battle scene.
+Style/medium: majestic Chinese dreamcore fantasy painting, traditional immortal metalwork rather than science-fiction technology; refined layered paint, strong continuous planes, architectural clarity, enormous but believable internal scale.
+Lighting/mood: pale turquoise daylight from the broken side and soft ivory conduit light, ochre-gray floor, quiet deep shadow with readable detail.
+Constraints: one unframed 1792x784 landscape, intact walkable stretches among centuries-old damage, no dominant character, player portrait, fresh destruction, text, UI, labels, neon circuitry, computers, modern guns or final vessel control center. Do not copy a generic stone temple corridor.

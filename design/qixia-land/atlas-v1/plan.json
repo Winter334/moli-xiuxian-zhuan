@@ -1,0 +1,52 @@
+{
+  "region": "qixia-land",
+  "version": "atlas-v1",
+  "authorization": "The user approved starting Qixia art and larger item/enemy atlases to reduce generation calls; this first batch is two atlases for review.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Ten first-use Qixia enemies and twelve approved jade-reed armor items only. Five shared enemies and all existing mounted art remain unchanged. Scenes, other items, the domain and later regions are outside this first batch.",
+  "scopeCounts": { "enemies": 10, "items": 12, "assets": 22, "atlases": 2 },
+  "references": "Independent text-only generation; no default reference images.",
+  "enemyDirection": "Complete subjects face screen-left, including body, head and main attack or movement. Faceless spirits remain faceless.",
+  "jobs": [
+    {
+      "id": "enemies-01", "kind": "atlas", "target": "enemies", "variant": "flare",
+      "assetSuffix": "flare-qixia-atlas-v1", "size": "2560x1024", "columns": 5, "rows": 2,
+      "background": "transparent", "backgroundRemoval": "preserve-alpha",
+      "references": [], "promptFile": "design/qixia-land/atlas-v1/prompts/enemies-01.txt",
+      "items": [
+        { "id": "jiuzhang-plundering-cultivator", "name": "九嶂夺萃修士" },
+        { "id": "reedbinding-raider", "name": "缚苇劫修" },
+        { "id": "pipebone-wraith", "name": "管骨鸣魅" },
+        { "id": "petal-array-spirit", "name": "聚萼阵灵" },
+        { "id": "crystallimb-stone-spirit", "name": "晶肢石灵" },
+        { "id": "gardenplundering-swordsman", "name": "掠园剑修" },
+        { "id": "sickletail-crystal-scorpion", "name": "镰尾晶螯" },
+        { "id": "arrayback-shellbeast", "name": "背阵壳兽" },
+        { "id": "rockcrown-longarm-beast", "name": "岩冠长臂兽" },
+        { "id": "veinguard-flame-spirit", "name": "守脉燧灵" }
+      ]
+    },
+    {
+      "id": "armor-01", "kind": "atlas", "target": "icons", "variant": "flare",
+      "assetSuffix": "flare-qixia-atlas-v1", "size": "1536x1152", "columns": 4, "rows": 3,
+      "background": "opaque",
+      "backgroundRemoval": "white-background-open",
+      "references": [], "promptFile": "design/qixia-land/atlas-v1/prompts/armor-01.txt",
+      "items": [
+        { "id": "jade-reed-headwrap", "name": "碧苇巾" },
+        { "id": "jade-reed-jacket", "name": "碧苇法衣" },
+        { "id": "jade-reed-leggings", "name": "碧苇长裤" },
+        { "id": "jade-reed-boots", "name": "碧苇履" },
+        { "id": "jade-reed-headwrap-lined-resonant-head-shell", "name": "鸣金碧苇巾" },
+        { "id": "jade-reed-jacket-lined-resonant-body-shell", "name": "鸣金碧苇法衣" },
+        { "id": "jade-reed-leggings-lined-resonant-leg-shell", "name": "鸣金碧苇长裤" },
+        { "id": "jade-reed-boots-lined-resonant-foot-shell", "name": "鸣金碧苇履" },
+        { "id": "jade-reed-headwrap-lined-returning-glow-head-shell", "name": "回辉碧苇巾" },
+        { "id": "jade-reed-jacket-lined-returning-glow-body-shell", "name": "回辉碧苇法衣" },
+        { "id": "jade-reed-leggings-lined-returning-glow-leg-shell", "name": "回辉碧苇长裤" },
+        { "id": "jade-reed-boots-lined-returning-glow-foot-shell", "name": "回辉碧苇履" }
+      ]
+    }
+  ]
+}
