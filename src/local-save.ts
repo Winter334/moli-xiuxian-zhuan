@@ -28,7 +28,9 @@ const localSchema = z.object({
 }).strict();
 export type LocalSave = z.infer<typeof localSchema>;
 export type SaveStorage = Pick<Storage, 'getItem' | 'setItem'>;
-export class LocalSaveReadError extends Error {}
+export class LocalSaveReadError extends Error {
+  constructor(message: string, readonly recoveryContext: LocalSave | null = null) { super(message); }
+}
 
 function readLocalSave(raw: unknown): LocalSave {
   const local = localSchema.parse(raw);
@@ -91,11 +93,14 @@ export class LocalSaveStore {
     this.expected = raw;
     if (raw === null) return null;
     if (raw.length > 1024 * 1024) throw new LocalSaveReadError('本地存档过大，未覆盖原数据');
+    let recoveryContext: LocalSave | null = null;
     try {
       const wrapper = z.object({ data: z.unknown(), checksum: z.string().regex(/^[a-f0-9]{64}$/) }).strict().parse(JSON.parse(raw));
       if (await checksum(JSON.stringify(wrapper.data)) !== wrapper.checksum) throw new Error('checksum');
-      return readLocalSave(wrapper.data);
-    } catch { throw new LocalSaveReadError('本地存档校验或版本不匹配，已停止读取，原数据未修改'); }
+      // Retain identity and pending receipts for recovery, never for gameplay.
+      recoveryContext = localSchema.parse(wrapper.data);
+      return readLocalSave(recoveryContext);
+    } catch { throw new LocalSaveReadError('本地存档校验或版本不匹配，已停止读取，原数据未修改', recoveryContext); }
   }
 
   async write(input: LocalSave, preserveOriginal = false): Promise<LocalSave> {

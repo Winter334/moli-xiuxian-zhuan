@@ -1,5 +1,5 @@
 import { getCharacterView } from '../core/prototype';
-import { checkProgress, MAX_SAVE_BYTES, type ClientSave, type CloudProfile } from '../shared/client-save';
+import { checkProgress, MAX_SAVE_BYTES, readClientSave, type ClientSave, type CloudProfile } from '../shared/client-save';
 import type { LocalSave } from './local-save';
 
 export interface SaveSummary {
@@ -30,13 +30,18 @@ export function sameClientSave(local: ClientSave, cloud: ClientSave): boolean {
 }
 
 export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloudBlocked: string | null,
-  allowAdministratorChanges = false): SaveComparison {
+  allowAdministratorChanges = false, localFailure: string | null = null): SaveComparison {
   const summarize = (save: CloudProfile['save'], savedAt: number, revision: string): SaveSummary => {
     const view = getCharacterView(save.character, cloud.serverTime);
     return { savedAt, revision, life: view.life.number, realm: view.realmName,
       cultivation: view.cultivation, location: view.locationName };
   };
-  let localBlocked = cloudBlocked;
+  let localSummary: SaveSummary | null = null;
+  let localBlocked = cloudBlocked ?? localFailure;
+  if (local) {
+    try { localSummary = summarize(readClientSave(local.save), local.wallSavedAt, local.cloudRevision); }
+    catch { localBlocked ??= '本地存档未通过规则校验，不能保留；可选择正常的云端存档。'; }
+  }
   if (!local) localBlocked = '本地存档无法读取，不能采用。';
   else if (local.characterId !== cloud.characterId) localBlocked = '本地角色与云端账号不一致，不能采用。';
   else if (local.pendingTrade || local.pendingReincarnation || local.pendingPvp) {
@@ -52,7 +57,7 @@ export function compareSaves(local: LocalSave | null, cloud: CloudProfile, cloud
     } catch (error) { localBlocked = error instanceof Error ? error.message : '本地进度未通过校验。'; }
   }
   return {
-    local: local ? summarize(local.save, local.wallSavedAt, local.cloudRevision) : null,
+    local: localSummary,
     cloud: summarize(cloud.save, cloud.save.character.simulation.clockMs, cloud.revision),
     localBlocked, cloudBlocked,
   };

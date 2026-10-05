@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { advanceCharacter, createCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
+import * as prototype from '../core/prototype';
 import { reincarnateCharacter } from '../core/prototype/reincarnation';
 import { ClientSaveService } from '../server/client/service';
 import type { CloudSnapshot, CloudStore } from '../server/client/repository';
@@ -14,6 +15,11 @@ const characterId = '00000000-0000-4000-8000-000000000001';
 const otherId = '00000000-0000-4000-8000-000000000002';
 const key = discordSaveKey('123456789012345678', '234567890123456789');
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
+async function storedSave(local: LocalSave) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(local)));
+  const checksum = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+  return JSON.stringify({ data: local, checksum });
+}
 function profile(): CloudProfile {
   let character = createCharacter(0, 19);
   const regionId = getCharacterView(character).regions.find(region => region.enterable)!.id;
@@ -49,6 +55,116 @@ async function setup(fetcher: typeof fetch, initial: CloudProfile | string = pro
 }
 
 describe('explicit account save recovery', () => {
+  it.each(['tick', 'inspection'] as const)(
+    'keeps cloud recovery available after a runtime validation failure during %s and restores online backups', async trigger => {
+      const cloud = profile();
+      const fetcher = vi.fn<typeof fetch>().mockImplementation(async (_url, init) => {
+        if (init?.method === 'GET') return json(cloud);
+        const request = JSON.parse(String(init?.body));
+        cloud.save = request.save;
+        cloud.revision = String(BigInt(request.baseRevision) + 1n);
+        return json({ characterId, requestId: request.requestId, revision: cloud.revision, savedAt: 2000 });
+      });
+      const state = await setup(fetcher);
+      const original = state.values.get(key);
+      state.time(1000);
+      const failure = vi.spyOn(prototype, 'advanceCharacter').mockImplementationOnce(() => {
+        throw new Error('Character stats are not settled');
+      });
+      try {
+        if (trigger === 'tick') {
+          await state.client.tick();
+          expect(state.client.getSnapshot()).toMatchObject({
+            blocked: true, onlineReady: false, recoveryAvailable: true,
+            issue: { source: 'local', message: 'Character stats are not settled' },
+          });
+        }
+        expect(await state.client.inspectSaves()).toBe(true);
+      } finally { failure.mockRestore(); }
+      expect(state.values.get(key)).toBe(original);
+      expect(state.client.getSnapshot().recovery).toMatchObject({
+        localBlocked: 'Character stats are not settled', cloudBlocked: null,
+      });
+      expect(await state.client.chooseSave('local')).toBe(false);
+      expect(state.values.get(key)).toBe(original);
+      expect(await state.client.chooseSave('cloud')).toBe(true);
+      expect(state.values.get(`${key}:recovery`)).toBe(original);
+      expect(state.client.getSnapshot()).toMatchObject({
+        blocked: false, onlineReady: true, tradeStopped: false, issue: null,
+      });
+      expect(state.client.getOnlineRevision()).toBe(cloud.revision);
+      expect((await state.read())!.save.character.simulation.actionCounts).toEqual(cloud.save.character.simulation.actionCounts);
+      state.time(2000);
+      await state.client.tick();
+      await state.client.sync();
+      expect((await state.read())!).toMatchObject({ cloudRevision: '1', pending: null, syncConflict: null });
+      expect(state.client.getSnapshot().onlineReady).toBe(true);
+      expect(fetcher.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+    });
+
+  it('recovers a structurally readable local save with invalid stats without adopting its invalid progress', async () => {
+    const cloud = profile();
+    const local = localFromCloud(cloud, 0);
+    local.save.character.simulation.player.base.attack = '999';
+    const original = await storedSave(local);
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => json(cloud));
+    const state = await setup(fetcher, original);
+    expect(state.client.getSnapshot()).toMatchObject({ blocked: true, recoveryAvailable: true, response: null });
+    expect(fetcher).not.toHaveBeenCalled();
+    expect(await state.client.inspectSaves()).toBe(true);
+    expect(state.client.getSnapshot().recovery).toMatchObject({ local: null, cloudBlocked: null });
+    expect(await state.client.chooseSave('local')).toBe(false);
+    expect(state.values.get(key)).toBe(original);
+    expect(await state.client.chooseSave('cloud')).toBe(true);
+    expect(state.values.get(`${key}:recovery`)).toBe(original);
+    expect((await state.read())!.save).toEqual(cloud.save);
+    expect(state.client.getSnapshot()).toMatchObject({ blocked: false, onlineReady: true, issue: null });
+    expect(fetcher.mock.calls.every(([, init]) => init?.method === 'GET')).toBe(true);
+  });
+
+  it('retains unresolved transaction guards when local stats fail validation during loading', async () => {
+    const cloud = profile();
+    const local = localFromCloud(cloud, 0);
+    const requestId = crypto.randomUUID();
+    local.pendingReincarnation = { characterId, requestId, baseRevision: '0', save: structuredClone(local.save) };
+    local.save.character.simulation.player.base.attack = '999';
+    const original = await storedSave(local);
+    let settled = false;
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async url => {
+      if (String(url).includes('/receipts/')) return json(settled ? { status: 'settled', receipt: {
+        status: 'rejected', characterId, requestId, settledAt: 0,
+        error: { code: 'SAVE_REJECTED', message: 'not committed' },
+      } } : { status: 'unknown' });
+      return json(cloud);
+    });
+    const state = await setup(fetcher, original);
+    expect(await state.client.inspectSaves()).toBe(true);
+    expect(state.client.getSnapshot().recovery?.cloudBlocked).toContain('轮回结果尚未确认');
+    expect(await state.client.chooseSave('cloud')).toBe(false);
+    expect(state.values.get(key)).toBe(original);
+    expect(state.values.has(`${key}:recovery`)).toBe(false);
+    settled = true;
+    expect(await state.client.inspectSaves()).toBe(true);
+    expect(await state.client.chooseSave('cloud')).toBe(true);
+    expect(state.values.get(`${key}:recovery`)).toBe(original);
+    expect((await state.read())!).toMatchObject({ pendingReincarnation: null, save: cloud.save });
+    expect(fetcher.mock.calls.every(([, init]) => init?.method === 'GET')).toBe(true);
+  });
+
+  it('does not use invalid local stats as a reason to bypass another-account identity protection', async () => {
+    const local = localFromCloud({ ...profile(), characterId: otherId }, 0);
+    local.save.character.simulation.player.base.attack = '999';
+    const original = await storedSave(local);
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => json(profile()));
+    const state = await setup(fetcher, original);
+    expect(state.client.getSnapshot()).toMatchObject({ blocked: true, recoveryAvailable: false });
+    expect(await state.client.inspectSaves()).toBe(false);
+    expect(await state.client.chooseSave('cloud')).toBe(false);
+    expect(state.values.get(key)).toBe(original);
+    expect(state.values.has(`${key}:recovery`)).toBe(false);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it('never silently replaces a damaged save and archives the exact original before an explicit cloud restore', async () => {
     const cloud = profile();
     const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => json(cloud));

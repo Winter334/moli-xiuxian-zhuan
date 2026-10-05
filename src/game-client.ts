@@ -169,7 +169,14 @@ export class GameClient {
     return result;
   }
   private failLocal(error: unknown) {
-    this.publish({ blocked: true, onlineReady: false, recoveryAvailable: error instanceof LocalSaveReadError,
+    if (error instanceof LocalSaveReadError) this.local = error.recoveryContext;
+    const identityMismatch = this.local && this.expectedCharacterId && this.local.characterId !== this.expectedCharacterId;
+    if (identityMismatch) {
+      this.local = null;
+      error = new Error('本地角色与当前 Discord 账号不一致，原存档保留，不能覆盖。');
+    }
+    this.publish({ blocked: true, onlineReady: false, tradeStopped: true,
+      recoveryAvailable: !identityMismatch && (error instanceof LocalSaveReadError || this.local !== null),
       issue: { source: 'local', message: error instanceof Error ? error.message : '本地存档不可用，已暂停推进' } });
   }
   private onlineSourceReady() {
@@ -1004,7 +1011,10 @@ export class GameClient {
     const flight = (async () => {
       await this.serial(async () => {
         if (generation !== this.generation) return;
-        if (this.initialized && !this.state.blocked) await this.advanceFrame();
+        if (this.initialized && !this.state.blocked) {
+          try { await this.advanceFrame(); }
+          catch (error) { this.failLocal(error); }
+        }
         if (!this.releaseLock) {
           const release = await this.acquireLock();
           if (generation !== this.generation) { release(); return; }
@@ -1022,7 +1032,14 @@ export class GameClient {
               this.failLocal(error);
               throw error;
             }
-            this.local = null;
+            if (error.recoveryContext && this.expectedCharacterId &&
+                error.recoveryContext.characterId !== this.expectedCharacterId) {
+              this.releaseLock?.();
+              this.releaseLock = null;
+              this.failLocal(error);
+              throw new Error('本地角色与当前账号不一致，不能覆盖。');
+            }
+            this.local = error.recoveryContext;
           }
         }
       });
@@ -1042,7 +1059,8 @@ export class GameClient {
           this.lastFrame = this.monotonicNow();
         }
         if (this.recoveryProfile) this.publish({
-          recovery: compareSaves(this.local, this.recoveryProfile, this.recoveryCloudBlocked, this.state.debugAllowed),
+          recovery: compareSaves(this.local, this.recoveryProfile, this.recoveryCloudBlocked, this.state.debugAllowed,
+            this.state.issue?.source === 'local' ? this.state.issue.message : null),
         });
       });
       if (this.recoveryFlight === flight) {
@@ -1119,7 +1137,8 @@ export class GameClient {
       if (profile.revision !== chosen.revision) throw new Error('云端进度又有变化，请重新查看两份存档后确认。');
       return this.serial(async () => {
         if (generation !== this.generation || !this.releaseLock) return false;
-        const comparison = compareSaves(this.local, profile, cloudBlocked, this.state.debugAllowed);
+        const comparison = compareSaves(this.local, profile, cloudBlocked, this.state.debugAllowed,
+          this.state.issue?.source === 'local' ? this.state.issue.message : null);
         const reason = source === 'local' ? comparison.localBlocked : comparison.cloudBlocked;
         if (reason) throw new Error(reason);
         const local = source === 'cloud' ? localFromCloud(profile, this.wallNow()) : {
