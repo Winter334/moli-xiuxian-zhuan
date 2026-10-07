@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [{
     name: 'activity-storage-sql',
     generateBundle() {
-      for (const name of ['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql', '005_pvp.sql']) {
+      const directory = new URL('./server/client/', import.meta.url);
+      const migrations = readdirSync(directory, { withFileTypes: true })
+        .filter(entry => entry.isFile() && /^\d+_[a-z0-9_]+\.sql$/.test(entry.name))
+        .map(entry => entry.name).sort();
+      for (const name of migrations) {
         this.emitFile({
           type: 'asset',
           fileName: `server/client/${name}`,

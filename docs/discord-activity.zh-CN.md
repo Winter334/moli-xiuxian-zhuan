@@ -1,6 +1,6 @@
 # Discord Activity 接入
 
-更新：2026-10-03。
+更新：2026-10-07。
 
 ## 范围与当前状态
 
@@ -176,7 +176,8 @@ Target 不含 `https://`，不指向 `index.html`；API与素材同走此映射�
 ### 文件与安全边界
 
 - [Dockerfile](../Dockerfile)使用 Node.js 22 与仓库指定的 pnpm，构建后只携带运行依赖和
-  `dist`，以非 root 用户运行。`pnpm build:activity`生成网页、Node 后端及原有 SQL；
+  `dist`，以非 root 用户运行。`pnpm build:activity`生成网页、Node 后端及编号迁移 SQL；
+  构建按 `server/client` 下编号 SQL 文件自动收集，不另维护迁移文件名副本；执行顺序仍由存储初始化维护。
   `pnpm start:activity`运行专用入口，不使用 Vite 或 watch 服务。
 - [部署Compose](../compose.activity.yaml)与本机`compose.yaml`使用不同项目和持久化卷。
   PostgreSQL 不发布端口；应用只发布`127.0.0.1:5180`，可用`ACTIVITY_BIND_PORT`改宿主机端口，
@@ -260,6 +261,8 @@ docker compose --env-file /etc/moli-activity.env -f compose.activity.yaml exec b
 测试库与 VPS 角色库隔离，不对后者运行集成/E2E或数值测试。首次上线仅核对健康、
 实际 Discord 授权、本人头像昵称、同一账号关闭重开与存档；邀请测试不扩大为正式发布，
 寄售、轮回及榜单全流程仍待后续实际联调。
+
+2026-10-07修复迁移006未随Activity构建输出、导致部署启动ENOENT的问题：移除构建配置中止于005的固定清单，自动打包编号SQL，后续新增迁移同样适用。实际完成后端生产构建，工作区7份SQL（含尚待后续发布的007）与产物逐字节一致，编译后的迁移加载器在数据库替身下读取全部7份成功，类型检查通过；未执行线上迁移或镜像部署。本次热修仅发布打包规则，007及封顶改动仍随后续内容发布。
 
 2026-10-01补齐本节部署入口、构建、容器配置、可选 HTTPS 与独立数据库保护。
 9项定向身份/部署边界测试、前后端构建、Compose配置校验及初始化脚本语法检查通过；
