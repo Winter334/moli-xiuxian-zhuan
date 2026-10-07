@@ -15,7 +15,7 @@ import { FATES, FATE_TIERS } from './fates';
 import { FURNACES, furnaceTierSchema } from './furnace';
 import { FOUNDATION_ROOTS } from './foundation';
 import { advanceWork, exactMiningPeriod, gatheringSkill, marrowSeamChance, MINING_SITE_IDS, MINING_SITES, miningEfficiency, miningSiteIdSchema, miningSpeed } from './gathering';
-import { FOUNDATION_LEVEL, killExperience, killExperienceRealmFactor, LEVEL_CAP, realmAt, realmName } from './growth';
+import { cultivationCarryCap, FOUNDATION_LEVEL, killExperience, killExperienceRealmFactor, LEVEL_CAP, realmAt, realmName } from './growth';
 import { incrementRecord, markMilestone } from './history';
 import { advanceFishing, JOURNEY_LENGTH, journeySpeed, waitingFishing } from './lake-activities';
 import { initialReactor, REACTOR_MATERIALS, REACTOR_SCORCH_SOURCE, reactorMaterialSchema, reactorQuality, reactorStep } from './ark-reactor';
@@ -850,7 +850,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
         ? `${effectText}；同效续时；${foodRealmName}及以下`
         : itemId === 'huashen-crystal'
           ? '每颗增加1000亿修为，不乘经验加成；批量逐颗结算。' + (state.level === 24 && dec(state.cultivation).gte('900000000000')
-            ? '当前首颗可突破化神，先按1兆处理旧积存，再结算突破成本。' : state.level >= 25 ? '本批境界上限为化神初期，所得修为继续积存。' : '当前首颗不能突破化神，仍会消耗；批量后续可随修为达标突破，许可不保留。')
+            ? '当前首颗可突破化神，先按1兆处理旧积存，再结算突破成本。' : state.level >= 25 ? '修为最多保留下一阶段所需数量，达到当前开放上限后，溢出不再计入；仍会消耗灵晶。' : '当前首颗不能突破化神，仍会消耗；批量后续可随修为达标突破，许可不保留。')
           : item.experience
           ? `修为+${item.experience.amount}，不乘经验加成，不提供突破许可；炼气十二层最高6000万，超出不保存`
           : `随机永久增长：攻/防/敏 +${item.marrowValue} 或气血 +${item.marrowValue! * (item.marrowValue! > 7500 ? 100 : 50)}，随累计增长递减`,
@@ -883,6 +883,7 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
       tierName: FATE_TIERS[fate.tier].name, description: fate.description, effectDescription: fate.effectDescription },
     level: state.level, realmName: realmName(state.level), cultivation: state.cultivation,
     nextLevelCost: state.level < LEVEL_CAP ? realmAt(state.level + 1).entryCost : null,
+    cultivationCap: state.level === LEVEL_CAP ? cultivationCarryCap(state.level) : null,
     foundationRequired: state.level === FOUNDATION_LEVEL - 1,
     foundationName: state.foundationRoot === null ? null : FOUNDATION_ROOTS[state.foundationRoot].name,
     marrowAbsorption: marrowAbsorptionPreview(state),

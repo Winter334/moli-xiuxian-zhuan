@@ -7,6 +7,24 @@ export const HUASHEN_LEVEL = 25;
 export const HUASHEN_CULTIVATION_CAP = '1000000000000';
 export const LEVEL_CAP = HUASHEN_LEVEL;
 
+// Retain only the next stage's cost, including when a later release opens it.
+const CULTIVATION_CARRY_CAPS: Readonly<Record<number, string>> = {
+  24: HUASHEN_CULTIVATION_CAP,
+  25: '12000000000000',
+  26: '88000000000000',
+  27: '320000000000000',
+  28: '1120000000000000',
+};
+export function cultivationCarryCap(level: number): string | null {
+  const cap = CULTIVATION_CARRY_CAPS[level];
+  if (level === LEVEL_CAP && cap === undefined) throw new Error('Missing cultivation cap for released realm');
+  return cap ?? null;
+}
+export function cappedCultivation(level: number, cultivation: string): string {
+  const cap = cultivationCarryCap(level);
+  return cap !== null && dec(cultivation).gt(cap) ? cap : cultivation;
+}
+
 // Saved levels stay independent of the source budget positions.
 const realmGrowth = [
   { attack: 1, defense: 0, maxHp: 50, xp: '0' },
@@ -93,8 +111,7 @@ export function gainCultivation(level: number, cultivation: string, amount: stri
   nonnegativeSchema.parse(cultivation);
   nonnegativeSchema.parse(amount);
   const beforeReference = Math.floor(budgetPosition(level));
-  let remaining = dec(level === HUASHEN_LEVEL - 1 && dec(cultivation).gt(HUASHEN_CULTIVATION_CAP)
-    ? HUASHEN_CULTIVATION_CAP : cultivation).plus(amount);
+  let remaining = dec(cappedCultivation(level, cultivation)).plus(amount);
   const levels: number[] = [];
   while (level < LEVEL_CAP) {
     const cost = realmAt(level + 1).entryCost;
@@ -111,7 +128,7 @@ export function gainCultivation(level: number, cultivation: string, amount: stri
     levels.push(++level);
   }
   return {
-    level, cultivation: text(remaining), levels,
+    level, cultivation: level === LEVEL_CAP ? cappedCultivation(level, text(remaining)) : text(remaining), levels,
     referencePromotions: Math.floor(budgetPosition(level)) - beforeReference,
   };
 }

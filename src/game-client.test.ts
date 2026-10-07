@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { advanceCharacter, createCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
-import { checkProgress, MAX_INVENTORY_INSTANCES, SaveCapacityError, type CloudProfile, type SaveUpload } from '../shared/client-save';
+import { checkProgress, MAX_INVENTORY_INSTANCES, MAX_SAVE_BYTES, SaveCapacityError, type CloudProfile, type SaveUpload } from '../shared/client-save';
 import * as reservations from './trade-reservation';
 import type { OpeningCommand } from '../shared/opening-contracts';
 import { COMBAT_POWER_VERSION } from '../core/prototype/combat-power';
@@ -716,5 +716,183 @@ describe('client-owned simulation and saves', () => {
     expect(await client.command({ type: 'withdraw' })).toBe(false);
     expect(client.getSnapshot().blocked).toBe(true);
     expect(clean.storage.getItem(LOCAL_SAVE_KEY)).toBe(before);
+  });
+});
+
+describe('cloud save capacity recovery', () => {
+  const legacyMessage = '存档超过云端接收上限，本地进度保留';
+  const bytes = (value: unknown) => new TextEncoder().encode(JSON.stringify(value)).byteLength;
+  const options = { acquireLock: lock, wallNow: () => 0, monotonicNow: () => 0 };
+  const accept = (_url: unknown, init?: RequestInit) => {
+    const input = JSON.parse(String(init!.body)) as SaveUpload;
+    return Promise.resolve(json({ characterId, requestId: input.requestId,
+      revision: String(BigInt(input.baseRevision) + 1n), savedAt: 0 }));
+  };
+  function stockedProfile(target: number) {
+    const initial = profile();
+    const state = initial.save.character;
+    state.shop.dayIndex = worldCalendarAt(0).dayIndex - 1;
+    addInstance(state, state.instances, 'old-wood-hilt', 100);
+    let size = bytes(initial.save);
+    while (size < target) {
+      const id = addInstance(state, state.shop.instances, 'old-wood-hilt', 100);
+      size += bytes({ [id]: state.shop.instances[id] }) - 1;
+    }
+    return initial;
+  }
+  async function legacyStorage() {
+    const memory = memoryStorage();
+    const store = new LocalSaveStore(memory.storage);
+    await store.load();
+    const local = localFromCloud(stockedProfile(256 * 1024 + 4096), 0);
+    local.cloudRevision = '7';
+    local.localRevision = '2';
+    local.syncConflict = legacyMessage;
+    local.pending = { localRevision: '1', request: {
+      characterId, requestId: crypto.randomUUID(), baseRevision: '7', save: structuredClone(local.save),
+    } };
+    local.save.character = executeCharacterCommand(local.save.character, { type: 'visit-shop', shopId: 'village-stall' }, 0);
+    await store.write(local);
+    return memory;
+  }
+
+  it('keeps oversized progress playable across reopening and uploads the refreshed shop without a stale snapshot', async () => {
+    const memory = memoryStorage();
+    const initial = stockedProfile(MAX_SAVE_BYTES + 4096);
+    expect(bytes(initial.save)).toBeGreaterThan(MAX_SAVE_BYTES);
+    await seed(memory.storage, initial);
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(accept);
+    const client = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    expect(await client.command({ type: 'recover', mode: 'rest' })).toBe(true);
+    await client.sync();
+    const oversized = (await saved(memory.storage))!;
+    expect(oversized.pending).toBeNull();
+    expect(oversized.save.character.shop.instances).toEqual(initial.save.character.shop.instances);
+    expect(client.getSnapshot()).toMatchObject({ blocked: false, onlineReady: false, issue: { retryable: true } });
+    expect(fetcher).not.toHaveBeenCalled();
+
+    const reopened = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await reopened.initialize();
+    expect(reopened.getSnapshot()).toMatchObject({ blocked: false, onlineReady: false, issue: { retryable: true } });
+    await reopened.sync();
+    expect(fetcher).not.toHaveBeenCalled();
+    expect(await reopened.command({ type: 'visit-shop', shopId: 'village-stall' })).toBe(true);
+    const refreshed = (await saved(memory.storage))!.save;
+    expect(refreshed.character.instances).toEqual(initial.save.character.instances);
+    await reopened.sync();
+    expect(JSON.parse(String(fetcher.mock.calls[0][1]!.body)).save).toEqual(refreshed);
+    expect((await saved(memory.storage))!).toMatchObject({ pending: null, syncConflict: null, cloudRevision: '1' });
+    expect(reopened.getSnapshot()).toMatchObject({ blocked: false, onlineReady: true, tradeStopped: false, issue: null });
+  });
+
+  it.each([200, 409])('recovers the exact legacy preflight rejection without rebasing the cloud revision (HTTP %i)', async status => {
+    const memory = await legacyStorage();
+    const original = memory.storage.getItem(LOCAL_SAVE_KEY);
+    const before = (await saved(memory.storage))!;
+    const fetcher = vi.fn<typeof fetch>().mockImplementation((url, init) =>
+      status === 200 ? accept(url, init) : Promise.resolve(json({ message: 'conflict' }, status)));
+    const client = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    expect(memory.storage.getItem(`${LOCAL_SAVE_KEY}:recovery`)).toBe(original);
+    expect((await saved(memory.storage))!).toMatchObject({ save: before.save, pending: null, cloudRevision: '7' });
+    expect(client.getSnapshot().onlineReady).toBe(false);
+    await client.sync();
+    const input = JSON.parse(String(fetcher.mock.calls[0][1]!.body)) as SaveUpload;
+    expect(input).toMatchObject({ baseRevision: '7', save: before.save });
+    expect(input.requestId).not.toBe(before.pending!.request.requestId);
+    expect(client.getSnapshot().onlineReady).toBe(status === 200);
+    await client.sync();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(memory.storage.getItem(`${LOCAL_SAVE_KEY}:recovery`)).toBe(original);
+  });
+
+  it('preserves the legacy original and does not retry when its recovery backup cannot be saved', async () => {
+    const memory = await legacyStorage();
+    const original = memory.storage.getItem(LOCAL_SAVE_KEY);
+    const storage: SaveStorage = { getItem: memory.storage.getItem, setItem: (key, value) => {
+      if (key.endsWith(':recovery')) throw new Error('quota');
+      memory.storage.setItem(key, value);
+    } };
+    const fetcher = vi.fn<typeof fetch>();
+    const client = new GameClient({ ...options, fetcher, store: new LocalSaveStore(storage) });
+    await client.initialize();
+    await client.sync();
+    expect(memory.storage.getItem(LOCAL_SAVE_KEY)).toBe(original);
+    expect(client.getSnapshot()).toMatchObject({ blocked: true, onlineReady: false, issue: { source: 'local' } });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it('can retry a first-attempt non-JSON 413 with current progress after reopening', async () => {
+    const memory = memoryStorage();
+    await seed(memory.storage, profile());
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response('Request too large', { status: 413 }))
+      .mockImplementation(accept);
+    const client = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    await client.command({ type: 'visit-shop', shopId: 'village-stall' });
+    await client.sync();
+    expect((await saved(memory.storage))!.pending).toBeNull();
+    expect(client.getSnapshot()).toMatchObject({ blocked: false, onlineReady: false, issue: { retryable: true } });
+    const reopened = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await reopened.initialize();
+    await reopened.command({ type: 'recover', mode: 'rest' });
+    const current = (await saved(memory.storage))!.save;
+    await reopened.sync();
+    const first = JSON.parse(String(fetcher.mock.calls[0][1]!.body)) as SaveUpload;
+    const retried = JSON.parse(String(fetcher.mock.calls[1][1]!.body)) as SaveUpload;
+    expect(retried).toMatchObject({ save: current, baseRevision: first.baseRevision });
+    expect(retried.requestId).not.toBe(first.requestId);
+    expect(reopened.getSnapshot()).toMatchObject({ onlineReady: true, issue: null });
+  });
+
+  it('retains an unknown upload across a later 413, shop refresh and reopening until its original acknowledgement', async () => {
+    const memory = memoryStorage();
+    await seed(memory.storage, stockedProfile(MAX_SAVE_BYTES - 4096));
+    const fetcher = vi.fn<typeof fetch>().mockRejectedValueOnce(new TypeError('response lost'))
+      .mockResolvedValueOnce(new Response('Request too large', { status: 413 }))
+      .mockImplementation(accept);
+    const client = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await client.initialize();
+    await client.command({ type: 'recover', mode: 'rest' });
+    await client.sync();
+    const pending = (await saved(memory.storage))!.pending;
+    expect(pending).not.toBeNull();
+    expect(await client.command({ type: 'visit-shop', shopId: 'village-stall' })).toBe(true);
+    const latest = (await saved(memory.storage))!.save;
+    await client.sync();
+    expect((await saved(memory.storage))!.pending).toEqual(pending);
+    const reopened = new GameClient({ ...options, fetcher, store: new LocalSaveStore(memory.storage) });
+    await reopened.initialize();
+    await reopened.sync();
+    for (const [, init] of fetcher.mock.calls) expect(init!.body).toBe(fetcher.mock.calls[0][1]!.body);
+    expect((await saved(memory.storage))!).toMatchObject({ save: latest, pending: null, cloudRevision: '1' });
+    await reopened.sync();
+    expect(JSON.parse(String(fetcher.mock.calls[3][1]!.body))).toMatchObject({ baseRevision: '1', save: latest });
+    expect(reopened.getSnapshot()).toMatchObject({ onlineReady: true, issue: null });
+  });
+
+  it('fits current and pending near-limit snapshots plus an exact recovery copy within a 5 MiB UTF-16 storage budget', async () => {
+    const memory = memoryStorage();
+    const storage: SaveStorage = { getItem: memory.storage.getItem, setItem: (key, value) => {
+      const next = new Map(memory.values).set(key, value);
+      const used = [...next].reduce((total, [entryKey, entry]) => total + 2 * (entryKey.length + entry.length), 0);
+      if (used > 5 * 1024 * 1024) throw new Error('quota');
+      memory.storage.setItem(key, value);
+    } };
+    const local = localFromCloud(stockedProfile(MAX_SAVE_BYTES - 512), 0);
+    local.localRevision = '1';
+    local.pending = { localRevision: '1', request: {
+      characterId, requestId: crypto.randomUUID(), baseRevision: '0', save: structuredClone(local.save),
+    } };
+    expect(bytes(local.pending.request)).toBeLessThanOrEqual(MAX_SAVE_BYTES);
+    const store = new LocalSaveStore(storage);
+    await store.load();
+    await store.write(local);
+    const original = storage.getItem(LOCAL_SAVE_KEY);
+    await store.write({ ...local, localRevision: '2' }, true);
+    expect(storage.getItem(`${LOCAL_SAVE_KEY}:recovery`)).toBe(original);
+    expect((await saved(storage))!).toMatchObject({ save: local.save, pending: local.pending, localRevision: '2' });
   });
 });

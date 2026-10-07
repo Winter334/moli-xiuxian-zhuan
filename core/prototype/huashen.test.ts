@@ -28,7 +28,7 @@ describe('化神突破长期规则', () => {
     expect(gainCultivation(24, next.cultivation, '50000000000000').level).toBe(24);
     expect(gainCultivation(24, next.cultivation, '50000000000000').cultivation).toBe('1000000000000');
   });
-  it('灵晶本次授权突破，保留当次余量，化神初期继续积存但不晋升', () => {
+  it('灵晶本次授权突破，保留当次余量，化神初期封顶但不晋升', () => {
     for (const [before, remaining] of [['900000000000', '0'], ['50000000000000', '100000000000']]) {
       const old = waiting(before);
       const next = executeCharacterCommand(old, { type: 'use', itemId: 'huashen-crystal', quantity: 1 });
@@ -39,7 +39,7 @@ describe('化神突破长期规则', () => {
       const again = executeCharacterCommand(next, { type: 'use', itemId: 'huashen-crystal', quantity: 1 });
       expect(again.skills.domain).toEqual(next.skills.domain);
       expect(gainCultivation(25, again.cultivation, '50000000000000').level).toBe(25);
-      expect(gainCultivation(25, again.cultivation, '50000000000000').cultivation).toBe(dec(again.cultivation).plus('50000000000000').toFixed());
+      expect(gainCultivation(25, again.cultivation, '50000000000000').cultivation).toBe('12000000000000');
     }
     const early = executeCharacterCommand(waiting('0'), { type: 'use', itemId: 'huashen-crystal', quantity: 1 });
     expect(early.level).toBe(24);

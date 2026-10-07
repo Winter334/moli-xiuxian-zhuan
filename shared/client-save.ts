@@ -1,3 +1,4 @@
+import { cappedCultivation } from '../core/prototype/growth';
 import { z } from 'zod';
 import { readCharacter, storedShops, type CharacterState } from '../core/prototype/character-state';
 import { characterSchema } from '../core/prototype/character-state';
@@ -6,7 +7,7 @@ import { checkHistoryProgress } from '../core/prototype/history';
 
 export const MAX_FRAME_GAP_MS = 5000;
 export const CLOUD_SAVE_INTERVAL_MS = 60_000;
-export const MAX_SAVE_BYTES = 256 * 1024;
+export const MAX_SAVE_BYTES = 512 * 1024;
 export const MAX_INVENTORY_INSTANCES = 1000;
 export const worldTimeSchema = z.object({
   serverTime: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
@@ -118,7 +119,7 @@ export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt
         (after.meditationTier === undefined || after.meditationTier < before.meditationTier)) ||
       (before.marrowInsight !== undefined &&
         (after.marrowInsight === undefined || dec(after.marrowInsight).lt(before.marrowInsight))) ||
-      (after.level === before.level && dec(after.cultivation).lt(before.level === 24 && dec(before.cultivation).gt('1000000000000') ? '1000000000000' : before.cultivation)) ||
+      (after.level === before.level && dec(after.cultivation).lt(cappedCultivation(before.level, before.cultivation))) ||
       Object.entries(before.skills).some(([id, skill]) => {
         if (!skill) return false;
         const current = after.skills[id as keyof typeof after.skills];

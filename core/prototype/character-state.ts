@@ -7,7 +7,7 @@ import { equipmentSource, instanceSchema, type ItemInstance } from './equipment'
 import { drawFate, FATES, FATE_TIERS, fateIdSchema, fateSource } from './fates';
 import { furnaceTierSchema } from './furnace';
 import { foundationBase, foundationRootSchema, FOUNDATION_ROOTS, type FoundationRoot } from './foundation';
-import { FOUNDATION_LEVEL, gainCultivation, HUASHEN_LEVEL, HUASHEN_CULTIVATION_CAP, LEVEL_CAP, realmAt, realmName } from './growth';
+import { FOUNDATION_LEVEL, gainCultivation, HUASHEN_LEVEL, cultivationCarryCap, LEVEL_CAP, realmAt, realmName } from './growth';
 import { gatheringSchema, gatheringSkill, LOGGING, MINING, MINING_SITES, miningCountSchema, miningEfficiency } from './gathering';
 import { historySchema, initialHistory, markMilestone, validateHistory } from './history';
 import { RECENT_LOG_LIMIT } from './log';
@@ -245,10 +245,11 @@ export function gainCharacterExperience(
 
 // Pure readers accept the original save; only gameplay applies this explicit transition.
 export function normalizeHuashenCultivation(state: CharacterState): boolean {
-  if (state.level !== HUASHEN_LEVEL - 1 || dec(state.cultivation).lte(HUASHEN_CULTIVATION_CAP)) return false;
+  const cap = cultivationCarryCap(state.level);
+  if (cap === null || dec(state.cultivation).lte(cap)) return false;
   const previous = state.cultivation;
-  state.cultivation = HUASHEN_CULTIVATION_CAP;
-  record(state, `化神开放修为处理：原有${previous}，元婴圆满上限${HUASHEN_CULTIVATION_CAP}，移除超额${text(dec(previous).minus(HUASHEN_CULTIVATION_CAP))}`);
+  state.cultivation = cap;
+  record(state, `修为封顶处理：原有${previous}，${realmName(state.level)}上限${cap}，移除超额${text(dec(previous).minus(cap))}`);
   return true;
 }
 

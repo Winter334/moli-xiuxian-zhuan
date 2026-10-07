@@ -1,7 +1,8 @@
+import { cultivationCarryCap } from '../core/prototype/growth';
 import { z } from 'zod';
 import { dec } from '../core/numbers';
 import {
-  clientSaveSchema, readClientSave, revisionSchema, uploadSchema, type CloudProfile,
+  clientSaveSchema, MAX_SAVE_BYTES, readClientSave, revisionSchema, uploadSchema, type CloudProfile,
 } from '../shared/client-save';
 import { checkReservedCapacity, pendingTradeSchema, validateReservation } from './trade-reservation';
 import { reincarnationRequestSchema } from '../shared/reincarnation';
@@ -9,6 +10,8 @@ import { pendingPvpSchema, PVP_RULES } from '../shared/pvp';
 import { readPlayerDuel } from '../core/prototype/simulation';
 
 export const LOCAL_SAVE_KEY = 'moli.client-save.v1';
+// Current and pending snapshots plus envelope overhead; leave room for a recovery copy.
+export const MAX_LOCAL_SAVE_CHARS = 2 * MAX_SAVE_BYTES + 64 * 1024;
 const localSchema = z.object({
   format: z.literal('opening-local-4'),
   characterId: z.uuid(),
@@ -93,7 +96,7 @@ export class LocalSaveStore {
     const raw = this.storage.getItem(this.key);
     this.expected = raw;
     if (raw === null) return null;
-    if (raw.length > 1024 * 1024) throw new LocalSaveReadError('本地存档过大，未覆盖原数据');
+    if (raw.length > MAX_LOCAL_SAVE_CHARS) throw new LocalSaveReadError('本地存档过大，未覆盖原数据');
     let recoveryContext: LocalSave | null = null;
     try {
       const wrapper = z.object({ data: z.unknown(), checksum: z.string().regex(/^[a-f0-9]{64}$/) }).strict().parse(JSON.parse(raw));
@@ -108,7 +111,7 @@ export class LocalSaveStore {
     if (this.expected === undefined) throw new Error('必须先读取本地存档');
     const data = readLocalSave(input);
     const raw = JSON.stringify({ data, checksum: await checksum(JSON.stringify(data)) });
-    if (raw.length > 1024 * 1024) throw new Error('本地存档超过接收上限');
+    if (raw.length > MAX_LOCAL_SAVE_CHARS) throw new Error('本地存档超过接收上限');
     if (this.storage.getItem(this.key) !== this.expected) throw new Error('本地存档已被另一页面修改，当前页面已暂停');
     try {
       if (preserveOriginal && this.expected !== null) this.storage.setItem(`${this.key}:recovery`, this.expected);
@@ -116,8 +119,9 @@ export class LocalSaveStore {
         let original;
         try { original = JSON.parse(this.expected); } catch { /* Explicit recovery can replace a malformed envelope. */ }
         const previous = original?.data?.save?.character;
-        if (previous?.level === 24 && typeof previous.cultivation === 'string' &&
-            /^\d+(\.\d+)?$/.test(previous.cultivation) && dec(previous.cultivation).gt('1000000000000') && raw !== this.expected) {
+        const cap = previous && Number.isInteger(previous.level) ? cultivationCarryCap(previous.level) : null;
+        if (cap !== null && typeof previous.cultivation === 'string' &&
+            /^\d+(\.\d+)?$/.test(previous.cultivation) && dec(previous.cultivation).gt(cap) && raw !== this.expected) {
           this.storage.setItem(this.key + ':huashen-original:' + original.checksum, this.expected);
         }
       }

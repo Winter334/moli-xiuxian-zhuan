@@ -78,6 +78,10 @@ interface Options {
 class RequestError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
 }
+const CAPACITY_PAUSE_MESSAGE = '存档暂时超过上传上限，本地进度保留，稍后自动重试';
+const LEGACY_CAPACITY_MESSAGE = '存档超过云端接收上限，本地进度保留';
+const LEGACY_MAX_SAVE_BYTES = 256 * 1024;
+const requestBytes = (request: unknown) => new TextEncoder().encode(JSON.stringify(request)).byteLength;
 
 export class GameClient {
   private state: ClientState = {
@@ -138,7 +142,7 @@ export class GameClient {
 
   getSnapshot = () => this.state;
   getOnlineRevision = () => {
-    if (!this.local || !this.state.onlineReady) throw new Error('当前保存存在冲突，请先在存档管理中选择保留的进度。');
+    if (!this.local || !this.state.onlineReady) throw new Error(this.state.onlineMessage ?? '当前保存存在冲突，请先在存档管理中选择保留的进度。');
     return this.local.cloudRevision;
   };
   prepareOnlineConnection = async () => {
@@ -183,6 +187,9 @@ export class GameClient {
   private onlineSourceReady() {
     return !this.cloudStopped && this.local?.syncConflict === null;
   }
+  private capacityPaused() {
+    return this.local?.syncConflict === CAPACITY_PAUSE_MESSAGE;
+  }
   private async persist(local: LocalSave, show = true, events: CharacterEvent[] = [], paused = false) {
     try { this.local = await this.store.write({ ...local, worldClock: this.worldClock.checkpoint() }); }
     catch (error) { this.failLocal(error); throw error; }
@@ -208,9 +215,11 @@ export class GameClient {
         headers: { Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: controller.signal,
       });
-      const data = await response.json() as { message?: string };
-      if (!response.ok) throw new RequestError(data.message ?? '云存档暂不可用，本地进度保留', response.status);
-      return data;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null) as { message?: string } | null;
+        throw new RequestError(data?.message ?? '云存档暂不可用，本地进度保留', response.status);
+      }
+      return await response.json();
     } finally { clearTimeout(timeout); }
   }
 
@@ -230,6 +239,12 @@ export class GameClient {
         }
         this.local = loaded;
         if (this.local) {
+          if (this.local.syncConflict === LEGACY_CAPACITY_MESSAGE && this.local.pending &&
+              !this.local.pendingTrade && !this.local.pendingReincarnation && !this.local.pendingPvp &&
+              requestBytes(this.local.pending.request) > LEGACY_MAX_SAVE_BYTES) {
+            // This exact legacy failure happened before sending. Preserve the original before replacing its request.
+            this.local = await this.store.write({ ...this.local, pending: null, syncConflict: CAPACITY_PAUSE_MESSAGE }, true);
+          }
           this.worldClock.restore(this.local.worldClock);
         } else {
           const profile = cloudProfileSchema.parse(await this.request('/api/client/session', {}));
@@ -264,10 +279,10 @@ export class GameClient {
     if (generation !== this.generation) return;
     this.lastFrame = this.monotonicNow();
     this.initialized = true;
-    this.cloudStopped = this.local!.syncConflict !== null;
+    this.cloudStopped = this.local!.syncConflict !== null && !this.capacityPaused();
     this.publish({
       blocked: this.local!.pendingReincarnation !== null, recoveryAvailable: true,
-      issue: this.local!.syncConflict ? { source: 'cloud', message: this.local!.syncConflict, retryable: false } : null,
+      issue: this.local!.syncConflict ? { source: 'cloud', message: this.local!.syncConflict, retryable: !this.cloudStopped } : null,
       tradePending: this.local!.pendingTrade !== null, tradeStopped: !this.onlineSourceReady(),
       onlineReady: this.onlineSourceReady(),
       onlineMessage: this.local!.syncConflict,
@@ -383,12 +398,16 @@ export class GameClient {
       checkReservedCapacity(character, this.local.pendingTrade);
       const save = { ...this.local.save, character };
       const localRevision = String(BigInt(this.local.localRevision) + 1n);
+      const pending = checkpoint ? { localRevision, request: {
+        characterId: this.local.characterId, requestId: crypto.randomUUID(), baseRevision: this.local.cloudRevision, save,
+      } } : this.local.pending;
+      if (checkpoint && requestBytes(pending!.request) > MAX_SAVE_BYTES) {
+        throw new CharacterCommandError('当前存档超过上传上限，暂不能提交此操作。');
+      }
       await this.persist({
         ...this.local, save, localRevision,
         // Back up administrator identity changes before ordinary online checkpoints can use them.
-        ...(checkpoint ? { pending: { localRevision, request: {
-          characterId: this.local.characterId, requestId: crypto.randomUUID(), baseRevision: this.local.cloudRevision, save,
-        } } } : {}),
+        pending,
       }, true, events);
       if (this.state.issue?.source === 'action') this.publish({ issue: null });
       return true;
@@ -679,6 +698,17 @@ export class GameClient {
       issue: { source: 'cloud', message, retryable: false } });
   }
 
+  private async pauseForSaveSize(rejectedRequestId?: string) {
+    if (!this.local || this.cloudStopped || this.state.issue?.source === 'local' ||
+        (this.local.syncConflict !== null && !this.capacityPaused())) return;
+    await this.persist({ ...this.local, syncConflict: CAPACITY_PAUSE_MESSAGE,
+      pending: rejectedRequestId && this.local.pending?.request.requestId === rejectedRequestId ? null : this.local.pending,
+    }, false);
+    this.publish({ onlineReady: false, onlineMessage: CAPACITY_PAUSE_MESSAGE,
+      tradeStopped: true, tradeMessage: CAPACITY_PAUSE_MESSAGE,
+      issue: { source: 'cloud', message: CAPACITY_PAUSE_MESSAGE, retryable: true } });
+  }
+
   private runTrade(work: (generation: number) => Promise<boolean>): Promise<boolean> {
     if (this.tradeFlight) return this.tradeFlight;
     const generation = this.generation;
@@ -951,43 +981,63 @@ export class GameClient {
     const generation = this.generation;
     this.publish({ refreshing: true });
     const work = async () => {
+      let firstAttemptId: string | undefined;
       try {
         const pending = await this.serial(async () => {
           if (generation !== this.generation || !this.local || !this.releaseLock || this.local.pendingTrade ||
               this.local.pendingReincarnation || this.local.pendingPvp || this.cloudStopped || this.state.recoveryBusy ||
               ((this.tradeFlight || this.reincarnationFlight || this.pvpFlight) && !this.local.pending)) return null;
           if (!this.local.pending) {
-            if (this.local.localRevision === this.local.uploadedRevision) return null;
+            if (this.local.localRevision === this.local.uploadedRevision && !this.capacityPaused()) return null;
+            const request = {
+              characterId: this.local.characterId, requestId: crypto.randomUUID(),
+              baseRevision: this.local.cloudRevision, save: this.local.save,
+            };
+            if (requestBytes(request) > MAX_SAVE_BYTES) {
+              await this.pauseForSaveSize();
+              return null;
+            }
             await this.persist({
               ...this.local,
-              pending: {
-                localRevision: this.local.localRevision,
-                request: {
-                  characterId: this.local.characterId, requestId: crypto.randomUUID(),
-                  baseRevision: this.local.cloudRevision, save: this.local.save,
-                },
-              },
+              pending: { localRevision: this.local.localRevision, request },
             }, false);
+            firstAttemptId = request.requestId;
+          } else if (requestBytes(this.local.pending.request) > MAX_SAVE_BYTES) {
+            // Existing requests may already have been accepted; never replace them without a known outcome.
+            await this.pauseForSaveSize();
+            return null;
           }
           return this.local!.pending;
         });
         if (!pending) return;
-        if (new TextEncoder().encode(JSON.stringify(pending.request)).byteLength > MAX_SAVE_BYTES) {
-          throw new RequestError('存档超过云端接收上限，本地进度保留', 413);
-        }
         const ack = uploadAckSchema.parse(await this.request('/api/client/save', pending.request));
         if (ack.characterId !== pending.request.characterId || ack.requestId !== pending.request.requestId ||
             BigInt(ack.revision) !== BigInt(pending.request.baseRevision) + 1n) throw new Error('云存档回执不匹配');
         await this.serial(async () => {
           if (generation !== this.generation || !this.local || !this.releaseLock || this.local.pending?.request.requestId !== pending.request.requestId) return;
+          const syncConflict = this.capacityPaused() &&
+            requestBytes({ ...pending.request, baseRevision: ack.revision, save: this.local.save }) <= MAX_SAVE_BYTES
+            ? null : this.local.syncConflict;
           await this.persist({
-            ...this.local, cloudRevision: ack.revision, uploadedRevision: pending.localRevision, pending: null,
+            ...this.local, cloudRevision: ack.revision, uploadedRevision: pending.localRevision, pending: null, syncConflict,
           }, false);
-          this.publish({ lastCloudSave: ack.savedAt, onlineReady: this.onlineSourceReady(), onlineMessage: null,
-            tradeStopped: !this.onlineSourceReady(), ...(this.state.issue?.source === 'cloud' ? { issue: null } : {}) });
+          if (this.state.issue?.source !== 'local') this.publish({
+            lastCloudSave: ack.savedAt, onlineReady: this.onlineSourceReady(), onlineMessage: syncConflict,
+            tradeStopped: !this.onlineSourceReady(), tradeMessage: syncConflict,
+            ...(this.state.issue?.source === 'cloud' && !syncConflict ? { issue: null } : {}),
+          });
         });
       } catch (error) {
         if (generation !== this.generation) return;
+        if (error instanceof RequestError && error.status === 413) {
+          await this.serial(async () => {
+            if (generation === this.generation && this.releaseLock) {
+              // A first-attempt 413 is a rejection. A retry can still have an earlier, unknown successful outcome.
+              await this.pauseForSaveSize(firstAttemptId);
+            }
+          }).catch(() => undefined);
+          return;
+        }
         if (error instanceof RequestError && [400, 401, 403, 409, 413, 422].includes(error.status)) {
           await this.serial(async () => {
             if (generation === this.generation && this.local && this.releaseLock && this.state.issue?.source !== 'local') {

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { assertActivityDeploymentDatabaseUrl, assertLocalDatabaseUrl } from '../../server/config';
 import { createClientApp } from '../../server/client/main';
+import { MAX_SAVE_BYTES } from '../../shared/client-save';
 
 const pool = vi.hoisted(() => ({
   query: vi.fn(async () => ({ rows: [], rowCount: 0 })),
@@ -32,6 +33,19 @@ afterEach(() => {
 });
 
 describe('Activity deployment boundary', () => {
+  it('uses the shared save request limit before authentication without accepting oversized requests', async () => {
+    const app = await createClientApp({ deployment: true });
+    try {
+      const payload = JSON.stringify({ data: 'x'.repeat(MAX_SAVE_BYTES - 11) });
+      expect(Buffer.byteLength(payload)).toBe(MAX_SAVE_BYTES);
+      const request = { method: 'POST' as const, url: '/api/client/save', remoteAddress: '172.18.0.2',
+        headers: { origin: `https://${clientId}.discordsays.com`, 'content-type': 'application/json' } };
+      expect((await app.inject({ ...request, payload })).statusCode).toBe(401);
+      expect((await app.inject({ ...request, payload: `${payload} ` })).statusCode).toBe(413);
+      expect(pool.query).not.toHaveBeenCalled();
+    } finally { await app.close(); }
+  });
+
   it('allows only an explicit isolated deployment database without weakening the local guard', () => {
     expect(() => assertActivityDeploymentDatabaseUrl(databaseUrl)).not.toThrow();
     expect(() => assertLocalDatabaseUrl(databaseUrl)).toThrow();

@@ -34,7 +34,7 @@ export interface CloudStore {
 }
 
 export async function initializeStorage(pool: Pool) {
-  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql', '005_pvp.sql', '006_huashen_cultivation.sql'].map(async name => {
+  const migrations = await Promise.all(['001_initial.sql', '002_discord.sql', '003_discord_profiles.sql', '004_social.sql', '005_pvp.sql', '006_huashen_cultivation.sql', '007_cultivation_caps.sql'].map(async name => {
     const sql = await readFile(new URL(`./${name}`, import.meta.url), 'utf8');
     return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') };
   }));

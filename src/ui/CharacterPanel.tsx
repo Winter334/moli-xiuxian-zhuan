@@ -87,9 +87,9 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
     </header>
     <div className="character-vitals">
       <Meter label="气血" value={game.hp} max={game.stats.maxHp} tone="red" />
-      <Meter label="修为" value={game.cultivation} max={game.nextLevelCost ?? game.cultivation} />
+      <Meter label="修为" value={game.cultivation} max={game.nextLevelCost ?? game.cultivationCap ?? game.cultivation} />
       {game.level === 24 && <p className="muted small">元婴圆满修为上限1兆；达到9000亿后，炼化一颗化神灵晶可突破。</p>}
-      {game.level === 25 && <p className="muted small">当前开放至化神初期，修为可继续积存。</p>}
+      {game.cultivationCap && <p className="muted small">当前开放至{game.realmName}，修为上限{formatAmount(game.cultivationCap)}；溢出不再计入。</p>}
       <div className="character-wealth"><span>常态战力 <strong>{formatAmount(game.combatPower.score)}</strong></span>
         <span className="wallet"><Coins size={13} />{formatAmount(game.money)}</span></div>
     </div>
