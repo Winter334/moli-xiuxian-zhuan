@@ -74,6 +74,9 @@ export const SCENE_ART: Record<string, string> = {
     'fallen-ark-inner', 'furnace-guard-corridor', 'essence-condensing-corridor',
     'energy-gathering-cabin', 'starbreaking-chamber', 'ark-meditation-cabin',
   ].map(id => [id, `/assets/art/scenes/${id}-sunburst-ark-inner-v1.webp`])),
+  ...Object.fromEntries([
+    'crystal-chamber', 'deep-hub-corridor', 'array-cabin', 'main-hub-hall',
+  ].map(id => [id, `/assets/art/scenes/${id}-sunburst-huashen-hub-v1.webp`])),
 };
 export const ENEMY_AVATARS: Record<string, string> = {
   ...Object.fromEntries([
@@ -190,6 +193,11 @@ export const ENEMY_AVATARS: Record<string, string> = {
     'energy-gathering-core-spirit', 'breath-eroding-gel-wraith', 'golden-fur-beast',
     'silver-eye-core-spirit', 'threehead-wandering-serpent', 'starbreaking-heavy-puppet',
   ].map(id => [id, `/assets/art/enemies/${id}-flare-ark-inner-v1.png`])),
+  ...Object.fromEntries([
+    'ark-mansion-guard', 'dark-hub-puppet', 'bloodedge-puppet', 'lightchasing-puppet', 'arraypiercing-puppet', 'main-hub-puppet',
+  ].map(id => [id, `/assets/art/enemies/${id}-flare-huashen-hub-v1.png`])),
+  'crystal-keeper': '/assets/art/enemies/silver-eye-core-spirit-flare-ark-inner-v1.png',
+  'starbreaking-patrol': '/assets/art/enemies/starbreaking-heavy-puppet-flare-ark-inner-v1.png',
 };
 export const PLAYER_ART: { avatar?: string } = {};
 export const ITEM_ICONS: Record<string, string> = {
@@ -356,6 +364,9 @@ export const ITEM_ICONS: Record<string, string> = {
     'rising-blood-elixir', 'sealed-gel-crate', 'sealed-ark-core-crate',
     'purple-cast-coin', 'star-dissolution-disk',
   ].map(id => [id, `/assets/art/icons/${id}-flare-ark-inner-v1.png`])),
+  ...Object.fromEntries([
+    'crystallization-notes', 'huashen-crystal', 'main-hub-core',
+  ].map(id => [id, `/assets/art/icons/${id}-flare-huashen-hub-v1.png`])),
 };
 export const TECHNIQUE_ART: Record<string, string> = {
   ...Object.fromEntries([

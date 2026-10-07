@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dec } from '../core/numbers';
 import {
   clientSaveSchema, readClientSave, revisionSchema, uploadSchema, type CloudProfile,
 } from '../shared/client-save';
@@ -111,6 +112,15 @@ export class LocalSaveStore {
     if (this.storage.getItem(this.key) !== this.expected) throw new Error('本地存档已被另一页面修改，当前页面已暂停');
     try {
       if (preserveOriginal && this.expected !== null) this.storage.setItem(`${this.key}:recovery`, this.expected);
+      if (this.expected !== null) {
+        let original;
+        try { original = JSON.parse(this.expected); } catch { /* Explicit recovery can replace a malformed envelope. */ }
+        const previous = original?.data?.save?.character;
+        if (previous?.level === 24 && typeof previous.cultivation === 'string' &&
+            /^\d+(\.\d+)?$/.test(previous.cultivation) && dec(previous.cultivation).gt('1000000000000') && raw !== this.expected) {
+          this.storage.setItem(this.key + ':huashen-original:' + original.checksum, this.expected);
+        }
+      }
       this.storage.setItem(this.key, raw);
     }
     catch { throw new Error('无法保存到此浏览器，已暂停推进；请检查存储权限与空间'); }

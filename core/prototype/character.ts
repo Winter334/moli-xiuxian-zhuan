@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { dec, exactAdd, integerAdd, random, text } from '../numbers';
 import { worldCalendarAt } from './calendar';
 import {
-  addStack, awardItem, characterStats, cleared, defeatDestination, equippedWeaponSkill, gainCharacterExperience, gainCharacterSkill, isUnlocked, readCharacter, record, synchronizeCharacter, type CharacterState,
+  addStack, awardItem, characterStats, cleared, defeatDestination, equippedWeaponSkill, gainCharacterExperience, gainCharacterSkill, isUnlocked, normalizeHuashenCultivation, readCharacter, record, synchronizeCharacter, type CharacterState,
 } from './character-state';
 import { CharacterCommandError, commandEntry } from './command-error';
 import { combatPower, COMBAT_POWER_VERSION } from './combat-power';
@@ -67,6 +67,8 @@ export const characterCommandSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('reactor'), active: z.boolean() }).strict(),
   z.object({ type: z.literal('reactor-feed'), itemId: reactorMaterialSchema, quantity: batch }).strict(),
   z.object({ type: z.literal('reactor-extract') }).strict(),
+  z.object({ type: z.literal('reactor-crystallize') }).strict(),
+  z.object({ type: z.literal('offer-fortune') }).strict(),
   z.object({ type: z.literal('read-ark-contract') }).strict(),
   z.object({ type: z.literal('absorb-marrow') }).strict(),
 ]);
@@ -110,6 +112,7 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
   return {
     stopOnEncounterEnd: true,
     getMoney: () => state.money,
+    hasArkContract: () => Boolean(state.equipment.special && state.instances[state.equipment.special]?.itemId === 'ark-ward-contract'),
     getMarrowInsight: () => state.marrowInsight ?? '0',
     getSturdyCap: () => state.equipment.special
       ? ITEMS[state.instances[state.equipment.special].itemId].sturdyCap ?? 1 : 1,
@@ -142,6 +145,8 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         } else if (event.hit && !simulation.battle!.enemies[event.slot].definition.abilities.noToughnessXp) {
           changed = gainCharacterSkill(state, 'toughness', text(dec(event.incomingPower).div(10)));
         }
+      } else if (event.kind === 'ark-contract') {
+        record(state, '护舟阵契引动破枢灵光，主枢战傀气血降至1');
       } else if (event.kind === 'enemy-healed') {
         record(state, `${ENEMIES[simulation.battle!.enemies[event.slot].definition.id].name}回春，气血+${event.amount}`);
       } else if (event.kind === 'reflection') {
@@ -154,11 +159,23 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
         changed = gainCharacterSkill(state, state.activeManual, xp);
       } else if (event.kind === 'enemy-defeated') {
         incrementRecord(state.history.kills, event.enemyId);
+        if (event.enemyId === 'main-hub-puppet') {
+          const equipped = state.equipment.special;
+          const uid = equipped && state.instances[equipped]?.itemId === 'ark-ward-contract' ? equipped
+            : Object.entries(state.instances).find(([, item]) => item.itemId === 'ark-ward-contract' && item.quality === 130)?.[0];
+          if (uid) {
+            if (state.equipment.special === uid) state.equipment.special = null;
+            delete state.instances[uid];
+            changed = true;
+            record(state, '护舟阵契归入主枢，旧令已成');
+          }
+        }
         const enemy = encounterEnemy(event.regionId, event.enemyId, simulation.battle?.entry);
         const realmFactor = killExperienceRealmFactor(enemy.realm, state.level);
         const xp = killExperience(enemy.xp, enemy.realm, state.level, event.groupSize, allExperienceMultiplier(state.skills));
         const reward = gainCharacterExperience(state, xp, undefined, true, ['activity', 'kill']);
-        ({ changed, fullHeal } = reward);
+        changed = reward.changed || changed;
+        fullHeal = reward.fullHeal;
         const loot = rollLoot(simulation, enemy.loot, enemy.lootMultiplier, '1', sources);
         for (const [id, count] of Object.entries(loot)) awardItem(state, id, count, enemy.loot.find(entry => entry.itemId === id)?.quality);
         const drops = Object.entries(loot).map(([id, count]) => `${ITEMS[id].name}×${count}`).join('、');
@@ -197,6 +214,7 @@ function characterHooks(state: CharacterState, events?: CharacterEvent[]): Simul
             }
           }
           if (first) {
+            if (event.regionId === 'crystal-chamber') record(state, '已学会凝晶方法，可在灵能反应炉凝聚化神灵晶');
             if (event.regionId === 'essence-condensing-corridor') {
               state.meditationTier = 120;
               record(state, '静修舱已开放，养息基础熟练提升为120/秒');
@@ -341,6 +359,7 @@ function startNextGroup(state: CharacterState, events?: CharacterEvent[]) {
 
 export function advanceCharacter(input: CharacterState, targetMs: number, maxSteps = 1000, events?: CharacterEvent[]): CharacterState {
   const state = readCharacter(input);
+  normalizeHuashenCultivation(state);
   if (!Number.isSafeInteger(targetMs) || targetMs < state.simulation.clockMs ||
       targetMs > Number.MAX_SAFE_INTEGER - 3_600_000 || !Number.isInteger(maxSteps) || maxSteps < 1 || maxSteps > 10000) {
     throw new Error('Invalid character catch-up target or budget');
@@ -421,6 +440,7 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
   if (!parsed.success) throw new CharacterCommandError('操作参数无效');
   const command = parsed.data;
   const state = readCharacter(input);
+  normalizeHuashenCultivation(state);
   const interruptsMeditation = ['craft', 'upgrade-furnace', 'assemble', 'assemble-armor'].includes(command.type) ||
     (command.type === 'train' && command.skillId !== null) || (command.type === 'gather' && command.siteId !== null);
   if (state.simulation.mode === 'sleep' && interruptsMeditation) {
@@ -543,6 +563,26 @@ export function executeCharacterCommand(input: CharacterState, raw: CharacterCom
       state.reactor[key] += command.quantity;
       if (key === 'gel') state.reactor.temperature -= (state.reactor.temperature - 20) * command.quantity / state.reactor.gel;
       record(state, `反应炉投料：${ITEMS[command.itemId].name}×${command.quantity}`);
+      break;
+    }
+    case 'offer-fortune': {
+      if (state.level < 25) throw new CharacterCommandError('化神后开放纳财养运');
+      const count = state.inventory['purple-cast-coin'] ?? '0';
+      if (count === '0') throw new CharacterCommandError('没有可投入的紫铸旧币');
+      addStack(state.inventory, 'purple-cast-coin', '-' + count);
+      state.fortuneOffering = integerAdd(state.fortuneOffering ?? '0', count);
+      synchronizeCharacter(state);
+      record(state, '纳财养运：投入紫铸旧币' + count + '枚，累计' + state.fortuneOffering + '枚');
+      break;
+    }
+    case 'reactor-crystallize': {
+      if (!state.reactor?.active || state.locationId !== 'fallen-ark-outer') throw new CharacterCommandError('请先操作灵能反应炉');
+      if (!cleared(state, 'crystal-chamber')) throw new CharacterCommandError('尚未学会凝晶方法');
+      if (state.reactor.radiation < 1000000) throw new CharacterCommandError('凝晶需要100万灵能辐照');
+      state.reactor.radiation -= 1000000;
+      state.reactor.power = 0;
+      awardItem(state, 'huashen-crystal', 1);
+      record(state, '凝聚化神灵晶一颗，消耗100万灵能辐照，反应强度归零');
       break;
     }
     case 'reactor-extract': {
@@ -808,7 +848,10 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
         ? `${FOUNDATION_ROOTS[item.foundationRoot!].name}；仅炼气十二层修满可用，消耗1颗与6000万修为，必成；境界基础四维加成${text(dec(FOUNDATION_ROOTS[item.foundationRoot!].bonusRate).mul(100))}%，不加成装备、灵髓或熟练`
         : food
         ? `${effectText}；同效续时；${foodRealmName}及以下`
-        : item.experience
+        : itemId === 'huashen-crystal'
+          ? '每颗增加1000亿修为，不乘经验加成；批量逐颗结算。' + (state.level === 24 && dec(state.cultivation).gte('900000000000')
+            ? '当前首颗可突破化神，先按1兆处理旧积存，再结算突破成本。' : state.level >= 25 ? '本批境界上限为化神初期，所得修为继续积存。' : '当前首颗不能突破化神，仍会消耗；批量后续可随修为达标突破，许可不保留。')
+          : item.experience
           ? `修为+${item.experience.amount}，不乘经验加成，不提供突破许可；炼气十二层最高6000万，超出不保存`
           : `随机永久增长：攻/防/敏 +${item.marrowValue} 或气血 +${item.marrowValue! * (item.marrowValue! > 7500 ? 100 : 50)}，随累计增长递减`,
     };
@@ -843,6 +886,13 @@ export function getCharacterView(input: CharacterState, worldTimeMs = Date.now()
     foundationRequired: state.level === FOUNDATION_LEVEL - 1,
     foundationName: state.foundationRoot === null ? null : FOUNDATION_ROOTS[state.foundationRoot].name,
     marrowAbsorption: marrowAbsorptionPreview(state),
+    fortuneOffering: state.level >= 25 ? {
+      points: state.fortuneOffering ?? '0', count: state.inventory['purple-cast-coin'] ?? '0',
+      value: text(dec(state.inventory['purple-cast-coin'] ?? '0').mul('1000000000000')),
+      multiplier: text(dec(state.fortuneOffering ?? '0').plus(1).pow('.1')),
+      nextMultiplier: text(dec(state.fortuneOffering ?? '0').plus(state.inventory['purple-cast-coin'] ?? '0').plus(1).pow('.1')),
+    } : null,
+    crystallizationKnown: cleared(state, 'crystal-chamber'),
     stats: getPlayerStats(simulation), hp: simulation.player.hp, mode: simulation.mode,
     combatPower: { score: combatPower(state), version: COMBAT_POWER_VERSION },
     locationId: state.locationId,

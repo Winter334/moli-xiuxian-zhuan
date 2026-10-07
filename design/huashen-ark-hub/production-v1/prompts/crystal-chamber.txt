@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: A sunken circular crystallization chamber inside a fallen ancient Chinese immortal ark. A quiet open well descends below a surrounding walkway, a few enormous pale rings suspended at staggered heights above its empty center. Thin silver-white spirit currents gather through those rings. Sparse closed storage caskets sit against curved walls. A distant tiny silver ring-eye spirit floats within the structure as a small local inhabitant, not a central deity. Architecture is immense but enclosed within the vessel.
+Composition/framing: High oblique view from an upper threshold down into the open circular well; calm clear silver-white light and muted blue-grey stone, restrained old-gold fittings, immense empty depth. Do not cover the room in crystal spikes.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly architecture, coherent large planes, limited luminous accents, lucid unreal spatial depth. Composition is landscape 1792x784, with meaningful negative space and strong depth.
+Constraints: preserve an ancient Chinese immortal-ark identity. No modern machinery, screens, guns, UI, lettering, numbers, labels, watermark, border, player portrait, loot arrangement or collage. No dense ornamental noise. No reference image.

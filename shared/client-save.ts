@@ -91,6 +91,7 @@ export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt
       next.playedMs - previous.playedMs > Math.max(0, now - Math.min(receivedAt, before.simulation.clockMs)) + MAX_FRAME_GAP_MS) {
     throw new Error('存档计时异常，本地进度未覆盖云端');
   }
+  if (BigInt(after.fortuneOffering ?? '0') < BigInt(before.fortuneOffering ?? '0')) throw new Error('纳财养运进度发生回退');
   if (after.level < before.level || after.furnaceTier < before.furnaceTier ||
       BigInt(after.simulation.actionCounts.basicAttack) < BigInt(before.simulation.actionCounts.basicAttack) ||
       (before.foundationRoot !== null && after.foundationRoot !== before.foundationRoot) ||
@@ -117,7 +118,7 @@ export function checkProgress(previous: ClientSave, next: ClientSave, receivedAt
         (after.meditationTier === undefined || after.meditationTier < before.meditationTier)) ||
       (before.marrowInsight !== undefined &&
         (after.marrowInsight === undefined || dec(after.marrowInsight).lt(before.marrowInsight))) ||
-      (after.level === before.level && dec(after.cultivation).lt(before.cultivation)) ||
+      (after.level === before.level && dec(after.cultivation).lt(before.level === 24 && dec(before.cultivation).gt('1000000000000') ? '1000000000000' : before.cultivation)) ||
       Object.entries(before.skills).some(([id, skill]) => {
         if (!skill) return false;
         const current = after.skills[id as keyof typeof after.skills];

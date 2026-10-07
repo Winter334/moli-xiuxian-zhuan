@@ -130,14 +130,14 @@ export function executeDebugCommand(input: CharacterState, raw: DebugCommand): C
       const amount = dec(realmAt(command.level).cumulativeCost)
         .minus(realmAt(state.level).cumulativeCost).minus(state.cultivation);
       ({ fullHeal } = gainCharacterExperience(state, maximum(amount, 0),
-        command.level >= FOUNDATION_LEVEL ? state.foundationRoot ?? command.root ?? 'human' : undefined, false));
+        command.level >= FOUNDATION_LEVEL ? state.foundationRoot ?? command.root ?? 'human' : undefined, false, ['fixed'], true));
       record(state, `[测试] 境界提升至${realmName(state.level)}`);
       break;
     }
     case 'cultivation': {
       const result = gainCharacterExperience(state, command.amount, undefined, false);
       fullHeal = result.fullHeal;
-      if (dec(result.credited).lte(0)) throw new CharacterCommandError('修为已达突破前上限，请先筑基');
+      if (dec(result.credited).lte(0)) throw new CharacterCommandError('修为已达突破前上限，请先完成突破');
       record(state, `[测试] 增加修为${result.credited}${dec(result.credited).lt(command.amount) ? '，封顶溢出未计入' : ''}`);
       break;
     }

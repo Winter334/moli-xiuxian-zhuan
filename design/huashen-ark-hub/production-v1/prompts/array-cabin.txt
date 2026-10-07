@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: The last defensive array cabin before an immortal ark's central hub. A very tall enclosed hall, great sentinel plinths arranged along both walls, several empty sockets where guardians have left their seats. A few restrained red and white seams of spiritual illumination mark the ready defenses, with broad overhead ancient launch cradles. A clear exit remains visible ahead. The architecture is Chinese fantasy spirit engineering, with stone, archaic metal and suspended array structures.
+Composition/framing: Low wide angle across the open passage, tall plinths on each side and strong readable exit ahead. Pale stone faces, muted cinnabar and white illumination, deep blue upper vault. Emphasize defensive staging rather than a supply room of pipes.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly architecture, coherent large planes, limited luminous accents, lucid unreal spatial depth. Composition is landscape 1792x784, with meaningful negative space and strong depth.
+Constraints: preserve an ancient Chinese immortal-ark identity. No modern machinery, screens, guns, UI, lettering, numbers, labels, watermark, border, player portrait, loot arrangement or collage. No dense ornamental noise. No reference image.

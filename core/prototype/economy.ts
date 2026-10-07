@@ -269,7 +269,7 @@ export function useItem(state: CharacterState, itemId: string, quantity: number)
       state.meditationTier = state.meditationTier === 120 ? 120 : 40;
       record(state, `墟纹静室已开放，养息基础熟练为${state.meditationTier}/秒`);
     } else if (item.kind === 'insight') {
-      const result = gainCharacterExperience(state, item.experience!.amount);
+      const result = gainCharacterExperience(state, item.experience!.amount, undefined, true, ['fixed'], itemId === 'huashen-crystal');
       cultivationGained = cultivationGained.plus(result.credited);
       cultivationOverflow ||= dec(result.earned).gt(result.credited);
       if (result.changed) synchronizeCharacter(state);

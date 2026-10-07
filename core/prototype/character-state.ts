@@ -7,7 +7,7 @@ import { equipmentSource, instanceSchema, type ItemInstance } from './equipment'
 import { drawFate, FATES, FATE_TIERS, fateIdSchema, fateSource } from './fates';
 import { furnaceTierSchema } from './furnace';
 import { foundationBase, foundationRootSchema, FOUNDATION_ROOTS, type FoundationRoot } from './foundation';
-import { FOUNDATION_LEVEL, gainCultivation, LEVEL_CAP, realmAt, realmName } from './growth';
+import { FOUNDATION_LEVEL, gainCultivation, HUASHEN_LEVEL, HUASHEN_CULTIVATION_CAP, LEVEL_CAP, realmAt, realmName } from './growth';
 import { gatheringSchema, gatheringSkill, LOGGING, MINING, MINING_SITES, miningCountSchema, miningEfficiency } from './gathering';
 import { historySchema, initialHistory, markMilestone, validateHistory } from './history';
 import { RECENT_LOG_LIMIT } from './log';
@@ -40,6 +40,7 @@ export const characterSchema = z.object({
   foundationRoot: foundationRootSchema.nullable(),
   cultivation: nonnegativeSchema,
   marrowInsight: nonnegativeSchema.optional(),
+  fortuneOffering: countSchema.optional(),
   skills: skillsSchema,
   activeManual: manualIdSchema.optional(),
   learnedDivineArts: z.array(divineArtIdSchema).max(DIVINE_ART_IDS.length)
@@ -147,6 +148,13 @@ export function characterStats(state: CharacterState, excludeStageAid = false): 
     sources: [
       { id: 'marrow', flat: { ...state.marrow } },
       fateSource(state.fateId),
+      ...(state.level >= HUASHEN_LEVEL ? [{ id: 'realm:huashen',
+        multiplier: { critChance: '0.25', critMultiplier: '4' },
+        modifiers: [
+          { target: 'loot.quantity', operation: 'increase', value: '0.2', tags: ['loot'] },
+          { target: 'loot.quantity', operation: 'multiply', value: text(dec(state.fortuneOffering ?? '0').plus(1).pow('.1')), tags: ['loot'] },
+        ],
+      }] : []),
       ...skillSources(state.skills, equippedWeaponSkill(state)),
       ...SLOTS.flatMap((slot) => {
         const uid = state.equipment[slot];
@@ -207,17 +215,25 @@ export function gainCharacterSkill(state: CharacterState, id: SkillId, amount: s
 }
 
 export function gainCharacterExperience(
-  state: CharacterState, amount: string, root?: FoundationRoot, recordHistory = true, tags: readonly EffectTag[] = ['fixed'],
+  state: CharacterState, amount: string, root?: FoundationRoot, recordHistory = true, tags: readonly EffectTag[] = ['fixed'], allowHuashen = false,
 ) {
+  normalizeHuashenCultivation(state);
   const earned = tags.includes('activity')
     ? positiveValue(amount, 'experience.cultivation', activeSources(state.simulation), { tags }) : amount;
   const before = dec(realmAt(state.level).cumulativeCost).plus(state.cultivation);
-  const result = gainCultivation(state.level, state.cultivation, earned, root !== undefined);
+  const result = gainCultivation(state.level, state.cultivation, earned, root !== undefined, allowHuashen);
   const credited = dec(realmAt(result.level).cumulativeCost).plus(result.cultivation).minus(before).toFixed();
   state.level = result.level;
   state.cultivation = result.cultivation;
   if (recordHistory) for (const level of result.levels) markMilestone(state, 'firstRealms', String(level), level);
   if (result.levels.length) record(state, `晋升${realmName(result.level)}`);
+  if (result.levels.includes(HUASHEN_LEVEL)) {
+    state.skills.domain ??= { level: 0, xp: '0' };
+    if (!state.learnedDivineArts.includes('domain')) state.learnedDivineArts.push('domain');
+    if (state.activeDivineArt === 'circulating-qi') state.activeDivineArt = 'domain';
+    gainSkill(state.skills, 'domain', '9999000000000000', state.level, undefined, [], false);
+    record(state, '元神凝成，领域熟练增加9999000000000000；纳财养运已开放');
+  }
   if (result.levels.includes(FOUNDATION_LEVEL)) {
     state.foundationRoot = foundationRootSchema.parse(root);
     record(state, `根基已定：${FOUNDATION_ROOTS[state.foundationRoot].name}`);
@@ -225,6 +241,15 @@ export function gainCharacterExperience(
     record(state, `掌握神通：${DIVINE_ARTS[FOUNDATION_DIVINE_ART].name}，灵髓化悟已开放`);
   }
   return { changed: result.levels.length > 0, fullHeal: result.referencePromotions > 0, earned, credited };
+}
+
+// Pure readers accept the original save; only gameplay applies this explicit transition.
+export function normalizeHuashenCultivation(state: CharacterState): boolean {
+  if (state.level !== HUASHEN_LEVEL - 1 || dec(state.cultivation).lte(HUASHEN_CULTIVATION_CAP)) return false;
+  const previous = state.cultivation;
+  state.cultivation = HUASHEN_CULTIVATION_CAP;
+  record(state, `化神开放修为处理：原有${previous}，元婴圆满上限${HUASHEN_CULTIVATION_CAP}，移除超额${text(dec(previous).minus(HUASHEN_CULTIVATION_CAP))}`);
+  return true;
 }
 
 export function createCharacter(clockMs: number, seed: number): CharacterState {
@@ -264,7 +289,7 @@ export function readCharacter(raw: unknown): CharacterState {
     throw new Error('Active divine art has not been learned');
   }
   if (Boolean(state.skills.domain) !== state.learnedDivineArts.includes('domain') ||
-      (state.skills.domain && (!state.brokenplainIntroduced || !cleared(state, 'bone-array-gully') ||
+      (state.skills.domain && ((state.level < HUASHEN_LEVEL && (!state.brokenplainIntroduced || !cleared(state, 'bone-array-gully'))) ||
         state.activeDivineArt === 'circulating-qi'))) throw new Error('Invalid domain acquisition or replacement');
   state.simulation = readSimulation(state.simulation);
   const shops = storedShops(state);
@@ -375,7 +400,8 @@ export function readCharacter(raw: unknown): CharacterState {
     }
   }
   if (state.manorAidClaimed && !cleared(state, MANOR_AID.prerequisite)) throw new Error('Invalid assistance acquisition');
-  if ((state.level < FOUNDATION_LEVEL - 1 || (state.level > FOUNDATION_LEVEL && state.level < LEVEL_CAP)) &&
+  if (state.fortuneOffering !== undefined && state.level < HUASHEN_LEVEL) throw new Error('纳财养运尚未开放');
+  if ((state.level < FOUNDATION_LEVEL - 1 || (state.level > FOUNDATION_LEVEL && state.level < HUASHEN_LEVEL - 1)) &&
       dec(state.cultivation).gte(realmAt(state.level + 1).entryCost)) {
     throw new Error('Unsettled cultivation');
   }

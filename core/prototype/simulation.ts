@@ -10,7 +10,7 @@ import {
 
 const needsRoundCounter = (abilities: ResolvedEnemy['abilities']) =>
   Boolean(abilities.rampingDamage || abilities.mirrorOpening || abilities.arrayStrikes || abilities.periodicStrike ||
-    abilities.roundStrikes || abilities.healthBurst);
+    abilities.roundStrikes || abilities.healthBurst || abilities.arkHub);
 
 export function getPlayerStats(state: SimulationState): Stats {
   return resolveStats(state.player.base, activeSources(state));
@@ -509,6 +509,12 @@ function advanceCombat(
         }
         if (state.battle !== battle) break;
         performEnemyAction(state, slot, strikes, events, hooks, damageMultiplier);
+        if (state.battle === battle && abilities.arkHub && round === 10) {
+          if (hooks?.hasArkContract?.()) {
+            enemy.hp = '1';
+            emit(state, events, { kind: 'ark-contract', at: state.clockMs, slot }, hooks);
+          } else performEnemyAction(state, slot, 1, events, hooks);
+        }
         if (state.battle === battle && abilities.extraStrike) {
           performEnemyAction(state, slot, [abilities.extraStrike.coefficient], events, hooks,
             text(dec(damageMultiplier).mul(abilities.extraStrike.damageMultiplier)));

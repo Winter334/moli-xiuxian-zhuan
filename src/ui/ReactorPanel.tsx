@@ -24,6 +24,11 @@ export function ReactorPanel({ game, blocked, command }: ViewProps) {
         max={Math.min(10000, Number(material.owned))} defaultValue={1} step={1} required disabled={blocked || material.owned === '0'} />
       <button type="submit" disabled={blocked || material.owned === '0'} title={`投入${material.name}`}><Plus size={16} /></button>
     </form>)}</div>
+    <div className="reactor-readings"><p>{game.crystallizationKnown
+      ? '凝晶消耗100万辐照，反应强度归零；其它炉内积存保留。提取淬液会清零辐照。'
+      : '通关凝晶室后可在此凝聚化神灵晶。'}</p>
+      <button disabled={blocked || !game.crystallizationKnown || reactor.radiation < 1000000}
+        onClick={() => void command({ type: 'reactor-crystallize' })}>凝聚化神灵晶</button></div>
     <footer><span className="muted small">提取消耗当前凝胶20%；过热熔毁会损失炉内投料并施加灵机灼扰。</span>
       <button disabled={blocked || reactor.gel < 10} onClick={() => void command({ type: 'reactor-extract' })}>
         <FlaskConical size={16} />提取淬液</button></footer>

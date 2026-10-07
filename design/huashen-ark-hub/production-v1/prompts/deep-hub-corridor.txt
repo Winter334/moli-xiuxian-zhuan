@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: wide xianxia RPG environment painting.
+Primary request: A vast deep-hub passage running through the belly of a fallen Chinese immortal ark. Broad ancient arches recur into the distance; thick luminous spirit conduits pass through them in coherent bundles. Heavy transport tracks and an accessible side path retain the identity of a working supply passage taken over by intruders. A few closed shadowed maintenance bays hint at heavy guardians without filling the scene with enemies.
+Composition/framing: Long lateral and oblique perspective through repeated monumental arches, near foreground structure framing deep lucid space. Warm ivory spirit currents within broad dark teal and bronze supports. Clear large shapes, not a central circular reactor.
+Style/medium: monumental Chinese fantasy dreamcore, refined painterly architecture, coherent large planes, limited luminous accents, lucid unreal spatial depth. Composition is landscape 1792x784, with meaningful negative space and strong depth.
+Constraints: preserve an ancient Chinese immortal-ark identity. No modern machinery, screens, guns, UI, lettering, numbers, labels, watermark, border, player portrait, loot arrangement or collage. No dense ornamental noise. No reference image.

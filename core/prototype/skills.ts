@@ -248,7 +248,7 @@ export function masteryBonuses(skills: SkillProgress, id: MasteryId) {
 }
 
 export function gainSkill(
-  skills: SkillProgress, id: SkillId, amount: string, realm: number, insight?: string, sources: readonly StatSource[] = [],
+  skills: SkillProgress, id: SkillId, amount: string, realm: number, insight?: string, sources: readonly StatSource[] = [], useBonuses = true,
 ): boolean {
   nonnegativeSchema.parse(amount);
   const skill = skills[id];
@@ -260,9 +260,9 @@ export function gainSkill(
   const base = text(dec(amount).mul(allExperienceMultiplier(skills)).mul(realmAt(realm).skillXpMultiplier)
     .mul(insightExperienceMultiplier(insight)).mul(parentMultiplier)
     .mul(id === 'domain' ? domainExperienceMultiplier(skills) : '1'));
-  const earned = dec(positiveValue(base, 'experience.skill', sources, {
+  const earned = dec(useBonuses ? positiveValue(base, 'experience.skill', sources, {
     tags: ['skill', ...('tags' in definition ? definition.tags : [])],
-  })).toDecimalPlaces(2);
+  }) : amount).toDecimalPlaces(2);
   skill.xp = exactAdd(skill.xp, text(earned));
   const before = skill.level;
   while (skill.level < SKILLS[id].max && dec(skill.xp).gte(threshold(id, skill.level + 1))) skill.level++;

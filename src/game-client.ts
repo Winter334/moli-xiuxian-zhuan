@@ -1,3 +1,4 @@
+import { normalizeHuashenCultivation } from '../core/prototype/character-state';
 import { advanceCharacter, executeCharacterCommand, getCharacterView, pauseSimulationUntil } from '../core/prototype';
 import { CharacterCommandError, type CharacterEvent } from '../core/prototype/character';
 import { readCharacter, type CharacterState } from '../core/prototype/character-state';
@@ -251,6 +252,11 @@ export class GameClient {
   };
 
   private async activateLocal(generation: number, recoverUntil = this.wallNow()) {
+    if (!this.local!.pendingReincarnation && !this.local!.pendingPvp) {
+      const character = structuredClone(this.local!.save.character);
+      if (normalizeHuashenCultivation(character)) await this.persist({ ...this.local!,
+        save: { ...this.local!.save, character }, localRevision: String(BigInt(this.local!.localRevision) + 1n) }, false);
+    }
     const gap = Math.max(0, recoverUntil - this.local!.wallSavedAt);
     if (!this.local!.pendingReincarnation && !this.local!.pendingPvp) await this.settle(gap, false, generation, recoverUntil);
     if (generation !== this.generation) return;
@@ -295,6 +301,7 @@ export class GameClient {
       let next = (available.simulation.battle || available.training || available.gathering || available.fishing || available.reactor?.active) && !connected
         ? { ...available, simulation: pauseSimulationUntil(available.simulation, target) }
         : advanceCharacter(available, target, connected && this.local.pendingTrade ? 1 : 128, events);
+      normalizeHuashenCultivation(next);
       next = restoreReservation(next, this.local.pendingTrade);
       try { checkReservedCapacity(next, this.local.pendingTrade); }
       catch (error) {

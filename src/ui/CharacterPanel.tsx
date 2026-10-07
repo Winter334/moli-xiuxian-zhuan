@@ -58,6 +58,7 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
   const [using, setUsing] = useState(false);
   const [useNotice, setUseNotice] = useState('');
   const [absorb, setAbsorb] = useState(false);
+  const [offering, setOffering] = useState(false);
   const stat = detail?.kind === 'stat' ? ATTRIBUTES.find(entry => entry.id === detail.id) : null;
   const skill = detail?.kind === 'skill' ? game.skills.find(entry => entry.id === detail.id) : null;
   const valueOf = (id: typeof ATTRIBUTES[number]['id']) => id === 'critChance' || id === 'hpRegenPercent' ? `${percent(Number(game.stats[id]))}${id === 'hpRegenPercent' ? '/秒' : ''}`
@@ -87,6 +88,8 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
     <div className="character-vitals">
       <Meter label="气血" value={game.hp} max={game.stats.maxHp} tone="red" />
       <Meter label="修为" value={game.cultivation} max={game.nextLevelCost ?? game.cultivation} />
+      {game.level === 24 && <p className="muted small">元婴圆满修为上限1兆；达到9000亿后，炼化一颗化神灵晶可突破。</p>}
+      {game.level === 25 && <p className="muted small">当前开放至化神初期，修为可继续积存。</p>}
       <div className="character-wealth"><span>常态战力 <strong>{formatAmount(game.combatPower.score)}</strong></span>
         <span className="wallet"><Coins size={13} />{formatAmount(game.money)}</span></div>
     </div>
@@ -125,7 +128,7 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
           const batchIssue = `每次最多使用${formatAmount(String(use.maxBatch))}个`;
           return <article key={item.itemId} className="quick-item" role="listitem" title={formatNumericText(use.issue ?? use.description)}>
             <ItemGlyph kind={item.kind} itemId={item.itemId} size={32} />
-            <div className="quick-item-info"><strong>{item.name}</strong><small title={`持有 ${item.quantity} 个`}>×{formatAmount(item.quantity)}</small></div>
+            <div className="quick-item-info"><strong>{item.name}</strong><small title={`持有 ${item.quantity} 个`}>×{formatAmount(item.quantity)}</small>{item.itemId === 'huashen-crystal' && <small>{use.description}</small>}</div>
             <div className="quick-item-actions" role="group" aria-label={`使用${item.name}`}>
               <button aria-label={`使用1个${item.name}`} title={use.issue ?? `使用1个${item.name}`}
                 disabled={disabled || max < 1} onClick={() => void useConsumable(item.itemId, 1)}>1</button>
@@ -140,6 +143,15 @@ export function CharacterPanel({ game, blocked, command, goActivity, activityLab
       {!consumables.length && <p className="quickbar-empty">暂无消耗品</p>}
       {useNotice && <p className="quickbar-notice negative" role="status">{useNotice}</p>}
     </section>
+    {game.fortuneOffering && <button disabled={blocked} onClick={() => setOffering(true)}>纳财养运 · ×{formatAmount(game.fortuneOffering.multiplier)}</button>}
+    {offering && game.fortuneOffering && <Dialog title="纳财养运" onClose={() => setOffering(false)}>
+      <p>消耗行囊全部紫铸旧币，共{formatAmount(game.fortuneOffering.count)}枚，出售价值{formatAmount(game.fortuneOffering.value)}灵石。</p>
+      <p>本世累计投入{formatAmount(game.fortuneOffering.points)}枚；幸运乘区 ×{formatAmount(game.fortuneOffering.multiplier)} → ×{formatAmount(game.fortuneOffering.nextMultiplier)}。</p>
+      <p>投入随轮回重置，不消耗灵石余额或其它货币。</p>
+      <button className="primary" disabled={blocked || game.fortuneOffering.count === '0'} onClick={async () => {
+        if (await command({ type: 'offer-fortune' })) setOffering(false);
+      }}>确认投入全部紫铸旧币</button>
+    </Dialog>}
     <button className="character-activity" onClick={goActivity}><i className={game.battle || activityLabel ? 'combat' : ''} /><span>{activityLabel ?? activityName(game)}</span>
       <small>{game.locationName}</small><ArrowUpRight size={14} /></button>
     {detail && <Dialog title={stat?.name ?? skill?.name ?? ({ fate: '本世气运', effects: '当前药效', marrow: '灵髓积蕴' } as Record<string, string>)[detail.kind] ?? '角色详情'}

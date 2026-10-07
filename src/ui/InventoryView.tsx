@@ -1,3 +1,4 @@
+import { gainCultivation, realmName } from '../../core/prototype/growth';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowDownWideNarrow, ArrowUpFromLine, Check, ChevronDown, ChevronRight, ChevronUp, Coins, FlaskConical, Package, RefreshCw, ShoppingCart, Sparkles, X } from 'lucide-react';
 import { rarityMultiplier } from '../../core/prototype/equipment';
@@ -122,6 +123,8 @@ export function InventoryView({ game, blocked, command, sort, onSortChange }: Vi
   });
   const selected = items.find(item => entryKey(item) === selectedId);
   const max = selected && !isInstance(selected) ? batchLimit(selected.quantity, '1', selected.use?.maxBatch ?? 10000) : 1;
+  const crystalPreview = selected?.itemId === 'huashen-crystal' && Number.isInteger(quantity) && quantity > 0 && quantity <= max
+    ? gainCultivation(game.level, game.cultivation, decimal('100000000000').mul(quantity).toFixed(), false, true) : null;
   const selectedSlot = selected && isInstance(selected) ? selected.slot : null;
   const equipped = selectedSlot ? game.instances.find(item => item.instanceId === game.equipment[selectedSlot]) ?? null : null;
   const comparing = selected && isInstance(selected) && selected.slot && !selected.equipped;
@@ -156,10 +159,13 @@ export function InventoryView({ game, blocked, command, sort, onSortChange }: Vi
       {selected.equipped ? <ArrowDownToLine size={16} /> : <ArrowUpFromLine size={16} />}{selected.equipped ? '卸下' : equipped ? '替换装备' : '装备'}
     </button>
   </div> : selected.use && <div className="bag-detail-actions">
+    {crystalPreview && <p>消耗化神灵晶{quantity}颗，修为增加{formatAmount(decimal('100000000000').mul(quantity).toFixed())}；
+      {crystalPreview.level > game.level ? `炼化后晋升${realmName(crystalPreview.level)}` : '本次不晋升，灵晶仍会消耗'}，
+      结余修为{formatAmount(crystalPreview.cultivation)}。元婴圆满旧积存先按1兆处理，突破许可不保留。</p>}
     {selected.use.maxBatch !== 1 && <Quantity label="使用数量" value={quantity} max={max} onChange={setQuantity} disabled={disabled} />}
     <button className="primary" disabled={disabled || Boolean(selected.use.issue) || !Number.isInteger(quantity) || quantity < 1 || quantity > max}
       onClick={() => void act({ type: 'use', itemId: selected.itemId, quantity: selected.use!.maxBatch === 1 ? 1 : quantity })}>
-      <FlaskConical size={16} />{selected.kind === 'foundation-pill' ? '服丹筑基' : selected.kind === 'food' ? '服用' : '使用'}
+      <FlaskConical size={16} />{selected.itemId === 'huashen-crystal' ? '炼化' : selected.kind === 'foundation-pill' ? '服丹筑基' : selected.kind === 'food' ? '服用' : '使用'}
     </button>
   </div>);
   return <div className="page inventory-view">

@@ -1,0 +1,214 @@
+{
+  "region": "huashen-ark-hub",
+  "version": "production-v1",
+  "authorization": "User explicitly authorized integrating artwork for the implemented Huashen breakthrough and ark hub batch using the project API. fal.ai remains the authorized provider.",
+  "directionDocument": "docs/asset-manifest.zh-CN.md",
+  "quality": "high",
+  "scope": "Four implemented scenes, six new enemy identities and three items. Two same-form enemies reuse existing images. No later regions, heart pendant, player portrait, skill-stage or facility images; no gameplay changes.",
+  "scopeCounts": {
+    "scenes": 4,
+    "enemies": 6,
+    "items": 3,
+    "newAssets": 13,
+    "reuseAliases": 2,
+    "newMountedIds": 15
+  },
+  "reuse": [
+    {
+      "id": "crystal-keeper",
+      "sourceId": "silver-eye-core-spirit",
+      "target": "enemies"
+    },
+    {
+      "id": "starbreaking-patrol",
+      "sourceId": "starbreaking-heavy-puppet",
+      "target": "enemies"
+    }
+  ],
+  "references": "Independent text-only generation; no existing images attached or altered.",
+  "jobs": [
+    {
+      "id": "crystal-chamber",
+      "name": "凝晶室",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huashen-hub-v1",
+      "size": "1792x784",
+      "background": "opaque",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/crystal-chamber.txt"
+    },
+    {
+      "id": "deep-hub-corridor",
+      "name": "深枢回廊",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huashen-hub-v1",
+      "size": "1792x784",
+      "background": "opaque",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/deep-hub-corridor.txt"
+    },
+    {
+      "id": "array-cabin",
+      "name": "列阵舱",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huashen-hub-v1",
+      "size": "1792x784",
+      "background": "opaque",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/array-cabin.txt"
+    },
+    {
+      "id": "main-hub-hall",
+      "name": "主枢殿",
+      "kind": "scene",
+      "variant": "sunburst",
+      "assetSuffix": "sunburst-huashen-hub-v1",
+      "size": "1792x784",
+      "background": "opaque",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/main-hub-hall.txt"
+    },
+    {
+      "id": "enemies",
+      "kind": "atlas",
+      "target": "enemies",
+      "variant": "flare",
+      "assetSuffix": "flare-huashen-hub-v1",
+      "size": "1536x1024",
+      "columns": 3,
+      "rows": 2,
+      "background": "transparent",
+      "backgroundRemoval": "preserve-alpha",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/enemies.txt",
+      "items": [
+        {
+          "id": "ark-mansion-guard",
+          "name": "夺舟府卫",
+          "cellBounds": [
+            0,
+            0,
+            537,
+            518
+          ]
+        },
+        {
+          "id": "dark-hub-puppet",
+          "name": "晦枢重傀",
+          "cellBounds": [
+            537,
+            0,
+            431,
+            525
+          ]
+        },
+        {
+          "id": "bloodedge-puppet",
+          "name": "血锋刃傀",
+          "cellBounds": [
+            968,
+            0,
+            568,
+            487
+          ]
+        },
+        {
+          "id": "lightchasing-puppet",
+          "name": "逐光石傀",
+          "cellBounds": [
+            0,
+            518,
+            550,
+            506
+          ],
+          "excludedCellRegions": [
+            [
+              496,
+              175,
+              550,
+              315
+            ]
+          ]
+        },
+        {
+          "id": "arraypiercing-puppet",
+          "name": "贯阵梭傀",
+          "cellBounds": [
+            490,
+            525,
+            532,
+            499
+          ],
+          "excludedCellRegions": [
+            [
+              0,
+              0,
+              62,
+              160
+            ]
+          ]
+        },
+        {
+          "id": "main-hub-puppet",
+          "name": "主枢战傀",
+          "cellBounds": [
+            1022,
+            487,
+            514,
+            537
+          ]
+        }
+      ],
+      "slicingNote": "Independent bounds follow the actual atlas. Two lower-row crops overlap in x only: the stone puppet light trail is above the shuttle nose. Small exclusion rectangles remove only the other subject inside those overlaps, without alpha thresholding or modifying either subject."
+    },
+    {
+      "id": "items",
+      "kind": "atlas",
+      "target": "icons",
+      "variant": "flare",
+      "assetSuffix": "flare-huashen-hub-v1",
+      "size": "1536x768",
+      "columns": 3,
+      "rows": 1,
+      "background": "transparent",
+      "backgroundRemoval": "preserve-alpha",
+      "references": [],
+      "promptFile": "design/huashen-ark-hub/production-v1/prompts/items.txt",
+      "items": [
+        {
+          "id": "crystallization-notes",
+          "name": "凝晶手札",
+          "cellBounds": [
+            0,
+            0,
+            478,
+            768
+          ]
+        },
+        {
+          "id": "huashen-crystal",
+          "name": "化神灵晶",
+          "cellBounds": [
+            478,
+            0,
+            551,
+            768
+          ]
+        },
+        {
+          "id": "main-hub-core",
+          "name": "主枢灵核",
+          "cellBounds": [
+            1029,
+            0,
+            507,
+            768
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,9 @@ import { BASE_STATS } from './stats';
 import { nonnegativeSchema, type Stats } from './types';
 
 export const FOUNDATION_LEVEL = 13;
-export const LEVEL_CAP = 24;
+export const HUASHEN_LEVEL = 25;
+export const HUASHEN_CULTIVATION_CAP = '1000000000000';
+export const LEVEL_CAP = HUASHEN_LEVEL;
 
 // Saved levels stay independent of the source budget positions.
 const realmGrowth = [
@@ -32,8 +34,9 @@ const realmGrowth = [
   { attack: 144001, defense: 72000, maxHp: 25000000, xp: '37982578105' },
   { attack: 288001, defense: 144000, maxHp: 47500000, xp: '81182578105' },
   { attack: 540001, defense: 270000, maxHp: 80000000, xp: '189182578105' },
+  { attack: 900001, defense: 450000, maxHp: 200000000, xp: '1189182578105' },
 ] as const;
-const earthPositions = [9, 10, 11, 11.25, 12, 13, 14, 14.25, 15, 16, 17, 18] as const;
+const earthPositions = [9, 10, 11, 11.25, 12, 13, 14, 14.25, 15, 16, 17, 18, 19] as const;
 
 function budgetPosition(level: number): number {
   if (!Number.isInteger(level) || level < 0 || level > LEVEL_CAP) throw new Error('Invalid prototype realm');
@@ -42,7 +45,7 @@ function budgetPosition(level: number): number {
 
 export function effectiveRealm(level: number): string {
   const position = budgetPosition(level);
-  if (level >= FOUNDATION_LEVEL) return String(Math.min(position, 17));
+  if (level >= FOUNDATION_LEVEL) return String(level >= HUASHEN_LEVEL ? position - 1 : Math.min(position, 17));
   return text(dec(level).mul(2).div(3));
 }
 
@@ -50,7 +53,7 @@ export function realmName(level: number): string {
   effectiveRealm(level);
   if (level < FOUNDATION_LEVEL) return level === 0 ? '凡人' : `炼气${level}层`;
   const offset = level - FOUNDATION_LEVEL;
-  return `${['筑基', '结丹', '元婴'][Math.floor(offset / 4)]}${['初期', '中期', '后期', '圆满'][offset % 4]}`;
+  return `${['筑基', '结丹', '元婴', '化神'][Math.floor(offset / 4)]}${['初期', '中期', '后期', '圆满'][offset % 4]}`;
 }
 
 export function realmAt(level: number): {
@@ -63,7 +66,7 @@ export function realmAt(level: number): {
   const whole = Math.floor(position);
   let skillMultiplier = dec(1);
   for (let rank = 1; rank <= whole; rank++) {
-    skillMultiplier = skillMultiplier.mul(rank < 3 ? '1.1' : rank < 6 ? '1.15' : rank < 9 ? '1.2' : '1.25');
+    skillMultiplier = skillMultiplier.mul(rank < 3 ? '1.1' : rank < 6 ? '1.15' : rank < 9 ? '1.2' : rank < 19 ? '1.25' : '1.4');
   }
   const nextFactor = whole + 1 < 3 ? '1.1' : whole + 1 < 6 ? '1.15' : '1.2';
   if (level < FOUNDATION_LEVEL) skillMultiplier = skillMultiplier.mul(dec(nextFactor).pow(dec(level * 2 % 3).div(3)));
@@ -85,15 +88,20 @@ export function realmAt(level: number): {
   };
 }
 
-export function gainCultivation(level: number, cultivation: string, amount: string, allowFoundation = false) {
+export function gainCultivation(level: number, cultivation: string, amount: string, allowFoundation = false, allowHuashen = false) {
   effectiveRealm(level);
   nonnegativeSchema.parse(cultivation);
   nonnegativeSchema.parse(amount);
   const beforeReference = Math.floor(budgetPosition(level));
-  let remaining = dec(cultivation).plus(amount);
+  let remaining = dec(level === HUASHEN_LEVEL - 1 && dec(cultivation).gt(HUASHEN_CULTIVATION_CAP)
+    ? HUASHEN_CULTIVATION_CAP : cultivation).plus(amount);
   const levels: number[] = [];
   while (level < LEVEL_CAP) {
     const cost = realmAt(level + 1).entryCost;
+    if (level + 1 === HUASHEN_LEVEL && !allowHuashen) {
+      if (remaining.gt(cost)) remaining = dec(cost);
+      break;
+    }
     if (level + 1 === FOUNDATION_LEVEL && !allowFoundation) {
       if (remaining.gt(cost)) remaining = dec(cost);
       break;

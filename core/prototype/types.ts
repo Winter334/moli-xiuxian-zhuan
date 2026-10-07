@@ -94,6 +94,7 @@ const abilitiesSchema = z.object({
   strikes: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(6),
     z.tuple([attackCoefficientSchema, attackCoefficientSchema])]),
   rending: z.boolean().optional(),
+  arkHub: z.boolean().optional(),
   weakening: z.number().min(0).max(100).optional(),
   reversal: z.boolean().optional(),
   walletSuppressionUnit: attackCoefficientSchema.optional(),
@@ -211,6 +212,7 @@ export interface Strike {
 }
 
 export type SimulationEvent =
+  | { kind: 'ark-contract'; at: number; slot: number }
   | ({ kind: 'strike'; at: number; side: 'player' | 'enemy'; slot: number; hpLost: string } & Strike)
   | { kind: 'miss-punishment'; at: number; slot: number; damage: string; hpLost: string }
   | { kind: 'reflection'; at: number; slot: number; damage: string; hpLost: string }
@@ -235,6 +237,7 @@ export interface PlayerUpdate {
 
 // Trusted rule callbacks run inside the event loop, never as client commands.
 export interface SimulationHooks {
+  hasArkContract?: () => boolean;
   getMoney?: () => string;
   getMarrowInsight?: () => string;
   getSturdyCap?: () => number;

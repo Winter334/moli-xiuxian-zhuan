@@ -24,7 +24,7 @@ export const AREAS = [
     'four-aspect-puppet-workshop', 'lost-command-corridor', 'armor-bearing-cabin', 'sealed-hub-forecourt',
     'ark-seizing-sidechamber', 'triangular-array-gate', 'hidden-hub-chamber'] },
   { id: 'ark-inner', name: '坠星灵舟·内舱', subtitle: '供能深舱', locations: ['fallen-ark-inner', 'furnace-guard-corridor',
-    'essence-condensing-corridor', 'energy-gathering-cabin', 'starbreaking-chamber', 'ark-meditation-cabin'] },
+    'essence-condensing-corridor', 'energy-gathering-cabin', 'starbreaking-chamber', 'ark-meditation-cabin', 'crystal-chamber', 'deep-hub-corridor', 'array-cabin', 'main-hub-hall'] },
 ];
 export function areaFor(id: string) { return AREAS.find(area => area.locations.includes(id)) ?? AREAS[0]; }
 export function knownAreas(game: OpeningView) {
@@ -95,6 +95,7 @@ const LOCAL_POINTS: Record<string, [number, number]> = {
   'lost-command-corridor': [140, -170], 'armor-bearing-cabin': [340, 20], 'sealed-hub-forecourt': [270, 240],
   'ark-seizing-sidechamber': [-430, -260], 'triangular-array-gate': [420, -250], 'hidden-hub-chamber': [510, 180],
   'fallen-ark-inner': [-420, 170], 'furnace-guard-corridor': [-300, -90], 'essence-condensing-corridor': [20, -190],
+  'crystal-chamber': [380, 180], 'deep-hub-corridor': [660, -60], 'array-cabin': [950, -60], 'main-hub-hall': [1240, -60],
   'energy-gathering-cabin': [370, -60], 'starbreaking-chamber': [-310, -340], 'ark-meditation-cabin': [80, 160],
 };
 export function mapPoint(id: string): MapPoint {

@@ -39,6 +39,7 @@ export function enemyAbilityDetails(a: ResolvedEnemy['abilities']): EnemyAbility
     a.noToughnessXp && { name: '不增长承伤熟练' },
     a.missPunishment !== undefined && { name: '截隙', description: `我方落空损失${a.missPunishment}气血` },
     a.attackAfterDamageThreshold !== undefined && { name: '潮压', description: `我方每段对其攻击后，承受max(${a.attackAfterDamageThreshold}－自身敏捷,0)直伤；落空及末击也触发` },
+    a.arkHub && { name: '护舟旧令', description: '第十轮普攻后，装备护舟阵契可将其气血置1，否则追加一次普通攻击；获胜收回一份阵契，优先装备，其次行囊品质130的一份' },
     a.healthBurst && { name: '囊爆', description: `第${a.healthBurst.round}轮普攻后，以当时剩余气血×${a.healthBurst.multiplier}造成直伤，自身降至1血；每次遭遇一次` },
     a.entryStrikes > 0 && { name: `起手${a.entryStrikes}击`, description: `攻击×${a.entryAttackCoefficient ?? 1} · 伤害×${a.entryDamageMultiplier ?? 1}` },
     a.entrySequence && { name: '折风先袭', description: a.entrySequence.map(batch =>
